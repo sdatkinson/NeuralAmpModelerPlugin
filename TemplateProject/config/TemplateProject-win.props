@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="UserMacros">
+    <IPLUG2_ROOT>$(ProjectDir)..\..\iPlug2</IPLUG2_ROOT>
+    <BINARY_NAME>TemplateProject</BINARY_NAME>
+    <EXTRA_ALL_DEFS>IGRAPHICS_NANOVG;IGRAPHICS_GL2</EXTRA_ALL_DEFS>
+    <EXTRA_DEBUG_DEFS />
+    <EXTRA_RELEASE_DEFS />
+    <EXTRA_TRACER_DEFS />
+    <PDB_FILE>$(SolutionDir)build-win\pdbs\$(TargetName)_$(Platform).pdb</PDB_FILE>
+    <BUILD_DIR>$(SolutionDir)build-win</BUILD_DIR>
+    <CREATE_BUNDLE_SCRIPT>$(IPLUG2_ROOT)\Scripts\create_bundle.bat</CREATE_BUNDLE_SCRIPT>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(IPLUG2_ROOT)\..\common-win.props" />
+  </ImportGroup>
+  <PropertyGroup>
+    <TargetName>$(BINARY_NAME)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(EXTRA_INC_PATHS);$(IPLUG_INC_PATHS);$(IGRAPHICS_INC_PATHS);$(GLAD_GL2_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(EXTRA_ALL_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>wininet.lib;comctl32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>$(PDB_FILE)</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>CALL "$(SolutionDir)scripts\postbuild-win.bat" "$(TargetExt)" "$(BINARY_NAME)" "$(Platform)" "$(COPY_VST2)" "$(TargetPath)" "$(VST2_32_PATH)" "$(VST2_64_PATH)" "$(VST3_32_PATH)" "$(VST3_64_PATH)" "$(AAX_32_PATH)" "$(AAX_64_PATH)" "$(BUILD_DIR)" "$(VST_ICON)" "$(AAX_ICON)" "$(CREATE_BUNDLE_SCRIPT)"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>CALL "$(SolutionDir)scripts\prebuild-win.bat" "$(TargetExt)" "$(BINARY_NAME)" "$(Platform)" "$(TargetPath)" "$(OutDir)"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BINARY_NAME">
+      <Value>$(BINARY_NAME)</Value>
+    </BuildMacro>
+    <BuildMacro Include="EXTRA_ALL_DEFS">
+      <Value>$(EXTRA_ALL_DEFS)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="EXTRA_DEBUG_DEFS">
+      <Value>$(EXTRA_DEBUG_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="EXTRA_RELEASE_DEFS">
+      <Value>$(EXTRA_RELEASE_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="EXTRA_TRACER_DEFS">
+      <Value>$(EXTRA_TRACER_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PDB_FILE">
+      <Value>$(PDB_FILE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BUILD_DIR">
+      <Value>$(BUILD_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="CREATE_BUNDLE_SCRIPT">
+      <Value>$(CREATE_BUNDLE_SCRIPT)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

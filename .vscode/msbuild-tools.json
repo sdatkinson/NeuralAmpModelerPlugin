@@ -1,0 +1,22 @@
+{
+    "solution": "${workspaceRoot}/NeuralAmpModeler/NeuralAmpModeler.sln",
+    "variables": {
+        "MSBUILD": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe",
+        "DEVENV": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/devenv.com"
+    },
+    "buildConfigurations": [
+        "Debug",
+        "Release"
+    ],
+    "platformConfigurations": [
+        "x64"
+    ],
+    "debugConfigurations": [
+        {
+            "name": "test",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/NeuralAmpModeler/build-win/NeuralAmpModeler_x64.exe",
+            "args": []
+        }
+    ]
+}

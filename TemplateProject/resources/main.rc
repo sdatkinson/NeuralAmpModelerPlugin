@@ -1,0 +1,235 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United Kingdom) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_PREF DIALOG 0, 0, 223, 309
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Preferences"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,110,285,50,14
+    PUSHBUTTON      "Apply",IDAPPLY,54,285,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,166,285,50,14
+    COMBOBOX        IDC_COMBO_AUDIO_DRIVER,20,35,100,100,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Driver Type",IDC_STATIC,22,25,38,8
+    COMBOBOX        IDC_COMBO_AUDIO_IN_DEV,20,65,100,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Input Device",IDC_STATIC,20,55,42,8
+    COMBOBOX        IDC_COMBO_AUDIO_OUT_DEV,20,95,100,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Output Device",IDC_STATIC,20,85,47,8
+    COMBOBOX        IDC_COMBO_AUDIO_BUF_SIZE,135,35,65,100,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Buffer Size",IDC_STATIC,137,25,46,8
+    COMBOBOX        IDC_COMBO_AUDIO_SR,135,95,65,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Sampling Rate",IDC_STATIC,135,85,47,8
+    GROUPBOX        "Audio Device Settings",IDC_STATIC,5,10,210,170
+    PUSHBUTTON      "Config...",IDC_BUTTON_OS_DEV_SETTINGS,135,155,65,14
+    COMBOBOX        IDC_COMBO_AUDIO_IN_L,20,125,40,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Input 1 (L)",IDC_STATIC,20,115,33,8
+    COMBOBOX        IDC_COMBO_AUDIO_IN_R,65,126,40,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Input 2 (R)",IDC_STATIC,65,115,34,8
+    COMBOBOX        IDC_COMBO_AUDIO_OUT_L,20,155,40,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Output 1 (L)",IDC_STATIC,20,145,38,8
+    COMBOBOX        IDC_COMBO_AUDIO_OUT_R,65,155,40,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Output 2 (R)",IDC_STATIC,65,145,40,8
+    GROUPBOX        "MIDI Device Settings",IDC_STATIC,5,190,210,85
+    COMBOBOX        IDC_COMBO_MIDI_OUT_DEV,15,250,100,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Output Device",IDC_STATIC,15,240,47,8
+    COMBOBOX        IDC_COMBO_MIDI_IN_DEV,15,220,100,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Input Device",IDC_STATIC,15,210,42,8
+    LTEXT           "Input Channel",IDC_STATIC,125,210,45,8
+    COMBOBOX        IDC_COMBO_MIDI_IN_CHAN,125,220,50,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+    LTEXT           "Output Channel",IDC_STATIC,125,240,50,8
+    COMBOBOX        IDC_COMBO_MIDI_OUT_CHAN,125,250,50,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
+END
+
+IDD_DIALOG_MAIN DIALOG 0, 0, 300, 300
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "TemplateProject"
+MENU IDR_MENU1
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Preferences...\tCtrl+,",     ID_PREFERENCES
+        MENUITEM "&Quit",                       ID_QUIT
+    END
+    POPUP "&Debug"
+    BEGIN
+        MENUITEM "&Live Edit Mode\tCtrl+E",     ID_LIVE_EDIT
+        MENUITEM "&Show Control Bounds\tCtrl+B", ID_SHOW_BOUNDS
+        MENUITEM "&Show Drawn Area\tCtrl+D",    ID_SHOW_DRAWN
+        MENUITEM "&Show FPS\tCtrl+F",           ID_SHOW_FPS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About",                      ID_ABOUT
+        MENUITEM "&Read Manual",                ID_HELP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_PREF, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_MAIN, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "#include ""..\\config.h""\r\n"
+    "ROBOTO_FN TTF ROBOTO_FN\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "TemplateProject.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+    VK_OEM_COMMA,   ID_PREFERENCES,         VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_SHOW_BOUNDS,         VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_SHOW_DRAWN,          VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_SHOW_FPS,            VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_LIVE_EDIT,           VIRTKEY, CONTROL, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 0,0,1,0
+PRODUCTVERSION 0,0,1,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004e4"
+        BEGIN
+            VALUE "FileVersion", "0.0.1"
+            VALUE "ProductVersion", "0.0.1"
+            VALUE "FileDescription", "TemplateProject"
+            VALUE "InternalName", "TemplateProject"
+            VALUE "ProductName", "TemplateProject"
+            VALUE "CompanyName", "AcmeInc"
+            VALUE "LegalCopyright", "Copyright 2020 Acme Inc"
+            VALUE "LegalTrademarks", "VST is a trademark of Steinberg Media Technologies GmbH, Audio Unit is a trademark of Apple, Inc."
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1252
+    END
+END
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "..\config.h"
+ROBOTO_FN TTF ROBOTO_FN
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

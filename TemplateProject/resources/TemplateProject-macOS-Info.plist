@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>TemplateProject</string>
+	<key>CFBundleGetInfoString</key>
+	<string>TemplateProject v0.0.0 Copyright 2021 Acme Inc</string>
+	<key>CFBundleIconFile</key>
+	<string>TemplateProject.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.AcmeInc.app.TemplateProject</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>TemplateProject</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>9c0G</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.0</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.music</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.11.0</string>
+	<key>NSMainNibFile</key>
+	<string>TemplateProject-macOS-MainMenu</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs mic access to process audio.</string>
+	<key>NSPrincipalClass</key>
+	<string>SWELLApplication</string>
+</dict>
+</plist>

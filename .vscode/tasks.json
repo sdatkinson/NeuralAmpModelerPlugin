@@ -1,0 +1,76 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build APP Debug",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "${workspaceFolder}/NeuralAmpModeler/projects/NeuralAmpModeler-macOS.xcodeproj",
+                "-target",
+                "APP",
+                "-configuration",
+                "Debug",
+                "SYMROOT=~/Library/Developer/Xcode/DerivedData"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "build VST2 Debug",
+            "type": "shell",
+            "group": "build",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "${workspaceFolder}/NeuralAmpModeler/projects/NeuralAmpModeler-macOS.xcodeproj",
+                "-target",
+                "VST2",
+                "-configuration",
+                "Debug",
+                "SYMROOT=~/Library/Developer/Xcode/DerivedData"
+            ]
+        },
+        {
+            "label": "build VST3 Debug",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "${workspaceFolder}/NeuralAmpModeler/projects/NeuralAmpModeler-macOS.xcodeproj",
+                "-target",
+                "VST3",
+                "-configuration",
+                "Debug",
+                "SYMROOT=~/Library/Developer/Xcode/DerivedData"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "build AUv2 Debug",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "${workspaceFolder}/NeuralAmpModeler/projects/NeuralAmpModeler-macOS.xcodeproj",
+                "-target",
+                "AU",
+                "-configuration",
+                "Debug",
+                "SYMROOT=~/Library/Developer/Xcode/DerivedData"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "build WAM",
+            "type": "shell",
+            "command": "${workspaceFolder}/NeuralAmpModeler/scripts/makedist-web.sh container",
+            "args": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}

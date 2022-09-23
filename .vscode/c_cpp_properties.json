@@ -1,0 +1,74 @@
+{
+    "env": {
+        "commonIncludePaths": [
+            "${workspaceFolder}/NeuralAmpModeler/.",
+            "${workspaceFolder}/NeuralAmpModeler/**",
+            "${workspaceFolder}/iPlug2/WDL/**",
+            "${workspaceFolder}/iPlug2/IPlug/**",
+            "${workspaceFolder}/iPlug2/IGraphics/**",
+            "${workspaceFolder}/iPlug2/Dependencies/IGraphics/glad_GL2/include/",
+            "${workspaceFolder}/iPlug2/Dependencies/IGraphics/NanoVG/src/",
+            "${workspaceFolder}/iPlug2/Dependencies/IGraphics/NanoSVG/src/"
+        ],
+        "commonDefs": [
+            "APP_API",
+            "IPLUG_DSP=1",
+            "IPLUG_EDITOR=1",
+            "IGRAPHICS_NANOVG",
+            "NOMINMAX"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${commonIncludePaths}",
+                "${workspaceFolder}/iPlug2/Dependencies/Build/mac/include/**",
+                "${workspaceFolder}/iPlug2/Dependencies/IGraphics/MetalNanoVG/src/"
+            ],
+            "defines": [
+                "${commonDefs}",
+                "OS_MAC",
+                "IGRAPHICS_METAL"
+            ],
+            "macFrameworkPath": [
+            ],
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "${commonIncludePaths}"
+            ],
+            "defines": [
+                "${commonDefs}",
+                "OS_WIN",
+                "IGRAPHICS_GL2"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "WASM",
+            "includePath": [
+                "${commonIncludePaths}",
+                "/emsdk/upstream/emscripten/system/include"
+            ],
+            "defines": [
+                "${commonDefs}",
+                "OS_WEB",
+                "IGRAPHICS_GLES2"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/emsdk/upstream/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

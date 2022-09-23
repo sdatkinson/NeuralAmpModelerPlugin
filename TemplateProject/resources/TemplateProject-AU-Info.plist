@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AudioComponents</key>
+	<array>
+		<dict>
+			<key>description</key>
+			<string>TemplateProject</string>
+			<key>factoryFunction</key>
+			<string>TemplateProject_Factory</string>
+			<key>manufacturer</key>
+			<string>Acme</string>
+			<key>name</key>
+			<string>AcmeInc: TemplateProject</string>
+			<key>sandboxSafe</key>
+			<true/>
+			<key>subtype</key>
+			<string>9c0G</string>
+			<key>type</key>
+			<string>aufx</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>AudioUnit Version</key>
+	<string>0x00000000</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>TemplateProject</string>
+	<key>CFBundleGetInfoString</key>
+	<string>TemplateProject v0.0.0 Copyright 2021 Acme Inc</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.AcmeInc.audiounit.TemplateProject</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>TemplateProject</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>9c0G</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.0</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.11.0</string>
+	<key>NSPrincipalClass</key>
+	<string>TemplateProject_View</string>
+</dict>
+</plist>

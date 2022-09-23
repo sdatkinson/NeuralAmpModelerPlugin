@@ -1,0 +1,306 @@
+{
+	"icontrol": {
+	"prefix": "IControl",
+	"body": [
+		"class ${1:MyNewControl} : public IControl",
+		"{", 
+		"public:", 
+		"\t$1(const IRECT& bounds)",
+		"\t: IControl(bounds)",
+		"\t{}",
+		"\t",
+		"\tvoid Draw(IGraphics& g) override",
+		"\t{",
+		"\t\tg.FillRect(COLOR_RED, mRECT);",
+		"\t}",
+		"\t",
+		"\t//void OnMouseDown(float x, float y, const IMouseMod& mod) override {}",
+		"\t//void OnMouseUp(float x, float y, const IMouseMod& mod) override {}",
+		"\t//void OnMouseDrag(float x, float y, float dX, float dY, const IMouseMod& mod) override {}",
+		// "\t//void OnMouseOver(float x, float y, const IMouseMod& mod) override {}",
+		// "\t//void OnMouseOut() override {}",
+		// "\t//void OnMouseWheel(float x, float y, const IMouseMod& mod, float d) override {}",
+		// "\t",
+		// "private:", 
+		// "\t$2", 
+		"};"
+	],
+	"description": "New IControl class"
+	},
+
+	"icontrolwithlayer": {
+		"prefix": "LayerIControl",
+		"body": [
+			"class ${1:MyNewControl} : public IControl",
+			"{", 
+			"public:", 
+			"\t$1(const IRECT& bounds)",
+			"\t: IControl(bounds)",
+			"\t{}",
+			"\t",
+			"\tvoid Draw(IGraphics& g) override",
+			"\t{",
+			"\t\tif(!g.CheckLayer(mLayer))",
+			"\t\t{",
+			"\t\t\tg.StartLayer(this, mRECT);",
+			"\t\t\tg.FillEllipse(COLOR_BLUE, mRECT);",
+			"\t\t\tmLayer = g.EndLayer();",
+			"\t\t}",
+			"\t}",
+			"\t",
+			"private:", 
+			"\tILayerPtr mLayer;", 
+			"};"
+		],
+		"description": "New IControl class with layer"
+		},
+
+	"skiacontrol": {
+		"prefix": "SkiaControl",
+		"body": [
+			"class ${1:MyNewSkiaControl} : public IControl",
+			"{", 
+			"public:", 
+			"\t$1(const IRECT& bounds)",
+			"\t: IControl(bounds)",
+			"\t{}",
+			"\t",
+			"\tvoid Draw(IGraphics& g) override",
+			"\t{",
+			"\t\tSkCanvas* canvas = static_cast<SkCanvas*>(g.GetDrawContext());",
+			"\t}",
+			"\t",
+			// "\t//void OnMouseDown(float x, float y, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseUp(float x, float y, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseDrag(float x, float y, float dX, float dY, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOver(float x, float y, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOut() override {}",
+			// "\t//void OnMouseWheel(float x, float y, const IMouseMod& mod, float d) override {}",
+			// "\t",
+			// "private:", 
+			// "\t$2", 
+			"};"
+		],
+		"description": "New IControl class"
+		},
+
+	"ivcontrol": {
+		"prefix": "IVControl",
+		"body": [
+			"class ${1:MyNewVControl} : public IControl",
+			"                    , public IVectorBase",
+			"{", 
+			"public:", 
+			"\t$1(const IRECT& bounds, const char* label = \"\", const IVStyle& style = DEFAULT_STYLE)",
+			"\t: IControl(bounds)",
+			"\t, IVectorBase(style)",
+			"\t{",
+			"\t\tAttachIControl(this, label);",
+			"\t}",
+			"\t",
+
+			"\tvoid Draw(IGraphics& g) override",
+			"\t{",
+			"\t\tDrawBackground(g, mRECT);",
+			"\t\tDrawWidget(g);",
+			"\t\tDrawLabel(g);",
+			"\t\tDrawValue(g, mMouseIsOver);",
+			"\t}",
+			"\t",
+			"\tvoid DrawWidget(IGraphics& g) override",
+			"\t{",
+			"\t\tg.FillRect(GetColor(kFG), mWidgetBounds);",
+			"\t}",
+			"\t",
+			"\tvoid OnResize() override",
+			"\t{",
+			"\t\tSetTargetRECT(MakeRects(mRECT));",
+			"\t}",
+			"\t",
+			"\t//void OnMouseDown(float x, float y, const IMouseMod& mod) override {}",
+			"\t//void OnMouseUp(float x, float y, const IMouseMod& mod) override {}",
+			"\t//void OnMouseDrag(float x, float y, float dX, float dY, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOver(float x, float y, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOut() override {}",
+			// "\t//void OnMouseWheel(float x, float y, const IMouseMod& mod, float d) override {}",
+			// "\t",
+			// "private:", 
+			// "\t$2", 
+			"};"
+		],
+		"description": "New IVControl class"
+	  },
+
+	"ibcontrol": {
+		"prefix": "IBControl",
+		"body": [
+			"class ${1:MyNewBControl} : public IControl",
+			"                    , public IBitmapBase",
+			"{", 
+			"public:", 
+			"\t$1(const IRECT& bounds, const IBitmap& bitmap)",
+			"\t: IControl(bounds)",
+			"\t, IBitmapBase(bitmap)",
+			"\t{",
+			"\t\tAttachIControl(this);",
+			"\t}",
+			"\t",
+			"\tvoid Draw(IGraphics& g) override",
+			"\t{",
+			"\t\tDrawBitmap(g);",
+			"\t}",
+			"\t",
+			"\tvoid OnRescale() override",
+			"\t{",
+			"\t\tmBitmap = GetUI()->GetScaledBitmap(mBitmap);",
+			"\t}",
+			"\t",
+			"\t//void OnMouseDown(float x, float y, const IMouseMod& mod) override {}",
+			"\t//void OnMouseUp(float x, float y, const IMouseMod& mod) override {}",
+			"\t//void OnMouseDrag(float x, float y, float dX, float dY, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOver(float x, float y, const IMouseMod& mod) override {}",
+			// "\t//void OnMouseOut() override {}",
+			// "\t//void OnMouseWheel(float x, float y, const IMouseMod& mod, float d) override {}",
+			// "\t",
+			// "private:", 
+			// "\t$2", 
+			"};"
+		],
+		"description": "New IBControl class"
+	  },
+
+	"itext": {
+		"prefix": "IText",
+		"body": [
+			"const IText text {",
+			"\tDEFAULT_TEXT_SIZE,            // size",
+			"\tDEFAULT_TEXT_FGCOLOR,         // color",
+			"\t\"Roboto-Regular\",             // font",
+			"\tEAlign::Center,               // horizontal align",
+			"\tEVAlign::Middle,              // vertical align",
+			"\t0,                            // angle",
+			"\tDEFAULT_TEXTENTRY_BGCOLOR,    // text entry BG color",
+			"\tDEFAULT_TEXTENTRY_FGCOLOR     // text entry text color",
+			"};",
+		],
+		"description": "Init IText"
+	},
+
+	"ivstyle": {
+		"prefix": "IVStyle",
+		"body": [
+			"const IVStyle style {",
+			"\tDEFAULT_SHOW_LABEL,           // show label",
+			"\tDEFAULT_SHOW_VALUE,           // show value",
+			"\t{                             // color spec:",
+			"\t\tDEFAULT_BGCOLOR,              // Background",
+			"\t\tDEFAULT_FGCOLOR,              // Foreground",
+			"\t\tDEFAULT_PRCOLOR,              // Pressed",
+			"\t\tCOLOR_BLACK,                  // Frame",
+			"\t\tDEFAULT_HLCOLOR,              // Highlight",
+			"\t\tDEFAULT_SHCOLOR,              // Shadow",
+			"\t\tCOLOR_BLACK,                  // Extra 1",
+			"\t\tDEFAULT_X2COLOR,              // Extra 2",
+			"\t\tDEFAULT_X3COLOR               // Extra 3",
+			"\t},",
+			"\t{                             // label text:",
+			"\t\tDEFAULT_TEXT_SIZE,            // size",
+			"\t\tDEFAULT_TEXT_FGCOLOR,         // color",
+			"\t\t\"Roboto-Regular\",             // font",
+			"\t\tEAlign::Center,               // horizontal align",
+			"\t\tEVAlign::Middle,              // vertical align",
+			"\t\t0                             // angle",
+			"\t},",
+			"\t{                             // value text:",
+			"\t\tDEFAULT_TEXT_SIZE,            // size",
+			"\t\tDEFAULT_TEXT_FGCOLOR,         // color",
+			"\t\t\"Roboto-Regular\",             // font",
+			"\t\tEAlign::Center,               // horizontal align",
+			"\t\tEVAlign::Middle,              // vertical align",
+			"\t\t0,                            // angle",
+			"\t\tDEFAULT_TEXTENTRY_BGCOLOR,    // text entry BG color",
+			"\t\tDEFAULT_TEXTENTRY_FGCOLOR     // text entry text color",
+			"\t},",
+			"\tDEFAULT_HIDE_CURSOR,          // hide cursor",
+			"\tDEFAULT_DRAW_FRAME,           // draw frame",
+			"\tDEFAULT_DRAW_SHADOWS,         // draw shadows",
+			"\tDEFAULT_EMBOSS,               // emboss",
+			"\tDEFAULT_ROUNDNESS,            // roundness",
+			"\tDEFAULT_FRAME_THICKNESS,      // frame thickness",
+			"\tDEFAULT_SHADOW_OFFSET,        // shadow offset",
+			"\tDEFAULT_WIDGET_FRAC,          // widget fraction",
+			"\tDEFAULT_WIDGET_ANGLE          // widget angle",
+			"};"
+		],
+		"description": "Init IVStyle"
+	},
+
+	"ivcolorspec": {
+		"prefix": "IVColorSpec",
+		"body": [
+			"const IVColorSpec spec {",
+			"\tDEFAULT_BGCOLOR,              // Background",
+			"\tDEFAULT_FGCOLOR,              // Foreground",
+			"\tDEFAULT_PRCOLOR,              // Pressed",
+			"\tCOLOR_BLACK,                  // Frame",
+			"\tDEFAULT_HLCOLOR,              // Highlight",
+			"\tDEFAULT_SHCOLOR,              // Shadow",
+			"\tCOLOR_BLACK,                  // Extra 1",
+			"\tDEFAULT_X2COLOR,              // Extra 2",
+			"\tDEFAULT_X3COLOR               // Extra 3",
+			"};"
+		],
+		"description": "Init IVColorSpec"
+	},
+
+	"lineargradient": {
+		"prefix": "LinearGradientPattern",
+		"body": [
+			"const IPattern pattern = IPattern::CreateLinearGradient(b, EDirection::Horizontal, { {${1:COLOR_WHITE}, 0.f}, {${2:COLOR_BLACK}, 1.f} });"
+		],
+		"description": "Init linear gradient IPattern"
+	},
+
+	"radialgradient": {
+		"prefix": "RadialGradientPattern",
+		"body": [
+			"const IPattern pattern = IPattern::CreateRadialGradient(b.MW(), b.MH(), b.W()/2.f, { {${1:COLOR_WHITE}, 0.f}, {${2:COLOR_BLACK}, 1.f} });"
+		],
+		"description": "Init radial gradient IPattern"
+	},
+
+	"attachlambda": {
+		"prefix": "AttachLambdaControl",
+		"body": [
+			"pGraphics->AttachControl(new ILambdaControl(bounds,",
+			"\t[](ILambdaControl* pCaller, IGraphics& g, IRECT& rect) {",
+			"\t",
+			"\t\tg.FillRect(COLOR_RED, rect);",
+			"\t",
+			"}, DEFAULT_ANIMATION_DURATION, false /*loop*/, false /*start immediately*/));",
+		],
+		"description": "Attach an ILambdaControl"
+	},
+
+	"attachivbutton": {
+		"prefix": "AttachIVButtonControl",
+		"body": [
+			"pGraphics->AttachControl(new IVButtonControl(bounds, SplashClickActionFunc,",
+			"\t\"${1:Press Me}\", DEFAULT_STYLE.WithColor(kFG, ${2:COLOR_WHITE}).WithLabelText({15.f, EVAlign::Middle})))->SetAnimationEndActionFunction(",
+			"\t[](IControl* pCaller) {",
+			"\t\t${3:DBGMSG(\"button clicked\")};",
+			"});",
+		],
+		"description": "Attach an IVButtonControl"
+	},
+
+	"attachprettyivslider": {
+		"prefix": "AttachIVSliderControl",
+		"body": [
+			"pGraphics->AttachControl(new IVSliderControl(b.GetCentredInside(30,100), [](IControl* pCaller){",
+			"\tdynamic_cast<IVSliderControl*>(pCaller)->SetColor(kX1, IColor::LinearInterpolateBetween(COLOR_RED, COLOR_ORANGE, pCaller->GetValue())); },",
+			"\t\"\", DEFAULT_STYLE, false, EDirection::Vertical, DEFAULT_GEARING, 0.f, 15.f));",
+		],
+		"description": "Attach an AttachIVSliderControl"
+	},
+  }

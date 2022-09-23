@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>TemplateProjectAppExtension</string>
+	<key>CFBundleExecutable</key>
+	<string>TemplateProjectAppExtension</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>TemplateProjectAppExtension</string>
+	<key>CFBundlePackageType</key>
+	<string>XPC!</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.0</string>
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionAttributes</key>
+		<dict>
+			<key>AudioComponents</key>
+			<array>
+				<dict>
+					<key>description</key>
+					<string>TemplateProject</string>
+					<key>factoryFunction</key>
+					<string>IPlugAUViewController_vTemplateProject</string>
+					<key>manufacturer</key>
+					<string>Acme</string>
+					<key>name</key>
+					<string>AcmeInc: TemplateProject</string>
+					<key>sandboxSafe</key>
+					<true/>
+					<key>subtype</key>
+					<string>9c0G</string>
+					<key>tags</key>
+					<array>
+						<string>Effects</string>
+						<string>size:{1024,768}</string>
+					</array>
+					<key>type</key>
+					<string>aufx</string>
+					<key>version</key>
+					<integer>0</integer>
+				</dict>
+			</array>
+		</dict>
+		<key>NSExtensionMainStoryboard</key>
+		<string>TemplateProject-iOS-MainInterface</string>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.AudioUnit-UI</string>
+	</dict>
+</dict>
+</plist>

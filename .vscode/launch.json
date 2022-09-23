@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // {
+        //     "name": "(lldb) Launch Reaper VST2",
+        //     "type": "lldb",
+        //     "request": "launch",
+        //     "program": "/Applications/REAPER.app",
+        //     "args": ["${workspaceFolder}/NeuralAmpModeler/NeuralAmpModeler.RPP"],
+        //     "preLaunchTask": "build VST2 Debug",
+        // },
+        // {
+        //     "name": "(lldb) Launch Reaper VST3",
+        //     "type": "lldb",
+        //     "request": "launch",
+        //     "program": "/Applications/REAPER.app",
+        //     "args": ["${workspaceFolder}/NeuralAmpModeler/NeuralAmpModeler.RPP"],
+        //     "preLaunchTask": "build VST3 Debug",
+        // },
+        // {
+        //     "name": "(lldb) Launch Reaper AUv2",
+        //     "type": "lldb",
+        //     "request": "launch",
+        //     "program": "/Applications/REAPER.app",
+        //     "args": ["${workspaceFolder}/NeuralAmpModeler/NeuralAmpModeler.RPP"],
+        //     "preLaunchTask": "build AUv2 Debug",
+        // },
+        {
+            "name": "(lldb) Launch APP",
+            "type": "lldb",
+            "request": "launch",
+            "program": "~/Applications/NeuralAmpModeler.app",
+            "preLaunchTask": "build APP Debug"
+        }
+    ]
+}

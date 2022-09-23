@@ -1,0 +1,72 @@
+{
+	"author": {
+	"prefix": "Header",
+	"body": [
+		"/*",
+		"==============================================================================",
+		"",
+		"This file is part of the iPlug 2 library. Copyright (C) the iPlug 2 developers.",
+		"",
+		"See LICENSE.txt for  more info.",
+		"",
+		"===============================================================================",
+		"*/",
+		"$7",
+	],
+	"description": "iPlug2 source header"
+	},
+
+	"osguard": {
+		"prefix": "OS Guard",
+		"body": [
+			"#if defined OS_WIN",
+			"   $1",
+			"#elif defined OS_MAC",
+			"   $2",
+			"#elif defined OS_IOS",
+			"   $3",
+			"#elif defined OS_LINUX",
+			"   $4",
+			"#elif defined OS_WEB",
+			"   $5",
+			"#else",
+			"   #error unsupported OS",
+			"#endif",
+		],
+		"description": "iPlug OS guard macros"
+	},
+
+	"initdoubleparam": {
+		"prefix": "InitDoubleParam",
+		"body": [
+			"GetParam(${1:kGain})->InitDouble(${2:\"label\"}, ${3:default}, ${4:min}, ${5:max}, ${6:step}, ${7:\"unit\"});"// ${8:IParam::kFlagsNone}, ${9:\"group\"});"
+		],
+		"description": "Initialize Double IParam"
+	},
+
+	"initintparam": {
+		"prefix": "InitIntParam",
+		"body": [
+			"GetParam(${1:kGain})->InitInt(${2:\"label\"}, ${3:default}, ${4:min}, ${5:max}, ${6:\"unit\"});"// ${7:IParam::kFlagsNone}, ${8:\"group\"});"
+		],
+		"description": "Initialize Integer IParam"
+	},
+
+	"initlistparam": {
+		"prefix": "InitEnumListParam",
+		"body": [
+			"GetParam(${1:kGain})->InitEnum(${2:\"label\"}, ${3:default}, {${4:\"One\"}, ${5:\"Two\"}, ${6:\"Three\"}});"// ${7:IParam::kFlagsNone}, ${8:\"group\"});"
+		],
+		"description": "Initialize Enumerated List IParam"
+	},
+
+	"initboolparam": {
+		"prefix": "InitBoolParam",
+		"body": [
+			"GetParam(${1:kGain})->InitBool(${2:\"label\"}, ${3:default});"//, ${4:IParam::kFlagsNone}, ${5:\"group\"}, ${6:\"off\"}, ${7:\"on\"});"
+		],
+		"description": "Initialize Boolean IParam"
+	},
+
+  }
+  

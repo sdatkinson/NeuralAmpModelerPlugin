@@ -1,0 +1,61 @@
+
+// IPLUG2_ROOT should point to the top level IPLUG2 folder
+// By default, that is three directories up from /Examples/TemplateProject/config
+// If you want to build your project "out of source", you can change IPLUG2_ROOT and the path to common-mac.xcconfig
+
+IPLUG2_ROOT = ../../iPlug2
+
+#include "../../common-mac.xcconfig"
+
+//------------------------------
+// Global build settings
+
+// the basename of the vst, vst3, app, component, aaxplugin
+BINARY_NAME = TemplateProject
+
+// ------------------------------
+// HEADER AND LIBRARY SEARCH PATHS
+EXTRA_INC_PATHS = $(IGRAPHICS_INC_PATHS)
+EXTRA_LIB_PATHS = $(IGRAPHICS_LIB_PATHS)
+EXTRA_LNK_FLAGS = -framework Metal -framework MetalKit //$(IGRAPHICS_LNK_FLAGS)
+
+// EXTRA_APP_DEFS =
+// EXTRA_PLUGIN_DEFS =
+
+//------------------------------
+// PREPROCESSOR MACROS
+EXTRA_ALL_DEFS = OBJC_PREFIX=vTemplateProject SWELL_APP_PREFIX=Swell_vTemplateProject IGRAPHICS_NANOVG IGRAPHICS_METAL
+//EXTRA_DEBUG_DEFS =
+//EXTRA_RELEASE_DEFS =
+//EXTRA_TRACER_DEFS =
+
+//------------------------------
+// RELEASE BUILD OPTIONS
+
+//Enable/Disable Profiling code
+PROFILE = NO //NO, YES - enable this if you want to use instruments to profile a plugin
+
+// Optimization level -
+// None: [-O0] Fast: [-O, -O1] Faster:[-O2] Fastest: [-O3] Fastest, smallest: Optimize for size. [-Os]
+RELEASE_OPTIMIZE = 3 //0,1,2,3,s
+
+//------------------------------
+// DEBUG BUILD OPTIONS
+DEBUG_OPTIMIZE = 0 //0,1,2,3,s
+
+//------------------------------
+// MISCELLANEOUS COMPILER OPTIONS
+
+//ARCHS = $(ARCHS_STANDARD_32_64_BIT)
+ARCHS = $(ARCHS_STANDARD_64_BIT)
+
+GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO
+
+// Flags to pass to compiler for all builds
+GCC_CFLAGS[arch=x86_64] = -Wno-write-strings -mfpmath=sse -msse -msse2 -msse3 //-mavx
+
+// Uncomment to enable relaxed IEEE compliance
+//GCC_FAST_MATH = YES
+
+// uncomment this to enable codesigning - necessary for AUv3 delivery
+CODE_SIGN_IDENTITY=//Mac Developer

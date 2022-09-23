@@ -1,0 +1,153 @@
+// this is used for macOS Developer ID / Appstore code-signing
+CERTIFICATE_ID = Oliver Larkin
+DEVELOPMENT_TEAM = 686EDA2T8T // log in to developer.apple.com and see the end of the URL e.g. https://developer.apple.com/account/#/overview/686EDA2T8T
+
+// Which compiler to use
+//COMPILER = com.intel.compilers.icc.12_1_0
+COMPILER = com.apple.compilers.llvm.clang.1_0
+
+// which osx sdk to compile against - defaults to latest SDK available
+BASE_SDK_MAC = macosx // latest SDK
+
+CLANG_CXX_LANGUAGE_STANDARD = c++17
+CLANG_CXX_LIBRARY = libc++
+
+CLANG_WARN_DOCUMENTATION_COMMENTS = NO
+
+CLANG_ENABLE_OBJC_WEAK = YES
+
+// the minimum OS to support
+MACOSX_DEPLOYMENT_TARGET = 10.11
+
+SHARED_PRECOMPS_DIR = $(TARGET_BUILD_DIR)/PCH
+
+// BUILD SETTINGS TO ENABLE DIFFERENT PREPROCESSOR MACROS, INCLUDE PATHS AND FUNCIONALITY-------------------------------
+
+// ***** PREPROCESSOR MACROS
+
+// macros for all debug/release/tracer builds
+DEBUG_DEFS = DEVELOPMENT=1 DEBUG=1 _DEBUG
+RELEASE_DEFS = RELEASE=1 NDEBUG=1
+TRACER_DEFS = $DEBUG_DEFS TRACER_BUILD // here you can change if a TRACER build is a DEBUG or RELEASE build
+
+// macros for individual plug-in format builds etc
+ALL_DEFS = NOMINMAX 
+PLUGIN_DEFS = SWELL_CLEANUP_ON_UNLOAD // macros for all plug-in builds
+VST2_DEFS = VST2_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
+VST3_DEFS = VST3_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
+VST3C_DEFS = VST3C_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=0
+VST3P_DEFS = VST3P_API $PLUGIN_DEFS IPLUG_EDITOR=0 IPLUG_DSP=1 //NO_IGRAPHICS
+AU_DEFS = AU_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
+AUv3_DEFS = AUv3_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
+AAX_DEFS = AAX_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
+APP_DEFS = APP_API __MACOSX_CORE__ IPLUG_EDITOR=1 IPLUG_DSP=1 SWELL_COMPILED// __UNIX_JACK__
+
+// ***** HEADER INCLUDE PATHS
+// Where the SDKs etc. are located in relation to the plug-in Xcode project (which is in the projects subfolder of an IPlug project)
+
+// the top level iPlug2 folder e.g. where this common-mac.xcconfig is
+// should be specified in the project's xcconfig with a build settng IPLUG2_ROOT
+
+PROJECT_ROOT = $(SRCROOT)/..
+
+PKGMAN_PATH = /usr/local
+
+DEPS_PATH = $(IPLUG2_ROOT)/Dependencies
+
+// if you want to use the homebrew or macports package managers, rather than building static libraries yourself (not advised) you can modify the BUILT_LIBS_PATH build setting to point to PKGMAN_PATH
+BUILT_LIBS_PATH = $(DEPS_PATH)/Build/mac
+BUILT_LIBS_INC_PATH = $(BUILT_LIBS_PATH)/include
+BUILT_LIBS_LIB_PATH = $(BUILT_LIBS_PATH)/lib
+
+// IPlug dependencies
+SCRIPTS_PATH = $(IPLUG2_ROOT)/Scripts
+WDL_PATH = $(IPLUG2_ROOT)/WDL
+SWELL_PATH = $(WDL_PATH)/swell
+IPLUG_PATH = $(IPLUG2_ROOT)/IPlug
+RTAUDIO_PATH = $(DEPS_PATH)/IPlug/RTAudio
+RTMIDI_PATH = $(DEPS_PATH)/IPlug/RTMidi
+
+EXTRAS_PATH = $(IPLUG_PATH)/Extras
+IMGUI_PATH = $(DEPS_PATH)/IGraphics/imgui
+
+//faust is linked as a dynamic library
+FAUST_LIB_PATHS = $(BUILT_LIBS_LIB_PATH)
+FAUST_INC_PATHS = $(BUILT_LIBS_INC_PATH)
+FAUST_LNK_FLAGS = $(BUILT_LIBS_LIB_PATH)/libfaust.dylib
+
+CIVETWEB_INC_PATHS = $(BUILT_LIBS_INC_PATH)
+CIVETWEB_LNK_FLAGS = $(BUILT_LIBS_LIB_PATH)/libcivetweb.a
+
+JSON_INC_PATH = $(DEPS_PATH)/Extras/nlohmann
+
+EXTRAS_INC_PATHS = $(EXTRAS_PATH) $(EXTRAS_PATH)/Synth $(EXTRAS_PATH)/Faust $(EXTRAS_PATH)/OSC $(EXTRAS_PATH)/HIIR $(EXTRAS_PATH)/WebSocket $(CIVETWEB_INC_PATHS) $(JSON11_PATH) $(RTAUDIO_PATH) $(RTMIDI_PATH) $(JSON_INC_PATH)
+
+// Plug-in SDK paths
+VST2_SDK = $(DEPS_PATH)/IPlug/VST2_SDK
+VST3_SDK = $(DEPS_PATH)/IPlug/VST3_SDK
+AAX_SDK = $(DEPS_PATH)/IPlug/AAX_SDK
+REAPER_SDK = $(DEPS_PATH)/IPlug/Reaper
+
+// this build setting is included at the xcode project level, since we need all these include paths
+IPLUG_INC_PATHS = $(PROJECT_ROOT) $(WDL_PATH) $(SWELL_PATH) $(SWELL_FOR_IPLUG_PATH) $(IPLUG_PATH) $(EXTRAS_INC_PATHS)
+
+IMGUI_INC_PATHS = $(IMGUI_PATH) $(IMGUI_PATH)/backends
+
+IGRAPHICS_PATH = $(IPLUG2_ROOT)/IGraphics
+
+// IGraphics dependencies
+IGRAPHICS_DEPS_PATH = $(DEPS_PATH)/IGraphics
+NSVG_PATH = $(IGRAPHICS_DEPS_PATH)/NanoSVG/src
+NVG_PATH = $(IGRAPHICS_DEPS_PATH)/NanoVG/src
+NVGMTL_PATH = $(IGRAPHICS_DEPS_PATH)/MetalNanoVG/src
+STB_PATH = $(DEPS_PATH)/IGraphics/STB
+FT_PATH = $(BUILT_LIBS_INC_PATH)/freetype2
+SKIA_PATH = $(DEPS_PATH)/Build/src/skia
+YOGA_PATH = $(DEPS_PATH)/IGraphics/yoga
+
+SKIA_INC_PATHS = $(SKIA_PATH) $(SKIA_PATH)/include/core $(SKIA_PATH)/include/effects $(SKIA_PATH)/include/config $(SKIA_PATH)/include/utils $(SKIA_PATH)/include/utils/mac $(SKIA_PATH)/include/gpu $(SKIA_PATH)/third_party/externals/icu/source/common $(SKIA_PATH)/modules/svg/include
+
+YOGA_INC_PATHS = $(YOGA_PATH) $(YOGA_PATH)/yoga
+
+// you can optionally include this build setting, by adding it to EXTRA_INC_PATHS in MyProject.xcconfig in order to get all varieties of IGraphics support
+IGRAPHICS_INC_PATHS = $(IGRAPHICS_PATH) $(IGRAPHICS_PATH)/Controls $(IGRAPHICS_PATH)/Platforms $(IGRAPHICS_PATH)/Drawing $(IGRAPHICS_PATH)/Extras $(NSVG_PATH) $(NVG_PATH) $(NVGMTL_PATH) $(BUILT_LIBS_INC_PATH) $(FT_PATH) $(STB_PATH) $(IMGUI_INC_PATHS) $(SKIA_INC_PATHS) $(YOGA_INC_PATHS)
+
+// *****  LINKER/LIBRARY INCLUDE PATHS AND LINKER FLAGS
+
+//Static library Paths - on macOS we need to supply an absolute path to the static library, otherwise it will pick up a dynamic library with the same name
+LIB_FT = $(BUILT_LIBS_LIB_PATH)/libfreetype.a
+LIB_PNG = $(BUILT_LIBS_LIB_PATH)/libpng.a
+LIB_Z = $(BUILT_LIBS_LIB_PATH)/libz.a
+LIB_CIVET = $(BUILT_LIBS_LIB_PATH)/libcivetweb.a
+LIB_SKIA = $(BUILT_LIBS_LIB_PATH)/libskia.a
+LIB_SKOTTIE = $(BUILT_LIBS_LIB_PATH)/libskottie.a
+LIB_SKSG = $(BUILT_LIBS_LIB_PATH)/libsksg.a
+LIB_SKSHAPER = $(BUILT_LIBS_LIB_PATH)/libskshaper.a
+LIB_SKPARAGRAPH = $(BUILT_LIBS_LIB_PATH)/libskparagraph.a
+LIB_SVG = $(BUILT_LIBS_LIB_PATH)/libsvg.a
+LIB_SKUNICODE = $(BUILT_LIBS_LIB_PATH)/libskunicode.a
+
+SKIA_LNK_FLAGS = $(LIB_SKIA) $(LIB_SKOTTIE) $(LIB_SKSG) $(LIB_SKSHAPER) $(LIB_SKPARAGRAPH) $(LIB_SVG) $(LIB_SKUNICODE)
+FREETYPE_LNK_FLAGS = $(LIB_FT) //$(LIB_PNG) $(LIB_Z)
+
+IGRAPHICS_LNK_FLAGS = $(SKIA_LNK_FLAGS) $(FREETYPE_LNK_FLAGS)
+
+ALL_FRAMEWORKS = -framework Cocoa -framework Carbon -framework CoreFoundation -framework CoreData -framework Foundation -framework CoreServices -framework QuartzCore 
+APP_FRAMEWORKS = -framework AppKit -framework CoreMIDI -framework CoreAudio
+AU_FRAMEWORKS = -framework AudioUnit -framework AudioToolbox -framework CoreAudio -framework CoreMIDI
+AUv3_FRAMEWORKS = -framework AudioToolbox -framework AVFoundation -framework CoreAudio -framework CoreAudioKit
+
+
+// ***** BINARY OUTPUT LOCATIONS ------------------------------------------------------------------------------------------------------------------------
+
+// Where to build the plug-ins / app bundles ...
+// By default iPlug2 builds to user plug-in folder
+// You can also build to the system plug-in folder, but you will need to explicitly add write permissions to build stuff there
+// The AAX folder should be the location of the PT Dev build plug-ins folder, installer scripts will copy to the non-developer build
+
+VST2_PATH = $(HOME)/Library/Audio/Plug-Ins/VST
+VST3_PATH = $(HOME)/Library/Audio/Plug-Ins/VST3
+AU_PATH = $(HOME)/Library/Audio/Plug-Ins/Components
+AAX_PATH = /Library/Application Support/Avid/Audio/Plug-Ins
+APP_PATH = $(HOME)/Applications
+REAPER_EXT_PATH = $(HOME)/Library/Application Support/REAPER/UserPlugins

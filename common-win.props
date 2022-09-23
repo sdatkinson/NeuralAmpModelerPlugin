@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <RTAUDIOMIDI_PATH>$(IPLUG_PATH)\APP\RTAudioMidi</RTAUDIOMIDI_PATH>
+    <IPLUG2_ROOT>$(ProjectDir)..\..\iPlug2</IPLUG2_ROOT>
+    <WDL_PATH>$(IPLUG2_ROOT)\WDL</WDL_PATH>
+    <IPLUG_PATH>$(IPLUG2_ROOT)\IPlug</IPLUG_PATH>
+    <EXTRAS_PATH>$(IPLUG_PATH)\Extras</EXTRAS_PATH>
+    <IGRAPHICS_PATH>$(IPLUG2_ROOT)\IGraphics</IGRAPHICS_PATH>
+    <DEPS_PATH>$(IPLUG2_ROOT)\Dependencies</DEPS_PATH>
+    <JSON_PATH>$(DEPS_PATH)\Extras\nlohmann</JSON_PATH>
+    <IPLUG_INC_PATHS>$(WDL_PATH);$(IPLUG_PATH);$(EXTRAS_PATH);$(EXTRAS_PATH)\OSC;$(EXTRAS_PATH)\Synth;$(EXTRAS_PATH)\Faust;$(EXTRAS_PATH)\WebView;$(JSON_PATH);$(SolutionDir)\resources</IPLUG_INC_PATHS>
+    <IPLUG_DEPS_PATH>$(DEPS_PATH)\IPlug</IPLUG_DEPS_PATH>
+    <IGRAPHICS_DEPS_PATH>$(DEPS_PATH)\IGraphics</IGRAPHICS_DEPS_PATH>
+    <NANOVG_PATH>$(IGRAPHICS_DEPS_PATH)\NanoVG\src</NANOVG_PATH>
+    <NANOSVG_PATH>$(IGRAPHICS_DEPS_PATH)\NanoSVG\src</NANOSVG_PATH>
+    <FREETYPE_PATH>$(DEPS_PATH)\Build\src\freetype\include</FREETYPE_PATH>
+    <SKIA_PATH>$(DEPS_PATH)\Build\src\skia</SKIA_PATH>
+    <SKIA_INC_PATHS>$(SKIA_PATH);$(SKIA_PATH)\include\core;$(SKIA_PATH)\include\effects;$(SKIA_PATH)\include\config;$(SKIA_PATH)\include\utils;$(SKIA_PATH)\include\gpu;$(SKIA_PATH)\modules\svg\include;$(SKIA_PATH)\third_party\externals\icu\source\common</SKIA_INC_PATHS>
+    <GLAD_GL2_PATHS>$(IGRAPHICS_DEPS_PATH)\glad_GL2\include;$(IGRAPHICS_DEPS_PATH)\glad_GL2\src</GLAD_GL2_PATHS>
+    <GLAD_GL3_PATHS>$(IGRAPHICS_DEPS_PATH)\glad_GL3\include;$(IGRAPHICS_DEPS_PATH)\glad_GL3\src</GLAD_GL3_PATHS>
+    <PNG_PATH>$(WDL_PATH)\libpng</PNG_PATH>
+    <ZLIB_PATH>$(WDL_PATH)\zlib</ZLIB_PATH>
+    <STB_PATH>$(IGRAPHICS_DEPS_PATH)\STB</STB_PATH>
+    <FAUST_INC_PATHS>$(DEPS_PATH)\Build\win\Faust\include</FAUST_INC_PATHS>
+    <STATIC_LIBS_PATH>$(DEPS_PATH)\Build\win\$(Platform)\$(Configuration)</STATIC_LIBS_PATH>
+    <IMGUI_INC_PATHS>$(IGRAPHICS_DEPS_PATH)\imgui;$(IGRAPHICS_DEPS_PATH)\imgui\backends</IMGUI_INC_PATHS>
+    <YOGA_INC_PATHS>$(IGRAPHICS_DEPS_PATH)\yoga;$(IGRAPHICS_DEPS_PATH)\yoga\yoga</YOGA_INC_PATHS>
+    <IGRAPHICS_INC_PATHS>$(IGRAPHICS_PATH);$(IGRAPHICS_PATH)\Controls;$(IGRAPHICS_PATH)\Drawing;$(IGRAPHICS_PATH)\Platforms;$(IGRAPHICS_PATH)\Extras;$(NANOSVG_PATH);$(NANOVG_PATH);$(PNG_PATH);$(ZLIB_PATH);$(FREETYPE_PATH);$(STB_PATH);$(IMGUI_INC_PATHS);$(SKIA_INC_PATHS);$(YOGA_INC_PATHS)</IGRAPHICS_INC_PATHS>
+    <VST2_SDK Condition="'$(VST2_SDK)'==''">$(IPLUG_DEPS_PATH)\VST2_SDK</VST2_SDK>
+    <VST3_SDK Condition="'$(VST3_SDK)'==''">$(IPLUG_DEPS_PATH)\VST3_SDK</VST3_SDK>
+    <ASIO_SDK Condition="'$(ASIO_SDK)'==''">$(IPLUG_DEPS_PATH)\RTAudio\include</ASIO_SDK>
+    <AAX_SDK Condition="'$(AAX_SDK)'==''">$(IPLUG_DEPS_PATH)\AAX_SDK</AAX_SDK>
+    <VST2_32_HOST_PATH Condition="'$(VST2_32_HOST_PATH)'==''">$(ProgramFiles)\REAPER\reaper.exe</VST2_32_HOST_PATH>
+    <VST2_64_HOST_PATH Condition="'$(VST2_64_HOST_PATH)'==''">$(ProgramW6432)\REAPER (x64)\reaper.exe</VST2_64_HOST_PATH>
+    <VST3_32_HOST_PATH Condition="'$(VST3_32_HOST_PATH)'==''">$(ProgramFiles)\REAPER\reaper.exe</VST3_32_HOST_PATH>
+    <VST3_64_HOST_PATH Condition="'$(VST3_64_HOST_PATH)'==''">$(ProgramW6432)\REAPER (x64)\reaper.exe</VST3_64_HOST_PATH>
+    <VST3_32_PATH Condition="'$(VST3_32_PATH)'==''">$(CommonProgramFiles)\VST3</VST3_32_PATH>
+    <VST3_64_PATH Condition="'$(VST3_64_PATH)'==''">$(CommonProgramW6432)\VST3</VST3_64_PATH>
+    <VST2_32_PATH Condition="'$(VST2_32_PATH)'==''">$(ProgramFiles)\VstPlugins</VST2_32_PATH>
+    <VST2_64_PATH Condition="'$(VST2_64_PATH)'==''">$(ProgramW6432)\VstPlugins</VST2_64_PATH>
+    <AAX_32_PATH Condition="'$(AAX_32_PATH)'==''">$(CommonProgramFiles)\Avid\Audio\Plug-Ins</AAX_32_PATH>
+    <AAX_64_PATH Condition="'$(AAX_64_PATH)'==''">$(CommonProgramW6432)\Avid\Audio\Plug-Ins</AAX_64_PATH>
+    <REAPER_EXT_PATH>$(APPDATA)\REAPER\UserPlugins</REAPER_EXT_PATH>
+    <APP_DEFS>APP_API;__WINDOWS_DS__;__WINDOWS_MM__;__WINDOWS_ASIO__;IPLUG_EDITOR=1;IPLUG_DSP=1</APP_DEFS>
+    <VST2_DEFS>VST2_API;VST_FORCE_DEPRECATED;IPLUG_EDITOR=1;IPLUG_DSP=1</VST2_DEFS>
+    <VST3_DEFS>VST3_API;IPLUG_EDITOR=1;IPLUG_DSP=1</VST3_DEFS>
+    <VST3P_DEFS>VST3P_API;IPLUG_EDITOR=0;IPLUG_DSP=1</VST3P_DEFS>
+    <VST3C_DEFS>VST3C_API;IPLUG_EDITOR=1;IPLUG_DSP=0</VST3C_DEFS>
+    <DEBUG_DEFS>_DEBUG;</DEBUG_DEFS>
+    <RELEASE_DEFS>NDEBUG;</RELEASE_DEFS>
+    <TRACER_DEFS>TRACER_BUILD;NDEBUG;</TRACER_DEFS>
+    <APP_INC_PATHS>$(IPLUG_PATH)\APP;$(IPLUG_DEPS_PATH)\RTAudio\include;$(IPLUG_DEPS_PATH)\RTAudio;$(IPLUG_DEPS_PATH)\RTMidi</APP_INC_PATHS>
+    <VST2_INC_PATHS>$(IPLUG_PATH)\VST2;$(VST2_SDK)</VST2_INC_PATHS>
+    <VST3_INC_PATHS>$(IPLUG_PATH)\VST3;$(VST3_SDK)</VST3_INC_PATHS>
+    <AAX_INC_PATHS>$(IPLUG_PATH)\AAX;$(AAX_SDK)\Interfaces;$(AAX_SDK)\Interfaces\ACF;</AAX_INC_PATHS>
+    <AAX_DEFS>AAX_API;IPLUG_EDITOR=1;IPLUG_DSP=1;_WINDOWS;WIN32;_WIN32;WINDOWS_VERSION;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE</AAX_DEFS>
+    <ALL_DEFS>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX</ALL_DEFS>
+    <AAX_LIBS>wininet.lib;odbc32.lib;odbccp32.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comctl32.lib;</AAX_LIBS>
+    <APP_LIBS>dsound.lib;winmm.lib;</APP_LIBS>
+    <VST2_32_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST2_32_COMMAND_ARGS>
+    <VST2_64_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST2_64_COMMAND_ARGS>
+    <VST3_64_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_64_COMMAND_ARGS>
+    <VST3_32_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_32_COMMAND_ARGS>
+    <COPY_VST2>1</COPY_VST2>
+    <REAPER_INC_PATHS>$(IPLUG_DEPS_PATH)/Reaper;$(IPLUG_PATH)\ReaperExt;</REAPER_INC_PATHS>
+    <AAX_ICON>$(AAX_SDK)\Utilities\PlugIn.ico</AAX_ICON>
+    <VST_ICON>$(VST3_SDK)\doc\artwork\VST_Logo_Steinberg.ico</VST_ICON>
+    <FAUST_LIB_PATH>$(DEPS_PATH)\Build\win\Faust\lib</FAUST_LIB_PATH>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>$(ALL_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996;4250;4018;4267;4068;</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(WDL_PATH);$(IPLUG_PATH);$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ItemDefinitionGroup Condition=" '$(Platform)' == 'Win32' ">
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(STATIC_LIBS_PATH);$(AAX_SDK)\Libs\$(Configuration);$(FAUST_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
+    </Link>
+    <Lib>
+      <AdditionalDependencies />
+    </Lib>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\resources\fonts;$(SolutionDir)\resources\img;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="IPLUG2_ROOT">
+      <Value>$(IPLUG2_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="WDL_PATH">
+      <Value>$(WDL_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IPLUG_PATH">
+      <Value>$(IPLUG_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="EXTRAS_PATH">
+      <Value>$(EXTRAS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IGRAPHICS_PATH">
+      <Value>$(IGRAPHICS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="DEPS_PATH">
+      <Value>$(DEPS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="JSON_PATH">
+      <Value>$(JSON_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IPLUG_INC_PATHS">
+      <Value>$(IPLUG_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IPLUG_DEPS_PATH">
+      <Value>$(IPLUG_DEPS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IGRAPHICS_DEPS_PATH">
+      <Value>$(IGRAPHICS_DEPS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="NANOVG_PATH">
+      <Value>$(NANOVG_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="NANOSVG_PATH">
+      <Value>$(NANOSVG_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="FREETYPE_PATH">
+      <Value>$(FREETYPE_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SKIA_PATH">
+      <Value>$(SKIA_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SKIA_INC_PATHS">
+      <Value>$(SKIA_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GLAD_GL2_PATHS">
+      <Value>$(GLAD_GL2_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GLAD_GL3_PATHS">
+      <Value>$(GLAD_GL3_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PNG_PATH">
+      <Value>$(PNG_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ZLIB_PATH">
+      <Value>$(ZLIB_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="STB_PATH">
+      <Value>$(STB_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="FAUST_INC_PATHS">
+      <Value>$(FAUST_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="STATIC_LIBS_PATH">
+      <Value>$(STATIC_LIBS_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IMGUI_INC_PATHS">
+      <Value>$(IMGUI_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="YOGA_INC_PATHS">
+      <Value>$(YOGA_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IGRAPHICS_INC_PATHS">
+      <Value>$(IGRAPHICS_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_SDK">
+      <Value>$(VST2_SDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_SDK">
+      <Value>$(VST3_SDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ASIO_SDK">
+      <Value>$(ASIO_SDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_SDK">
+      <Value>$(AAX_SDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_32_HOST_PATH">
+      <Value>$(VST2_32_HOST_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_64_HOST_PATH">
+      <Value>$(VST2_64_HOST_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_32_HOST_PATH">
+      <Value>$(VST3_32_HOST_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_64_HOST_PATH">
+      <Value>$(VST3_64_HOST_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_32_PATH">
+      <Value>$(VST3_32_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_64_PATH">
+      <Value>$(VST3_64_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_32_PATH">
+      <Value>$(VST2_32_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_64_PATH">
+      <Value>$(VST2_64_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_32_PATH">
+      <Value>$(AAX_32_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_64_PATH">
+      <Value>$(AAX_64_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="REAPER_EXT_PATH">
+      <Value>$(REAPER_EXT_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="APP_DEFS">
+      <Value>$(APP_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_DEFS">
+      <Value>$(VST2_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_DEFS">
+      <Value>$(VST3_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3P_DEFS">
+      <Value>$(VST3P_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3C_DEFS">
+      <Value>$(VST3C_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="DEBUG_DEFS">
+      <Value>$(DEBUG_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="RELEASE_DEFS">
+      <Value>$(RELEASE_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="TRACER_DEFS">
+      <Value>$(TRACER_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="APP_INC_PATHS">
+      <Value>$(APP_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_INC_PATHS">
+      <Value>$(VST2_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_INC_PATHS">
+      <Value>$(VST3_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_INC_PATHS">
+      <Value>$(AAX_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_DEFS">
+      <Value>$(AAX_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ALL_DEFS">
+      <Value>$(ALL_DEFS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_LIBS">
+      <Value>$(AAX_LIBS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="APP_LIBS">
+      <Value>$(APP_LIBS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_32_COMMAND_ARGS">
+      <Value>$(VST2_32_COMMAND_ARGS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST2_64_COMMAND_ARGS">
+      <Value>$(VST2_64_COMMAND_ARGS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_64_COMMAND_ARGS">
+      <Value>$(VST3_64_COMMAND_ARGS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST3_32_COMMAND_ARGS">
+      <Value>$(VST3_32_COMMAND_ARGS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="COPY_VST2">
+      <Value>$(COPY_VST2)</Value>
+    </BuildMacro>
+    <BuildMacro Include="REAPER_INC_PATHS">
+      <Value>$(REAPER_INC_PATHS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="AAX_ICON">
+      <Value>$(AAX_ICON)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VST_ICON">
+      <Value>$(VST_ICON)</Value>
+    </BuildMacro>
+    <BuildMacro Include="FAUST_LIB_PATH">
+      <Value>$(FAUST_LIB_PATH)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

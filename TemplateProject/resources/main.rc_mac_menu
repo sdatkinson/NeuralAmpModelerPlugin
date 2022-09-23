@@ -1,0 +1,24 @@
+SWELL_DEFINE_MENU_RESOURCE_BEGIN(IDR_MENU1)
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Preferences...\tCtrl+,",     ID_PREFERENCES
+        MENUITEM "&Quit",                       ID_QUIT
+    END
+    POPUP "&Debug"
+    BEGIN
+        MENUITEM "&Live Edit Mode\tCtrl+E",     ID_LIVE_EDIT
+        MENUITEM "&Show Control Bounds\tCtrl+B", ID_SHOW_BOUNDS
+        MENUITEM "&Show Drawn Area\tCtrl+D",    ID_SHOW_DRAWN
+        MENUITEM "&Show FPS\tCtrl+F",           ID_SHOW_FPS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About",                      ID_ABOUT
+        MENUITEM "&Read Manual",                ID_HELP
+    END
+SWELL_DEFINE_MENU_RESOURCE_END(IDR_MENU1)
+
+
+
+//EOF
+

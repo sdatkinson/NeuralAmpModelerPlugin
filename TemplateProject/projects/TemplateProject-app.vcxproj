@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="PaceFixLogs" AssemblyFile="$(PACE_FUSION_HOME)PaceFusionUi2013.dll" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Tracer|Win32">
+      <Configuration>Tracer</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Tracer|x64">
+      <Configuration>Tracer</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{41785AE4-5B70-4A75-880B-4B418B4E13C6}</ProjectGuid>
+    <RootNamespace>TemplateProject</RootNamespace>
+    <ProjectName>TemplateProject-app</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\config\TemplateProject-win.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+    <LinkIncremental>
+    </LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+    <LinkIncremental />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">
+    <OutDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">
+    <IntDir>$(SolutionDir)build-win\app\$(Platform)\$(Configuration)\int\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>$(APP_DEFS);$(DEBUG_DEFS);$(EXTRA_DEBUG_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture />
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>$(APP_DEFS);$(DEBUG_DEFS);$(EXTRA_DEBUG_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile />
+    <ResourceCompile>
+      <Culture />
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>$(APP_DEFS);$(RELEASE_DEFS);$(EXTRA_RELEASE_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>SA_API</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>$(APP_DEFS);$(RELEASE_DEFS);$(EXTRA_RELEASE_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>SA_API</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>$(APP_DEFS);$(TRACER_DEFS);$(EXTRA_TRACER_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>SA_API</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>$(APP_DEFS);$(TRACER_DEFS);$(EXTRA_TRACER_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(APP_INC_PATHS);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(APP_LIBS);%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>SA_API</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="../config.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asio.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrivers.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrvr.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiolist.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiosys.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\dsound.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\functiondiscoverykeys_devpkey.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\ginclude.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\iasiodrv.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\iasiothiscallresolver.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\soundcard.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\RtAudio.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTMidi\RtMidi.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IControls.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IFPSDisplayControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IPopupMenuControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\ITextEntryControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVKeyboardControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVMeterControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVMultiSliderControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVScopeControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsNanoVG.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphics.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsConstants.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsLiveEdit.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsPopupMenu.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsStructs.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsPrivate.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsUtilities.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphics_include_in_plug_hdr.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphics_include_in_plug_src.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphics_select.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\ISender.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsLinux.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsMac.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsMac_view.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWeb.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugAPIBase.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugConstants.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugEditorDelegate.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugLogger.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugMidi.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugParameter.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugPaths.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugPlatform.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugPluginBase.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugProcessor.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugStructs.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugTimer.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugUtilities.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_hdr.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_src.h" />
+    <ClInclude Include="..\TemplateProject.h" />
+    <ClInclude Include="..\resources\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asio.cpp" />
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrivers.cpp" />
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiolist.cpp" />
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\iasiothiscallresolver.cpp" />
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\RtAudio.cpp" />
+    <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTMidi\RtMidi.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\Controls\IControls.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\Controls\IPopupMenuControl.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\Controls\ITextEntryControl.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsNanoVG.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\iPlug2\IGraphics\IControl.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\IGraphics.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_dialog.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_main.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugAPIBase.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugParameter.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugPaths.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugPluginBase.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugProcessor.cpp" />
+    <ClCompile Include="..\..\iPlug2\IPlug\IPlugTimer.cpp" />
+    <ClCompile Include="..\TemplateProject.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\main.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\resources\TemplateProject.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\config\TemplateProject-ios.xcconfig" />
+    <None Include="..\config\TemplateProject-web.mk" />
+    <None Include="..\config\TemplateProject-win.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\config\TemplateProject-mac.xcconfig" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="AfterBuild">
+    <PaceFixLogs Condition="Exists('$(PACE_FUSION_HOME)PaceFusionUi2013.dll')" LogDirectory="$(IntDir)" />
+  </Target>
+</Project>

@@ -1,0 +1,100 @@
+// this is used for macOS Developer ID / Appstore code-signing
+CERTIFICATE_ID = Oliver Larkin
+DEVELOPMENT_TEAM = 686EDA2T8T // log in to developer.apple.com and see the end of the URL e.g. https://developer.apple.com/account/#/overview/686EDA2T8T
+
+// Which compiler to use
+COMPILER = com.apple.compilers.llvm.clang.1_0
+
+// which osx sdk to compile against - defaults to latest SDK available
+BASE_SDK_IOS = iphoneos // latest SDK
+
+CLANG_CXX_LANGUAGE_STANDARD = c++17
+CLANG_CXX_LIBRARY = libc++
+
+CLANG_WARN_DOCUMENTATION_COMMENTS = NO
+
+CLANG_ENABLE_OBJC_WEAK = YES
+
+// the minimum OS to support
+IPHONEOS_DEPLOYMENT_TARGET = 14
+
+SHARED_PRECOMPS_DIR = $(TARGET_BUILD_DIR)/PCH
+
+// BUILD SETTINGS TO ENABLE DIFFERENT PREPROCESSOR MACROS, INCLUDE PATHS AND FUNCIONALITY-------------------------------
+
+// ***** PREPROCESSOR MACROS
+
+// macros for all debug/release/tracer builds
+DEBUG_DEFS = DEVELOPMENT=1 DEBUG=1 _DEBUG
+RELEASE_DEFS = RELEASE=1 NDEBUG=1
+TRACER_DEFS = $DEBUG_DEFS TRACER_BUILD // here you can change if a TRACER build is a DEBUG or RELEASE build
+
+// macros for individual plug-in format builds etc
+ALL_DEFS = NOMINMAX
+AUv3_DEFS = AUv3_API IPLUG_EDITOR=1 IPLUG_DSP=1
+
+// ***** HEADER INCLUDE PATHS
+// Where the SDKs etc. are located in relation to the plug-in Xcode project (which is in the projects subfolder of an IPlug project)
+
+// the top level iPlug2 folder e.g. where this common.xcconfig is
+PROJECT_ROOT = $(SRCROOT)/..
+
+DEPS_PATH = $(IPLUG2_ROOT)/Dependencies
+
+// IPlug dependencies
+WDL_PATH = $(IPLUG2_ROOT)/WDL
+IPLUG_PATH = $(IPLUG2_ROOT)/IPlug
+AUv3_PATH = $(IPLUG_PATH)/AUv3
+SWELL_PATH = $(WDL_PATH)/swell
+
+EXTRAS_PATH = $(IPLUG_PATH)/Extras
+EXTRAS_INC_PATHS = $(EXTRAS_PATH) $(EXTRAS_PATH)/Faust $(EXTRAS_PATH)/OSC $(EXTRAS_PATH)/HIIR $(EXTRAS_PATH)/WebSocket
+
+JSON_INC_PATH = $(DEPS_PATH)/Extras/nlohmann
+
+// this build setting is included at the xcode project level, since we need all these include paths
+IPLUG_INC_PATHS = $(PROJECT_ROOT) $(WDL_PATH) $(IPLUG_PATH) $(EXTRAS_INC_PATHS) $(AUv3_PATH) $(JSON_INC_PATH)
+
+BUILT_LIBS_PATH = $(DEPS_PATH)/Build/ios
+BUILT_LIBS_INC_PATH = $(BUILT_LIBS_PATH)/include
+BUILT_LIBS_LIB_PATH = $(BUILT_LIBS_PATH)/lib/$CURRENT_ARCH
+
+IGRAPHICS_PATH = $(IPLUG2_ROOT)/IGraphics
+CONTROLS_PATH = $(IGRAPHICS_PATH)/Controls
+PLATFORMS_PATH = $(IGRAPHICS_PATH)/Platforms
+DRAWING_PATH = $(IGRAPHICS_PATH)/Drawing
+
+// IGraphics dependencies
+IGRAPHICS_DEPS_PATH = $(DEPS_PATH)/IGraphics
+NSVG_PATH = $(IGRAPHICS_DEPS_PATH)/NanoSVG/src
+NVG_PATH = $(IGRAPHICS_DEPS_PATH)/NanoVG/src
+NVGMTL_PATH = $(IGRAPHICS_DEPS_PATH)/MetalNanoVG/src
+STB_PATH = $(DEPS_PATH)/IGraphics/STB
+IMGUI_PATH = $(DEPS_PATH)/IGraphics/imgui
+YOGA_PATH = $(DEPS_PATH)/IGraphics/yoga
+
+IMGUI_INC_PATHS = $(IMGUI_PATH) $(IMGUI_PATH)/backends
+
+SKIA_PATH = $(DEPS_PATH)/Build/src/skia
+
+SKIA_INC_PATHS = $(SKIA_PATH) $(SKIA_PATH)/include/core $(SKIA_PATH)/include/effects $(SKIA_PATH)/include/config $(SKIA_PATH)/include/utils $(SKIA_PATH)/include/utils/mac $(SKIA_PATH)/include/gpu $(SKIA_PATH)/third_party/externals/icu/source/common $(SKIA_PATH)/modules/svg/include
+YOGA_INC_PATHS = $(YOGA_PATH) $(YOGA_PATH)/yoga
+
+IGRAPHICS_INC_PATHS = $(IGRAPHICS_PATH) $(CONTROLS_PATH) $(PLATFORMS_PATH) $(DRAWING_PATH) $(NSVG_PATH) $(NVG_PATH) $(NVGMTL_PATH) $(SKIA_INC_PATHS) $(FT_PATH) $(STB_PATH) $(IMGUI_INC_PATHS) $(YOGA_INC_PATHS)
+//FAUST_INC_PATHS = /usr/local/include /usr/local/opt/include
+FAUST_INC_PATHS = $(DEPS_PATH)/Build/mac/include
+
+LIB_SKIA = $(BUILT_LIBS_LIB_PATH)/libskia.a
+LIB_SKOTTIE = $(BUILT_LIBS_LIB_PATH)/libskottie.a
+LIB_SKSG = $(BUILT_LIBS_LIB_PATH)/libsksg.a
+LIB_SKSHAPER = $(BUILT_LIBS_LIB_PATH)/libskshaper.a
+LIB_SKPARAGRAPH = $(BUILT_LIBS_LIB_PATH)/libskparagraph.a
+LIB_SVG = $(BUILT_LIBS_LIB_PATH)/libsvg.a
+LIB_SKUNICODE = $(BUILT_LIBS_LIB_PATH)/libskunicode.a
+
+SKIA_LNK_FLAGS = $(LIB_SKIA) $(LIB_SKOTTIE) $(LIB_SKSG) $(LIB_SKSHAPER) $(LIB_SKPARAGRAPH) $(LIB_SVG) $(LIB_SKUNICODE)
+IGRAPHICS_LNK_FLAGS = $(SKIA_LNK_FLAGS)
+
+AUv3_FRAMEWORKS = -framework AudioToolbox -framework AVFoundation -framework CoreAudioKit -framework QuartzCore -framework UIKit -framework CoreText -framework CoreGraphics
+
+
