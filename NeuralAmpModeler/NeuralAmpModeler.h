@@ -14,9 +14,6 @@ enum EParams
 {
   kInputGain = 0,
   kOutputGain,
-  kParametricDrive,
-  kParametricLevel,
-  kParametricTone,
   kNumParams
 };
 
@@ -50,10 +47,7 @@ private:
   
   std::unordered_map<std::string, double> mDSPParams = {
     { "Input", 0.0 },
-    { "Output", 0.0 },
-    { "Drive", 0.0 },
-    { "Level", 0.0 },
-    { "Tone" , 0.0 }
+    { "Output", 0.0 }
   };
   
   iplug::IPeakAvgSender<> mSender;
