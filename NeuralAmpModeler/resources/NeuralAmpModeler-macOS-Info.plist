@@ -7,11 +7,11 @@
 	<key>CFBundleExecutable</key>
 	<string>NeuralAmpModeler</string>
 	<key>CFBundleGetInfoString</key>
-	<string>NeuralAmpModeler v0.0.0 Copyright 2021 Acme Inc</string>
+	<string>NeuralAmpModeler v0.5.5 Copyright 2022 Steven Atkinson</string>
 	<key>CFBundleIconFile</key>
 	<string>NeuralAmpModeler.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.AcmeInc.app.NeuralAmpModeler</string>
+	<string>com.StevenAtkinson.app.NeuralAmpModeler</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -19,17 +19,17 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CFBundleSignature</key>
-	<string>9c0G</string>
+	<string>1YEo</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.music</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.11.0</string>
+	<string>10.15.0</string>
 	<key>NSMainNibFile</key>
 	<string>NeuralAmpModeler-macOS-MainMenu</string>
 	<key>NSMicrophoneUsageDescription</key>

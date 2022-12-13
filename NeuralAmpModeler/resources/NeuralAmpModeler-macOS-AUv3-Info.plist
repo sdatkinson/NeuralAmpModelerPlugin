@@ -7,9 +7,9 @@
 	<key>CFBundleExecutable</key>
 	<string>NeuralAmpModeler</string>
 	<key>CFBundleGetInfoString</key>
-	<string>NeuralAmpModeler v0.0.0 Copyright 2021 Acme Inc</string>
+	<string>NeuralAmpModeler v0.5.5 Copyright 2022 Steven Atkinson</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.AcmeInc.app.NeuralAmpModeler.AUv3</string>
+	<string>com.StevenAtkinson.app.NeuralAmpModeler.AUv3</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.12.0</string>
 	<key>NSExtension</key>
@@ -27,20 +27,20 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>AudioComponentBundle</key>
-			<string>com.AcmeInc.app.NeuralAmpModeler.AUv3Framework</string>
+			<string>com.StevenAtkinson.app.NeuralAmpModeler.AUv3Framework</string>
 			<key>AudioComponents</key>
 			<array>
 				<dict>
 					<key>description</key>
 					<string>NeuralAmpModeler</string>
 					<key>manufacturer</key>
-					<string>Acme</string>
+					<string>SDAa</string>
 					<key>name</key>
-					<string>AcmeInc: NeuralAmpModeler</string>
+					<string>StevenAtkinson: NeuralAmpModeler</string>
 					<key>sandboxSafe</key>
 					<true/>
 					<key>subtype</key>
-					<string>9c0G</string>
+					<string>1YEo</string>
 					<key>tags</key>
 					<array>
 						<string>Effects</string>
@@ -48,7 +48,7 @@
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>0</integer>
+					<integer>1285</integer>
 				</dict>
 			</array>
 		</dict>

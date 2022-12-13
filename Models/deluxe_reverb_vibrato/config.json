@@ -1,0 +1,9 @@
+{
+    "version": "0.4.0",
+    "architecture": "LSTM",
+    "config": {
+        "input_size": 1,
+        "hidden_size": 24,
+        "num_layers": 3
+    }
+}

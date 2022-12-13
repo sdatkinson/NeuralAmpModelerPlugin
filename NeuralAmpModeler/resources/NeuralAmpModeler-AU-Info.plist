@@ -10,29 +10,29 @@
 			<key>factoryFunction</key>
 			<string>NeuralAmpModeler_Factory</string>
 			<key>manufacturer</key>
-			<string>Acme</string>
+			<string>SDAa</string>
 			<key>name</key>
-			<string>AcmeInc: NeuralAmpModeler</string>
+			<string>StevenAtkinson: NeuralAmpModeler</string>
 			<key>sandboxSafe</key>
 			<true/>
 			<key>subtype</key>
-			<string>9c0G</string>
+			<string>1YEo</string>
 			<key>type</key>
 			<string>aufx</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>1285</integer>
 		</dict>
 	</array>
 	<key>AudioUnit Version</key>
-	<string>0x00000000</string>
+	<string>0x00000505</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>NeuralAmpModeler</string>
 	<key>CFBundleGetInfoString</key>
-	<string>NeuralAmpModeler v0.0.0 Copyright 2021 Acme Inc</string>
+	<string>NeuralAmpModeler v0.5.5 Copyright 2022 Steven Atkinson</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.AcmeInc.audiounit.NeuralAmpModeler</string>
+	<string>com.StevenAtkinson.audiounit.NeuralAmpModeler</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -40,15 +40,15 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CFBundleSignature</key>
-	<string>9c0G</string>
+	<string>1YEo</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.11.0</string>
+	<string>10.15.0</string>
 	<key>NSPrincipalClass</key>
 	<string>NeuralAmpModeler_View</string>
 </dict>

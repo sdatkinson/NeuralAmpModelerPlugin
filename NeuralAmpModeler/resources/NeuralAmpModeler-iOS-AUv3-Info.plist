@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.0</string>
+	<string>0.5.5</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -34,22 +34,22 @@
 					<key>factoryFunction</key>
 					<string>IPlugAUViewController_vNeuralAmpModeler</string>
 					<key>manufacturer</key>
-					<string>Acme</string>
+					<string>SDAa</string>
 					<key>name</key>
-					<string>AcmeInc: NeuralAmpModeler</string>
+					<string>StevenAtkinson: NeuralAmpModeler</string>
 					<key>sandboxSafe</key>
 					<true/>
 					<key>subtype</key>
-					<string>9c0G</string>
+					<string>1YEo</string>
 					<key>tags</key>
 					<array>
 						<string>Effects</string>
-						<string>size:{1024,768}</string>
+						<string>size:{500,300}</string>
 					</array>
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>0</integer>
+					<integer>1285</integer>
 				</dict>
 			</array>
 		</dict>

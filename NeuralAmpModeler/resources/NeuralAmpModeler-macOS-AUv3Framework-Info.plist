@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>NeuralAmpModelerAU</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.AcmeInc.app.NeuralAmpModeler.AUv3Framework</string>
+	<string>com.StevenAtkinson.app.NeuralAmpModeler.AUv3Framework</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

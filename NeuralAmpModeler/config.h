@@ -1,16 +1,15 @@
 #define PLUG_NAME "NeuralAmpModeler"
-#define PLUG_MFR "AcmeInc"
-#define PLUG_VERSION_HEX 0x00000000
-#define PLUG_VERSION_STR "0.0.0"
+#define PLUG_MFR "StevenAtkinson"
+#define PLUG_VERSION_HEX 0x00000505
+#define PLUG_VERSION_STR "0.5.5"
 #define PLUG_UNIQUE_ID '1YEo'
-#define PLUG_MFR_ID 'Acme'
-#define PLUG_URL_STR "https://iplug2.github.io"
+#define PLUG_MFR_ID 'SDAa'
+#define PLUG_URL_STR "https://github.com/olilarkin/NeuralAmpModeler"
 #define PLUG_EMAIL_STR "spam@me.com"
-#define PLUG_COPYRIGHT_STR "Copyright 2021 Acme Inc"
+#define PLUG_COPYRIGHT_STR "Copyright 2022 Steven Atkinson"
 #define PLUG_CLASS_NAME NeuralAmpModeler
-
 #define BUNDLE_NAME "NeuralAmpModeler"
-#define BUNDLE_MFR "AcmeInc"
+#define BUNDLE_MFR "StevenAtkinson"
 #define BUNDLE_DOMAIN "com"
 
 #define SHARED_RESOURCES_SUBPATH "NeuralAmpModeler"
@@ -24,15 +23,15 @@
 #define PLUG_DOES_MPE 0
 #define PLUG_DOES_STATE_CHUNKS 0
 #define PLUG_HAS_UI 1
-#define PLUG_WIDTH 1024
-#define PLUG_HEIGHT 768
+#define PLUG_WIDTH 500
+#define PLUG_HEIGHT 300
 #define PLUG_FPS 60
-#define PLUG_SHARED_RESOURCES 1
-#define PLUG_HOST_RESIZE 1
-#define PLUG_MIN_WIDTH 256
-#define PLUG_MIN_HEIGHT 256
-#define PLUG_MAX_WIDTH 8192
-#define PLUG_MAX_HEIGHT 8192
+#define PLUG_SHARED_RESOURCES 0
+#define PLUG_HOST_RESIZE 0
+#define PLUG_MIN_WIDTH 250
+#define PLUG_MIN_HEIGHT 150
+#define PLUG_MAX_WIDTH 1000
+#define PLUG_MAX_HEIGHT 600
 
 #define AUV2_ENTRY NeuralAmpModeler_Entry
 #define AUV2_ENTRY_STR "NeuralAmpModeler_Entry"
@@ -47,7 +46,7 @@
 #define AAX_PLUG_CATEGORY_STR "Effect"
 #define AAX_DOES_AUDIOSUITE 1
 
-#define VST3_SUBCATEGORY "Instrument|Effect"
+#define VST3_SUBCATEGORY "Effect"
 
 #define APP_NUM_CHANNELS 2
 #define APP_N_VECTOR_WAIT 0
@@ -56,3 +55,7 @@
 #define APP_SIGNAL_VECTOR_SIZE 64
 
 #define ROBOTO_FN "Roboto-Regular.ttf"
+#define HELP_FN "help.svg"
+#define FOLDER_FN "folder.svg"
+#define TOLEX_FN "tolex.jpeg"
+#define TOLEX2X_FN "tolex@2x.jpeg"

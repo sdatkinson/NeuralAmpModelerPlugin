@@ -129,7 +129,7 @@ def main():
     auv3['CFBundlePackageType'] = "XPC!"
     auv3['NSExtension'] = dict(
     NSExtensionAttributes = dict(
-                                AudioComponentBundle = "com.AcmeInc.app." + config['BUNDLE_NAME'] + ".AUv3Framework",
+                                AudioComponentBundle = "com.StevenAtkinson.app." + config['BUNDLE_NAME'] + ".AUv3Framework",
                                 AudioComponents = [{}]),
   #                               NSExtensionServiceRoleType = "NSExtensionServiceRoleTypeEditor",
     NSExtensionPointIdentifier = NSEXTENSIONPOINTIDENTIFIER,

@@ -21,8 +21,8 @@ SCRIPTS=$IPLUG2_ROOT/Scripts
 CODESIGN=0
 
 # macOS codesigning/notarization
-NOTARIZE_BUNDLE_ID=com.AcmeInc.NeuralAmpModeler
-NOTARIZE_BUNDLE_ID_DEMO=com.AcmeInc.NeuralAmpModeler.DEMO
+NOTARIZE_BUNDLE_ID=com.StevenAtkinson.NeuralAmpModeler
+NOTARIZE_BUNDLE_ID_DEMO=com.StevenAtkinson.NeuralAmpModeler.DEMO
 APP_SPECIFIC_ID=TODO
 APP_SPECIFIC_PWD=TODO
 

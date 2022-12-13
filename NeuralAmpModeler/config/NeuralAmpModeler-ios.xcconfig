@@ -15,9 +15,9 @@ BINARY_NAME = NeuralAmpModeler
 
 // ------------------------------
 // HEADER AND LIBRARY SEARCH PATHS
-EXTRA_INC_PATHS = $(IGRAPHICS_INC_PATHS)
+EXTRA_INC_PATHS =  $(IPLUG2_ROOT)/../eigen $(IGRAPHICS_INC_PATHS)
 EXTRA_LIB_PATHS = $(IGRAPHICS_LIB_PATHS)
-EXTRA_LNK_FLAGS = -framework Metal -framework MetalKit //$(IGRAPHICS_LNK_FLAGS)
+EXTRA_LNK_FLAGS = -framework Metal -framework MetalKit -framework Accelerate//$(IGRAPHICS_LNK_FLAGS)
 
 //------------------------------
 // PREPROCESSOR MACROS

@@ -63,7 +63,7 @@ BEGIN
     COMBOBOX        IDC_COMBO_MIDI_OUT_CHAN,125,250,50,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS
 END
 
-IDD_DIALOG_MAIN DIALOG 0, 0, 300, 300
+IDD_DIALOG_MAIN DIALOG 0, 0, 500, 300
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "NeuralAmpModeler"
 MENU IDR_MENU1
@@ -207,7 +207,7 @@ BEGIN
             VALUE "FileDescription", "NeuralAmpModeler"
             VALUE "InternalName", "NeuralAmpModeler"
             VALUE "ProductName", "NeuralAmpModeler"
-            VALUE "CompanyName", "AcmeInc"
+            VALUE "CompanyName", "StevenAtkinson"
             VALUE "LegalCopyright", "Copyright 2020 Acme Inc"
             VALUE "LegalTrademarks", "VST is a trademark of Steinberg Media Technologies GmbH, Audio Unit is a trademark of Apple, Inc."
         END
@@ -230,6 +230,10 @@ END
 //
 #include "..\config.h"
 ROBOTO_FN TTF ROBOTO_FN
+TOLEX_FN JPEG TOLEX_FN
+TOLEX2X_FN JPEG TOLEX2X_FN
+FOLDER_FN SVG FOLDER_FN
+HELP_FN SVG HELP_FN
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

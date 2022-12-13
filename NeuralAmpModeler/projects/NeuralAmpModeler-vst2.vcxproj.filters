@@ -48,6 +48,27 @@
       <Filter>IGraphics\Drawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsNanoVG.cpp" />
+    <ClCompile Include="..\dsp\cnpy.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\dsp.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\get_dsp.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\lstm.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\numpy_util.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\util.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\wavenet.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
@@ -193,6 +214,30 @@
     <ClInclude Include="..\..\iPlug2\IGraphics\ISender.h">
       <Filter>IGraphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\dsp\wavenet.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\activations.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\cnpy.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\dsp.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\HardCodedModel.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\lstm.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\numpy_util.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\util.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="IPlug">
@@ -218,6 +263,9 @@
     </Filter>
     <Filter Include="config">
       <UniqueIdentifier>{8c338368-7512-426b-af83-0f50719ca0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp">
+      <UniqueIdentifier>{721003ab-1117-4143-86a2-3d9fd0d78e62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

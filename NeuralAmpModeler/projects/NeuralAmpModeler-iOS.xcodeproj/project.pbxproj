@@ -27,6 +27,20 @@
 		4F32AE7D231431BD00710734 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; };
 		4F3E0F6A20A0BCD900A9C2BE /* NeuralAmpModeler-iOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */; };
 		4F3E0F6B20A0BCE300A9C2BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6820A0BCAF00A9C2BE /* Images.xcassets */; };
+		4F3EF91628DE0BA7002972F2 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90728DE0BA7002972F2 /* util.cpp */; };
+		4F3EF91728DE0BA7002972F2 /* dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90828DE0BA7002972F2 /* dsp.cpp */; };
+		4F3EF91828DE0BA7002972F2 /* lstm.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90928DE0BA7002972F2 /* lstm.h */; };
+		4F3EF91928DE0BA7002972F2 /* cnpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */; };
+		4F3EF91A28DE0BA7002972F2 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90B28DE0BA7002972F2 /* wavenet.h */; };
+		4F3EF91B28DE0BA7002972F2 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90C28DE0BA7002972F2 /* lstm.cpp */; };
+		4F3EF91C28DE0BA7002972F2 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90D28DE0BA7002972F2 /* util.h */; };
+		4F3EF91D28DE0BA7002972F2 /* dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90E28DE0BA7002972F2 /* dsp.h */; };
+		4F3EF91E28DE0BA7002972F2 /* numpy_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */; };
+		4F3EF91F28DE0BA7002972F2 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91028DE0BA7002972F2 /* activations.h */; };
+		4F3EF92028DE0BA7002972F2 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF91128DE0BA7002972F2 /* wavenet.cpp */; };
+		4F3EF92128DE0BA7002972F2 /* numpy_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91228DE0BA7002972F2 /* numpy_util.h */; };
+		4F3EF92228DE0BA7002972F2 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */; };
+		4F3EF92328DE0BA7002972F2 /* cnpy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91428DE0BA7002972F2 /* cnpy.h */; };
 		4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F4856832773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m */; };
 		4F4856872773C41E005BCF8E /* IPlugAUViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105620A0E57100D3092F /* IPlugAUViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F4856882773C41E005BCF8E /* IPlugAUAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105420A0E57000D3092F /* IPlugAUAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -34,8 +48,8 @@
 		4F7C499C255DE03500DF7588 /* ITextEntryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4976255DE01F00DF7588 /* ITextEntryControl.cpp */; };
 		4F7C4A15255DE23D00DF7588 /* IControls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4970255DE01F00DF7588 /* IControls.cpp */; };
 		4F914A4C26B4911A00E19BD1 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F9A81382929A0F400042B60 /* NeuralAmpModelerAU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4FA61F7522E899B500A92C58 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; };
-		4FA61F7622E899B500A92C58 /* NeuralAmpModelerAU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4FA61F7C22E89A5900A92C58 /* NeuralAmpModelerAU.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FA61F7E22E89AFF00A92C58 /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF106620A0E58600D3092F /* IPlugPluginBase.cpp */; };
 		4FA61F7F22E89AFF00A92C58 /* IPlugAPIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103A20A0E55900D3092F /* IPlugAPIBase.cpp */; };
@@ -91,7 +105,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4FA61F7622E899B500A92C58 /* NeuralAmpModelerAU.framework in Embed Frameworks */,
+				4F9A81382929A0F400042B60 /* NeuralAmpModelerAU.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +132,20 @@
 		4F3E0F6520A0BC4000A9C2BE /* NeuralAmpModeler-iOS-AUv3-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-iOS-AUv3-Info.plist"; path = "../resources/NeuralAmpModeler-iOS-AUv3-Info.plist"; sourceTree = "<group>"; };
 		4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "NeuralAmpModeler-iOS.storyboard"; path = "../resources/NeuralAmpModeler-iOS.storyboard"; sourceTree = "<group>"; };
 		4F3E0F6820A0BCAF00A9C2BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../resources/Images.xcassets; sourceTree = "<group>"; };
+		4F3EF90728DE0BA7002972F2 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
+		4F3EF90828DE0BA7002972F2 /* dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dsp.cpp; sourceTree = "<group>"; };
+		4F3EF90928DE0BA7002972F2 /* lstm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lstm.h; sourceTree = "<group>"; };
+		4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cnpy.cpp; sourceTree = "<group>"; };
+		4F3EF90B28DE0BA7002972F2 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet.h; sourceTree = "<group>"; };
+		4F3EF90C28DE0BA7002972F2 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lstm.cpp; sourceTree = "<group>"; };
+		4F3EF90D28DE0BA7002972F2 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		4F3EF90E28DE0BA7002972F2 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
+		4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numpy_util.cpp; sourceTree = "<group>"; };
+		4F3EF91028DE0BA7002972F2 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
+		4F3EF91128DE0BA7002972F2 /* wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet.cpp; sourceTree = "<group>"; };
+		4F3EF91228DE0BA7002972F2 /* numpy_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numpy_util.h; sourceTree = "<group>"; };
+		4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
+		4F3EF91428DE0BA7002972F2 /* cnpy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cnpy.h; sourceTree = "<group>"; };
 		4F4856832773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NeuralAmpModelerAUv3Appex.m; path = ../resources/NeuralAmpModelerAUv3Appex.m; sourceTree = "<group>"; };
 		4F4A44A322D3604800A9D1A1 /* IGraphicsSkia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IGraphicsSkia.h; sourceTree = "<group>"; };
 		4F4A44A422D3604800A9D1A1 /* IGraphicsSkia.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IGraphicsSkia.cpp; sourceTree = "<group>"; };
@@ -323,6 +351,28 @@
 				4FFF102F20A0E54C00D3092F /* WDL */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4F3EF90528DE0BA7002972F2 /* dsp */ = {
+			isa = PBXGroup;
+			children = (
+				4F3EF90728DE0BA7002972F2 /* util.cpp */,
+				4F3EF90828DE0BA7002972F2 /* dsp.cpp */,
+				4F3EF90928DE0BA7002972F2 /* lstm.h */,
+				4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */,
+				4F3EF90B28DE0BA7002972F2 /* wavenet.h */,
+				4F3EF90C28DE0BA7002972F2 /* lstm.cpp */,
+				4F3EF90D28DE0BA7002972F2 /* util.h */,
+				4F3EF90E28DE0BA7002972F2 /* dsp.h */,
+				4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */,
+				4F3EF91028DE0BA7002972F2 /* activations.h */,
+				4F3EF91128DE0BA7002972F2 /* wavenet.cpp */,
+				4F3EF91228DE0BA7002972F2 /* numpy_util.h */,
+				4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */,
+				4F3EF91428DE0BA7002972F2 /* cnpy.h */,
+			);
+			name = dsp;
+			path = ../dsp;
 			sourceTree = "<group>";
 		};
 		4F63697420A463AF0022C370 /* IGraphics */ = {
@@ -647,6 +697,7 @@
 		91D3DA0B1B023C03008FFFBB = {
 			isa = PBXGroup;
 			children = (
+				4F3EF90528DE0BA7002972F2 /* dsp */,
 				4FFF108420A1036200D3092F /* config.h */,
 				4FFF108820A1036200D3092F /* NeuralAmpModeler.h */,
 				4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */,
@@ -675,9 +726,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F3EF91828DE0BA7002972F2 /* lstm.h in Headers */,
 				4F4856882773C41E005BCF8E /* IPlugAUAudioUnit.h in Headers */,
+				4F3EF91D28DE0BA7002972F2 /* dsp.h in Headers */,
+				4F3EF92128DE0BA7002972F2 /* numpy_util.h in Headers */,
 				4FA61F7C22E89A5900A92C58 /* NeuralAmpModelerAU.h in Headers */,
 				4F4856872773C41E005BCF8E /* IPlugAUViewController.h in Headers */,
+				4F3EF91C28DE0BA7002972F2 /* util.h in Headers */,
+				4F3EF91F28DE0BA7002972F2 /* activations.h in Headers */,
+				4F3EF91A28DE0BA7002972F2 /* wavenet.h in Headers */,
+				4F3EF92328DE0BA7002972F2 /* cnpy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -874,18 +932,25 @@
 			files = (
 				4F7C4A15255DE23D00DF7588 /* IControls.cpp in Sources */,
 				4FA61F9122E8A2A700A92C58 /* IGraphicsNanoVG_src.m in Sources */,
+				4F3EF91628DE0BA7002972F2 /* util.cpp in Sources */,
 				4FA61F8622E89B2000A92C58 /* IPlugAUv3.mm in Sources */,
 				4FA61F8522E89B2000A92C58 /* IPlugAUAudioUnit.mm in Sources */,
+				4F3EF91728DE0BA7002972F2 /* dsp.cpp in Sources */,
+				4F3EF91E28DE0BA7002972F2 /* numpy_util.cpp in Sources */,
 				4FA61F8F22E89B4300A92C58 /* IGraphicsIOS_view.mm in Sources */,
 				4F914A4C26B4911A00E19BD1 /* IPlugAUViewController.mm in Sources */,
 				4FA61F8E22E89B4300A92C58 /* IGraphicsIOS.mm in Sources */,
 				4FA61F9022E8A1F500A92C58 /* IGraphics.cpp in Sources */,
+				4F3EF91928DE0BA7002972F2 /* cnpy.cpp in Sources */,
+				4F3EF92028DE0BA7002972F2 /* wavenet.cpp in Sources */,
 				4FA61F7E22E89AFF00A92C58 /* IPlugPluginBase.cpp in Sources */,
+				4F3EF92228DE0BA7002972F2 /* get_dsp.cpp in Sources */,
 				4FA61F8C22E89B3700A92C58 /* IControl.cpp in Sources */,
 				4FA61F8D22E89B4300A92C58 /* IGraphicsCoreText.mm in Sources */,
 				4F7C499C255DE03500DF7588 /* ITextEntryControl.cpp in Sources */,
 				4FA61F8222E89AFF00A92C58 /* IPlugTimer.cpp in Sources */,
 				4FA61F8B22E89B3700A92C58 /* IGraphicsEditorDelegate.cpp in Sources */,
+				4F3EF91B28DE0BA7002972F2 /* lstm.cpp in Sources */,
 				4FA61F8322E89AFF00A92C58 /* IPlugPaths.mm in Sources */,
 				4FA61F8122E89AFF00A92C58 /* IPlugParameter.cpp in Sources */,
 				4F0D965B23099F5A00BFDED0 /* IPlugProcessor.cpp in Sources */,
@@ -950,7 +1015,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -978,10 +1042,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler.AUv3Framework;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3Framework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1005,7 +1068,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1034,10 +1096,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler.AUv3Framework;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3Framework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1088,7 +1149,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler;
 				PRODUCT_NAME = NeuralAmpModeler;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1135,7 +1196,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler;
 				PRODUCT_NAME = NeuralAmpModeler;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -1184,7 +1245,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler.AUv3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3;
 				PRODUCT_NAME = NeuralAmpModelerAppExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1229,7 +1290,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-AUv3-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = com.AcmeInc.NeuralAmpModeler.AUv3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3;
 				PRODUCT_NAME = NeuralAmpModelerAppExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

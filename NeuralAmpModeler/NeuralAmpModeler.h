@@ -1,36 +1,60 @@
 #pragma once
 
+#include "choc_DisableAllWarnings.h"
+#include "dsp.h"
+#include "choc_ReenableAllWarnings.h"
+
 #include "IPlug_include_in_plug_hdr.h"
+
+#include "ISender.h"
 
 const int kNumPresets = 1;
 
 enum EParams
 {
-  kParamGain = 0,
+  kInputGain = 0,
+  kOutputGain,
+  kParametricDrive,
+  kParametricLevel,
+  kParametricTone,
   kNumParams
 };
 
 enum ECtrlTags
 {
-  kCtrlTagVersionNumber = 0,
-  kCtrlTagSlider,
-  kCtrlTagTitle
+  kCtrlTagModelName = 0,
+  kCtrlTagMeter,
+  kNumCtrlTags
 };
 
-using namespace iplug;
-using namespace igraphics;
-
-class NeuralAmpModeler final : public Plugin
+class NeuralAmpModeler final : public iplug::Plugin
 {
 public:
-  NeuralAmpModeler(const InstanceInfo& info);
+  NeuralAmpModeler(const iplug::InstanceInfo& info);
 
-#if IPLUG_EDITOR
-  void OnParentWindowResize(int width, int height) override;
-  bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
-#endif
+  void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
+  void OnReset() override { mSender.Reset(GetSampleRate()); }
+  void OnIdle() override { mSender.TransmitData(*this); }
   
-#if IPLUG_DSP // http://bit.ly/2S64BDd
-  void ProcessBlock(sample** inputs, sample** outputs, int nFrames) override;
-#endif
+  bool SerializeState(IByteChunk& chunk) const override;
+  int UnserializeState(const IByteChunk& chunk, int startPos) override;
+  
+private:
+  void GetDSP(const WDL_String& dspPath);
+  // The DSP actually being used:
+  std::unique_ptr<DSP> mDSP;
+  // Manages switching what DSP is being used.
+  std::unique_ptr<DSP> mStagedDSP;
+  
+  WDL_String mModelPath;
+  
+  std::unordered_map<std::string, double> mDSPParams = {
+    { "Input", 0.0 },
+    { "Output", 0.0 },
+    { "Drive", 0.0 },
+    { "Level", 0.0 },
+    { "Tone" , 0.0 }
+  };
+  
+  iplug::IPeakAvgSender<> mSender;
 };

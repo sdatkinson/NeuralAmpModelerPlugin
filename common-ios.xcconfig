@@ -95,6 +95,6 @@ LIB_SKUNICODE = $(BUILT_LIBS_LIB_PATH)/libskunicode.a
 SKIA_LNK_FLAGS = $(LIB_SKIA) $(LIB_SKOTTIE) $(LIB_SKSG) $(LIB_SKSHAPER) $(LIB_SKPARAGRAPH) $(LIB_SVG) $(LIB_SKUNICODE)
 IGRAPHICS_LNK_FLAGS = $(SKIA_LNK_FLAGS)
 
-AUv3_FRAMEWORKS = -framework AudioToolbox -framework AVFoundation -framework CoreAudioKit -framework QuartzCore -framework UIKit -framework CoreText -framework CoreGraphics
+AUv3_FRAMEWORKS = -framework AudioToolbox -framework AVFoundation -framework CoreAudioKit -framework QuartzCore -framework UIKit -framework CoreText -framework CoreGraphics -framework UniformTypeIdentifiers
 
 
