@@ -35,9 +35,14 @@ public:
   
   bool SerializeState(IByteChunk& chunk) const override;
   int UnserializeState(const IByteChunk& chunk, int startPos) override;
+  void OnUIOpen() override;
   
 private:
   void GetDSP(const WDL_String& dspPath);
+  void _SetModelMsg(const WDL_String& dspPath);
+  bool _HaveModel() const {
+      return this->mDSP == NULL;
+  };
   // The DSP actually being used:
   std::unique_ptr<DSP> mDSP;
   // Manages switching what DSP is being used.
