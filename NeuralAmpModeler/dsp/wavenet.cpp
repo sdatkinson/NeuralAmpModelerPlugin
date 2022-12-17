@@ -95,6 +95,14 @@ void wavenet::_LayerArray::advance_buffers_(const int num_frames)
   this->_buffer_start += num_frames;
 }
 
+long wavenet::_LayerArray::get_receptive_field() const
+{
+    long result = 0;
+    for (int i = 0; i < this->_layers.size(); i++)
+        result += this->_layers[i].get_dilation() * (this->_layers[i].get_kernel_size() - 1);
+    return result;
+}
+
 void wavenet::_LayerArray::prepare_for_frames_(const int num_frames)
 {
   if (this->_buffer_start + num_frames > this->_get_buffer_size())
@@ -290,6 +298,7 @@ wavenet::WaveNet::WaveNet(
   }
   this->_head_output.resize(1, 0);  // Mono output!
   this->set_params_(params);
+  this->_reset_anti_pop_();
 }
 
 void wavenet::WaveNet::finalize_(const int num_frames)
@@ -377,7 +386,7 @@ void wavenet::WaveNet::_process_core_()
   for (int s = 0; s < num_frames; s++)
     this->_core_dsp_output[s] = this->_head_scale * this->_head_arrays[final_head_array](0, s);
   // Apply anti-pop
-  // this->_anti_pop_();
+  this->_anti_pop_();
 }
 
 void wavenet::WaveNet::_set_num_frames_(const int num_frames)
@@ -396,4 +405,28 @@ void wavenet::WaveNet::_set_num_frames_(const int num_frames)
     this->_layer_arrays[i].set_num_frames_(num_frames);
   //this->_head.set_num_frames_(num_frames);
   this->_num_frames = num_frames;
+}
+
+void wavenet::WaveNet::_anti_pop_()
+{
+    if (this->_anti_pop_countdown >= this->_anti_pop_ramp)
+        return;
+    const float slope = 1.0f / float(this->_anti_pop_ramp);
+    for (int i = 0; i < this->_core_dsp_output.size(); i++)
+    {
+        if (this->_anti_pop_countdown >= this->_anti_pop_ramp)
+            break;
+        const float gain = std::max(slope * float(this->_anti_pop_countdown), 0.0f);
+        this->_core_dsp_output[i] *= gain;
+        this->_anti_pop_countdown++;
+    }
+}
+
+void wavenet::WaveNet::_reset_anti_pop_()
+{
+    // You need the "real" receptive field, not the buffers.
+    long receptive_field = 1;
+    for (int i = 0; i < this->_layer_arrays.size(); i++)
+        receptive_field += this->_layer_arrays[i].get_receptive_field();
+    this->_anti_pop_countdown = -receptive_field;
 }
