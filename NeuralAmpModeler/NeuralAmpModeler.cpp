@@ -116,6 +116,8 @@ public:
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
+  this->mDSP = NULL;
+  this->mStagedDSP = NULL;
   GetParam(kInputGain)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kOutputGain)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
 
@@ -289,10 +291,7 @@ void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
     previousModelPath = mModelPath;
     auto dspPath = std::filesystem::path(modelPath.Get());
     mStagedDSP = get_dsp(dspPath);
-    mModelPath = modelPath;
-    std::stringstream ss;
-    ss << "Loaded " << dspPath.parent_path().filename();
-    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    this->_SetModelMsg(modelPath);
   }
   catch (std::exception& e) {
     std::stringstream ss;
@@ -305,6 +304,15 @@ void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
   }
+}
+
+void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
+{
+    auto dspPath = std::filesystem::path(modelPath.Get());
+    mModelPath = modelPath;
+    std::stringstream ss;
+    ss << "Loaded " << dspPath.parent_path().filename();
+    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
@@ -320,4 +328,16 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   startPos = chunk.GetStr(mModelPath, startPos);
   mDSP = nullptr;
   return UnserializeParams(chunk, startPos);
+}
+
+void NeuralAmpModeler::OnUIOpen()
+{
+    Plugin::OnUIOpen();
+    if (!this->_HaveModel()) {
+        if (this->mModelPath.GetLength())
+            this->GetDSP(this->mModelPath);
+        this->GetUI()->SetAllControlsDirty();
+    }
+    else if (this->mModelPath.GetLength())
+        this->_SetModelMsg(this->mModelPath);
 }
