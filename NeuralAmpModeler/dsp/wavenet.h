@@ -140,6 +140,8 @@ namespace wavenet {
     void set_num_frames_(const int num_frames);
     void set_params_(std::vector<float>::iterator& it);
 
+    long get_receptive_field() const;
+
   private:
     long _buffer_start;
     // The rechannel before the layers
@@ -240,5 +242,14 @@ namespace wavenet {
 
     // Ensure that all buffer arrays are the right size for this num_frames
     void _set_num_frames_(const int num_frames);
+
+    // The net starts with random parameters inside; we need to wait for a full
+    // receptive field to pass through before we can count on the output being
+    // ok. This implements a gentle "ramp-up" so that there's no "pop" at the
+    // start.
+    long _anti_pop_countdown;
+    const long _anti_pop_ramp = 4000;
+    void _anti_pop_();
+    void _reset_anti_pop_();
   };
 }; // namespace wavenet
