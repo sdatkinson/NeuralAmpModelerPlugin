@@ -4,6 +4,3 @@
 [submodule "eigen"]
 	path = eigen
 	url = https://gitlab.com/libeigen/eigen.git
-[submodule "Notebook"]
-	path = Notebook
-	url = git@github.com:sdatkinson/neural-amp-modeler.git
