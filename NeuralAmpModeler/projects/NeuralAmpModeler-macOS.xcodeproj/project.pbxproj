@@ -3087,7 +3087,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST2-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
@@ -3112,7 +3112,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST2-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst.${BINARY_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3136,7 +3136,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST2-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
@@ -3178,7 +3178,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../iPlug2/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = "$(inherited)";
@@ -3226,7 +3226,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../iPlug2/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
@@ -3272,7 +3272,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../iPlug2/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
@@ -3298,7 +3298,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-AU-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				OTHER_LDFLAGS = (
 					"$(AU_FRAMEWORKS)",
@@ -3332,7 +3332,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-AU-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				OTHER_LDFLAGS = (
 					"$(AU_FRAMEWORKS)",
@@ -3364,7 +3364,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-AU-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				OTHER_LDFLAGS = (
 					"$(AU_FRAMEWORKS)",
@@ -3402,7 +3402,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -3436,7 +3436,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -3468,7 +3468,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -3521,7 +3521,7 @@
 					"$(inherited)",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
@@ -3583,7 +3583,7 @@
 					"$(inherited)",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
@@ -3645,7 +3645,7 @@
 					"$(inherited)",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
@@ -3712,7 +3712,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
@@ -3740,7 +3740,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3767,7 +3767,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
@@ -3825,7 +3825,7 @@
 					"$(EXTRA_LIB_PATHS)",
 					"$(AAX_SDK)/Libs/Debug",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.aax.${BINARY_NAME}";
 				SDKROOT = "$(BASE_SDK_MAC)";
@@ -3894,7 +3894,7 @@
 					"$(EXTRA_LIB_PATHS)",
 					"$(AAX_SDK)/Libs/Release",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				OTHER_LDFLAGS = (
 					"$(EXTRA_LNK_FLAGS)",
@@ -3970,7 +3970,7 @@
 					"$(EXTRA_LIB_PATHS)",
 					"$(AAX_SDK)/Libs/Release",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 0.5.7;
 				OTHER_LDFLAGS = (
 					"$(EXTRA_LNK_FLAGS)",
@@ -4119,7 +4119,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -4154,7 +4154,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -4189,7 +4189,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = (
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
@@ -4218,7 +4218,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
 				WRAPPER_EXTENSION = vst3;
@@ -4244,7 +4244,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
@@ -4269,7 +4269,7 @@
 					"$(VST3_SDK)",
 				);
 				INFOPLIST_FILE = "../resources/NeuralAmpModeler-VST3-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.vst3.${BINARY_NAME}";
 				SKIP_INSTALL = NO;
 				WRAPPER_EXTENSION = vst3;
