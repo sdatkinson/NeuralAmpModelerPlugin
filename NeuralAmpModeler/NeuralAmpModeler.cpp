@@ -294,7 +294,7 @@ void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
     ss << "FAILED to load model";
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
     if (mStagedDSP != nullptr) {
-      mStagedDSP = NULL;
+      mStagedDSP = nullptr;
     }
     mModelPath = previousModelPath;
     std::cerr << "Failed to read DSP module" << std::endl;
@@ -320,20 +320,18 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
-  WDL_String dir;
-  startPos = chunk.GetStr(mModelPath, startPos);
-  mDSP = nullptr;
-  return UnserializeParams(chunk, startPos);
+    WDL_String dir;
+    startPos = chunk.GetStr(mModelPath, startPos);
+    mDSP = nullptr;
+    int retcode = UnserializeParams(chunk, startPos);
+    if (this->mModelPath.GetLength())
+        this->GetDSP(this->mModelPath);
+    return retcode;
 }
 
 void NeuralAmpModeler::OnUIOpen()
 {
     Plugin::OnUIOpen();
-    if (!this->_HaveModel()) {
-        if (this->mModelPath.GetLength())
-            this->GetDSP(this->mModelPath);
-        this->GetUI()->SetAllControlsDirty();
-    }
-    else if (this->mModelPath.GetLength())
+    if (this->mModelPath.GetLength())
         this->_SetModelMsg(this->mModelPath);
 }
