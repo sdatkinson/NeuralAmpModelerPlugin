@@ -41,7 +41,7 @@ private:
   void GetDSP(const WDL_String& dspPath);
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const {
-      return this->mDSP == NULL;
+      return this->mDSP != nullptr;
   };
   // The DSP actually being used:
   std::unique_ptr<DSP> mDSP;
