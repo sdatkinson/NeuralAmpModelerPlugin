@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>NeuralAmpModeler</string>
 	<key>CFBundleGetInfoString</key>
-	<string>NeuralAmpModeler v0.5.5 Copyright 2022 Steven Atkinson</string>
+	<string>NeuralAmpModeler v0.5.7 Copyright 2022 Steven Atkinson</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.StevenAtkinson.app.NeuralAmpModeler.AUv3</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.5</string>
+	<string>0.5.7</string>
 	<key>CFBundleVersion</key>
-	<string>0.5.5</string>
+	<string>0.5.7</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.12.0</string>
 	<key>NSExtension</key>
@@ -36,7 +36,7 @@
 					<key>manufacturer</key>
 					<string>SDAa</string>
 					<key>name</key>
-					<string>StevenAtkinson: NeuralAmpModeler</string>
+					<string>Steven Atkinson: NeuralAmpModeler</string>
 					<key>sandboxSafe</key>
 					<true/>
 					<key>subtype</key>
@@ -48,7 +48,7 @@
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>1285</integer>
+					<integer>1287</integer>
 				</dict>
 			</array>
 		</dict>
