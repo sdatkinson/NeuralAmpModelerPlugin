@@ -116,18 +116,18 @@ public:
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
-  this->mDSP = NULL;
-  this->mStagedDSP = NULL;
+  this->mDSP = nullptr;
+  this->mStagedDSP = nullptr;
   GetParam(kInputGain)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kOutputGain)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
 
-  try {
-     mDSP = get_hard_dsp();
-  }
-  catch (std::exception& e) {
-    std::cerr << "Failed to read hard coded DSP" << std::endl;
-    std::cerr << e.what() << std::endl;
-  }
+//  try {
+//     this->mDSP = get_hard_dsp();
+//  }
+//  catch (std::exception& e) {
+//    std::cerr << "Failed to read hard coded DSP" << std::endl;
+//    std::cerr << e.what() << std::endl;
+//  }
   
   mMakeGraphicsFunc = [&]() {
     return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT));
@@ -197,7 +197,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Tells us what model is loaded
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, COLOR_NAM_1)));  // .WithContrast(-0.75)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(30).GetPadded(-2.f), loadModel, folderSVG));
-    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Default model", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     
     pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 0, 1, kNumParams).GetPadded(-10), kInputGain, "", style));
     pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 1, 1, kNumParams).GetPadded(-10), kOutputGain, "", style));
@@ -254,10 +254,6 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const double inputGain = pow(10.0, GetParam(kInputGain)->Value() / 10.0);
   const double outputGain = pow(10.0, GetParam(kOutputGain)->Value() / 10.0);
   
-//  mDSPParams["Drive"] = GetParam(kParametricDrive)->Value();
-//  mDSPParams["Level"] = GetParam(kParametricLevel)->Value();
-//  mDSPParams["Tone"] = GetParam(kParametricTone)->Value();
-  
   if (mStagedDSP)
   {
     // Move from staged to active DSP
@@ -298,7 +294,7 @@ void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
     ss << "FAILED to load model";
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
     if (mStagedDSP != nullptr) {
-      mStagedDSP = NULL;
+      mStagedDSP = nullptr;
     }
     mModelPath = previousModelPath;
     std::cerr << "Failed to read DSP module" << std::endl;
@@ -324,20 +320,18 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
-  WDL_String dir;
-  startPos = chunk.GetStr(mModelPath, startPos);
-  mDSP = nullptr;
-  return UnserializeParams(chunk, startPos);
+    WDL_String dir;
+    startPos = chunk.GetStr(mModelPath, startPos);
+    mDSP = nullptr;
+    int retcode = UnserializeParams(chunk, startPos);
+    if (this->mModelPath.GetLength())
+        this->GetDSP(this->mModelPath);
+    return retcode;
 }
 
 void NeuralAmpModeler::OnUIOpen()
 {
     Plugin::OnUIOpen();
-    if (!this->_HaveModel()) {
-        if (this->mModelPath.GetLength())
-            this->GetDSP(this->mModelPath);
-        this->GetUI()->SetAllControlsDirty();
-    }
-    else if (this->mModelPath.GetLength())
+    if (this->mModelPath.GetLength())
         this->_SetModelMsg(this->mModelPath);
 }
