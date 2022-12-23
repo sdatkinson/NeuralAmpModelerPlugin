@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.5</string>
+	<string>0.5.8</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.5.5</string>
+	<string>0.5.8</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -36,7 +36,7 @@
 					<key>manufacturer</key>
 					<string>SDAa</string>
 					<key>name</key>
-					<string>StevenAtkinson: NeuralAmpModeler</string>
+					<string>Steven Atkinson: NeuralAmpModeler</string>
 					<key>sandboxSafe</key>
 					<true/>
 					<key>subtype</key>
@@ -49,7 +49,7 @@
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>1285</integer>
+					<integer>1288</integer>
 				</dict>
 			</array>
 		</dict>
