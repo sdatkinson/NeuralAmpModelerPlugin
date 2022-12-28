@@ -37,7 +37,7 @@ public:
     this->mOutputSender.Reset(sampleRate);
   }
   void OnIdle() override {
-//    this->mInputSender.TransmitData(*this);
+    this->mInputSender.TransmitData(*this);
     this->mOutputSender.TransmitData(*this);
   }
   
@@ -92,5 +92,5 @@ private:
   };
   
   iplug::IPeakAvgSender<> mInputSender;
-  iplug::IPeakAvgSender<> mOutputSender;  // Do I need separate ones?...
+  iplug::IPeakAvgSender<> mOutputSender;
 };
