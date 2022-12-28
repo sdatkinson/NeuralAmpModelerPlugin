@@ -63,8 +63,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
-  mNumChannels(0),
-  mNumFrames(0),
   mDSP(nullptr),
   mStagedDSP(nullptr)
 {
@@ -96,8 +94,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto titleLabel = content.GetFromTop(50);
     const auto knobs = content.GetReducedFromLeft(10).GetReducedFromRight(10).GetMidVPadded(70);
     const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
+    const auto inputMeterArea = content.GetFromBottom(70).GetFromTop(20);
     const auto outputMeterArea = content.GetFromBottom(50).GetFromTop(20);
-//    const auto inputMeterArea = content.GetFromBottom(70).GetFromTop(20);
 
     const IVStyle style {
       true, // Show label
@@ -230,6 +228,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     this->_FallbackDSP(nFrames);
   }
   this->_ProcessOutput(outputs, nFrames);
+  // * Output of input leveling (inputs -> mInputPointers),
+  // * Output of output leveling (mOutputPointers -> outputs)
   this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
 }
 
@@ -290,28 +290,41 @@ void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
   }
 }
 
+size_t NeuralAmpModeler::_GetBufferNumChannels() const
+{
+  return this->mInputArray.size();
+}
+
+size_t NeuralAmpModeler::_GetBufferNumFrames() const
+{
+  if (this->_GetBufferNumChannels() == 0)
+    return 0;
+  return this->mInputArray[0].size();
+}
+
 void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
 {
   const size_t nChans = this->NOutChansConnected();
-  const bool updateChannels = nChans != this->mNumChannels;
-  const bool updateFrames = updateChannels || (this->mNumFrames != nFrames);
-  if (!updateChannels && !updateFrames)
-    return;
+  const bool updateChannels = nChans != this->_GetBufferNumChannels();
+  const bool updateFrames = updateChannels || (this->_GetBufferNumFrames() != nFrames);
+//  if (!updateChannels && !updateFrames)
+//    return;
   
   if (updateChannels) {  // Does channels *and* frames just to be safe.
     this->_PrepareIOPointers(nChans);
     this->mInputArray.resize(nChans);
     this->mOutputArray.resize(nChans);
-    this->mNumChannels = nChans;
   }
   if (updateFrames) { // and not update channels
     for (int c=0; c<nChans; c++) {
       this->mInputArray[c].resize(nFrames);
-      this->mInputPointers[c] = this->mInputArray[c].data();
       this->mOutputArray[c].resize(nFrames);
-      this->mOutputPointers[c] = this->mOutputArray[c].data();
     }
-    this->mNumFrames = nFrames;
+  }
+  // Would these ever change?
+  for (auto c=0; c<this->mInputArray.size(); c++) {
+    this->mInputPointers[c] = this->mInputArray[c].data();
+    this->mOutputPointers[c] = this->mOutputArray[c].data();
   }
 }
 

@@ -49,6 +49,9 @@ private:
   void _FallbackDSP(const int nFrames);
   // Gets a new DSP object and stores it to mStagedDSP
   void _GetDSP(const WDL_String& dspPath);
+  // Sizes based on mInputArray
+  size_t _GetBufferNumChannels() const;
+  size_t _GetBufferNumFrames() const;
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const {
@@ -74,8 +77,6 @@ private:
   // Pointer versions
   sample** mInputPointers;
   sample** mOutputPointers;
-  size_t mNumChannels;
-  size_t mNumFrames;
   
   // The DSP actually being used:
   std::unique_ptr<DSP> mDSP;
