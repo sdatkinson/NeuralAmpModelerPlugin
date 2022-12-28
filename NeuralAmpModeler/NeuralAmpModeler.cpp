@@ -92,10 +92,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
     const auto titleLabel = content.GetFromTop(50);
-    const auto knobs = content.GetReducedFromLeft(10).GetReducedFromRight(10).GetMidVPadded(70);
+    
+    const float knobHalfPad = 10.0f;
+    const float knobPad = 2.0f * knobHalfPad;
+    const float knobHalfHeight = 70.0f;
+    const auto knobs = content.GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetMidVPadded(knobHalfHeight);
+    IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, kNumParams).GetPadded(-10);
+    IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
+    
     const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
-    const auto inputMeterArea = content.GetFromBottom(70).GetFromTop(20);
-    const auto outputMeterArea = content.GetFromBottom(50).GetFromTop(20);
+    const float meterHalfHeight = 0.5f * 250.0f;
+    const auto inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
+    const auto outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
 
     const IVStyle style {
       true, // Show label
@@ -149,17 +157,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     
     // The knobs
-    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 0, 1, kNumParams).GetPadded(-10), kInputLevel, "", style));
-    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 1, 1, kNumParams).GetPadded(-10), kOutputLevel, "", style));
+    pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 
     // The meters
+    const float meterMin = -60.0f;
+    const float meterMax = 12.0f;
     pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
-                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagInputMeter)
+                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Vertical, {}, 0, meterMin, meterMax, {}), kCtrlTagInputMeter)
     ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
     pGraphics->AttachControl(new IVPeakAvgMeterControl(outputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
-                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagOutputMeter)
+                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Vertical, {}, 0, meterMin, meterMax, {}), kCtrlTagOutputMeter)
     ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
 
     // Help/about box
