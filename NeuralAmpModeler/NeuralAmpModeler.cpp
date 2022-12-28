@@ -60,12 +60,16 @@ public:
 };
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
-: Plugin(info, MakeConfig(kNumParams, kNumPresets))
+: Plugin(info, MakeConfig(kNumParams, kNumPresets)),
+  mInputPointers(nullptr),
+  mOutputPointers(nullptr),
+  mNumChannels(0),
+  mNumFrames(0),
+  mDSP(nullptr),
+  mStagedDSP(nullptr)
 {
-  this->mDSP = nullptr;
-  this->mStagedDSP = nullptr;
-  GetParam(kInputGain)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
-  GetParam(kOutputGain)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
+  GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  GetParam(kOutputLevel)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
 
 //  try {
 //     this->mDSP = get_hard_dsp();
@@ -92,7 +96,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto titleLabel = content.GetFromTop(50);
     const auto knobs = content.GetReducedFromLeft(10).GetReducedFromRight(10).GetMidVPadded(70);
     const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
-    const auto meterArea = content.GetFromBottom(50).GetFromTop(20);
+    const auto outputMeterArea = content.GetFromBottom(50).GetFromTop(20);
+//    const auto inputMeterArea = content.GetFromBottom(70).GetFromTop(20);
 
     const IVStyle style {
       true, // Show label
@@ -129,14 +134,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                 .WithDrawFrame(false)
                                                 .WithValueText({30, EAlign::Center, PluginColors::NAM_3})));
 
-//    pGraphics->AttachControl(new IVBakedPresetManagerControl(modelArea, style.WithValueText({DEFAULT_TEXT_SIZE, EVAlign::Middle, COLOR_WHITE})));
+    //    pGraphics->AttachControl(new IVBakedPresetManagerControl(modelArea, style.WithValueText({DEFAULT_TEXT_SIZE, EVAlign::Middle, COLOR_WHITE})));
 
     // Model loader button
     auto loadModel = [&, pGraphics](IControl* pCaller) {
       WDL_String dir;
       pGraphics->PromptForDirectory(dir, [&](const WDL_String& fileName, const WDL_String& path){
         if (path.GetLength())
-          GetDSP(path);
+          _GetDSP(path);
       });
     };
     
@@ -145,14 +150,21 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(30).GetPadded(-2.f), loadModel, folderSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     
-    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 0, 1, kNumParams).GetPadded(-10), kInputGain, "", style));
-    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 1, 1, kNumParams).GetPadded(-10), kOutputGain, "", style));
+    // The knobs
+    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 0, 1, kNumParams).GetPadded(-10), kInputLevel, "", style));
+    pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 1, 1, kNumParams).GetPadded(-10), kOutputLevel, "", style));
 
-    pGraphics->AttachControl(new IVPeakAvgMeterControl(meterArea, "", style.WithWidgetFrac(0.5)
+    // The meters
+//    pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
+//                                                       .WithShowValue(false)
+//                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagInputMeter)
+//    ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
+    pGraphics->AttachControl(new IVPeakAvgMeterControl(outputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
-                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagMeter)
+                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagOutputMeter)
     ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
 
+    // Help/about box
     pGraphics->AttachControl(new IVAboutBoxControl(
     new IRolloverCircleSVGButtonControl(mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20), DefaultClickActionFunc, helpSVG),
     new IPanelControl(IRECT(),
@@ -196,37 +208,67 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
-  const int nChans = NOutChansConnected();
-  const double inputGain = pow(10.0, GetParam(kInputGain)->Value() / 10.0);
-  const double outputGain = pow(10.0, GetParam(kOutputGain)->Value() / 10.0);
-  
-  if (mStagedDSP)
+  this->_PrepareBuffers(nFrames);
+  this->_ProcessInput(inputs, nFrames);
+  if (mStagedDSP != nullptr)
   {
     // Move from staged to active DSP
     mDSP = std::move(mStagedDSP);
     mStagedDSP = nullptr;
   }
 
-  if (mDSP)
+  if (mDSP != nullptr)
   {
-    mDSP->process(inputs, outputs, nChans, nFrames, inputGain, outputGain, mDSPParams);
+    // TODO remove input / output gains from here.
+    const int nChans = this->NOutChansConnected();
+    const double inputGain = 1.0;
+    const double outputGain = 1.0;
+    mDSP->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mDSPParams);
     mDSP->finalize_(nFrames);
   }
-  else
-  {
-    for (auto c = 0; c < nChans; c++)
-    {
-      for (auto s = 0; s < nFrames; s++)
-      {
-        outputs[c][s] = inputs[c][s];
-      }
-    }
+  else {
+    this->_FallbackDSP(nFrames);
   }
-  
-  mSender.ProcessBlock(outputs, nFrames, kCtrlTagMeter);
+  this->_ProcessOutput(outputs, nFrames);
+  this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
 }
 
-void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
+bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
+{
+  // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
+  chunk.PutStr(mModelPath.Get());
+  return SerializeParams(chunk);
+}
+
+int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
+{
+  WDL_String dir;
+  startPos = chunk.GetStr(mModelPath, startPos);
+  mDSP = nullptr;
+  int retcode = UnserializeParams(chunk, startPos);
+  if (this->mModelPath.GetLength())
+    this->_GetDSP(this->mModelPath);
+  return retcode;
+}
+
+void NeuralAmpModeler::OnUIOpen()
+{
+  Plugin::OnUIOpen();
+  if (this->mModelPath.GetLength())
+    this->_SetModelMsg(this->mModelPath);
+}
+
+// Private methods ============================================================
+
+void NeuralAmpModeler::_FallbackDSP(const int nFrames)
+{
+  const int nChans = this->NOutChansConnected();
+  for (int c=0; c<nChans; c++)
+    for (int s=0; s<nFrames; s++)
+      this->mOutputArray[c][s] = this->mInputArray[c][s];
+}
+
+void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
 {
   WDL_String previousModelPath;
   try {
@@ -248,6 +290,65 @@ void NeuralAmpModeler::GetDSP(const WDL_String& modelPath)
   }
 }
 
+void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
+{
+  const size_t nChans = this->NOutChansConnected();
+  const bool updateChannels = nChans != this->mNumChannels;
+  const bool updateFrames = updateChannels || (this->mNumFrames != nFrames);
+  if (!updateChannels && !updateFrames)
+    return;
+  
+  if (updateChannels) {  // Does channels *and* frames just to be safe.
+    this->_PrepareIOPointers(nChans);
+    this->mInputArray.resize(nChans);
+    this->mOutputArray.resize(nChans);
+    this->mNumChannels = nChans;
+  }
+  if (updateFrames) { // and not update channels
+    for (int c=0; c<nChans; c++) {
+      this->mInputArray[c].resize(nFrames);
+      this->mInputPointers[c] = this->mInputArray[c].data();
+      this->mOutputArray[c].resize(nFrames);
+      this->mOutputPointers[c] = this->mOutputArray[c].data();
+    }
+    this->mNumFrames = nFrames;
+  }
+}
+
+void NeuralAmpModeler::_PrepareIOPointers(const size_t nChans)
+{
+  if (this->mInputPointers != nullptr)
+    delete[] this->mInputPointers;
+  if (this->mOutputPointers != nullptr)
+    delete[] this->mOutputPointers;
+  this->mInputPointers = new sample*[nChans];
+  if (this->mInputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
+  this->mOutputPointers = new sample*[nChans];
+  if (this->mOutputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+}
+
+void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
+{
+  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 10.0);
+  const size_t nChans = this->NOutChansConnected();
+  // Assume _PrepareBuffers() was already called
+  for (int c=0; c<nChans; c++)
+    for (int s=0; s<nFrames; s++)
+      this->mInputArray[c][s] = gain * inputs[c][s];
+}
+
+void NeuralAmpModeler::_ProcessOutput(iplug::sample **outputs, const int nFrames)
+{
+  const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 10.0);
+  const size_t nChans = this->NOutChansConnected();
+  // Assume _PrepareBuffers() was already called
+  for (int c=0; c<nChans; c++)
+    for (int s=0; s<nFrames; s++)
+      outputs[c][s] = gain * this->mOutputArray[c][s];
+}
+
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
     auto dspPath = std::filesystem::path(modelPath.Get());
@@ -257,27 +358,8 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
-bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
+void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)
 {
-  // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
-  chunk.PutStr(mModelPath.Get());
-  return SerializeParams(chunk);
-}
-
-int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
-{
-    WDL_String dir;
-    startPos = chunk.GetStr(mModelPath, startPos);
-    mDSP = nullptr;
-    int retcode = UnserializeParams(chunk, startPos);
-    if (this->mModelPath.GetLength())
-        this->GetDSP(this->mModelPath);
-    return retcode;
-}
-
-void NeuralAmpModeler::OnUIOpen()
-{
-    Plugin::OnUIOpen();
-    if (this->mModelPath.GetLength())
-        this->_SetModelMsg(this->mModelPath);
+//  this->mInputSender.ProcessBlock(inputPointer, nFrames, kCtrlTagInputMeter);
+  this->mOutputSender.ProcessBlock(outputPointer, nFrames, kCtrlTagOutputMeter);
 }
