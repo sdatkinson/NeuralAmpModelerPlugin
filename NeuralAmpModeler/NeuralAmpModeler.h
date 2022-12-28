@@ -32,8 +32,9 @@ public:
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
   void OnReset() override {
-//    this->mInputSender.Reset(GetSampleRate());
-    this->mOutputSender.Reset(GetSampleRate());
+    const auto sampleRate = this->GetSampleRate();
+    this->mInputSender.Reset(sampleRate);
+    this->mOutputSender.Reset(sampleRate);
   }
   void OnIdle() override {
 //    this->mInputSender.TransmitData(*this);
