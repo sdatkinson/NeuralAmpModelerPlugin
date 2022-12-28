@@ -373,6 +373,6 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)
 {
-//  this->mInputSender.ProcessBlock(inputPointer, nFrames, kCtrlTagInputMeter);
+  this->mInputSender.ProcessBlock(inputPointer, nFrames, kCtrlTagInputMeter);
   this->mOutputSender.ProcessBlock(outputPointer, nFrames, kCtrlTagOutputMeter);
 }
