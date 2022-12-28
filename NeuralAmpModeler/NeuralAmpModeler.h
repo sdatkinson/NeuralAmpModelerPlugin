@@ -13,6 +13,9 @@ const int kNumPresets = 1;
 enum EParams
 {
   kInputLevel = 0,
+  kToneBass,
+  kToneMid,
+  kToneTreble,
   kOutputLevel,
   kNumParams
 };
@@ -83,6 +86,11 @@ private:
   std::unique_ptr<DSP> mDSP;
   // Manages switching what DSP is being used.
   std::unique_ptr<DSP> mStagedDSP;
+  
+  // Tone stack modules
+  // recursive_linear_filter::LowShelfFilter toneBass;
+  // recursive_linear_filter::PeakingFilter toneMid;
+  // recursive_linear_filter::HiShelfFilter toneTreble;
   
   WDL_String mModelPath;
   

@@ -67,6 +67,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mStagedDSP(nullptr)
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
+  GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
+  GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
 
 //  try {
@@ -98,6 +101,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float knobHalfHeight = 70.0f;
     const auto knobs = content.GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetMidVPadded(knobHalfHeight);
     IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, kNumParams).GetPadded(-10);
+    IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, kNumParams).GetPadded(-10);
+    IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, kNumParams).GetPadded(-10);
+    IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
     IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
     
     const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
@@ -158,6 +164,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
+    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
+    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 
     // The meters
@@ -237,6 +246,9 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   else {
     this->_FallbackDSP(nFrames);
   }
+  // Tone stack
+  
+  
   this->_ProcessOutput(outputs, nFrames);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
