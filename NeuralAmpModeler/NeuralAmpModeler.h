@@ -20,7 +20,7 @@ enum EParams
 enum ECtrlTags
 {
   kCtrlTagModelName = 0,
-//  kCtrlTagInputMeter,
+  kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kNumCtrlTags
 };
@@ -90,6 +90,6 @@ private:
     { "Output", 0.0 }
   };
   
-//  iplug::IPeakAvgSender<> mInputSender;
+  iplug::IPeakAvgSender<> mInputSender;
   iplug::IPeakAvgSender<> mOutputSender;  // Do I need separate ones?...
 };

@@ -153,10 +153,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVKnobControl(knobs.GetGridCell(0, 1, 1, kNumParams).GetPadded(-10), kOutputLevel, "", style));
 
     // The meters
-//    pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
-//                                                       .WithShowValue(false)
-//                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagInputMeter)
-//    ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
+    pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
+                                                       .WithShowValue(false)
+                                                       .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagInputMeter)
+    ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
     pGraphics->AttachControl(new IVPeakAvgMeterControl(outputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
                                                        .WithColor(kFG, PluginColors::NAM_2), EDirection::Horizontal, {}, 0, -60.f, 12.f, {}), kCtrlTagOutputMeter)
