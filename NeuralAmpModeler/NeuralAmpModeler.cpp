@@ -64,7 +64,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
   mDSP(nullptr),
-  mStagedDSP(nullptr)
+  mStagedDSP(nullptr),
+  mToneBass(),
+  mToneMid(),
+  mToneTreble()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -225,6 +228,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
+  const int nChans = this->NOutChansConnected();
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   if (mStagedDSP != nullptr)
@@ -237,7 +241,6 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   if (mDSP != nullptr)
   {
     // TODO remove input / output gains from here.
-    const int nChans = this->NOutChansConnected();
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     mDSP->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mDSPParams);
@@ -247,9 +250,29 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     this->_FallbackDSP(nFrames);
   }
   // Tone stack
+  const double sampleRate = this->GetSampleRate();
+  const double bassFrequency = 150.0;
+  const double midFrequency = 450.0;
+  const double trebleFrequency = 1800.0;
+  const double bassQuality = 0.707;
+  const double midQuality = 1.5;
+  const double trebleQuality = 0.707;
   
+  // Translate params from knob 0-10 to +/-20dB.
+  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);
+  const double midGainDB = 4.0 * (this->GetParam(kToneMid)->Value() - 5.0);
+  const double trebleGainDB = 4.0 * (this->GetParam(kToneTreble)->Value() - 5.0);
+  // Define filter parameters
+  recursive_linear_filter::LowShelfParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+  recursive_linear_filter::PeakingParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+  recursive_linear_filter::HighShelfParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+  // Apply tone stack
+  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, nChans, nFrames, &bassParams);
+  sample** midPointers = this->mToneMid.Process(bassPointers, nChans, nFrames, &midParams);
+  sample** treblePointers = this->mToneTreble.Process(midPointers, nChans, nFrames, &trebleParams);
   
-  this->_ProcessOutput(outputs, nFrames);
+  // Let's get outta here
+  this->_ProcessOutput(treblePointers, outputs, nFrames);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
   this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
@@ -374,14 +397,14 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
       this->mInputArray[c][s] = gain * inputs[c][s];
 }
 
-void NeuralAmpModeler::_ProcessOutput(iplug::sample **outputs, const int nFrames)
+void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **outputs, const int nFrames)
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 10.0);
   const size_t nChans = this->NOutChansConnected();
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
     for (int s=0; s<nFrames; s++)
-      outputs[c][s] = gain * this->mOutputArray[c][s];
+      outputs[c][s] = gain * inputs[c][s];
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)

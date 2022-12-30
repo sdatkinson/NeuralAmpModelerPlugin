@@ -3,6 +3,7 @@
 #include "choc_DisableAllWarnings.h"
 #include "dsp.h"
 #include "choc_ReenableAllWarnings.h"
+#include "dsp/RecursiveLinearFilter.h"
 
 #include "IPlug_include_in_plug_hdr.h"
 
@@ -68,7 +69,7 @@ private:
   // Copy the input buffer to the object, applying input level.
   void _ProcessInput(iplug::sample** inputs, const int nFrames);
   // Copy the output to the output buffer, applying output level.
-  void _ProcessOutput(iplug::sample** outputs, const int nFrames);
+  void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const int nFrames);
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
@@ -88,9 +89,10 @@ private:
   std::unique_ptr<DSP> mStagedDSP;
   
   // Tone stack modules
-  // recursive_linear_filter::LowShelfFilter toneBass;
-  // recursive_linear_filter::PeakingFilter toneMid;
-  // recursive_linear_filter::HiShelfFilter toneTreble;
+  // TODO low shelf, peaking, high shelf
+  recursive_linear_filter::LowShelf mToneBass;
+  recursive_linear_filter::Peaking mToneMid;
+  recursive_linear_filter::HighShelf mToneTreble;
   
   WDL_String mModelPath;
   

@@ -72,6 +72,7 @@
 		4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D752267CE540007B686 /* AppDelegate.m */; };
 		4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D7D2267CEBA0007B686 /* IPlugAUPlayer.mm */; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -314,6 +315,8 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RecursiveLinearFilter.cpp; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.cpp; sourceTree = "<absolute>"; };
+		AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecursiveLinearFilter.h; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.h; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +359,8 @@
 		4F3EF90528DE0BA7002972F2 /* dsp */ = {
 			isa = PBXGroup;
 			children = (
+				AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */,
+				AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */,
 				4F3EF90728DE0BA7002972F2 /* util.cpp */,
 				4F3EF90828DE0BA7002972F2 /* dsp.cpp */,
 				4F3EF90928DE0BA7002972F2 /* lstm.h */,
@@ -957,6 +962,7 @@
 				4FA61F7F22E89AFF00A92C58 /* IPlugAPIBase.cpp in Sources */,
 				4FA61F9222E8A2B500A92C58 /* NeuralAmpModeler.cpp in Sources */,
 				4F7C499B255DE03500DF7588 /* IPopupMenuControl.cpp in Sources */,
+				AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
