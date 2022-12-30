@@ -251,17 +251,22 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   }
   // Tone stack
   const double sampleRate = this->GetSampleRate();
+  // Translate params from knob 0-10 to dB.
+  // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
+  // much swing as bass can use.
+  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
+  const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
+  const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
+  
   const double bassFrequency = 150.0;
-  const double midFrequency = 450.0;
+  const double midFrequency = 425.0;
   const double trebleFrequency = 1800.0;
   const double bassQuality = 0.707;
-  const double midQuality = 1.5;
+  // Wider EQ on mid bump up to sound less honky.
+  const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
   const double trebleQuality = 0.707;
   
-  // Translate params from knob 0-10 to +/-20dB.
-  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);
-  const double midGainDB = 4.0 * (this->GetParam(kToneMid)->Value() - 5.0);
-  const double trebleGainDB = 4.0 * (this->GetParam(kToneTreble)->Value() - 5.0);
+  
   // Define filter parameters
   recursive_linear_filter::LowShelfParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
   recursive_linear_filter::PeakingParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
