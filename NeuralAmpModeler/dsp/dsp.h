@@ -23,9 +23,6 @@ enum EArchitectures
   kNumModels
 };
 
-// HACK
-using namespace iplug;
-
 // Class for providing params from the plugin to the DSP module
 // For now, we'll work with doubles. Later, we'll add other types.
 class DSPParam
@@ -50,8 +47,8 @@ public:
   //    overridden in subclasses).
   // 4. The output level is applied and the result stored to `output`.
   virtual void process(
-    sample** inputs,
-    sample** outputs,
+    iplug::sample** inputs,
+    iplug::sample** outputs,
     const int num_channels,
     const int num_frames,
     const double input_gain,
@@ -85,7 +82,10 @@ protected:
 
   // Apply the input gain
   // Result populates this->_input_post_gain
-  void _apply_input_level_(sample** inputs, const int num_channels, const int num_frames, const double gain);
+  void _apply_input_level_(iplug::sample** inputs,
+                           const int num_channels,
+                           const int num_frames,
+                           const double gain);
 
   // i.e. ensure the size is correct.
   void _ensure_core_dsp_output_ready_();
@@ -96,7 +96,10 @@ protected:
   virtual void _process_core_();
 
   // Copy this->_core_dsp_output to output and apply the output volume
-  void _apply_output_level_(sample** outputs, const int num_channels, const int num_frames, const double gain);
+  void _apply_output_level_(iplug::sample** outputs,
+                            const int num_channels,
+                            const int num_frames,
+                            const double gain);
 };
 
 // Class where an input buffer is kept so that long-time effects can be captured.
@@ -368,5 +371,55 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname);
 
 // Hard-coded model:
 std::unique_ptr<DSP> get_hard_dsp();
+
+// Version 2 DSP abstraction ==================================================
+
+namespace dsp {
+  class Params {};
+  
+  class DSP {
+  public:
+    DSP();
+    ~DSP();
+    // The main interface for processing audio.
+    // The incoming audio is given as a raw pointer-to-pointers.
+    // The indexing is [channel][frame].
+    // The output shall be a pointer-to-pointers of matching size.
+    // This object instance will own the data referenced by the pointers and be
+    // responsible for its allocation and deallocation.
+    virtual iplug::sample** Process(iplug::sample** inputs, const size_t numChannels, const size_t numFrames) = 0;
+    // Update the parameters of the DSP object according to the provided params.
+    // Not declaring a pure virtual bc there's no concrete definition that can
+    // use Params.
+    // But, use this name :)
+    // virtual void SetParams(Params* params) = 0;
+    
+  protected:
+    // Methods
+    
+    size_t _GetNumChannels() const {return this->mOutputs.size();};
+    // Return a pointer-to-pointers for the DSP's output buffers (all channels)
+    // Assumes that ._PrepareBuffers()  was called recently enough.
+    iplug::sample** _GetPointers();
+    // Resize mOutputs to (numChannels, numFrames) and ensure that the raw
+    // pointers are also keeping up.
+    virtual void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
+    // Resize the pointer-to-pointers for the vector-of-vectors.
+    void _ResizePointers(const size_t numChannels);
+    
+    
+    // Attributes
+    
+    // The output array into which the DSP module's calculations will be written.
+    // Pointers to this member's data will be returned by .Process(), and std
+    // Will ensure proper allocation.
+    std::vector<std::vector<iplug::sample>> mOutputs;
+    // A pointer to pointers of which copies will be given out as the output of .Process().
+    // This object will ensure proper allocation and deallocation of the first level;
+    // The second level points to .data() from mOutputs.
+    iplug::sample** mOutputPointers;
+    size_t mOutputPointersSize;
+  };
+};
 
 #endif  // IPLUG_DSP

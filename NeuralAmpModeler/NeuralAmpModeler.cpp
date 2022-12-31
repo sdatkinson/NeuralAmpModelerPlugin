@@ -67,7 +67,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mStagedDSP(nullptr),
   mToneBass(),
   mToneMid(),
-  mToneTreble()
+  mToneTreble(),
+  mIR(),
+  mIRFileName(),
+  mIRPath()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -99,6 +102,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto content = mainArea.GetPadded(-10);
     const auto titleLabel = content.GetFromTop(50);
     
+    // Areas for knobs
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
     const float knobHalfHeight = 70.0f;
@@ -109,7 +113,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
     IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
     
-    const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
+    // Areas for model and IR
+    const float fileWidth = 150.0f;
+    const float fileHeight = 30.0f;
+    const float fileSpace = 10.0f;
+    const auto modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
+    const auto irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
+    
+    // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
     const auto inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
     const auto outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
@@ -153,6 +164,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Model loader button
     auto loadModel = [&, pGraphics](IControl* pCaller) {
+      // TODO start from last directory on second load if possible.
       WDL_String dir;
       pGraphics->PromptForDirectory(dir, [&](const WDL_String& fileName, const WDL_String& path){
         if (path.GetLength())
@@ -160,10 +172,24 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       });
     };
     
-    // Tells us what model is loaded
-    pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));  // .WithContrast(-0.75)
+    auto getIRPath = [&, pGraphics](IControl* pCaller) {
+      WDL_String fileName;
+      WDL_String path(this->mIRPath.Get());
+      pGraphics->PromptForFile(fileName, path);
+      if (fileName.GetLength()) {
+        this->mIRPath = path;
+        this->_GetIR(fileName);
+      }
+    };
+    
+    // Graphics objects for what model is loaded
+    pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(30).GetPadded(-2.f), loadModel, folderSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    // IR
+    pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(30).GetPadded(-2.f), getIRPath, folderSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(30), "Select IR...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
@@ -268,13 +294,19 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   
   
   // Define filter parameters
-  recursive_linear_filter::LowShelfParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-  recursive_linear_filter::PeakingParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-  recursive_linear_filter::HighShelfParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+  recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+  recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+  recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
   // Apply tone stack
-  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, nChans, nFrames, &bassParams);
-  sample** midPointers = this->mToneMid.Process(bassPointers, nChans, nFrames, &midParams);
-  sample** treblePointers = this->mToneTreble.Process(midPointers, nChans, nFrames, &trebleParams);
+  // Set parameters
+  this->mToneBass.SetParams(bassParams);
+  this->mToneMid.SetParams(midParams);
+  this->mToneTreble.SetParams(trebleParams);
+  const size_t numChannels = (size_t) nChans;
+  const size_t numFrames = (size_t) nFrames;
+  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
+  sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
+  sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
   
   // Let's get outta here
   this->_ProcessOutput(treblePointers, outputs, nFrames);
@@ -338,6 +370,12 @@ void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
   }
+}
+
+void NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
+{
+  this->mIRFileName = irFileName;
+  // TODO
 }
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const

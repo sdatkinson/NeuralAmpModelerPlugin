@@ -7,14 +7,12 @@
 // See: https://webaudio.github.io/Audio-EQ-Cookbook/audio-eq-cookbook.html
 
 #include <algorithm>  // std::fill
-#include <cmath>  // pow, sin
 
 #include "RecursiveLinearFilter.h"
 
 recursive_linear_filter::Base::Base(const size_t inputDegree,
                                     const size_t outputDegree) :
-mOutputPointers(nullptr),
-mOutputPointersSize(0),
+dsp::DSP(),
 mInputStart(inputDegree),  // 1 is subtracted before first use
 mOutputStart(outputDegree)
 {
@@ -23,12 +21,10 @@ mOutputStart(outputDegree)
 }
 
 iplug::sample** recursive_linear_filter::Base::Process(iplug::sample** inputs,
-                                                       const int numChannels,
-                                                       const int numFrames,
-                                                       const Params *params)
+                                                       const size_t numChannels,
+                                                       const size_t numFrames)
 {
   this->_PrepareBuffers(numChannels, numFrames);
-  params->SetCoefficients(this->mInputCoefficients, this->mOutputCoefficients);
   long inputStart=0;
   long outputStart=0;
   // Degree = longest history
@@ -64,55 +60,51 @@ iplug::sample** recursive_linear_filter::Base::Process(iplug::sample** inputs,
   }
   this->mInputStart = inputStart;
   this->mOutputStart = outputStart;
-  return this->GetPointers();
+  return this->_GetPointers();
 }
 
-iplug::sample** recursive_linear_filter::Base::GetPointers()
+void recursive_linear_filter::Base::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
 {
-  for (auto c=0; c<this->_GetNumChannels(); c++)
-    this->mOutputPointers[c] = this->mOutputs[c].data();
-  return this->mOutputPointers;
-}
-
-
-void recursive_linear_filter::Base::_PrepareBuffers(const int numChannels, const int numFrames)
-{
-  if (this->_GetNumChannels() != numChannels) {
+  // Check for new channel count *before* parent class ensures they match!
+  const bool newChannels = this->_GetNumChannels() != numChannels;
+  // Parent implementation takes care of mOutputs and mOutputPointers
+  this->dsp::DSP::_PrepareBuffers(numChannels, numFrames);
+  if (newChannels) {
     this->mInputHistory.resize(numChannels);
     this->mOutputHistory.resize(numChannels);
-    this->mOutputs.resize(numChannels);
     const size_t inputDegree = this->_GetInputDegree();
     const size_t outputDegree = this->_GetOutputDegree();
     for (auto c=0; c<numChannels; c++) {
       this->mInputHistory[c].resize(inputDegree);
       this->mOutputHistory[c].resize(outputDegree);
-      this->mOutputs[c].resize(numFrames);
       std::fill(this->mInputHistory[c].begin(), this->mInputHistory[c].end(), 0.0);
       std::fill(this->mOutputHistory[c].begin(), this->mOutputHistory[c].end(), 0.0);
     }
-    this->_ResizePointers((size_t) numChannels);
   }
 }
 
-void recursive_linear_filter::Base::_ResizePointers(const size_t numChannels)
+void recursive_linear_filter::Biquad::_AssignCoefficients(const double a0,
+                                                          const double a1,
+                                                          const double a2,
+                                                          const double b0,
+                                                          const double b1,
+                                                          const double b2)
 {
-  if (this->mOutputPointersSize == numChannels)
-    return;
-  if (this->mOutputPointers != nullptr)
-    delete[] this->mOutputPointers;
-  this->mOutputPointers = new iplug::sample*[numChannels];
-  if (this->mOutputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
-  this->mOutputPointersSize = numChannels;
+  this->mInputCoefficients[0] = b0 / a0;
+  this->mInputCoefficients[1] = b1 / a0;
+  this->mInputCoefficients[2] = b2 / a0;
+  // this->mOutputCoefficients[0] = 0.0;  // Always
+  // Sign flip due so we add during main loop (cf Eq. (4))
+  this->mOutputCoefficients[1] = -a1 / a0;
+  this->mOutputCoefficients[2] = -a2 / a0;
 }
 
-void recursive_linear_filter::LowShelfParams::SetCoefficients(std::vector<double> &inputCoefficients,
-                                                              std::vector<double> &outputCoefficients) const
+void recursive_linear_filter::LowShelf::SetParams(const recursive_linear_filter::BiquadParams &params)
 {
-  const double a = pow(10.0, this->mGainDB / 40.0);
-  const double omega_0 = 2.0 * MATH_PI * this->mFrequency / this->mSampleRate;
-  const double alpha = sin(omega_0) / (2.0 * this->mQuality);
-  const double cosw = cos(omega_0);
+  const double a = params.GetA();
+  const double omega_0 = params.GetOmega0();
+  const double alpha = params.GetAlpha(omega_0);
+  const double cosw = params.GetCosW(omega_0);
   
   const double ap = a + 1.0;
   const double am = a - 1.0;
@@ -125,22 +117,15 @@ void recursive_linear_filter::LowShelfParams::SetCoefficients(std::vector<double
   const double a1 = -2.0 * (am + ap * cosw);
   const double a2 = ap + am * cosw - roota2alpha;
   
-  inputCoefficients[0] = b0 / a0;
-  inputCoefficients[1] = b1 / a0;
-  inputCoefficients[2] = b2 / a0;
-  // outputCoefficients[0] = 0.0;  // Always
-  // Sign flip due so we add during main loop (cf Eq. (4))
-  outputCoefficients[1] = -a1 / a0;
-  outputCoefficients[2] = -a2 / a0;
+  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
 }
 
-void recursive_linear_filter::PeakingParams::SetCoefficients(std::vector<double> &inputCoefficients,
-                                                             std::vector<double> &outputCoefficients) const
+void recursive_linear_filter::Peaking::SetParams(const recursive_linear_filter::BiquadParams &params)
 {
-  const double a = pow(10.0, this->mGainDB / 40.0);
-  const double omega_0 = 2.0 * MATH_PI * this->mFrequency / this->mSampleRate;
-  const double alpha = sin(omega_0) / (2.0 * this->mQuality);
-  const double cosw = cos(omega_0);
+  const double a = params.GetA();
+  const double omega_0 = params.GetOmega0();
+  const double alpha = params.GetAlpha(omega_0);
+  const double cosw = params.GetCosW(omega_0);
   
   const double b0 = 1.0 + alpha * a;
   const double b1 = -2.0 * cosw;
@@ -149,24 +134,17 @@ void recursive_linear_filter::PeakingParams::SetCoefficients(std::vector<double>
   const double a1 = -2.0 * cosw;
   const double a2 = 1.0 - alpha / a;
   
-  inputCoefficients[0] = b0 / a0;
-  inputCoefficients[1] = b1 / a0;
-  inputCoefficients[2] = b2 / a0;
-  // outputCoefficients[0] = 0.0;  // Always
-  // Sign flip due so we add during main loop (cf Eq. (4))
-  outputCoefficients[1] = -a1 / a0;
-  outputCoefficients[2] = -a2 / a0;
+  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
 }
 
-void recursive_linear_filter::HighShelfParams::SetCoefficients(std::vector<double> &inputCoefficients,
-                                                               std::vector<double> &outputCoefficients) const
+void recursive_linear_filter::HighShelf::SetParams(const recursive_linear_filter::BiquadParams &params)
 {
-  const double a = pow(10.0, this->mGainDB / 40.0);
-  const double omega_0 = 2.0 * MATH_PI * this->mFrequency / this->mSampleRate;
-  const double alpha = sin(omega_0) / (2.0 * this->mQuality);
-  const double cosw = cos(omega_0);
-  const double roota2alpha = 2.0 * sqrt(a) * alpha;
+  const double a = params.GetA();
+  const double omega_0 = params.GetOmega0();
+  const double alpha = params.GetAlpha(omega_0);
+  const double cosw = params.GetCosW(omega_0);
   
+  const double roota2alpha = 2.0 * sqrt(a) * alpha;
   const double ap = a + 1.0;
   const double am = a - 1.0;
   
@@ -177,12 +155,5 @@ void recursive_linear_filter::HighShelfParams::SetCoefficients(std::vector<doubl
   const double a1 = 2.0 * (am - ap * cosw);
   const double a2 = ap - am * cosw - roota2alpha;
   
-  
-  inputCoefficients[0] = b0 / a0;
-  inputCoefficients[1] = b1 / a0;
-  inputCoefficients[2] = b2 / a0;
-  // outputCoefficients[0] = 0.0;  // Always
-  // Sign flip due so we add during main loop (cf Eq. (4))
-  outputCoefficients[1] = -a1 / a0;
-  outputCoefficients[2] = -a2 / a0;
+  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
 }

@@ -18,8 +18,8 @@ DSP::DSP()
 { this->_stale_params = true; }
 
 void DSP::process(
-  sample** inputs,
-  sample** outputs,
+  iplug::sample** inputs,
+  iplug::sample** outputs,
   const int num_channels,
   const int num_frames,
   const double input_gain,
@@ -52,7 +52,7 @@ void DSP::_get_params_(const std::unordered_map<std::string, double>& input_para
   }
 }
 
-void DSP::_apply_input_level_(sample** inputs, const int num_channels, const int num_frames, const double gain)
+void DSP::_apply_input_level_(iplug::sample** inputs, const int num_channels, const int num_frames, const double gain)
 {
   // Must match exactly; we're going to use the size of _input_post_gain later for num_frames.
   if (this->_input_post_gain.size() != num_frames)
@@ -76,7 +76,7 @@ void DSP::_process_core_()
     this->_core_dsp_output[i] = this->_input_post_gain[i];
 }
 
-void DSP::_apply_output_level_(sample** outputs, const int num_channels, const int num_frames, const double gain)
+void DSP::_apply_output_level_(iplug::sample** outputs, const int num_channels, const int num_frames, const double gain)
 {
   for (int c = 0; c < num_channels; c++)
     for (int s = 0; s < num_frames; s++)
@@ -566,4 +566,49 @@ void convnet::ConvNet::_reset_anti_pop_()
   for (int i = 0; i < this->_blocks.size(); i++)
     receptive_field += this->_blocks[i].conv.get_dilation();
   this->_anti_pop_countdown = -receptive_field;
+}
+
+// ============================================================================
+// Implementation of Version 2 interface
+
+dsp::DSP::DSP() :
+mOutputPointers(nullptr),
+mOutputPointersSize(0)
+{}
+
+dsp::DSP::~DSP()
+{
+  if (this->mOutputPointers != nullptr)
+    delete[] this->mOutputPointers;
+};
+
+iplug::sample** dsp::DSP::_GetPointers()
+{
+  for (auto c=0; c<this->_GetNumChannels(); c++)
+    this->mOutputPointers[c] = this->mOutputs[c].data();
+  return this->mOutputPointers;
+}
+
+
+void dsp::DSP::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
+{
+  if (this->_GetNumChannels() != numChannels) {
+    this->mOutputs.resize(numChannels);
+    for (auto c=0; c<numChannels; c++) {
+      this->mOutputs[c].resize(numFrames);
+    }
+    this->_ResizePointers(numChannels);
+  }
+}
+
+void dsp::DSP::_ResizePointers(const size_t numChannels)
+{
+  if (this->mOutputPointersSize == numChannels)
+    return;
+  if (this->mOutputPointers != nullptr)
+    delete[] this->mOutputPointers;
+  this->mOutputPointers = new iplug::sample*[numChannels];
+  if (this->mOutputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+  this->mOutputPointersSize = numChannels;
 }
