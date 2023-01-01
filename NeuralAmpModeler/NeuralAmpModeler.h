@@ -61,6 +61,10 @@ private:
   void _GetDSP(const WDL_String& dspPath);
   // Gets the IR and stores to mStagedIR
   void _GetIR(const WDL_String& irFileName);
+  // Moves DSP modules from staging area to the main area.
+  // Exists so that we don't try to use a DSP module that's only
+  // partially-instantiated.
+  void _GraduateStagedDSPs();
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const {
@@ -74,6 +78,8 @@ private:
   void _ProcessInput(iplug::sample** inputs, const int nFrames);
   // Copy the output to the output buffer, applying output level.
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const int nFrames);
+  // Update the text in the IR area to say what's loaded.
+  void _SetIRMsg(const WDL_String& modelPath);
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.

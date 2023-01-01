@@ -10,37 +10,31 @@
 #define ImpulseResponse_hpp
 
 #include <filesystem>
+
+#include <Eigen/Dense>
+
+#include "wdlstring.h"  // WDL_String
 #include "IPlugConstants.h"  // sample
 #include "dsp.h"
 
 namespace dsp {
-  class ImpulseResponseParams : public Params {
-    std::filesystem::path GetFilePath() const {return this->mFilePath;};
-    double GetSampleRate() const {return this->mSampleRate;};
-  private:
-    std::filesystem::path mFilePath;
-    // Sample rate of the plugin
-    double mSampleRate;
-  };
-  
-  class ImpulseResponse : public DSP {
+  class ImpulseResponse : public History {
   public:
+    ImpulseResponse(const WDL_String& fileName, const double sampleRate);
     iplug::sample** Process(iplug::sample** inputs,
                             const size_t numChannels,
                             const size_t numFrames) override;
-    void SetParams(const ImpulseResponseParams &params);
   private:
-    bool _HaveIR() const {return false;};  // TODO
-    void _FallbackProcess(iplug::sample** inputs,
-                          const size_t numChannels,
-                          const size_t numFrames);
-    void _PrepareBuffers(const size_t numChannels, const size_t numFrames) override;
-    void _Process(iplug::sample** inputs,
-                  const size_t numChannels,
-                  const size_t numFrames);
+    // Set the weights, given that the plugin is running at the provided sample rate.
+    void _SetWeights(const double sampleRate);
+    
     // Keep a copy of the raw audio that was loaded so that it can be resampled
-    std::vector<double> mRawAudio;
+    std::vector<float> mRawAudio;
     double mRawAudioSampleRate;
+    
+    const size_t mMaxLength = 8192;
+    // The weights
+    Eigen::VectorXf mWeight;
   };
 };
 

@@ -612,3 +612,49 @@ void dsp::DSP::_ResizePointers(const size_t numChannels)
     throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
   this->mOutputPointersSize = numChannels;
 }
+
+dsp::History::History() :
+DSP(),
+mHistoryRequired(0),
+mHistoryIndex(0)
+{
+}
+
+void dsp::History::_AdvanceHistoryIndex(const size_t bufferSize)
+{
+  this->mHistoryIndex += bufferSize;
+}
+
+void dsp::History::_EnsureHistorySize(const size_t bufferSize)
+{
+  const size_t repeatSize = std::max(bufferSize, this->mHistoryRequired);
+  const size_t requiredHistoryArraySize = 10 * repeatSize;  // Just so we don't spend too much time copying back.
+  if (this->mHistory.size() < requiredHistoryArraySize) {
+    this->mHistory.resize(requiredHistoryArraySize);
+    std::fill(this->mHistory.begin(), this->mHistory.end(), 0.0f);
+    this->mHistoryIndex = this->mHistoryRequired;  // Guaranteed to be less than requiredHistoryArraySize
+  }
+}
+
+void dsp::History::_RewindHistory()
+{
+  // TODO memcpy?  Should be fine w/ history array being >2x the history length.
+  for (size_t i=0, j=this->mHistoryIndex - this->mHistoryRequired; i<this->mHistoryRequired; i++, j++)
+    this->mHistory[i] = this->mHistory[j];
+  this->mHistoryIndex = this->mHistoryRequired;
+}
+
+void dsp::History::_UpdateHistory(iplug::sample **inputs,
+                                  const size_t numChannels,
+                                  const size_t numFrames)
+{
+  this->_EnsureHistorySize(numFrames);
+  if (numChannels < 1)
+    throw std::runtime_error("Zero channels?");
+  if (this->mHistoryIndex + numFrames >= this->mHistory.size())
+    this->_RewindHistory();
+  // Grabs channel 1, drops hannel 2.
+  for (size_t i=0, j=this->mHistoryIndex; i<numFrames; i++, j++)
+    // Convert down to float here.
+    this->mHistory[j] = (float) inputs[0][i];
+}

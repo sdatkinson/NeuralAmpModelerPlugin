@@ -257,12 +257,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const int nChans = this->NOutChansConnected();
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
-  if (mStagedDSP != nullptr)
-  {
-    // Move from staged to active DSP
-    mDSP = std::move(mStagedDSP);
-    mStagedDSP = nullptr;
-  }
+  this->_GraduateStagedDSPs();
 
   if (mDSP != nullptr)
   {
@@ -308,8 +303,12 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
   sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
   
+  sample** irPointers = treblePointers;
+  if (this->mIR != nullptr)
+    irPointers = this->mIR->Process(treblePointers, numChannels, numFrames);
+  
   // Let's get outta here
-  this->_ProcessOutput(treblePointers, outputs, nFrames);
+  this->_ProcessOutput(irPointers, outputs, nFrames);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
   this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
@@ -319,6 +318,7 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
   chunk.PutStr(mModelPath.Get());
+  chunk.PutStr(this->mIRFileName.Get());
   return SerializeParams(chunk);
 }
 
@@ -326,10 +326,14 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
   WDL_String dir;
   startPos = chunk.GetStr(mModelPath, startPos);
-  mDSP = nullptr;
+  startPos = chunk.GetStr(this->mIRFileName, startPos);
+  this->mDSP = nullptr;
+  this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
   if (this->mModelPath.GetLength())
     this->_GetDSP(this->mModelPath);
+  if (this->mIRFileName.GetLength())
+    this->_GetIR(this->mIRFileName);
   return retcode;
 }
 
@@ -338,6 +342,8 @@ void NeuralAmpModeler::OnUIOpen()
   Plugin::OnUIOpen();
   if (this->mModelPath.GetLength())
     this->_SetModelMsg(this->mModelPath);
+  if (this->mIRFileName.GetLength())
+    this->_SetIRMsg(this->mIRFileName);
 }
 
 // Private methods ============================================================
@@ -374,8 +380,24 @@ void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
 
 void NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
 {
-  this->mIRFileName = irFileName;
-  // TODO
+  WDL_String previousIRFileName;
+  try {
+    previousIRFileName = this->mIRFileName;
+    const double sampleRate = this->GetSampleRate();
+    this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(irFileName, sampleRate);
+    this->_SetIRMsg(irFileName);
+  }
+  catch (std::exception& e) {
+    std::stringstream ss;
+    ss << "FAILED to load IR";
+    SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    if (this->mStagedIR != nullptr) {
+      this->mStagedIR = nullptr;
+    }
+    this->mIRFileName = previousIRFileName;
+    std::cerr << "Failed to read IR" << std::endl;
+    std::cerr << e.what() << std::endl;
+  }
 }
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const
@@ -388,6 +410,20 @@ size_t NeuralAmpModeler::_GetBufferNumFrames() const
   if (this->_GetBufferNumChannels() == 0)
     return 0;
   return this->mInputArray[0].size();
+}
+
+void NeuralAmpModeler::_GraduateStagedDSPs()
+{
+  if (this->mStagedDSP != nullptr)
+  {
+    // Move from staged to active DSP
+    this->mDSP = std::move(this->mStagedDSP);
+    this->mStagedDSP = nullptr;
+  }
+  if (this->mStagedIR != nullptr) {
+    this->mIR = std::move(this->mStagedIR);
+    this->mStagedIR = nullptr;
+  }
 }
 
 void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
@@ -457,6 +493,15 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
     std::stringstream ss;
     ss << "Loaded " << dspPath.parent_path().filename();
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+}
+
+void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
+{
+  this->mIRFileName = irFileName;
+  auto dspPath = std::filesystem::path(irFileName.Get());
+  std::stringstream ss;
+  ss << "Loaded " << dspPath.filename();
+  SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)

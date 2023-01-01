@@ -415,6 +415,18 @@
 		AAD9F858295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F84D295F75F6009DBBA2 /* ImpulseResponse.cpp */; };
 		AAD9F859295F75F6009DBBA2 /* ImpulseResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F84E295F75F6009DBBA2 /* ImpulseResponse.h */; };
 		AAD9F85A295F75F6009DBBA2 /* ImpulseResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F84E295F75F6009DBBA2 /* ImpulseResponse.h */; };
+		AAD9F85F2960D0C6009DBBA2 /* wav.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F85E2960D0C6009DBBA2 /* wav.h */; };
+		AAD9F8602960D0C6009DBBA2 /* wav.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F85E2960D0C6009DBBA2 /* wav.h */; };
+		AAD9F8622960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8632960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8642960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8652960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8662960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8672960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8682960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8692960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F86A2960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F86B2960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -970,6 +982,8 @@
 		AAD9F845295E6CB7009DBBA2 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecursiveLinearFilter.h; sourceTree = "<group>"; };
 		AAD9F84D295F75F6009DBBA2 /* ImpulseResponse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImpulseResponse.cpp; sourceTree = "<group>"; };
 		AAD9F84E295F75F6009DBBA2 /* ImpulseResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImpulseResponse.h; sourceTree = "<group>"; };
+		AAD9F85E2960D0C6009DBBA2 /* wav.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
+		AAD9F8612960D4BA009DBBA2 /* wav.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wav.cpp; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1271,6 +1285,8 @@
 				4F3EF8AC28DE03ED002972F2 /* util.cpp */,
 				4F3EF8B028DE03ED002972F2 /* wavenet.h */,
 				4F3EF8B628DE03ED002972F2 /* wavenet.cpp */,
+				AAD9F85E2960D0C6009DBBA2 /* wav.h */,
+				AAD9F8612960D4BA009DBBA2 /* wav.cpp */,
 			);
 			name = dsp;
 			path = ../dsp;
@@ -1904,6 +1920,7 @@
 				4F3EF8E228DE03ED002972F2 /* dsp.h in Headers */,
 				4F3EF8F628DE03ED002972F2 /* numpy_util.h in Headers */,
 				4F78BE1222E73DD900AD537E /* NeuralAmpModelerAU.h in Headers */,
+				AAD9F8602960D0C6009DBBA2 /* wav.h in Headers */,
 				4F4856852773C3B5005BCF8E /* IPlugAUViewController.h in Headers */,
 				4F3EF8E128DE03ED002972F2 /* util.h in Headers */,
 				4F3EF8EC28DE03ED002972F2 /* activations.h in Headers */,
@@ -1919,6 +1936,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAD9F85F2960D0C6009DBBA2 /* wav.h in Headers */,
 				AA355E2D295B688F0061AA3D /* Colors.h in Headers */,
 				4FC3EFF02086CE5700BD11FA /* eventlist.h in Headers */,
 				4FC3EFF42086CE5700BD11FA /* module.h in Headers */,
@@ -2499,6 +2517,7 @@
 				AAD9F83C295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */,
 				4F3EF8D928DE03ED002972F2 /* lstm.cpp in Sources */,
 				4F3EF8E428DE03ED002972F2 /* numpy_util.cpp in Sources */,
+				AAD9F8632960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F5F344220C0226200487201 /* IPlugPaths.mm in Sources */,
 				4F3EF8C528DE03ED002972F2 /* dsp.cpp in Sources */,
 				4F6369EC20A466470022C370 /* IControl.cpp in Sources */,
@@ -2535,6 +2554,7 @@
 				4F3EF8C128DE03ED002972F2 /* util.cpp in Sources */,
 				4F3EF8E928DE03ED002972F2 /* numpy_util.cpp in Sources */,
 				4F3EF8F328DE03ED002972F2 /* wavenet.cpp in Sources */,
+				AAD9F8682960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F3EF8DE28DE03ED002972F2 /* lstm.cpp in Sources */,
 				4F3EF8D428DE03ED002972F2 /* cnpy.cpp in Sources */,
 			);
@@ -2556,6 +2576,7 @@
 				4F993F7423055C96000313AF /* IPlugProcessor.cpp in Sources */,
 				4F8C10E320BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
 				AAD9F852295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
+				AAD9F8652960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F3EF8D128DE03ED002972F2 /* cnpy.cpp in Sources */,
 				4F3EF8F028DE03ED002972F2 /* wavenet.cpp in Sources */,
 				4F6FD2B422675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
@@ -2610,6 +2631,7 @@
 				AAD9F844295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */,
 				4F3EF8C328DE03ED002972F2 /* util.cpp in Sources */,
 				4F3EE1D9231438D000004786 /* RtAudio.cpp in Sources */,
+				AAD9F86B2960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F3EE1DA231438D000004786 /* IGraphicsCoreText.mm in Sources */,
 				AAD9F858295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
 				4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */,
@@ -2633,6 +2655,7 @@
 				4F7C496A255DDFCB00DF7588 /* IControls.cpp in Sources */,
 				4F3EF8CB28DE03ED002972F2 /* dsp.cpp in Sources */,
 				4F78BE1422E7406D00AD537E /* NeuralAmpModeler.h in Sources */,
+				AAD9F86A2960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F0D965C23099F6900BFDED0 /* IPlugProcessor.cpp in Sources */,
 				4F78BE1522E7406D00AD537E /* NeuralAmpModeler.cpp in Sources */,
 				4F3EF8F428DE03ED002972F2 /* wavenet.cpp in Sources */,
@@ -2714,6 +2737,7 @@
 				4F81598D205D51F000393585 /* vstaudioeffect.cpp in Sources */,
 				4F81598C205D51CF00393585 /* vstsinglecomponenteffect.cpp in Sources */,
 				4F815984205D50EB00393585 /* updatehandler.cpp in Sources */,
+				AAD9F8642960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F815990205D51F000393585 /* vstcomponent.cpp in Sources */,
 				4F815981205D50EB00393585 /* fstreamer.cpp in Sources */,
 				4F815996205D51F000393585 /* vstrepresentation.cpp in Sources */,
@@ -2735,6 +2759,7 @@
 				4F7C4961255DDFC600DF7588 /* IControls.cpp in Sources */,
 				4F3EF8C828DE03ED002972F2 /* dsp.cpp in Sources */,
 				4F993F7523055C97000313AF /* IPlugProcessor.cpp in Sources */,
+				AAD9F8662960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4FDAC0EE207D76C600299363 /* IPlugTimer.cpp in Sources */,
 				4F8C10E420BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
 				4F3EF8F128DE03ED002972F2 /* wavenet.cpp in Sources */,
@@ -2781,6 +2806,7 @@
 				4FC3EFF92086CE5700BD11FA /* parameterchanges.cpp in Sources */,
 				4FC3EFCE2086C35D00BD11FA /* IPlugPluginBase.cpp in Sources */,
 				4F7C4965255DDFC800DF7588 /* IPopupMenuControl.cpp in Sources */,
+				AAD9F8692960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F722021225C1EB100FF0E7C /* commoniids.cpp in Sources */,
 				4FB1F59620E4B017004157C8 /* IGraphicsMac_view.mm in Sources */,
 				4F472103209B294400A0A0A8 /* IPlugVST3_Controller.cpp in Sources */,
@@ -2823,6 +2849,7 @@
 				AAD9F83B295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */,
 				4F3EF8BB28DE03ED002972F2 /* util.cpp in Sources */,
 				4FAFFE5821495A4800A6E72D /* RtAudio.cpp in Sources */,
+				AAD9F8622960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F6FD2B122675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
 				AAD9F84F295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
 				4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */,
@@ -2849,6 +2876,7 @@
 				4FFBB90820863B0E00DDD0E7 /* pluginfactory.cpp in Sources */,
 				4FFBB90920863B0E00DDD0E7 /* vstinitiids.cpp in Sources */,
 				4FFBB90A20863B0E00DDD0E7 /* fdebug.cpp in Sources */,
+				AAD9F8672960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4FFBB90C20863B0E00DDD0E7 /* IPlugAPIBase.cpp in Sources */,
 				B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */,
 				4FFBB90D20863B0E00DDD0E7 /* fdynlib.cpp in Sources */,

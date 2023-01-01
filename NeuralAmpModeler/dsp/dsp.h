@@ -420,6 +420,41 @@ namespace dsp {
     iplug::sample** mOutputPointers;
     size_t mOutputPointersSize;
   };
+  
+  // A class where a longer buffer of history is needed to correctly calculate
+  // the DSP algorithm (e.g. algorithms involving convolution).
+  //
+  // Hacky stuff:
+  // * Mono
+  // * Single-precision floats.
+  class History : public DSP {
+  public:
+    History();
+  protected:
+    // Called at the end of the DSP, advance the hsitory index to the next open
+    // spot.  Does not ensure that it's at a valid address.
+    void _AdvanceHistoryIndex(const size_t bufferSize);
+    // Drop the new samples into the history array.
+    // Manages history array size
+    void _UpdateHistory(iplug::sample** inputs,
+                        const size_t numChannels,
+                        const size_t numFrames);
+    
+    // The history array that's used for DSP calculations.
+    std::vector<float> mHistory;
+    // How many samples previous are required.
+    // Zero means that no history is required--only the current sample.
+    size_t mHistoryRequired;
+    // Location of the first sample in the current buffer.
+    // Shall always be in the range [mHistoryRequired, mHistory.size()).
+    size_t mHistoryIndex;
+    
+  private:
+    // Make sure that the history array is long enough.
+    void _EnsureHistorySize(const size_t bufferSize);
+    // Copy the end of the history back to the fron and reset mHistoryIndex
+    void _RewindHistory();
+  };
 };
 
 #endif  // IPLUG_DSP
