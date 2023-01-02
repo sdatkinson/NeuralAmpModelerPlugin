@@ -303,6 +303,7 @@
     <ClInclude Include="..\dsp\util.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Colors.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
