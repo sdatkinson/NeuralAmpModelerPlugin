@@ -70,7 +70,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mToneTreble(),
   mIR(),
   mIRFileName(),
-  mIRPath()
+  mIRPath(),
+  mFlagRemoveDSP(false),
+  mFlagRemoveIR(false),
+  mDefaultModelString("Select model..."),
+  mDefaultIRString("Select IR...")
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -182,14 +186,26 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       }
     };
     
+    // Model-clearing function
+    auto ClearModel = [&, pGraphics](IControl* pCaller) {
+      this->mFlagRemoveDSP = true;
+    };
+    // IR-clearing function
+    auto ClearIR = [&, pGraphics](IControl* pCaller) {
+      this->mFlagRemoveIR = true;
+    };
+    
     // Graphics objects for what model is loaded
+    const float iconWidth = 30.0f;
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(30).GetPadded(-2.f), loadModel, folderSVG));
-    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadModel, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, folderSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultModelString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     // IR
     pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(30).GetPadded(-2.f), getIRPath, folderSVG));
-    pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(30), "Select IR...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, folderSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
@@ -257,7 +273,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const int nChans = this->NOutChansConnected();
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
-  this->_GraduateStagedDSPs();
+  this->_ApplyDSPStaging();
 
   if (mDSP != nullptr)
   {
@@ -348,6 +364,32 @@ void NeuralAmpModeler::OnUIOpen()
 
 // Private methods ============================================================
 
+void NeuralAmpModeler::_ApplyDSPStaging()
+{
+  // Move things from staged to live
+  if (this->mStagedDSP != nullptr)
+  {
+    // Move from staged to active DSP
+    this->mDSP = std::move(this->mStagedDSP);
+    this->mStagedDSP = nullptr;
+  }
+  if (this->mStagedIR != nullptr) {
+    this->mIR = std::move(this->mStagedIR);
+    this->mStagedIR = nullptr;
+  }
+  // Remove marked modules
+  if (this->mFlagRemoveDSP) {
+    this->mDSP = nullptr;
+    this->_UnsetModelMsg();
+    this->mFlagRemoveDSP = false;
+  }
+  if (this->mFlagRemoveIR) {
+    this->mIR = nullptr;
+    this->_UnsetIRMsg();
+    this->mFlagRemoveIR = false;
+  }
+}
+
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)
 {
   const int nChans = this->NOutChansConnected();
@@ -410,20 +452,6 @@ size_t NeuralAmpModeler::_GetBufferNumFrames() const
   if (this->_GetBufferNumChannels() == 0)
     return 0;
   return this->mInputArray[0].size();
-}
-
-void NeuralAmpModeler::_GraduateStagedDSPs()
-{
-  if (this->mStagedDSP != nullptr)
-  {
-    // Move from staged to active DSP
-    this->mDSP = std::move(this->mStagedDSP);
-    this->mStagedDSP = nullptr;
-  }
-  if (this->mStagedIR != nullptr) {
-    this->mIR = std::move(this->mStagedIR);
-    this->mStagedIR = nullptr;
-  }
 }
 
 void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
@@ -502,6 +530,21 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
   std::stringstream ss;
   ss << "Loaded " << dspPath.filename();
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+}
+
+void NeuralAmpModeler::_UnsetModelMsg()
+{
+  this->_UnsetMsg(kCtrlTagModelName, this->mDefaultModelString);
+}
+
+void NeuralAmpModeler::_UnsetIRMsg()
+{
+  this->_UnsetMsg(kCtrlTagIRName, this->mDefaultIRString);
+}
+
+void NeuralAmpModeler::_UnsetMsg(const int tag, const WDL_String &msg)
+{
+  SendControlMsgFromDelegate(tag, 0, int(strlen(msg.Get())), msg.Get());
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)
