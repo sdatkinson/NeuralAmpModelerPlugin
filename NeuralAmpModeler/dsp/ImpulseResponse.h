@@ -31,6 +31,8 @@ namespace dsp {
     // Keep a copy of the raw audio that was loaded so that it can be resampled
     std::vector<float> mRawAudio;
     double mRawAudioSampleRate;
+    // Resampled to the required sample rate.
+    std::vector<float> mResampled;
     
     const size_t mMaxLength = 8192;
     // The weights

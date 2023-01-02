@@ -427,6 +427,8 @@
 		AAD9F8692960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
 		AAD9F86A2960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
 		AAD9F86B2960D4BA009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F8612960D4BA009DBBA2 /* wav.cpp */; };
+		AAD9F8702963777E009DBBA2 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F86F2963777E009DBBA2 /* Resample.h */; };
+		AAD9F8712963777E009DBBA2 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F86F2963777E009DBBA2 /* Resample.h */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -984,6 +986,7 @@
 		AAD9F84E295F75F6009DBBA2 /* ImpulseResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImpulseResponse.h; sourceTree = "<group>"; };
 		AAD9F85E2960D0C6009DBBA2 /* wav.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
 		AAD9F8612960D4BA009DBBA2 /* wav.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wav.cpp; sourceTree = "<group>"; };
+		AAD9F86F2963777E009DBBA2 /* Resample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Resample.h; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1281,6 +1284,7 @@
 				4F3EF8B428DE03ED002972F2 /* numpy_util.cpp */,
 				AAD9F845295E6CB7009DBBA2 /* RecursiveLinearFilter.h */,
 				AAD9F83A295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp */,
+				AAD9F86F2963777E009DBBA2 /* Resample.h */,
 				4F3EF8B228DE03ED002972F2 /* util.h */,
 				4F3EF8AC28DE03ED002972F2 /* util.cpp */,
 				4F3EF8B028DE03ED002972F2 /* wavenet.h */,
@@ -1927,6 +1931,7 @@
 				AAD9F85A295F75F6009DBBA2 /* ImpulseResponse.h in Headers */,
 				4F3EF8D728DE03ED002972F2 /* wavenet.h in Headers */,
 				AA355E2E295B688F0061AA3D /* Colors.h in Headers */,
+				AAD9F8712963777E009DBBA2 /* Resample.h in Headers */,
 				AAD9F847295E6CB7009DBBA2 /* RecursiveLinearFilter.h in Headers */,
 				4F3EF90028DE03ED002972F2 /* cnpy.h in Headers */,
 			);
@@ -1941,6 +1946,7 @@
 				4FC3EFF02086CE5700BD11FA /* eventlist.h in Headers */,
 				4FC3EFF42086CE5700BD11FA /* module.h in Headers */,
 				4F03A58C20A4621100EBDFFB /* IGraphicsNanoVG.h in Headers */,
+				AAD9F8702963777E009DBBA2 /* Resample.h in Headers */,
 				4F03A5D320A4621100EBDFFB /* IGraphicsStructs.h in Headers */,
 				4FC3EFF82086CE5700BD11FA /* optional.h in Headers */,
 				4FC3F0012086CE5700BD11FA /* uid.h in Headers */,

@@ -75,6 +75,7 @@
 		AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */; };
 		AAD9F85D295F762B009DBBA2 /* ImpulseResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */; };
 		AAD9F86E2960D4D0009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F86C2960D4D0009DBBA2 /* wav.cpp */; };
+		AAD9F873296377A6009DBBA2 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F872296377A6009DBBA2 /* Resample.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -323,6 +324,7 @@
 		AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImpulseResponse.cpp; sourceTree = "<group>"; };
 		AAD9F86C2960D4D0009DBBA2 /* wav.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wav.cpp; sourceTree = "<group>"; };
 		AAD9F86D2960D4D0009DBBA2 /* wav.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
+		AAD9F872296377A6009DBBA2 /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resample.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -379,6 +381,7 @@
 				4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */,
 				AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */,
 				AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */,
+				AAD9F872296377A6009DBBA2 /* Resample.h */,
 				4F3EF90D28DE0BA7002972F2 /* util.h */,
 				4F3EF90728DE0BA7002972F2 /* util.cpp */,
 				4F3EF90B28DE0BA7002972F2 /* wavenet.h */,
@@ -742,6 +745,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F3EF91828DE0BA7002972F2 /* lstm.h in Headers */,
+				AAD9F873296377A6009DBBA2 /* Resample.h in Headers */,
 				4F4856882773C41E005BCF8E /* IPlugAUAudioUnit.h in Headers */,
 				4F3EF91D28DE0BA7002972F2 /* dsp.h in Headers */,
 				4F3EF92128DE0BA7002972F2 /* numpy_util.h in Headers */,
