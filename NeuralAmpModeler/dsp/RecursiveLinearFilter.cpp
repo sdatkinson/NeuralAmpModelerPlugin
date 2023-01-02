@@ -7,6 +7,7 @@
 // See: https://webaudio.github.io/Audio-EQ-Cookbook/audio-eq-cookbook.html
 
 #include <algorithm>  // std::fill
+#include <stdexcept>
 
 #include "RecursiveLinearFilter.h"
 

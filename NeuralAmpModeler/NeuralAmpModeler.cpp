@@ -516,11 +516,11 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **ou
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
-    auto dspPath = std::filesystem::path(modelPath.Get());
-    mModelPath = modelPath;
-    std::stringstream ss;
-    ss << "Loaded " << dspPath.parent_path().filename();
-    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+  auto dspPath = std::filesystem::path(modelPath.Get());
+  mModelPath = modelPath;
+  std::stringstream ss;
+  ss << "Loaded " << dspPath.parent_path().filename();
+  SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
 void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
