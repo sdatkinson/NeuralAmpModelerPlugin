@@ -100,6 +100,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->EnableMouseOver(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto folderSVG = pGraphics->LoadSVG(FOLDER_FN);
+    auto closeButtonSVG = folderSVG;  // pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
@@ -199,12 +200,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float iconWidth = fileHeight;  // Square icon
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadModel, folderSVG));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultModelString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     // IR
     pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs

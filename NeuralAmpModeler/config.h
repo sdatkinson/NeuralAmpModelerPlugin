@@ -57,5 +57,6 @@
 #define ROBOTO_FN "Roboto-Regular.ttf"
 #define HELP_FN "help.svg"
 #define FOLDER_FN "folder.svg"
+#define CLOSE_BUTTON_FN "close-button.svg"
 #define TOLEX_FN "tolex.jpeg"
 #define TOLEX2X_FN "tolex@2x.jpeg"
