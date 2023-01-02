@@ -241,6 +241,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   if (mDSP != nullptr)
   {
     // TODO remove input / output gains from here.
+    const int nChans = this->NOutChansConnected();
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     mDSP->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mDSPParams);
