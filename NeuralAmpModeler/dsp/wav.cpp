@@ -12,8 +12,31 @@
 
 #include "wav.h"
 
+bool idIsJunk(char* id)
+{
+  return (strncmp(id, "junk", 4) == 0) || (strncmp(id, "JUNK", 4) == 0);
+}
+
+void ReadChunkAndSkipJunk(std::ifstream& file, char* chunkID)
+{
+  file.read(chunkID, 4);
+  if (idIsJunk(chunkID)) {
+    int junkSize;
+    file.read(reinterpret_cast<char*>(&junkSize), 4);
+    file.ignore(junkSize);
+    // Unused byte if junkSize is odd
+    if ((junkSize % 2) == 1)
+      file.ignore(1);
+    // And now we should be ready for data...
+    file.read(chunkID, 4);
+  }
+  if (idIsJunk(chunkID))
+    throw std::runtime_error("Found more than 1 junk chunk");
+}
+
 int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double &sampleRate)
 {
+  // FYI: https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
   // Open the WAV file for reading
   std::ifstream wavFile(fileName.Get(), std::ios::binary);
   
@@ -26,7 +49,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   // WAV file has 3 "chunks": RIFF ("RIFF"), format ("fmt ") and data ("data").
   // Read the WAV file header
   char chunkId[4];
-  wavFile.read(chunkId, 4);
+  ReadChunkAndSkipJunk(wavFile, chunkId);
   if (strncmp(chunkId, "RIFF", 4) != 0) {
     std::cerr << "Error: Not a WAV file" << std::endl;
     return dsp::wav::RET_ERROR_NOT_WAV;
@@ -44,7 +67,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   
   // Read the format chunk
   char subchunk1Id[4];
-  wavFile.read(subchunk1Id, 4);
+  ReadChunkAndSkipJunk(wavFile, subchunk1Id);
   if (strncmp(subchunk1Id, "fmt ", 4) != 0) {
     std::cerr << "Error: Invalid WAV file" << std::endl;
     return dsp::wav::RET_ERROR_INVALID_WAV;
@@ -53,7 +76,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   int subchunk1Size;
   wavFile.read(reinterpret_cast<char*>(&subchunk1Size), 4);
   
-  short audioFormat;
+  unsigned short audioFormat;
   wavFile.read(reinterpret_cast<char*>(&audioFormat), 2);
   if (audioFormat != 1) {
     std::cerr << "Error: Only PCM format is supported" << std::endl;
@@ -84,7 +107,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   
   // Read the data chunk
   char subchunk2Id[4];
-  wavFile.read(subchunk2Id, 4);
+  ReadChunkAndSkipJunk(wavFile, subchunk2Id);
   if (strncmp(subchunk2Id, "data", 4) != 0) {
     std::cerr << "Error: Invalid WAV file" << std::endl;
     return dsp::wav::RET_ERROR_INVALID_WAV;
