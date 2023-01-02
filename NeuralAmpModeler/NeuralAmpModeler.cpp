@@ -196,7 +196,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     };
     
     // Graphics objects for what model is loaded
-    const float iconWidth = 30.0f;
+    const float iconWidth = fileHeight;  // Square icon
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadModel, folderSVG));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, folderSVG));
