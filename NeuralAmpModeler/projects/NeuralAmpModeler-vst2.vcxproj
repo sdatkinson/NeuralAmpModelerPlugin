@@ -303,6 +303,7 @@
     <ClInclude Include="..\dsp\lstm.h" />
     <ClInclude Include="..\dsp\numpy_util.h" />
     <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
+    <ClInclude Include="..\dsp\Resample.h" />
     <ClInclude Include="..\dsp\util.h" />
     <ClInclude Include="..\dsp\wav.h" />
     <ClInclude Include="..\dsp\wavenet.h" />

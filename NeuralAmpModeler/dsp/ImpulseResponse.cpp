@@ -14,7 +14,11 @@ dsp::ImpulseResponse::ImpulseResponse(const WDL_String& fileName,
                                       const double sampleRate)
 {
   // Try to load the WAV
-  dsp::wav::Load(fileName, this->mRawAudio, this->mRawAudioSampleRate);
+    if (dsp::wav::Load(fileName, this->mRawAudio, this->mRawAudioSampleRate) != dsp::wav::RET_SUCCESS) {
+        std::stringstream ss;
+        ss << "Failed to load IR at " << fileName.Get() << std::endl;
+        throw std::runtime_error(ss.str());
+    }
   // Set the weights based on the raw audio.
   this->_SetWeights(sampleRate);
 }
@@ -52,7 +56,7 @@ void dsp::ImpulseResponse::_SetWeights(const double sampleRate)
     padded[0] = 0.0f;
     padded[padded.size()-1] = 0.0f;
     memcpy(padded.data() + 1, this->mRawAudio.data(), this->mRawAudio.size());
-    dsp::ResampleCubic(padded, this->mResampled, this->mRawAudioSampleRate, sampleRate, 0.0);
+    dsp::ResampleCubic<float>(padded, this->mRawAudioSampleRate, sampleRate, 0.0, this->mResampled);
   }
   // Simple implementation w/ no resample...
   const size_t irLength = std::min(this->mResampled.size(), this->mMaxLength);

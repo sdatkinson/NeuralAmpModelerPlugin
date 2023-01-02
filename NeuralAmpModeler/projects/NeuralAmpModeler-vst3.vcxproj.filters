@@ -421,6 +421,9 @@
     <ClInclude Include="..\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\dsp\Resample.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
