@@ -98,6 +98,9 @@
     <ClCompile Include="..\dsp\wavenet.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NeuralAmpModeler.h" />
@@ -304,6 +307,9 @@
       <Filter>dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\Colors.h" />
+    <ClInclude Include="..\dsp\RecursiveLinearFilter.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">

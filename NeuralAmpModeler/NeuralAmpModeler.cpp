@@ -64,9 +64,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
   mDSP(nullptr),
-  mStagedDSP(nullptr)
+  mStagedDSP(nullptr),
+  mToneBass(),
+  mToneMid(),
+  mToneTreble()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
+  GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
+  GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
 
 //  try {
@@ -98,6 +104,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float knobHalfHeight = 70.0f;
     const auto knobs = content.GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetMidVPadded(knobHalfHeight);
     IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, kNumParams).GetPadded(-10);
+    IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, kNumParams).GetPadded(-10);
+    IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, kNumParams).GetPadded(-10);
+    IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
     IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
     
     const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
@@ -158,6 +167,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
+    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
+    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 
     // The meters
@@ -216,6 +228,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
+  const int nChans = this->NOutChansConnected();
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   if (mStagedDSP != nullptr)
@@ -237,7 +250,35 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   else {
     this->_FallbackDSP(nFrames);
   }
-  this->_ProcessOutput(outputs, nFrames);
+  // Tone stack
+  const double sampleRate = this->GetSampleRate();
+  // Translate params from knob 0-10 to dB.
+  // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
+  // much swing as bass can use.
+  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
+  const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
+  const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
+  
+  const double bassFrequency = 150.0;
+  const double midFrequency = 425.0;
+  const double trebleFrequency = 1800.0;
+  const double bassQuality = 0.707;
+  // Wider EQ on mid bump up to sound less honky.
+  const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
+  const double trebleQuality = 0.707;
+  
+  
+  // Define filter parameters
+  recursive_linear_filter::LowShelfParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+  recursive_linear_filter::PeakingParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+  recursive_linear_filter::HighShelfParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+  // Apply tone stack
+  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, nChans, nFrames, &bassParams);
+  sample** midPointers = this->mToneMid.Process(bassPointers, nChans, nFrames, &midParams);
+  sample** treblePointers = this->mToneTreble.Process(midPointers, nChans, nFrames, &trebleParams);
+  
+  // Let's get outta here
+  this->_ProcessOutput(treblePointers, outputs, nFrames);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
   this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
@@ -362,14 +403,14 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
       this->mInputArray[c][s] = gain * inputs[c][s];
 }
 
-void NeuralAmpModeler::_ProcessOutput(iplug::sample **outputs, const int nFrames)
+void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **outputs, const int nFrames)
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 10.0);
   const size_t nChans = this->NOutChansConnected();
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
     for (int s=0; s<nFrames; s++)
-      outputs[c][s] = gain * this->mOutputArray[c][s];
+      outputs[c][s] = gain * inputs[c][s];
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
