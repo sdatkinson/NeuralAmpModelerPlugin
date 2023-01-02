@@ -324,6 +324,7 @@
     <ClInclude Include="..\dsp\HardCodedModel.h" />
     <ClInclude Include="..\dsp\lstm.h" />
     <ClInclude Include="..\dsp\numpy_util.h" />
+    <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
     <ClInclude Include="..\dsp\util.h" />
     <ClInclude Include="..\dsp\wavenet.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
@@ -374,6 +375,7 @@
     <ClCompile Include="..\dsp\get_dsp.cpp" />
     <ClCompile Include="..\dsp\lstm.cpp" />
     <ClCompile Include="..\dsp\numpy_util.cpp" />
+    <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp" />
     <ClCompile Include="..\dsp\util.cpp" />
     <ClCompile Include="..\dsp\wavenet.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />

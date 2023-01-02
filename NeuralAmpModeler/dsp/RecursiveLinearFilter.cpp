@@ -8,6 +8,7 @@
 
 #include <algorithm>  // std::fill
 #include <cmath>  // pow, sin
+#include <stdexcept>
 
 #include "RecursiveLinearFilter.h"
 
