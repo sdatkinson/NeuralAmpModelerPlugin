@@ -382,11 +382,13 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   // Remove marked modules
   if (this->mFlagRemoveDSP) {
     this->mDSP = nullptr;
+    this->mModelPath.Set("");
     this->_UnsetModelMsg();
     this->mFlagRemoveDSP = false;
   }
   if (this->mFlagRemoveIR) {
     this->mIR = nullptr;
+    this->mIRFileName.Set("");
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
