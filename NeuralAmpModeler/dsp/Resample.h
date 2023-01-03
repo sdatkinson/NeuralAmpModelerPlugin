@@ -8,6 +8,7 @@
 #ifndef Resample_h
 #define Resample_h
 
+#include <cmath>
 #include <vector>
 #include <stdexcept>
 
@@ -54,7 +55,7 @@ void dsp::ResampleCubic(const std::vector<T>& inputs,
     const double endTimeOriginal = (inputs.size() - 1) * timeIncrement;
     while (time < endTimeOriginal) {
         // Find the index of the sample in the original audio file that is just before the current time in the resampled audio file
-        int index = floor(time / timeIncrement);
+        int index = (long) std::floor(time / timeIncrement);
 
         // Calculate the time difference between the current time in the resampled audio file and the sample in the original audio file
         double timeDifference = time - index * timeIncrement;
