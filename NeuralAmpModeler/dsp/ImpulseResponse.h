@@ -1,13 +1,13 @@
 //
-//  ImpulseResponse.hpp
+//  ImpulseResponse.h
 //  NeuralAmpModeler-macOS
 //
 //  Created by Steven Atkinson on 12/30/22.
 //
 // Impulse response processing
 
-#ifndef ImpulseResponse_hpp
-#define ImpulseResponse_hpp
+#ifndef ImpulseResponse_h
+#define ImpulseResponse_h
 
 #include <filesystem>
 
@@ -40,4 +40,4 @@ namespace dsp {
   };
 };
 
-#endif /* ImpulseResponse_hpp */
+#endif /* ImpulseResponse_h */
