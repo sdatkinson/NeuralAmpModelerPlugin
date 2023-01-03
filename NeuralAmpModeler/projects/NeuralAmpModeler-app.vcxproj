@@ -322,10 +322,13 @@
     <ClInclude Include="..\dsp\cnpy.h" />
     <ClInclude Include="..\dsp\dsp.h" />
     <ClInclude Include="..\dsp\HardCodedModel.h" />
+    <ClInclude Include="..\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\dsp\lstm.h" />
     <ClInclude Include="..\dsp\numpy_util.h" />
     <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
+    <ClInclude Include="..\dsp\Resample.h" />
     <ClInclude Include="..\dsp\util.h" />
+    <ClInclude Include="..\dsp\wav.h" />
     <ClInclude Include="..\dsp\wavenet.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\resources\resource.h" />
@@ -373,10 +376,12 @@
     <ClCompile Include="..\dsp\cnpy.cpp" />
     <ClCompile Include="..\dsp\dsp.cpp" />
     <ClCompile Include="..\dsp\get_dsp.cpp" />
+    <ClCompile Include="..\dsp\ImpulseResponse.cpp" />
     <ClCompile Include="..\dsp\lstm.cpp" />
     <ClCompile Include="..\dsp\numpy_util.cpp" />
     <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp" />
     <ClCompile Include="..\dsp\util.cpp" />
+    <ClCompile Include="..\dsp\wav.cpp" />
     <ClCompile Include="..\dsp\wavenet.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
   </ItemGroup>

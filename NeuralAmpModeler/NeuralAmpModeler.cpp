@@ -1,3 +1,4 @@
+#include <algorithm>  // std::clamp
 #include <filesystem>
 #include <iostream>
 #include <utility>
@@ -67,7 +68,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mStagedDSP(nullptr),
   mToneBass(),
   mToneMid(),
-  mToneTreble()
+  mToneTreble(),
+  mIR(),
+  mIRFileName(),
+  mIRPath(),
+  mFlagRemoveDSP(false),
+  mFlagRemoveIR(false),
+  mDefaultModelString("Select model..."),
+  mDefaultIRString("Select IR...")
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -93,12 +101,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->EnableMouseOver(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto folderSVG = pGraphics->LoadSVG(FOLDER_FN);
+    auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
     const auto titleLabel = content.GetFromTop(50);
     
+    // Areas for knobs
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
     const float knobHalfHeight = 70.0f;
@@ -109,7 +119,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
     IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
     
-    const auto modelArea = content.GetFromBottom(30).GetMidHPadded(150);
+    // Areas for model and IR
+    const float fileWidth = 250.0f;
+    const float fileHeight = 30.0f;
+    const float fileSpace = 10.0f;
+    const auto modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
+    const auto irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
+    
+    // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
     const auto inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
     const auto outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
@@ -153,6 +170,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Model loader button
     auto loadModel = [&, pGraphics](IControl* pCaller) {
+      // TODO start from last directory on second load if possible.
       WDL_String dir;
       pGraphics->PromptForDirectory(dir, [&](const WDL_String& fileName, const WDL_String& path){
         if (path.GetLength())
@@ -160,10 +178,36 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       });
     };
     
-    // Tells us what model is loaded
-    pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));  // .WithContrast(-0.75)
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(30).GetPadded(-2.f), loadModel, folderSVG));
-    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(30), "Select model...", style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    auto getIRPath = [&, pGraphics](IControl* pCaller) {
+      WDL_String fileName;
+      WDL_String path(this->mIRPath.Get());
+      pGraphics->PromptForFile(fileName, path);
+      if (fileName.GetLength()) {
+        this->mIRPath = path;
+        this->_GetIR(fileName);
+      }
+    };
+    
+    // Model-clearing function
+    auto ClearModel = [&, pGraphics](IControl* pCaller) {
+      this->mFlagRemoveDSP = true;
+    };
+    // IR-clearing function
+    auto ClearIR = [&, pGraphics](IControl* pCaller) {
+      this->mFlagRemoveIR = true;
+    };
+    
+    // Graphics objects for what model is loaded
+    const float iconWidth = fileHeight;  // Square icon
+    pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadModel, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, closeButtonSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultModelString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    // IR
+    pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
@@ -174,7 +218,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // The meters
     const float meterMin = -60.0f;
-    const float meterMax = 12.0f;
+    const float meterMax = -0.01f;
     pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
                                                        .WithColor(kFG, PluginColors::NAM_2), EDirection::Vertical, {}, 0, meterMin, meterMax, {}), kCtrlTagInputMeter)
@@ -231,17 +275,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const int nChans = this->NOutChansConnected();
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
-  if (mStagedDSP != nullptr)
-  {
-    // Move from staged to active DSP
-    mDSP = std::move(mStagedDSP);
-    mStagedDSP = nullptr;
-  }
+  this->_ApplyDSPStaging();
 
   if (mDSP != nullptr)
   {
     // TODO remove input / output gains from here.
-    const int nChans = this->NOutChansConnected();
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     mDSP->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mDSPParams);
@@ -269,16 +307,26 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   
   
   // Define filter parameters
-  recursive_linear_filter::LowShelfParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-  recursive_linear_filter::PeakingParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-  recursive_linear_filter::HighShelfParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+  recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+  recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+  recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
   // Apply tone stack
-  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, nChans, nFrames, &bassParams);
-  sample** midPointers = this->mToneMid.Process(bassPointers, nChans, nFrames, &midParams);
-  sample** treblePointers = this->mToneTreble.Process(midPointers, nChans, nFrames, &trebleParams);
+  // Set parameters
+  this->mToneBass.SetParams(bassParams);
+  this->mToneMid.SetParams(midParams);
+  this->mToneTreble.SetParams(trebleParams);
+  const size_t numChannels = (size_t) nChans;
+  const size_t numFrames = (size_t) nFrames;
+  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
+  sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
+  sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
+  
+  sample** irPointers = treblePointers;
+  if (this->mIR != nullptr)
+    irPointers = this->mIR->Process(treblePointers, numChannels, numFrames);
   
   // Let's get outta here
-  this->_ProcessOutput(treblePointers, outputs, nFrames);
+  this->_ProcessOutput(irPointers, outputs, nFrames);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
   this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
@@ -288,6 +336,7 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
   chunk.PutStr(mModelPath.Get());
+  chunk.PutStr(this->mIRFileName.Get());
   return SerializeParams(chunk);
 }
 
@@ -295,10 +344,14 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
   WDL_String dir;
   startPos = chunk.GetStr(mModelPath, startPos);
-  mDSP = nullptr;
+  startPos = chunk.GetStr(this->mIRFileName, startPos);
+  this->mDSP = nullptr;
+  this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
   if (this->mModelPath.GetLength())
     this->_GetDSP(this->mModelPath);
+  if (this->mIRFileName.GetLength())
+    this->_GetIR(this->mIRFileName);
   return retcode;
 }
 
@@ -307,9 +360,37 @@ void NeuralAmpModeler::OnUIOpen()
   Plugin::OnUIOpen();
   if (this->mModelPath.GetLength())
     this->_SetModelMsg(this->mModelPath);
+  if (this->mIRFileName.GetLength())
+    this->_SetIRMsg(this->mIRFileName);
 }
 
 // Private methods ============================================================
+
+void NeuralAmpModeler::_ApplyDSPStaging()
+{
+  // Move things from staged to live
+  if (this->mStagedDSP != nullptr)
+  {
+    // Move from staged to active DSP
+    this->mDSP = std::move(this->mStagedDSP);
+    this->mStagedDSP = nullptr;
+  }
+  if (this->mStagedIR != nullptr) {
+    this->mIR = std::move(this->mStagedIR);
+    this->mStagedIR = nullptr;
+  }
+  // Remove marked modules
+  if (this->mFlagRemoveDSP) {
+    this->mDSP = nullptr;
+    this->_UnsetModelMsg();
+    this->mFlagRemoveDSP = false;
+  }
+  if (this->mFlagRemoveIR) {
+    this->mIR = nullptr;
+    this->_UnsetIRMsg();
+    this->mFlagRemoveIR = false;
+  }
+}
 
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)
 {
@@ -337,6 +418,28 @@ void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
     }
     mModelPath = previousModelPath;
     std::cerr << "Failed to read DSP module" << std::endl;
+    std::cerr << e.what() << std::endl;
+  }
+}
+
+void NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
+{
+  WDL_String previousIRFileName;
+  try {
+    previousIRFileName = this->mIRFileName;
+    const double sampleRate = this->GetSampleRate();
+    this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(irFileName, sampleRate);
+    this->_SetIRMsg(irFileName);
+  }
+  catch (std::exception& e) {
+    std::stringstream ss;
+    ss << "FAILED to load IR";
+    SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    if (this->mStagedIR != nullptr) {
+      this->mStagedIR = nullptr;
+    }
+    this->mIRFileName = previousIRFileName;
+    std::cerr << "Failed to read IR" << std::endl;
     std::cerr << e.what() << std::endl;
   }
 }
@@ -410,16 +513,40 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **ou
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
     for (int s=0; s<nFrames; s++)
-      outputs[c][s] = gain * inputs[c][s];
+      outputs[c][s] = std::clamp(gain * inputs[c][s], -1.0, 1.0);
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
-    auto dspPath = std::filesystem::path(modelPath.Get());
-    mModelPath = modelPath;
-    std::stringstream ss;
-    ss << "Loaded " << dspPath.parent_path().filename();
-    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+  auto dspPath = std::filesystem::path(modelPath.Get());
+  mModelPath = modelPath;
+  std::stringstream ss;
+  ss << "Loaded " << dspPath.parent_path().filename();
+  SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+}
+
+void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
+{
+  this->mIRFileName = irFileName;
+  auto dspPath = std::filesystem::path(irFileName.Get());
+  std::stringstream ss;
+  ss << "Loaded " << dspPath.filename();
+  SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+}
+
+void NeuralAmpModeler::_UnsetModelMsg()
+{
+  this->_UnsetMsg(kCtrlTagModelName, this->mDefaultModelString);
+}
+
+void NeuralAmpModeler::_UnsetIRMsg()
+{
+  this->_UnsetMsg(kCtrlTagIRName, this->mDefaultIRString);
+}
+
+void NeuralAmpModeler::_UnsetMsg(const int tag, const WDL_String &msg)
+{
+  SendControlMsgFromDelegate(tag, 0, int(strlen(msg.Get())), msg.Get());
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)

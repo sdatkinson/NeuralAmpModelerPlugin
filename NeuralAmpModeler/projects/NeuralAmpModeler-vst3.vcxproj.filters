@@ -158,6 +158,12 @@
     <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\dsp\ImpulseResponse.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp\wav.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
@@ -407,6 +413,15 @@
     </ClInclude>
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\dsp\RecursiveLinearFilter.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\ImpulseResponse.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\wav.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\Resample.h">
       <Filter>dsp</Filter>
     </ClInclude>
   </ItemGroup>
