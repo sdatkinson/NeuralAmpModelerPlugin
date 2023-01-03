@@ -118,7 +118,7 @@ void recursive_linear_filter::LowShelf::SetParams(const recursive_linear_filter:
   const double a1 = -2.0 * (am + ap * cosw);
   const double a2 = ap + am * cosw - roota2alpha;
   
-  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
+  this->_AssignCoefficients(a0, a1, a2, b0, b1, b2);
 }
 
 void recursive_linear_filter::Peaking::SetParams(const recursive_linear_filter::BiquadParams &params)
@@ -135,7 +135,7 @@ void recursive_linear_filter::Peaking::SetParams(const recursive_linear_filter::
   const double a1 = -2.0 * cosw;
   const double a2 = 1.0 - alpha / a;
   
-  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
+  this->_AssignCoefficients(a0, a1, a2, b0, b1, b2);
 }
 
 void recursive_linear_filter::HighShelf::SetParams(const recursive_linear_filter::BiquadParams &params)
@@ -156,5 +156,5 @@ void recursive_linear_filter::HighShelf::SetParams(const recursive_linear_filter
   const double a1 = 2.0 * (am - ap * cosw);
   const double a2 = ap - am * cosw - roota2alpha;
   
-  this->_AssignCoefficients(a0, a1, a2, b0, a1, b2);
+  this->_AssignCoefficients(a0, a1, a2, b0, b1, b2);
 }
