@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.8</string>
+	<string>0.6.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.5.8</string>
+	<string>0.6.0</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -44,12 +44,12 @@
 					<key>tags</key>
 					<array>
 						<string>Effects</string>
-						<string>size:{500,300}</string>
+						<string>size:{600,400}</string>
 					</array>
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>1288</integer>
+					<integer>1536</integer>
 				</dict>
 			</array>
 		</dict>
