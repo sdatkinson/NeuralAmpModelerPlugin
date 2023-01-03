@@ -100,7 +100,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->EnableMouseOver(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto folderSVG = pGraphics->LoadSVG(FOLDER_FN);
-    auto closeButtonSVG = folderSVG;  // pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
