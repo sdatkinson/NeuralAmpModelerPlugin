@@ -1,3 +1,4 @@
+#include <algorithm>  // std::clamp
 #include <filesystem>
 #include <iostream>
 #include <utility>
@@ -119,7 +120,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
     
     // Areas for model and IR
-    const float fileWidth = 150.0f;
+    const float fileWidth = 250.0f;
     const float fileHeight = 30.0f;
     const float fileSpace = 10.0f;
     const auto modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
@@ -217,7 +218,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // The meters
     const float meterMin = -60.0f;
-    const float meterMax = 12.0f;
+    const float meterMax = -0.01f;
     pGraphics->AttachControl(new IVPeakAvgMeterControl(inputMeterArea, "", style.WithWidgetFrac(0.5)
                                                        .WithShowValue(false)
                                                        .WithColor(kFG, PluginColors::NAM_2), EDirection::Vertical, {}, 0, meterMin, meterMax, {}), kCtrlTagInputMeter)
@@ -512,7 +513,7 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **ou
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
     for (int s=0; s<nFrames; s++)
-      outputs[c][s] = gain * inputs[c][s];
+      outputs[c][s] = std::clamp(gain * inputs[c][s], -1.0, 1.0);
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
