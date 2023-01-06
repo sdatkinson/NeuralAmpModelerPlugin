@@ -11,6 +11,7 @@
 
 #include <Eigen/Dense>
 #include "IPlugConstants.h"
+#include "json.hpp"
 
 enum EArchitectures
 {
@@ -361,13 +362,23 @@ namespace convnet {
 // Utilities ==================================================================
 // Implemented in get_dsp.cpp
 
+struct dspData {
+    std::string version;
+    std::string architecture;
+    nlohmann::json config;
+    std::vector<float> params;
+};
+
 // Verify that the config that we are building our model from is supported by
 // this plugin version.
 void verify_config_version(const std::string version);
 
 // Takes the directory, finds the required files, and uses them to instantiate
-// an instance of DSP.
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname);
+// an instance of DSP. Also returns an dspData struct that holds the data of the model.
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname, dspData& returnedConfig);
+
+//Instantiates a DSP object from dsp_config struct. 
+std::unique_ptr<DSP> get_dsp(dspData& conf);
 
 // Hard-coded model:
 std::unique_ptr<DSP> get_hard_dsp();
