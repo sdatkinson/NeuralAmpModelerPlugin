@@ -363,10 +363,10 @@ namespace convnet {
 // Implemented in get_dsp.cpp
 
 struct dspData {
-    std::string version;
-    std::string architecture;
-    nlohmann::json config;
-    std::vector<float> params;
+  std::string version;
+  std::string architecture;
+  nlohmann::json config;
+  std::vector<float> params;
 };
 
 // Verify that the config that we are building our model from is supported by
