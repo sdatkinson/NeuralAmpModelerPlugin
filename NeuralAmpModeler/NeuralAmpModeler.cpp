@@ -230,10 +230,22 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
+
+    // Tone stack toggle
+    IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(
+        eqToggleArea,
+        kEQActive,
+        "EQ",
+        style,
+        true,  // valueInButton
+        EDirection::Horizontal
+    );
+    pGraphics->AttachControl(toneStackSlider);
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    const IVStyle toneStackInitialStyle = styleInactive;
+    const bool toneStackIsActive = this->GetParam(kEQActive)->Value() > 0;
+    const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
     IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
     IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
     IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
@@ -241,33 +253,25 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(middleControl);
     pGraphics->AttachControl(trebleControl);
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
-
+    
+    // Extend the slider action function to set the style of the knobs 
     auto setKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
         const bool toneStackActive = pCaller->GetValue() > 0;
         const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
         bassControl->SetStyle(toneStackStyle);
         middleControl->SetStyle(toneStackStyle);
         trebleControl->SetStyle(toneStackStyle);
-        
+
         bassControl->SetDirty(false);
         middleControl->SetDirty(false);
         trebleControl->SetDirty(false);
-
-        const double toneStackDoubleVal = toneStackActive ? 1.0 : 0.0;
-        this->SetParameterValue(kEQActive, toneStackDoubleVal);
     };
-
-    // EQ toggle
-    pGraphics->AttachControl(
-        new IVSlideSwitchControl(
-            eqToggleArea, 
-            setKnobStyles, 
-            "EQ",
-            style, 
-            true,  // valueInButton
-            EDirection::Horizontal
-        )
-    );
+    auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
+    auto toneStackAction = [defaultToneStackSliderAction, setKnobStyles](IControl* pCaller) {
+        defaultToneStackSliderAction(pCaller);
+        setKnobStyles(pCaller);
+    };
+    toneStackSlider->SetActionFunction(toneStackAction);
 
     // The meters
     const float meterMin = -60.0f;
