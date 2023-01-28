@@ -60,6 +60,48 @@ public:
   }
 };
 
+
+// Styles
+const IVColorSpec activeColorSpec{
+    DEFAULT_BGCOLOR, // Background
+    PluginColors::NAM_1, // Foreground
+    PluginColors::NAM_2.WithOpacity(0.4), // Pressed
+    PluginColors::NAM_3, // Frame
+    PluginColors::MOUSEOVER, // Highlight
+    DEFAULT_SHCOLOR, // Shadow
+    PluginColors::NAM_2, // Extra 1
+    COLOR_RED, // Extra 2
+    DEFAULT_X3COLOR  // Extra 3
+};
+const IVColorSpec inactiveColorSpec{
+    DEFAULT_BGCOLOR,  // Background
+    PluginColors::NAM_1,//.WithOpacity(0.5f),  // Foreground
+    PluginColors::NAM_1,  // Pressed
+    PluginColors::NAM_3.WithOpacity(0.5f),  // Frame
+    PluginColors::NAM_1,  // Highlight
+    DEFAULT_SHCOLOR.WithOpacity(0.5f),  // Shadow
+    PluginColors::NAM_2.WithOpacity(0.5f),  // Extra 1
+    COLOR_RED.WithOpacity(0.5f),  // Extra 2
+    DEFAULT_X3COLOR.WithOpacity(0.5f)  // Extra 3
+};
+const IVStyle style = IVStyle{
+    true, // Show label
+    true, // Show value
+    activeColorSpec,
+    {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3},  // Knob label text
+    {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3},  // Knob value text
+    DEFAULT_HIDE_CURSOR,
+    DEFAULT_DRAW_FRAME,
+    false,
+    DEFAULT_EMBOSS,
+    0.2f,
+    2.f,
+    DEFAULT_SHADOW_OFFSET,
+    DEFAULT_WIDGET_FRAC,
+DEFAULT_WIDGET_ANGLE
+};
+const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
   mInputPointers(nullptr),
@@ -137,46 +179,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float meterHalfHeight = 0.5f * 250.0f;
     const IRECT inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
     const IRECT outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
-
-    const IVColorSpec activeColorSpec{
-        DEFAULT_BGCOLOR, // Background
-        PluginColors::NAM_1, // Foreground
-        PluginColors::NAM_2.WithOpacity(0.4), // Pressed
-        PluginColors::NAM_3, // Frame
-        PluginColors::MOUSEOVER, // Highlight
-        DEFAULT_SHCOLOR, // Shadow
-        PluginColors::NAM_2, // Extra 1
-        COLOR_RED, // Extra 2
-        DEFAULT_X3COLOR  // Extra 3
-    };
-    const IVColorSpec inactiveColorSpec{
-        DEFAULT_BGCOLOR,  // Background
-        PluginColors::NAM_1,//.WithOpacity(0.5f),  // Foreground
-        PluginColors::NAM_1,  // Pressed
-        PluginColors::NAM_3.WithOpacity(0.5f),  // Frame
-        PluginColors::NAM_1,  // Highlight
-        DEFAULT_SHCOLOR.WithOpacity(0.5f),  // Shadow
-        PluginColors::NAM_2.WithOpacity(0.5f),  // Extra 1
-        COLOR_RED.WithOpacity(0.5f),  // Extra 2
-        DEFAULT_X3COLOR.WithOpacity(0.5f)  // Extra 3
-    };
-    const IVStyle style = IVStyle{
-      true, // Show label
-      true, // Show value
-      activeColorSpec,
-      {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3},  // Knob label text
-      {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3},  // Knob value text
-      DEFAULT_HIDE_CURSOR,
-      DEFAULT_DRAW_FRAME,
-      false,
-      DEFAULT_EMBOSS,
-      0.2f,
-      2.f,
-      DEFAULT_SHADOW_OFFSET,
-      DEFAULT_WIDGET_FRAC,
-      DEFAULT_WIDGET_ANGLE
-    };
-    const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
     
     //auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     //pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), tolexPNG, kNoParameter))->SetBlend(IBlend(EBlend::Default, 0.5));
@@ -230,17 +232,36 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs
-    const IVStyle styleEQKnob = GetParam(kEQActive)->Value() == 1 ? style : styleInactive;
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", styleEQKnob));
-    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", styleEQKnob));
-    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", styleEQKnob));
+    const IVStyle toneStackInitialStyle = styleInactive;
+    IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
+    IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
+    IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
+    pGraphics->AttachControl(bassControl);
+    pGraphics->AttachControl(middleControl);
+    pGraphics->AttachControl(trebleControl);
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
+
+    auto setKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
+        const bool toneStackActive = pCaller->GetValue() > 0;
+        const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
+        bassControl->SetStyle(toneStackStyle);
+        middleControl->SetStyle(toneStackStyle);
+        trebleControl->SetStyle(toneStackStyle);
+        
+        bassControl->SetDirty(false);
+        middleControl->SetDirty(false);
+        trebleControl->SetDirty(false);
+
+        const double toneStackDoubleVal = toneStackActive ? 1.0 : 0.0;
+        this->SetParameterValue(kEQActive, toneStackDoubleVal);
+    };
+
     // EQ toggle
     pGraphics->AttachControl(
         new IVSlideSwitchControl(
             eqToggleArea, 
-            kEQActive, 
+            setKnobStyles, 
             "EQ",
             style, 
             true,  // valueInButton
@@ -268,7 +289,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IPattern::CreateLinearGradient(b, EDirection::Vertical, { {PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f} }),
     false, // draw frame
     // AttachFunc
-    [style](IContainerBase* pParent, const IRECT& r) {
+    [](IContainerBase* pParent, const IRECT& r) {
       pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1))));
 
       pParent->AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", style
@@ -304,11 +325,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
+  // TODO clean up the types here
   const int nChans = this->NOutChansConnected();
+  const size_t numChannels = (size_t)nChans;
+  const size_t numFrames = (size_t)nFrames;
+
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   this->_ApplyDSPStaging();
-  const bool eqActive = this->_CheckEQState();
+  const bool toneStackActive = this->_CheckEQState();
 
   if (mDSP != nullptr)
   {
@@ -321,42 +346,45 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   else {
     this->_FallbackDSP(nFrames);
   }
-  // Tone stack
-  const double sampleRate = this->GetSampleRate();
-  // Translate params from knob 0-10 to dB.
-  // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
-  // much swing as bass can use.
-  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
-  const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
-  const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
   
-  const double bassFrequency = 150.0;
-  const double midFrequency = 425.0;
-  const double trebleFrequency = 1800.0;
-  const double bassQuality = 0.707;
-  // Wider EQ on mid bump up to sound less honky.
-  const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
-  const double trebleQuality = 0.707;
+  sample** toneStackOutPointers = this->mOutputPointers;
+  if (toneStackActive) {
+      // Tone stack
+      const double sampleRate = this->GetSampleRate();
+      // Translate params from knob 0-10 to dB.
+      // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
+      // much swing as bass can use.
+      const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
+      const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
+      const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
+
+      const double bassFrequency = 150.0;
+      const double midFrequency = 425.0;
+      const double trebleFrequency = 1800.0;
+      const double bassQuality = 0.707;
+      // Wider EQ on mid bump up to sound less honky.
+      const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
+      const double trebleQuality = 0.707;
+
+
+      // Define filter parameters
+      recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+      recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+      recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+      // Apply tone stack
+      // Set parameters
+      this->mToneBass.SetParams(bassParams);
+      this->mToneMid.SetParams(midParams);
+      this->mToneTreble.SetParams(trebleParams);
+      sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
+      sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
+      sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
+      toneStackOutPointers = treblePointers;
+  }
   
-  
-  // Define filter parameters
-  recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-  recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-  recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
-  // Apply tone stack
-  // Set parameters
-  this->mToneBass.SetParams(bassParams);
-  this->mToneMid.SetParams(midParams);
-  this->mToneTreble.SetParams(trebleParams);
-  const size_t numChannels = (size_t) nChans;
-  const size_t numFrames = (size_t) nFrames;
-  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
-  sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
-  sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
-  
-  sample** irPointers = treblePointers;
+  sample** irPointers = toneStackOutPointers;
   if (this->mIR != nullptr)
-    irPointers = this->mIR->Process(treblePointers, numChannels, numFrames);
+    irPointers = this->mIR->Process(toneStackOutPointers, numChannels, numFrames);
   
   // Let's get outta here
   this->_ProcessOutput(irPointers, outputs, nFrames);
@@ -430,7 +458,8 @@ void NeuralAmpModeler::_ApplyDSPStaging()
 bool NeuralAmpModeler::_CheckEQState()
 {
     const bool eqActive = this->GetParam(kEQActive)->Value() > 0;
-    //const IVStyle knobStyle = eqActive ? this->mStyle : this->mStyleInactive;
+    const IVStyle knobStyle = eqActive ? style : styleInactive;
+
     return eqActive;
 }
 
