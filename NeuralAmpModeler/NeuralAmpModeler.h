@@ -19,8 +19,11 @@ enum EParams
   kToneMid,
   kToneTreble,
   kOutputLevel,
+  kEQActive,
   kNumParams
 };
+
+const int numKnobs = 5;
 
 enum ECtrlTags
 {
@@ -57,6 +60,9 @@ private:
   // Exists so that we don't try to use a DSP module that's only
   // partially-instantiated.
   void _ApplyDSPStaging();
+  // Check whether the EQ state is active or inactive. Updates the style of the
+  // Knob controls and returns a bool so that the DSP can react.
+  bool _CheckEQState();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(const int nFrames);
   // Sizes based on mInputArray
@@ -88,6 +94,8 @@ private:
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const int nFrames);
+
+  // Member data
     
   // Input arrays
   std::vector<std::vector<iplug::sample>> mInputArray;

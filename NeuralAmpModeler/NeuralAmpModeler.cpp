@@ -106,45 +106,64 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
-    const auto titleLabel = content.GetFromTop(50);
+    const float titleHeight = 50.0f;
+    const auto titleLabel = content.GetFromTop(titleHeight);
     
     // Areas for knobs
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
     const float knobHalfHeight = 70.0f;
-    const auto knobs = content.GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetMidVPadded(knobHalfHeight);
-    IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, kNumParams).GetPadded(-10);
-    IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, kNumParams).GetPadded(-10);
-    IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, kNumParams).GetPadded(-10);
-    IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
-    IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
+    const float knobHeight = 2.0f * knobHalfHeight;
+    const auto knobs = content.GetFromTop(knobHeight).GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetTranslated(0.0f, titleHeight);
+    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
+    const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-10);
+    const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-10);
+    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-10);
+    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-10);
+
+    // Area for EQ toggle
+    const float eqAreaHeight = 40.0f;
+    const float eqAreaHalfWidth = 60.0f;
+    const IRECT eqToggleArea = knobs.GetFromBottom(eqAreaHeight).GetTranslated(0.0f, eqAreaHeight).GetMidHPadded(eqAreaHalfWidth);
     
     // Areas for model and IR
     const float fileWidth = 250.0f;
     const float fileHeight = 30.0f;
     const float fileSpace = 10.0f;
-    const auto modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
-    const auto irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
+    const IRECT modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
+    const IRECT irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
     
     // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
-    const auto inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
-    const auto outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
+    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
+    const IRECT outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
 
-    const IVStyle style {
-      true, // Show label
-      true, // Show value
-      {
-        DEFAULT_BGCOLOR,  //PluginColors::NAM_1,  //DEFAULT_BGCOLOR, // Background
-        PluginColors::NAM_1,  // .WithOpacity(0.5), // Foreground
-        PluginColors::NAM_2.WithOpacity(0.4),  // .WithOpacity(0.4), // Pressed
+    const IVColorSpec activeColorSpec{
+        DEFAULT_BGCOLOR, // Background
+        PluginColors::NAM_1, // Foreground
+        PluginColors::NAM_2.WithOpacity(0.4), // Pressed
         PluginColors::NAM_3, // Frame
         PluginColors::MOUSEOVER, // Highlight
         DEFAULT_SHCOLOR, // Shadow
-        PluginColors::NAM_2 , // Extra 1
+        PluginColors::NAM_2, // Extra 1
         COLOR_RED, // Extra 2
         DEFAULT_X3COLOR  // Extra 3
-      }, // Colors
+    };
+    const IVColorSpec inactiveColorSpec{
+        DEFAULT_BGCOLOR,  // Background
+        PluginColors::NAM_1,//.WithOpacity(0.5f),  // Foreground
+        PluginColors::NAM_1,  // Pressed
+        PluginColors::NAM_3.WithOpacity(0.5f),  // Frame
+        PluginColors::NAM_1,  // Highlight
+        DEFAULT_SHCOLOR.WithOpacity(0.5f),  // Shadow
+        PluginColors::NAM_2.WithOpacity(0.5f),  // Extra 1
+        COLOR_RED.WithOpacity(0.5f),  // Extra 2
+        DEFAULT_X3COLOR.WithOpacity(0.5f)  // Extra 3
+    };
+    const IVStyle style = IVStyle{
+      true, // Show label
+      true, // Show value
+      activeColorSpec,
       {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3},  // Knob label text
       {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3},  // Knob value text
       DEFAULT_HIDE_CURSOR,
@@ -157,6 +176,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       DEFAULT_WIDGET_FRAC,
       DEFAULT_WIDGET_ANGLE
     };
+    const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
     
     //auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     //pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), tolexPNG, kNoParameter))->SetBlend(IBlend(EBlend::Default, 0.5));
@@ -210,11 +230,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
     
     // The knobs
+    const IVStyle styleEQKnob = GetParam(kEQActive)->Value() == 1 ? style : styleInactive;
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
-    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
-    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
+    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", styleEQKnob));
+    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", styleEQKnob));
+    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", styleEQKnob));
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
+    // EQ toggle
+    pGraphics->AttachControl(
+        new IVSlideSwitchControl(
+            eqToggleArea, 
+            kEQActive, 
+            "EQ",
+            style, 
+            true,  // valueInButton
+            EDirection::Horizontal
+        )
+    );
 
     // The meters
     const float meterMin = -60.0f;
@@ -276,6 +308,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   this->_ApplyDSPStaging();
+  const bool eqActive = this->_CheckEQState();
 
   if (mDSP != nullptr)
   {
@@ -392,6 +425,13 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
+}
+
+bool NeuralAmpModeler::_CheckEQState()
+{
+    const bool eqActive = this->GetParam(kEQActive)->Value() > 0;
+    //const IVStyle knobStyle = eqActive ? this->mStyle : this->mStyleInactive;
+    return eqActive;
 }
 
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)
