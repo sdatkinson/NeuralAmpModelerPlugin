@@ -17,7 +17,13 @@ namespace dsp {
     const int RET_ERROR_OPENING = 1;
     const int RET_ERROR_NOT_WAV = 2;
     const int RET_ERROR_INVALID_WAV = 3;
-    const int RET_ERROR_NOT_PCM = 4;
+    // Errors related to non-PCM formats:
+    // Format is "Extensible" instead of PCM
+    const int RET_ERROR_NOT_PCM_EXTENSIBLE = 4;
+    // IEEE float
+    const int RET_ERROR_NOT_PCM_IEEE_FLOAT = 5;
+    // Format is not PCM but something else
+    const int RET_ERROR_NOT_PCM_OTHER = 6;
     // Load a WAV file into a provided array of doubles,
     // And note the sample rate.
     //

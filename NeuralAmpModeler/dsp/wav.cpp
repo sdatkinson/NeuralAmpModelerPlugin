@@ -80,7 +80,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   wavFile.read(reinterpret_cast<char*>(&audioFormat), 2);
   if (audioFormat != 1) {
     std::cerr << "Error: Only PCM format is supported" << std::endl;
-    return dsp::wav::RET_ERROR_NOT_PCM;
+    return dsp::wav::RET_ERROR_NOT_PCM_OTHER;
   }
   
   short numChannels;
