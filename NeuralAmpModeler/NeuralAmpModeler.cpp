@@ -337,7 +337,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   this->_ApplyDSPStaging();
-  const bool toneStackActive = this->_CheckEQState();
+  const bool toneStackActive = this->GetParam(kEQActive)->Value() > 0;
 
   if (mDSP != nullptr)
   {
@@ -457,14 +457,6 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
-}
-
-bool NeuralAmpModeler::_CheckEQState()
-{
-    const bool eqActive = this->GetParam(kEQActive)->Value() > 0;
-    const IVStyle knobStyle = eqActive ? style : styleInactive;
-
-    return eqActive;
 }
 
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)

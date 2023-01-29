@@ -60,9 +60,6 @@ private:
   // Exists so that we don't try to use a DSP module that's only
   // partially-instantiated.
   void _ApplyDSPStaging();
-  // Check whether the EQ state is active or inactive. Updates the style of the
-  // Knob controls and returns a bool so that the DSP can react.
-  bool _CheckEQState();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(const int nFrames);
   // Sizes based on mInputArray
