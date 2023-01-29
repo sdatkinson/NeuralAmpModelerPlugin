@@ -11,16 +11,18 @@
 #include "ImpulseResponse.h"
 
 dsp::ImpulseResponse::ImpulseResponse(const WDL_String& fileName,
-                                      const double sampleRate)
+                                      const double sampleRate):
+    mWavState(dsp::wav::LoadReturnCode::ERROR_OTHER)
 {
   // Try to load the WAV
-    if (dsp::wav::Load(fileName, this->mRawAudio, this->mRawAudioSampleRate) != dsp::wav::RET_SUCCESS) {
-        std::stringstream ss;
-        ss << "Failed to load IR at " << fileName.Get() << std::endl;
-        throw std::runtime_error(ss.str());
-    }
-  // Set the weights based on the raw audio.
-  this->_SetWeights(sampleRate);
+  this->mWavState = dsp::wav::Load(fileName, this->mRawAudio, this->mRawAudioSampleRate);
+  if (this->mWavState != dsp::wav::LoadReturnCode::SUCCESS) {
+    std::stringstream ss;
+    ss << "Failed to load IR at " << fileName.Get() << std::endl;
+  }
+  else
+    // Set the weights based on the raw audio.
+    this->_SetWeights(sampleRate);
 }
 
 iplug::sample** dsp::ImpulseResponse::Process(iplug::sample** inputs,

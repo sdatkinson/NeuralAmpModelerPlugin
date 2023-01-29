@@ -12,17 +12,26 @@
 
 namespace dsp {
   namespace wav {
-    // Return cases
-    const int RET_SUCCESS = 0;
-    const int RET_ERROR_OPENING = 1;
-    const int RET_ERROR_NOT_WAV = 2;
-    const int RET_ERROR_INVALID_WAV = 3;
-    const int RET_ERROR_NOT_PCM = 4;
+    enum class LoadReturnCode {
+        SUCCESS = 0,
+        ERROR_OPENING,
+        ERROR_NOT_RIFF,
+        ERROR_NOT_WAVE,
+        ERROR_MISSING_FMT,
+        ERROR_INVALID_FILE,
+        ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT,
+        ERROR_UNSUPPORTED_FORMAT_ALAW,
+        ERROR_UNSUPPORTED_FORMAT_MULAW,
+        ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE,
+        ERROR_UNSUPPORTED_BITS_PER_SAMPLE,
+        ERROR_NOT_MONO,
+        ERROR_OTHER
+    };
     // Load a WAV file into a provided array of doubles,
     // And note the sample rate.
     //
     // Returns: as per return cases above
-    int Load(const WDL_String& fileName, std::vector<float> &audio, double& sampleRate);
+    LoadReturnCode Load(const WDL_String& fileName, std::vector<float> &audio, double& sampleRate);
     
     // Load samples, 16-bit
     void _LoadSamples16(std::ifstream &wavFile, const int chunkSize, std::vector<float>& samples);
