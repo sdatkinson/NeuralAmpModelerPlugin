@@ -33,9 +33,8 @@ std::vector<float> _get_weights(
     }
 }
 
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename)
 {
-  const std::filesystem::path config_filename = dirname / std::filesystem::path("model.nam");
   if (!std::filesystem::exists(config_filename))
     throw std::runtime_error("Config JSON doesn't exist!\n");
   std::ifstream i(config_filename);
