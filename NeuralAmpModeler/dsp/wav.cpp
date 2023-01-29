@@ -51,7 +51,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   char chunkId[4];
   ReadChunkAndSkipJunk(wavFile, chunkId);
   if (strncmp(chunkId, "RIFF", 4) != 0) {
-    std::cerr << "Error: Not a WAV file" << std::endl;
+    std::cerr << "Error: File does not start with expected RIFF chunk. Got" << chunkId << " instead." << std::endl;
     return dsp::wav::RET_ERROR_NOT_WAV;
   }
   
@@ -61,7 +61,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   char format[4];
   wavFile.read(format, 4);
   if (strncmp(format, "WAVE", 4) != 0) {
-    std::cerr << "Error: Not a WAV file" << std::endl;
+    std::cerr << "Error: Files' second chunk (format) is not expected WAV. Got" << format << " instead." << std::endl;
     return dsp::wav::RET_ERROR_NOT_WAV;
   }
   
