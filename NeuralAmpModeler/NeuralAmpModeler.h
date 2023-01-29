@@ -10,6 +10,8 @@
 
 #include "ISender.h"
 
+#include "dsp/wav.h"
+
 const int kNumPresets = 1;
 
 enum EParams
@@ -68,7 +70,7 @@ private:
   // Gets a new DSP object and stores it to mStagedDSP
   void _GetDSP(const WDL_String& dspPath);
   // Gets the IR and stores to mStagedIR
-  void _GetIR(const WDL_String& irFileName);
+  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irFileName);
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const {

@@ -206,7 +206,47 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pGraphics->PromptForFile(fileName, path);
       if (fileName.GetLength()) {
         this->mIRPath = path;
-        this->_GetIR(fileName);
+        const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
+        if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
+            std::stringstream message;
+            message << "Failed to load IR file " << fileName.Get() << ":\n";
+            switch (retCode) {
+            case (dsp::wav::LoadReturnCode::ERROR_OPENING):
+                message << "Failed to open file (is it being used by another program?)";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
+                message << "File is not a WAV file.";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
+                message << "File is not a WAV file.";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
+                message << "File is missing expected format chunk.";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
+                message << "WAV file contents are invalid.";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
+                message << "Unsupported file format \"IEEE float\"";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
+                message << "Unsupported file format \"A-law\"";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
+                message << "Unsupported file format \"mu-law\"";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
+                message << "Unsupported file format \"extensible\"";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
+                message << "File is not mono.";
+                break;
+            case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+                message << "???";
+                break;
+            }
+            pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
+        }
       }
     };
     
@@ -489,26 +529,36 @@ void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
   }
 }
 
-void NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
+dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
 {
   WDL_String previousIRFileName;
+
+  previousIRFileName = this->mIRFileName;
+  const double sampleRate = this->GetSampleRate();
+  dsp::wav::LoadReturnCode wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
   try {
-    previousIRFileName = this->mIRFileName;
-    const double sampleRate = this->GetSampleRate();
     this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(irFileName, sampleRate);
-    this->_SetIRMsg(irFileName);
+    wavState = this->mStagedIR->GetWavState();
   }
   catch (std::exception& e) {
-    std::stringstream ss;
-    ss << "FAILED to load IR";
-    SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
-    if (this->mStagedIR != nullptr) {
-      this->mStagedIR = nullptr;
-    }
-    this->mIRFileName = previousIRFileName;
-    std::cerr << "Failed to read IR" << std::endl;
+    wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
+    std::cerr << "Caught unhandled exception while attempting to load IR:" << std::endl;
     std::cerr << e.what() << std::endl;
   }
+
+  if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
+      this->_SetIRMsg(irFileName);
+  else {
+      if (this->mStagedIR != nullptr) {
+          this->mStagedIR = nullptr;
+      }
+      this->mIRFileName = previousIRFileName;
+      std::stringstream ss;
+      ss << "FAILED to load IR";
+      SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+  }
+
+  return wavState;
 }
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const
