@@ -123,7 +123,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kOutputLevel)->InitGain("Output", 0.0, -20.0, 20.0, 0.1);
+  GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
 
 //  try {
 //     this->mDSP = get_hard_dsp();
@@ -565,7 +565,7 @@ void NeuralAmpModeler::_PrepareIOPointers(const size_t nChans)
 
 void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
 {
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 10.0);
+  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
   const size_t nChans = this->NOutChansConnected();
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
@@ -575,7 +575,7 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
 
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **outputs, const int nFrames)
 {
-  const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 10.0);
+  const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
   const size_t nChans = this->NOutChansConnected();
   // Assume _PrepareBuffers() was already called
   for (int c=0; c<nChans; c++)
