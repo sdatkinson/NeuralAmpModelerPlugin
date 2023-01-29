@@ -34,7 +34,7 @@ void ReadChunkAndSkipJunk(std::ifstream& file, char* chunkID)
     throw std::runtime_error("Found more than 1 junk chunk");
 }
 
-int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double &sampleRate)
+dsp::wav::LoadReturnCode dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double &sampleRate)
 {
   // FYI: https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
   // Open the WAV file for reading
@@ -43,7 +43,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   // Check if the file was opened successfully
   if (!wavFile.is_open()) {
     std::cerr << "Error opening WAV file" << std::endl;
-    return dsp::wav::RET_ERROR_OPENING;
+    return dsp::wav::LoadReturnCode::ERROR_OPENING;
   }
   
   // WAV file has 3 "chunks": RIFF ("RIFF"), format ("fmt ") and data ("data").
@@ -52,7 +52,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   ReadChunkAndSkipJunk(wavFile, chunkId);
   if (strncmp(chunkId, "RIFF", 4) != 0) {
     std::cerr << "Error: File does not start with expected RIFF chunk. Got" << chunkId << " instead." << std::endl;
-    return dsp::wav::RET_ERROR_NOT_WAV;
+    return dsp::wav::LoadReturnCode::ERROR_NOT_RIFF;
   }
   
   int chunkSize;
@@ -62,15 +62,15 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   wavFile.read(format, 4);
   if (strncmp(format, "WAVE", 4) != 0) {
     std::cerr << "Error: Files' second chunk (format) is not expected WAV. Got" << format << " instead." << std::endl;
-    return dsp::wav::RET_ERROR_NOT_WAV;
+    return dsp::wav::LoadReturnCode::ERROR_NOT_WAVE;
   }
   
   // Read the format chunk
   char subchunk1Id[4];
   ReadChunkAndSkipJunk(wavFile, subchunk1Id);
   if (strncmp(subchunk1Id, "fmt ", 4) != 0) {
-    std::cerr << "Error: Invalid WAV file" << std::endl;
-    return dsp::wav::RET_ERROR_INVALID_WAV;
+    std::cerr << "Error: Invalid WAV file missing expected fmt section; got " << subchunk1Id << " instead." << std::endl;
+    return dsp::wav::LoadReturnCode::ERROR_MISSING_FMT;
   }
   
   int subchunk1Size;
@@ -79,8 +79,25 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   unsigned short audioFormat;
   wavFile.read(reinterpret_cast<char*>(&audioFormat), 2);
   if (audioFormat != 1) {
-    std::cerr << "Error: Only PCM format is supported" << std::endl;
-    return dsp::wav::RET_ERROR_NOT_PCM_OTHER;
+      std::cerr << "Error: Only PCM format is supported.";
+    switch (audioFormat)
+    {
+    case 3:
+        std::cerr << "(Got: IEEE float)" << std::endl;
+        return dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT;
+    case 6:
+        std::cerr << "(Got: A-law)" << std::endl;
+        return dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW;
+    case 7:
+        std::cerr << "(Got: mu-law)" << std::endl;
+        return dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW;
+    case 65534:
+        std::cerr << "(Got: Extensible)" << std::endl;
+        return dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE;
+    default:
+        std::cerr << "(Got unknown format " << audioFormat << ")" << std::endl;
+        return dsp::wav::LoadReturnCode::ERROR_INVALID_FILE;
+    }
   }
   
   short numChannels;
@@ -88,7 +105,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   // HACK
   if (numChannels != 1) {
     std::cerr << "Require mono (using for IR loading)" << std::endl;
-    return dsp::wav::RET_ERROR_INVALID_WAV;
+    return dsp::wav::LoadReturnCode::ERROR_NOT_MONO;
   }
   
   int iSampleRate;
@@ -110,7 +127,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   ReadChunkAndSkipJunk(wavFile, subchunk2Id);
   if (strncmp(subchunk2Id, "data", 4) != 0) {
     std::cerr << "Error: Invalid WAV file" << std::endl;
-    return dsp::wav::RET_ERROR_INVALID_WAV;
+    return dsp::wav::LoadReturnCode::ERROR_INVALID_FILE;
   }
   
   // Size of the data chunk, in bits.
@@ -125,7 +142,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
     dsp::wav::_LoadSamples32(wavFile, subchunk2Size, audio);
   else {
     std::cerr << "Error: Unsupported bits per sample: " << bitsPerSample << std::endl;
-    return 1;
+    return dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE;
   }
   
   // Close the WAV file
@@ -134,7 +151,7 @@ int dsp::wav::Load(const WDL_String &fileName, std::vector<float> &audio, double
   // Print the number of samples
   // std::cout << "Number of samples: " << samples.size() << std::endl;
   
-  return dsp::wav::RET_SUCCESS;
+  return dsp::wav::LoadReturnCode::SUCCESS;
 }
 
 void dsp::wav::_LoadSamples16(std::ifstream &wavFile,
