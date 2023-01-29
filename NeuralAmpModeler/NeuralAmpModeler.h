@@ -19,8 +19,11 @@ enum EParams
   kToneMid,
   kToneTreble,
   kOutputLevel,
+  kEQActive,
   kNumParams
 };
+
+const int numKnobs = 5;
 
 enum ECtrlTags
 {
@@ -88,6 +91,8 @@ private:
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const int nFrames);
+
+  // Member data
     
   // Input arrays
   std::vector<std::vector<iplug::sample>> mInputArray;

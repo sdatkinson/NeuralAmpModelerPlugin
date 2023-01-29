@@ -60,6 +60,48 @@ public:
   }
 };
 
+
+// Styles
+const IVColorSpec activeColorSpec{
+    DEFAULT_BGCOLOR, // Background
+    PluginColors::NAM_1, // Foreground
+    PluginColors::NAM_2.WithOpacity(0.4), // Pressed
+    PluginColors::NAM_3, // Frame
+    PluginColors::MOUSEOVER, // Highlight
+    DEFAULT_SHCOLOR, // Shadow
+    PluginColors::NAM_2, // Extra 1
+    COLOR_RED, // Extra 2
+    DEFAULT_X3COLOR  // Extra 3
+};
+const IVColorSpec inactiveColorSpec{
+    DEFAULT_BGCOLOR,  // Background
+    PluginColors::NAM_1,//.WithOpacity(0.5f),  // Foreground
+    PluginColors::NAM_1,  // Pressed
+    PluginColors::NAM_3.WithOpacity(0.5f),  // Frame
+    PluginColors::NAM_1,  // Highlight
+    DEFAULT_SHCOLOR.WithOpacity(0.5f),  // Shadow
+    PluginColors::NAM_2.WithOpacity(0.5f),  // Extra 1
+    COLOR_RED.WithOpacity(0.5f),  // Extra 2
+    DEFAULT_X3COLOR.WithOpacity(0.5f)  // Extra 3
+};
+const IVStyle style = IVStyle{
+    true, // Show label
+    true, // Show value
+    activeColorSpec,
+    {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3},  // Knob label text
+    {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3},  // Knob value text
+    DEFAULT_HIDE_CURSOR,
+    DEFAULT_DRAW_FRAME,
+    false,
+    DEFAULT_EMBOSS,
+    0.2f,
+    2.f,
+    DEFAULT_SHADOW_OFFSET,
+    DEFAULT_WIDGET_FRAC,
+DEFAULT_WIDGET_ANGLE
+};
+const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
   mInputPointers(nullptr),
@@ -106,57 +148,37 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
-    const auto titleLabel = content.GetFromTop(50);
+    const float titleHeight = 50.0f;
+    const auto titleLabel = content.GetFromTop(titleHeight);
     
     // Areas for knobs
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
     const float knobHalfHeight = 70.0f;
-    const auto knobs = content.GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetMidVPadded(knobHalfHeight);
-    IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, kNumParams).GetPadded(-10);
-    IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, kNumParams).GetPadded(-10);
-    IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, kNumParams).GetPadded(-10);
-    IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, kNumParams).GetPadded(-10);
-    IRECT outputKnobArea =knobs.GetGridCell(0, kOutputLevel, 1, kNumParams).GetPadded(-10);
+    const float knobHeight = 2.0f * knobHalfHeight;
+    const auto knobs = content.GetFromTop(knobHeight).GetReducedFromLeft(knobPad).GetReducedFromRight(knobPad).GetTranslated(0.0f, titleHeight);
+    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
+    const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-10);
+    const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-10);
+    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-10);
+    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-10);
+
+    // Area for EQ toggle
+    const float eqAreaHeight = 40.0f;
+    const float eqAreaHalfWidth = 60.0f;
+    const IRECT eqToggleArea = knobs.GetFromBottom(eqAreaHeight).GetTranslated(0.0f, eqAreaHeight).GetMidHPadded(eqAreaHalfWidth);
     
     // Areas for model and IR
     const float fileWidth = 250.0f;
     const float fileHeight = 30.0f;
     const float fileSpace = 10.0f;
-    const auto modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
-    const auto irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
+    const IRECT modelArea = content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
+    const IRECT irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
     
     // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
-    const auto inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
-    const auto outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
-
-    const IVStyle style {
-      true, // Show label
-      true, // Show value
-      {
-        DEFAULT_BGCOLOR,  //PluginColors::NAM_1,  //DEFAULT_BGCOLOR, // Background
-        PluginColors::NAM_1,  // .WithOpacity(0.5), // Foreground
-        PluginColors::NAM_2.WithOpacity(0.4),  // .WithOpacity(0.4), // Pressed
-        PluginColors::NAM_3, // Frame
-        PluginColors::MOUSEOVER, // Highlight
-        DEFAULT_SHCOLOR, // Shadow
-        PluginColors::NAM_2 , // Extra 1
-        COLOR_RED, // Extra 2
-        DEFAULT_X3COLOR  // Extra 3
-      }, // Colors
-      {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3},  // Knob label text
-      {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3},  // Knob value text
-      DEFAULT_HIDE_CURSOR,
-      DEFAULT_DRAW_FRAME,
-      false,
-      DEFAULT_EMBOSS,
-      0.2f,
-      2.f,
-      DEFAULT_SHADOW_OFFSET,
-      DEFAULT_WIDGET_FRAC,
-      DEFAULT_WIDGET_ANGLE
-    };
+    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(-knobPad, 0.0f);
+    const IRECT outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad).GetMidHPadded(knobHalfPad).GetMidVPadded(meterHalfHeight).GetTranslated(knobPad, 0.0f);
     
     //auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     //pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), tolexPNG, kNoParameter))->SetBlend(IBlend(EBlend::Default, 0.5));
@@ -208,13 +230,48 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
+
+    // Tone stack toggle
+    IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(
+        eqToggleArea,
+        kEQActive,
+        "EQ",
+        style,
+        true,  // valueInButton
+        EDirection::Horizontal
+    );
+    pGraphics->AttachControl(toneStackSlider);
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
-    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
-    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
+    const bool toneStackIsActive = this->GetParam(kEQActive)->Value() > 0;
+    const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
+    IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
+    IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
+    IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
+    pGraphics->AttachControl(bassControl);
+    pGraphics->AttachControl(middleControl);
+    pGraphics->AttachControl(trebleControl);
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
+    
+    // Extend the slider action function to set the style of the knobs 
+    auto setKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
+        const bool toneStackActive = pCaller->GetValue() > 0;
+        const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
+        bassControl->SetStyle(toneStackStyle);
+        middleControl->SetStyle(toneStackStyle);
+        trebleControl->SetStyle(toneStackStyle);
+
+        bassControl->SetDirty(false);
+        middleControl->SetDirty(false);
+        trebleControl->SetDirty(false);
+    };
+    auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
+    auto toneStackAction = [defaultToneStackSliderAction, setKnobStyles](IControl* pCaller) {
+        defaultToneStackSliderAction(pCaller);
+        setKnobStyles(pCaller);
+    };
+    toneStackSlider->SetActionFunction(toneStackAction);
 
     // The meters
     const float meterMin = -60.0f;
@@ -236,7 +293,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IPattern::CreateLinearGradient(b, EDirection::Vertical, { {PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f} }),
     false, // draw frame
     // AttachFunc
-    [style](IContainerBase* pParent, const IRECT& r) {
+    [](IContainerBase* pParent, const IRECT& r) {
       pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1))));
 
       pParent->AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", style
@@ -272,10 +329,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
+  // TODO clean up the types here
   const int nChans = this->NOutChansConnected();
+  const size_t numChannels = (size_t)nChans;
+  const size_t numFrames = (size_t)nFrames;
+
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   this->_ApplyDSPStaging();
+  const bool toneStackActive = this->GetParam(kEQActive)->Value() > 0;
 
   if (mDSP != nullptr)
   {
@@ -288,42 +350,45 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   else {
     this->_FallbackDSP(nFrames);
   }
-  // Tone stack
-  const double sampleRate = this->GetSampleRate();
-  // Translate params from knob 0-10 to dB.
-  // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
-  // much swing as bass can use.
-  const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
-  const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
-  const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
   
-  const double bassFrequency = 150.0;
-  const double midFrequency = 425.0;
-  const double trebleFrequency = 1800.0;
-  const double bassQuality = 0.707;
-  // Wider EQ on mid bump up to sound less honky.
-  const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
-  const double trebleQuality = 0.707;
+  sample** toneStackOutPointers = this->mOutputPointers;
+  if (toneStackActive) {
+      // Tone stack
+      const double sampleRate = this->GetSampleRate();
+      // Translate params from knob 0-10 to dB.
+      // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
+      // much swing as bass can use.
+      const double bassGainDB = 4.0 * (this->GetParam(kToneBass)->Value() - 5.0);  // +/- 20
+      const double midGainDB = 3.0 * (this->GetParam(kToneMid)->Value() - 5.0); // +/- 15
+      const double trebleGainDB = 2.0 * (this->GetParam(kToneTreble)->Value() - 5.0);  // +/- 10
+
+      const double bassFrequency = 150.0;
+      const double midFrequency = 425.0;
+      const double trebleFrequency = 1800.0;
+      const double bassQuality = 0.707;
+      // Wider EQ on mid bump up to sound less honky.
+      const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
+      const double trebleQuality = 0.707;
+
+
+      // Define filter parameters
+      recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+      recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+      recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+      // Apply tone stack
+      // Set parameters
+      this->mToneBass.SetParams(bassParams);
+      this->mToneMid.SetParams(midParams);
+      this->mToneTreble.SetParams(trebleParams);
+      sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
+      sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
+      sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
+      toneStackOutPointers = treblePointers;
+  }
   
-  
-  // Define filter parameters
-  recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-  recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-  recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
-  // Apply tone stack
-  // Set parameters
-  this->mToneBass.SetParams(bassParams);
-  this->mToneMid.SetParams(midParams);
-  this->mToneTreble.SetParams(trebleParams);
-  const size_t numChannels = (size_t) nChans;
-  const size_t numFrames = (size_t) nFrames;
-  sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
-  sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
-  sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
-  
-  sample** irPointers = treblePointers;
+  sample** irPointers = toneStackOutPointers;
   if (this->mIR != nullptr)
-    irPointers = this->mIR->Process(treblePointers, numChannels, numFrames);
+    irPointers = this->mIR->Process(toneStackOutPointers, numChannels, numFrames);
   
   // Let's get outta here
   this->_ProcessOutput(irPointers, outputs, nFrames);
