@@ -65,7 +65,7 @@ public:
 const IVColorSpec activeColorSpec{
     DEFAULT_BGCOLOR, // Background
     PluginColors::NAM_1, // Foreground
-    PluginColors::NAM_2.WithOpacity(0.4), // Pressed
+    PluginColors::NAM_2.WithOpacity(0.4f), // Pressed
     PluginColors::NAM_3, // Frame
     PluginColors::MOUSEOVER, // Highlight
     DEFAULT_SHCOLOR, // Shadow
@@ -106,17 +106,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
-  mDSP(nullptr),
-  mStagedDSP(nullptr),
+  mNAM(nullptr),
+  mStagedNAM(nullptr),
   mToneBass(),
   mToneMid(),
   mToneTreble(),
   mIR(),
-  mIRFileName(),
   mIRPath(),
-  mFlagRemoveDSP(false),
+  mFlagRemoveNAM(false),
   mFlagRemoveIR(false),
-  mDefaultModelString("Select model..."),
+  mDefaultNAMString("Select model..."),
   mDefaultIRString("Select IR...")
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
@@ -188,24 +187,24 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                 .WithDrawFrame(false)
                                                 .WithValueText({30, EAlign::Center, PluginColors::NAM_3})));
 
-    //    pGraphics->AttachControl(new IVBakedPresetManagerControl(modelArea, style.WithValueText({DEFAULT_TEXT_SIZE, EVAlign::Middle, COLOR_WHITE})));
-
     // Model loader button
-    auto loadModel = [&, pGraphics](IControl* pCaller) {
-      // TODO start from last directory on second load if possible.
-      WDL_String dir;
-      pGraphics->PromptForDirectory(dir, [&](const WDL_String& fileName, const WDL_String& path){
-        if (path.GetLength())
-          _GetDSP(path);
-      });
+    auto loadNAM = [&, pGraphics](IControl* pCaller) {
+      WDL_String filename;
+      WDL_String path(this->mNAMPath.remove_filepart());
+      pGraphics->PromptForFile(filename, path);
+      if (filename.GetLength()) {
+          // Sets mNAMPath and mStagedNAM
+          this->_GetNAM(filename);
+          // TODO error messages like the IR loader.
+      }
     };
-    
-    auto getIRPath = [&, pGraphics](IControl* pCaller) {
+    // IR loader button
+    auto loadIR = [&, pGraphics](IControl* pCaller) {
       WDL_String fileName;
-      WDL_String path(this->mIRPath.Get());
+      WDL_String path(this->mIRPath.remove_filepart());
       pGraphics->PromptForFile(fileName, path);
       if (fileName.GetLength()) {
-        this->mIRPath = path;
+        this->mIRPath = fileName;
         const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
         if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
             std::stringstream message;
@@ -249,25 +248,24 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         }
       }
     };
-    
     // Model-clearing function
-    auto ClearModel = [&, pGraphics](IControl* pCaller) {
-      this->mFlagRemoveDSP = true;
+    auto ClearNAM = [&, pGraphics](IControl* pCaller) {
+      this->mFlagRemoveNAM = true;
     };
     // IR-clearing function
     auto ClearIR = [&, pGraphics](IControl* pCaller) {
       this->mFlagRemoveIR = true;
     };
     
-    // Graphics objects for what model is loaded
+    // Graphics objects for what NAM is loaded
     const float iconWidth = fileHeight;  // Square icon
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadModel, folderSVG));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearModel, closeButtonSVG));
-    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultModelString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadNAM, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearNAM, closeButtonSVG));
+    pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultNAMString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     // IR
     pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), getIRPath, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadIR, folderSVG));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
 
@@ -334,7 +332,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     false, // draw frame
     // AttachFunc
     [](IContainerBase* pParent, const IRECT& r) {
-      pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1))));
+      pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
 
       pParent->AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", style
                                                   .WithDrawFrame(false)
@@ -379,13 +377,13 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   this->_ApplyDSPStaging();
   const bool toneStackActive = this->GetParam(kEQActive)->Value() > 0;
 
-  if (mDSP != nullptr)
+  if (mNAM != nullptr)
   {
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
-    mDSP->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mDSPParams);
-    mDSP->finalize_(nFrames);
+    mNAM->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mNAMParams);
+    mNAM->finalize_(nFrames);
   }
   else {
     this->_FallbackDSP(nFrames);
@@ -440,33 +438,33 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
-  chunk.PutStr(mModelPath.Get());
-  chunk.PutStr(this->mIRFileName.Get());
+  chunk.PutStr(mNAMPath.Get());
+  chunk.PutStr(this->mIRPath.Get());
   return SerializeParams(chunk);
 }
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
   WDL_String dir;
-  startPos = chunk.GetStr(mModelPath, startPos);
-  startPos = chunk.GetStr(this->mIRFileName, startPos);
-  this->mDSP = nullptr;
+  startPos = chunk.GetStr(mNAMPath, startPos);
+  startPos = chunk.GetStr(this->mIRPath, startPos);
+  this->mNAM = nullptr;
   this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
-  if (this->mModelPath.GetLength())
-    this->_GetDSP(this->mModelPath);
-  if (this->mIRFileName.GetLength())
-    this->_GetIR(this->mIRFileName);
+  if (this->mNAMPath.GetLength())
+    this->_GetNAM(this->mNAMPath);
+  if (this->mIRPath.GetLength())
+    this->_GetIR(this->mIRPath);
   return retcode;
 }
 
 void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
-  if (this->mModelPath.GetLength())
-    this->_SetModelMsg(this->mModelPath);
-  if (this->mIRFileName.GetLength())
-    this->_SetIRMsg(this->mIRFileName);
+  if (this->mNAMPath.GetLength())
+    this->_SetModelMsg(this->mNAMPath);
+  if (this->mIRPath.GetLength())
+    this->_SetIRMsg(this->mIRPath);
 }
 
 // Private methods ============================================================
@@ -474,26 +472,26 @@ void NeuralAmpModeler::OnUIOpen()
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
   // Move things from staged to live
-  if (this->mStagedDSP != nullptr)
+  if (this->mStagedNAM != nullptr)
   {
     // Move from staged to active DSP
-    this->mDSP = std::move(this->mStagedDSP);
-    this->mStagedDSP = nullptr;
+    this->mNAM = std::move(this->mStagedNAM);
+    this->mStagedNAM = nullptr;
   }
   if (this->mStagedIR != nullptr) {
     this->mIR = std::move(this->mStagedIR);
     this->mStagedIR = nullptr;
   }
   // Remove marked modules
-  if (this->mFlagRemoveDSP) {
-    this->mDSP = nullptr;
-    this->mModelPath.Set("");
+  if (this->mFlagRemoveNAM) {
+    this->mNAM = nullptr;
+    this->mNAMPath.Set("");
     this->_UnsetModelMsg();
-    this->mFlagRemoveDSP = false;
+    this->mFlagRemoveNAM = false;
   }
   if (this->mFlagRemoveIR) {
     this->mIR = nullptr;
-    this->mIRFileName.Set("");
+    this->mIRPath.Set("");
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
@@ -507,37 +505,36 @@ void NeuralAmpModeler::_FallbackDSP(const int nFrames)
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 
-void NeuralAmpModeler::_GetDSP(const WDL_String& modelPath)
+void NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
 {
-  WDL_String previousModelPath;
+  WDL_String previousModelPath = this->mNAMPath;
   try {
-    previousModelPath = mModelPath;
     auto dspPath = std::filesystem::path(modelPath.Get());
-    mStagedDSP = get_dsp(dspPath);
+    mStagedNAM = get_dsp(dspPath);
     this->_SetModelMsg(modelPath);
   }
   catch (std::exception& e) {
     std::stringstream ss;
     ss << "FAILED to load model";
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
-    if (mStagedDSP != nullptr) {
-      mStagedDSP = nullptr;
+    if (mStagedNAM != nullptr) {
+      mStagedNAM = nullptr;
     }
-    mModelPath = previousModelPath;
+    mNAMPath = previousModelPath;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
   }
 }
 
-dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
+dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
 {
-  WDL_String previousIRFileName;
-
-  previousIRFileName = this->mIRFileName;
+  // FIXME it'd be better for the path to be "staged" as well. Just in case the
+  // path and the model got caught on opposite sides of the fence...
+  WDL_String previousIRPath = this->mIRPath;
   const double sampleRate = this->GetSampleRate();
   dsp::wav::LoadReturnCode wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
   try {
-    this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(irFileName, sampleRate);
+    this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(irPath, sampleRate);
     wavState = this->mStagedIR->GetWavState();
   }
   catch (std::exception& e) {
@@ -546,13 +543,15 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irFileName)
     std::cerr << e.what() << std::endl;
   }
 
-  if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
-      this->_SetIRMsg(irFileName);
+  if (wavState == dsp::wav::LoadReturnCode::SUCCESS) {
+      this->_SetIRMsg(irPath);
+      this->mIRPath = irPath;
+  }
   else {
       if (this->mStagedIR != nullptr) {
           this->mStagedIR = nullptr;
       }
-      this->mIRFileName = previousIRFileName;
+      this->mIRPath = previousIRPath;
       std::stringstream ss;
       ss << "FAILED to load IR";
       SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
@@ -636,16 +635,16 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **ou
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
   auto dspPath = std::filesystem::path(modelPath.Get());
-  mModelPath = modelPath;
+  this->mNAMPath = modelPath;
   std::stringstream ss;
   ss << "Loaded " << dspPath.parent_path().filename();
   SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
-void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
+void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
 {
-  this->mIRFileName = irFileName;
-  auto dspPath = std::filesystem::path(irFileName.Get());
+  this->mIRPath = irPath;  // This might already be done elsewhere...need to dedup.
+  auto dspPath = std::filesystem::path(irPath.Get());
   std::stringstream ss;
   ss << "Loaded " << dspPath.filename();
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
@@ -653,7 +652,7 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irFileName)
 
 void NeuralAmpModeler::_UnsetModelMsg()
 {
-  this->_UnsetMsg(kCtrlTagModelName, this->mDefaultModelString);
+  this->_UnsetMsg(kCtrlTagModelName, this->mDefaultNAMString);
 }
 
 void NeuralAmpModeler::_UnsetIRMsg()

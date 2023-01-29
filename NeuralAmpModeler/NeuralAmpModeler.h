@@ -67,14 +67,16 @@ private:
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
-  // Gets a new DSP object and stores it to mStagedDSP
-  void _GetDSP(const WDL_String& dspPath);
-  // Gets the IR and stores to mStagedIR
-  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irFileName);
+  // Gets a new Neural Amp Model object and stores it to mStagedNAM
+  void _GetNAM(const WDL_String& dspPath);
+  // Gets the IR and stores to mStagedIR.
+  // Return status code so that error messages can be relayed if
+  // it wasn't successful.
+  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const {
-      return this->mDSP != nullptr;
+      return this->mNAM != nullptr;
   };
   // Prepare the input & output buffers
   void _PrepareBuffers(const int nFrames);
@@ -85,7 +87,7 @@ private:
   // Copy the output to the output buffer, applying output level.
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const int nFrames);
   // Update the text in the IR area to say what's loaded.
-  void _SetIRMsg(const WDL_String& modelPath);
+  void _SetIRMsg(const WDL_String& irPath);
   void _UnsetModelMsg();
   void _UnsetIRMsg();
   void _UnsetMsg(const int tag, const WDL_String& msg);
@@ -96,24 +98,25 @@ private:
 
   // Member data
     
-  // Input arrays
+  // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
-  // Output arrays
+  // Output from NAM
   std::vector<std::vector<iplug::sample>> mOutputArray;
   // Pointer versions
   iplug::sample** mInputPointers;
   iplug::sample** mOutputPointers;
   
-  // The DSPs actually being used:
-  std::unique_ptr<DSP> mDSP;
+  // The Neural Amp Model (NAM) actually being used:
+  std::unique_ptr<DSP> mNAM;
+  // And the IR
   std::unique_ptr<dsp::ImpulseResponse> mIR;
   // Manages switching what DSP is being used.
-  std::unique_ptr<DSP> mStagedDSP;
+  std::unique_ptr<DSP> mStagedNAM;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
-  bool mFlagRemoveDSP;
+  bool mFlagRemoveNAM;
   bool mFlagRemoveIR;
-  const WDL_String mDefaultModelString;
+  const WDL_String mDefaultNAMString;
   const WDL_String mDefaultIRString;
   
   // Tone stack modules
@@ -121,13 +124,12 @@ private:
   recursive_linear_filter::Peaking mToneMid;
   recursive_linear_filter::HighShelf mToneTreble;
   
-  // Paths to model and IR
-  WDL_String mModelPath;
-  WDL_String mIRFileName;
-  // Directory containing the file (for better file browsing on second load-in)
-  WDL_String mIRPath;  // Do we need this, or can we manipualte mITFileName (".dirname")
+  // Path to model's config.json or model.nam
+  WDL_String mNAMPath;
+  // Path to IR (.wav file)
+  WDL_String mIRPath;
   
-  std::unordered_map<std::string, double> mDSPParams = {
+  std::unordered_map<std::string, double> mNAMParams = {
     { "Input", 0.0 },
     { "Output", 0.0 }
   };
