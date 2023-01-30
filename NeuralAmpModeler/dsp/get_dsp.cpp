@@ -11,14 +11,41 @@
 
 void verify_config_version(const std::string version)
 {
-  const std::unordered_set<std::string> supported_versions({"0.2.0", "0.2.1", "0.3.0", "0.3.1", "0.4.0"});
+  const std::unordered_set<std::string> supported_versions({"0.2.0", "0.2.1", "0.3.0", "0.3.1", "0.4.0", "0.5.0"});
   if (supported_versions.find(version) == supported_versions.end())
     throw std::runtime_error("Unsupported config version");
 }
 
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
+std::vector<float> _get_weights(
+    nlohmann::json const& j,
+    const std::filesystem::path config_path)
 {
-  const std::filesystem::path config_filename = dirname / std::filesystem::path("config.json");
+    if (j.find("weights") != j.end()) { // New-style model
+        auto weight_list = j["weights"];
+        std::vector<float> weights;
+        for (auto it = weight_list.begin(); it != weight_list.end(); ++it)
+            weights.push_back(*it);
+        return weights;
+    }
+    else {  // Old-style config.json + weights.npy
+        std::filesystem::path weights_path = config_path.parent_path() / std::filesystem::path("weights.npy");
+        if (!std::filesystem::exists(weights_path)) {
+            std::stringstream s;
+            s << "No weights in model file, and could not find accompanying weights at expected location " << weights_path;
+            throw std::runtime_error(s.str());
+        }
+        return numpy_util::load_to_vector(weights_path);
+    }
+}
+
+std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path model_dir)
+{
+  auto config_filename = model_dir / std::filesystem::path("config.json");
+  return get_dsp(config_filename);
+}
+
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename)
+{
   if (!std::filesystem::exists(config_filename))
     throw std::runtime_error("Config JSON doesn't exist!\n");
   std::ifstream i(config_filename);
@@ -28,12 +55,12 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
 
   auto architecture = j["architecture"];
   nlohmann::json config = j["config"];
+  std::vector<float> params = _get_weights(j, config_filename);
 
   if (architecture == "Linear")
   {
     const int receptive_field = config["receptive_field"];
     const bool _bias = config["bias"];
-    std::vector<float> params = numpy_util::load_to_vector(dirname / std::filesystem::path("weights.npy"));
     return std::make_unique<Linear>(receptive_field, _bias, params);
   }
   else if (architecture == "ConvNet")
@@ -44,7 +71,6 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
     for (int i = 0; i < config["dilations"].size(); i++)
       dilations.push_back(config["dilations"][i]);
     const std::string activation = config["activation"];
-    std::vector<float> params = numpy_util::load_to_vector(dirname / std::filesystem::path("weights.npy"));
     return std::make_unique<convnet::ConvNet>(channels, dilations, batchnorm, activation, params);
   }
   else if (architecture == "LSTM")
@@ -52,7 +78,6 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
     const int num_layers = config["num_layers"];
     const int input_size = config["input_size"];
     const int hidden_size = config["hidden_size"];
-    std::vector<float> params = numpy_util::load_to_vector(dirname / std::filesystem::path("weights.npy"));
     auto json = nlohmann::json {};
     return std::make_unique<lstm::LSTM>(num_layers, input_size, hidden_size, params, json);
   }
@@ -61,7 +86,6 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
     const int num_layers = config["num_layers"];
     const int input_size = config["input_size"];
     const int hidden_size = config["hidden_size"];
-    std::vector<float> params = numpy_util::load_to_vector(dirname / std::filesystem::path("weights.npy"));
     return std::make_unique<lstm::LSTM>(num_layers, input_size, hidden_size, params, config["parametric"]);
   }
   else if (architecture == "WaveNet" || architecture == "CatWaveNet")
@@ -88,7 +112,6 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname)
     }
     const bool with_head = config["head"] == NULL;
     const float head_scale = config["head_scale"];
-    std::vector<float> params = numpy_util::load_to_vector(dirname / std::filesystem::path("weights.npy"));
     // Solves compilation issue on macOS Error: No matching constructor for initialization of 'wavenet::WaveNet'
     // Solution from https://stackoverflow.com/a/73956681/3768284
     auto parametric_json = architecture == "CatWaveNet" ? config["parametric"] : nlohmann::json{};

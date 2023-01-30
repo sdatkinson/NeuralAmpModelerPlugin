@@ -365,9 +365,10 @@ namespace convnet {
 // this plugin version.
 void verify_config_version(const std::string version);
 
-// Takes the directory, finds the required files, and uses them to instantiate
-// an instance of DSP.
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path dirname);
+// Takes the model file and uses it to instantiate an instance of DSP.
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path model_file);
+// Legacy loader for directory-type DSPs
+std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path dirname);
 
 // Hard-coded model:
 std::unique_ptr<DSP> get_hard_dsp();
