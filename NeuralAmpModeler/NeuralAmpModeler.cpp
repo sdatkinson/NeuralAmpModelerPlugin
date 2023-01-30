@@ -242,7 +242,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
             case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
                 message << "File is not mono.";
                 break;
+            case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
+                message << "Unsupported bits per sample";
+                break;
             case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+                message << "???";
+                break;
+            default:
                 message << "???";
                 break;
             }
