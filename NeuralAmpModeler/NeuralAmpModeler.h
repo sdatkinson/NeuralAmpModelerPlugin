@@ -69,10 +69,9 @@ private:
   size_t _GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
   // Returns a bool for whether the operation was successful.
-  // I need to do this because (sigh) macOS's sandboxing will prevent me from
-  // making a backwards-compatible loader without a lot of pain.
-  // Better to make a message and encourage users to upgrade the model.
-  bool _GetNAM(const WDL_String& dspPath);
+  bool _GetNAM(const WDL_String& dspFile);
+  // Legacy load from directory containing "config.json" and "weights.npy"
+  bool _GetNAMLegacy(const WDL_String& dspDirectory);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
@@ -130,6 +129,8 @@ private:
   
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
+  // Legacy
+  WDL_String mNAMLegacyPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
   

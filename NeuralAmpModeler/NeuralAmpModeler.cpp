@@ -141,6 +141,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
+    auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto folderSVG = pGraphics->LoadSVG(FOLDER_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
@@ -200,6 +201,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
             pGraphics->ShowMessageBox("Failed to load NAM model. If the model is an old \"directory-style\" model, it can be converted using the utility at https://github.com/sdatkinson/nam-model-utility", "Failed to load model!", kMB_OK);
       }
     };
+#if defined OS_MAC
+    // Legacy directory-based loader.
+    auto loadNAMLegacy = [&, pGraphics](IControl* pCaller) {
+      WDL_String dir;
+      pGraphics->PromptForDirectory(dir, [&](const WDL_String& fileName, const WDL_String& path){
+        if (path.GetLength())
+          _GetNAMLegacy(path);
+      });
+    };
+#endif
     // IR loader button
     auto loadIR = [&, pGraphics](IControl* pCaller) {
       WDL_String fileName;
@@ -268,12 +279,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Graphics objects for what NAM is loaded
     const float iconWidth = fileHeight;  // Square icon
     pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadNAM, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadNAM, fileSVG));
+#if defined OS_MAC
+    // Extra button for legacy model loading since Sandboxing prevent the Windows way of doing it.
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetTranslated(iconWidth, 0.0f).GetPadded(-2.f), loadNAMLegacy, folderSVG));
+#endif
     pGraphics->AttachControl(new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearNAM, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultNAMString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagModelName);
     // IR
     pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadIR, folderSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadIR, fileSVG));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
     pGraphics->AttachControl(new IVUpdateableLabelControl(irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(), style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))), kCtrlTagIRName);
 
@@ -446,7 +461,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again when we unserialize)
-  chunk.PutStr(mNAMPath.Get());
+  chunk.PutStr(this->mNAMPath.Get());
+  chunk.PutStr(this->mNAMLegacyPath.Get());
   chunk.PutStr(this->mIRPath.Get());
   return SerializeParams(chunk);
 }
@@ -454,11 +470,14 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
   WDL_String dir;
-  startPos = chunk.GetStr(mNAMPath, startPos);
+  startPos = chunk.GetStr(this->mNAMPath, startPos);
+  startPos = chunk.GetStr(this->mNAMLegacyPath, startPos);
   startPos = chunk.GetStr(this->mIRPath, startPos);
   this->mNAM = nullptr;
   this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
+  if (this->mNAMLegacyPath.GetLength())
+    this->_GetNAMLegacy(this->mNAMLegacyPath);
   if (this->mNAMPath.GetLength())
     this->_GetNAM(this->mNAMPath);
   if (this->mIRPath.GetLength())
@@ -469,6 +488,8 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
+  if (this->mNAMLegacyPath.GetLength())
+    this->_SetModelMsg(this->mNAMLegacyPath);
   if (this->mNAMPath.GetLength())
     this->_SetModelMsg(this->mNAMPath);
   if (this->mIRPath.GetLength())
@@ -494,6 +515,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   if (this->mFlagRemoveNAM) {
     this->mNAM = nullptr;
     this->mNAMPath.Set("");
+    this->mNAMLegacyPath.Set("");
     this->_UnsetModelMsg();
     this->mFlagRemoveNAM = false;
   }
@@ -515,20 +537,51 @@ void NeuralAmpModeler::_FallbackDSP(const int nFrames)
 
 bool NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
 {
-  WDL_String previousModelPath = this->mNAMPath;
+  WDL_String previousNAMPath = this->mNAMPath;
+  WDL_String previousNAMLegacyPath = this->mNAMLegacyPath;
   try {
     auto dspPath = std::filesystem::path(modelPath.Get());
     mStagedNAM = get_dsp(dspPath);
     this->_SetModelMsg(modelPath);
+    this->mNAMPath = modelPath;
+    this->mNAMLegacyPath.Set("");
   }
   catch (std::exception& e) {
     std::stringstream ss;
     ss << "FAILED to load model";
     SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    if (this->mStagedNAM != nullptr) {
+      this->mStagedNAM = nullptr;
+    }
+    this->mNAMPath = previousNAMPath;
+    this->mNAMLegacyPath = previousNAMLegacyPath;
+    std::cerr << "Failed to read DSP module" << std::endl;
+    std::cerr << e.what() << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool NeuralAmpModeler::_GetNAMLegacy(const WDL_String& modelDir)
+{
+  WDL_String previousNAMLegacyPath = this->mNAMLegacyPath;
+  WDL_String previousNAMPath = this->mNAMPath;
+  try {
+    auto dspPath = std::filesystem::path(modelDir.Get());
+    mStagedNAM = get_dsp_legacy(dspPath);
+    this->_SetModelMsg(modelDir);
+    this->mNAMLegacyPath = modelDir;
+    this->mNAMPath.Set("");
+  }
+  catch (std::exception& e) {
+    std::stringstream ss;
+    ss << "FAILED to load legacy model";
+    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
     if (mStagedNAM != nullptr) {
       mStagedNAM = nullptr;
     }
-    mNAMPath = previousModelPath;
+    this->mNAMLegacyPath = previousNAMLegacyPath;
+    this->mNAMPath = previousNAMLegacyPath;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
     return false;
@@ -645,7 +698,6 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **ou
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
   auto dspPath = std::filesystem::path(modelPath.Get());
-  this->mNAMPath = modelPath;
   std::stringstream ss;
   ss << "Loaded " << dspPath.filename();
   SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());

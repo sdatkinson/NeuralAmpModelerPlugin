@@ -38,6 +38,12 @@ std::vector<float> _get_weights(
     }
 }
 
+std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path model_dir)
+{
+  auto config_filename = model_dir / std::filesystem::path("config.json");
+  return get_dsp(config_filename);
+}
+
 std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename)
 {
   if (!std::filesystem::exists(config_filename))
