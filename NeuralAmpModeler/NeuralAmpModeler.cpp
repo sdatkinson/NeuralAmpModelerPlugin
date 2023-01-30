@@ -112,6 +112,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mToneMid(),
   mToneTreble(),
   mIR(),
+  mNAMPath(),
+  mNAMLegacyPath(),
   mIRPath(),
   mFlagRemoveNAM(false),
   mFlagRemoveIR(false),
