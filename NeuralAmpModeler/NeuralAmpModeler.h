@@ -68,7 +68,11 @@ private:
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
-  void _GetNAM(const WDL_String& dspPath);
+  // Returns a bool for whether the operation was successful.
+  // I need to do this because (sigh) macOS's sandboxing will prevent me from
+  // making a backwards-compatible loader without a lot of pain.
+  // Better to make a message and encourage users to upgrade the model.
+  bool _GetNAM(const WDL_String& dspPath);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.

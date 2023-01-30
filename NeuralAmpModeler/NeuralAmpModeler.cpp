@@ -194,8 +194,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pGraphics->PromptForFile(filename, path);
       if (filename.GetLength()) {
           // Sets mNAMPath and mStagedNAM
-          this->_GetNAM(filename);
+          bool success = this->_GetNAM(filename);
           // TODO error messages like the IR loader.
+          if (!success)
+            pGraphics->ShowMessageBox("Failed to load NAM model. If the model is an old \"directory-style\" model, it can be converted using the utility at https://github.com/sdatkinson/nam-model-utility", "Failed to load model!", kMB_OK);
       }
     };
     // IR loader button
@@ -505,7 +507,7 @@ void NeuralAmpModeler::_FallbackDSP(const int nFrames)
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 
-void NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
+bool NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
 {
   WDL_String previousModelPath = this->mNAMPath;
   try {
@@ -523,7 +525,9 @@ void NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
     mNAMPath = previousModelPath;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
+    return false;
   }
+  return true;
 }
 
 dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
@@ -637,7 +641,7 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
   auto dspPath = std::filesystem::path(modelPath.Get());
   this->mNAMPath = modelPath;
   std::stringstream ss;
-  ss << "Loaded " << dspPath.parent_path().filename();
+  ss << "Loaded " << dspPath.filename();
   SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
