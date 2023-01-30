@@ -699,7 +699,11 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
 {
   auto dspPath = std::filesystem::path(modelPath.Get());
   std::stringstream ss;
-  ss << "Loaded " << dspPath.filename();
+  ss << "Loaded ";
+  if (dspPath.has_filename())
+    ss << dspPath.filename().stem();  // /path/to/model.nam -> "model"
+  else
+    ss << dspPath.parent_path().filename(); // /path/to/model/ -> "model"
   SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
@@ -708,7 +712,7 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
   this->mIRPath = irPath;  // This might already be done elsewhere...need to dedup.
   auto dspPath = std::filesystem::path(irPath.Get());
   std::stringstream ss;
-  ss << "Loaded " << dspPath.filename();
+  ss << "Loaded " << dspPath.filename().stem();
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
