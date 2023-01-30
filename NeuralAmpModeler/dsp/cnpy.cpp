@@ -3,6 +3,7 @@
 //license available in LICENSE file, or at http://www.opensource.org/licenses/mit-license.php
 
 #include"cnpy.h"
+#include<cerrno>
 #include<complex>
 #include<cstdlib>
 #include<algorithm>
@@ -10,6 +11,7 @@
 #include<iomanip>
 #include<stdint.h>
 #include<stdexcept>
+#include<iostream>
 #include <regex>
 
 char cnpy::BigEndianTest() {
@@ -328,7 +330,13 @@ cnpy::NpyArray cnpy::npy_load(std::string fname) {
 
     FILE* fp = fopen(fname.c_str(), "rb");
 
-    if(!fp) throw std::runtime_error("npy_load: Unable to open file "+fname);
+    if (!fp) {
+        std::stringstream ss;
+        ss << "npy_load: Unable to open file " << fname << ":\n"
+        << std::strerror(errno) << std::endl;
+        
+        throw std::runtime_error(ss.str());
+    }
 
     NpyArray arr = load_the_npy_file(fp);
 

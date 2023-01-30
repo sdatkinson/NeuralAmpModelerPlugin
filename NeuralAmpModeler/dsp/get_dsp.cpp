@@ -28,7 +28,12 @@ std::vector<float> _get_weights(
         return weights;
     }
     else {  // Old-style config.json + weights.npy
-        auto weights_path = config_path.parent_path() / std::filesystem::path("weights.npy");
+        std::filesystem::path weights_path = config_path.parent_path() / std::filesystem::path("weights.npy");
+        if (!std::filesystem::exists(weights_path)) {
+            std::stringstream s;
+            s << "No weights in model file, and could not find accompanying weights at expected location " << weights_path;
+            throw std::runtime_error(s.str());
+        }
         return numpy_util::load_to_vector(weights_path);
     }
 }
