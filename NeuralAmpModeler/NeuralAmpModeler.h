@@ -33,6 +33,7 @@ enum ECtrlTags
   kCtrlTagIRName,
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
+  kCtrlTagAboutBox,
   kNumCtrlTags
 };
 

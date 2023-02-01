@@ -348,45 +348,51 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                        .WithColor(kFG, PluginColors::NAM_2), EDirection::Vertical, {}, 0, meterMin, meterMax, {}), kCtrlTagOutputMeter)
     ->As<IVPeakAvgMeterControl<>>()->SetPeakSize(2.0f);
 
-    // Help/about box
-    pGraphics->AttachControl(new IVAboutBoxControl(
-    new IRolloverCircleSVGButtonControl(mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20), DefaultClickActionFunc, helpSVG),
-    new IPanelControl(IRECT(),
-//    COLOR_LIGHT_GRAY,
-    IPattern::CreateLinearGradient(b, EDirection::Vertical, { {PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f} }),
-    false, // draw frame
-    // AttachFunc
-    [](IContainerBase* pParent, const IRECT& r) {
-      pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
+//     Help/about box
+    pGraphics->AttachControl(new IRolloverCircleSVGButtonControl(mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20), [pGraphics](IControl* pCaller){
+      pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
+    }, helpSVG));
 
-      pParent->AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", style
-                                                  .WithDrawFrame(false)
-                                                  .WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
+    pGraphics->AttachControl(new IAboutBoxControl(b,
+                            COLOR_GRAY,
+            // AttachFunc
+            [](IContainerBase* pParent, const IRECT& r) {
+              pParent->AddChildControl(new IPanelControl(IRECT(),                                                 IPattern::CreateLinearGradient(r, EDirection::Vertical, { {PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f} })));
+
+              pParent->AddChildControl(new IVPanelControl(IRECT(), "", style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f)).WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
+
+              pParent->AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", style
+                                                          .WithDrawFrame(false)
+                                                          .WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
+
+              WDL_String versionStr {"Version "};
+              versionStr.Append(PLUG_VERSION_STR);
+              pParent->AddChildControl(new IVLabelControl(IRECT(), versionStr.Get(), style
+                                                          .WithDrawFrame(false)
+                                                          .WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT })));
+              pParent->AddChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style
+                                                          .WithDrawFrame(false)
+                                                          .WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+              pParent->AddChildControl(new IURLControl(IRECT(),
+                                                        "Train your own model",
+                                                        "https://github.com/sdatkinson/neural-amp-modeler", {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT }));
       
-      WDL_String versionStr {"Version "};
-      versionStr.Append(PLUG_VERSION_STR);
-      pParent->AddChildControl(new IVLabelControl(IRECT(), versionStr.Get(), style
-                                                  .WithDrawFrame(false)
-                                                  .WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT })));
-      pParent->AddChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style
-                                                  .WithDrawFrame(false)
-                                                  .WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-      pParent->AddChildControl(new IURLControl(IRECT(),
-                                                "Train your own model",
-                                                "https://github.com/sdatkinson/neural-amp-modeler", {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT }));
-    },
-    // ResizeFunc
-    [](IContainerBase* pParent, const IRECT& r) {
-      const IRECT mainArea = r.GetPadded(-20);
-      const auto content = mainArea.GetPadded(-10);
-      const auto titleLabel = content.GetFromTop(50);
-      pParent->GetChild(0)->SetTargetAndDrawRECTs(mainArea);
-      pParent->GetChild(1)->SetTargetAndDrawRECTs(titleLabel);
-      pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-      pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
-      pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40));
-    })
-    ));
+            },
+            // ResizeFunc
+            [](IContainerBase* pParent, const IRECT& r) {
+              const IRECT mainArea = r.GetPadded(-20);
+              const auto content = mainArea.GetPadded(-10);
+              const auto titleLabel = content.GetFromTop(50);
+              pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
+              pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
+              pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
+              pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
+              pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
+              pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40));
+            },
+            // Animation Time
+            0)
+       , kCtrlTagAboutBox)->Hide(true);
   };
 }
 
