@@ -107,18 +107,21 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
   mNAM(nullptr),
+  mIR(nullptr),
   mStagedNAM(nullptr),
-  mToneBass(),
-  mToneMid(),
-  mToneTreble(),
-  mIR(),
-  mNAMPath(),
-  mNAMLegacyPath(),
-  mIRPath(),
+  mStagedIR(nullptr),
   mFlagRemoveNAM(false),
   mFlagRemoveIR(false),
   mDefaultNAMString("Select model..."),
-  mDefaultIRString("Select IR...")
+  mDefaultIRString("Select IR..."),
+  mToneBass(),
+  mToneMid(),
+  mToneTreble(),
+  mNAMPath(),
+  mNAMLegacyPath(),
+  mIRPath(),
+  mInputSender(),
+  mOutputSender()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -672,10 +675,14 @@ void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
 
 void NeuralAmpModeler::_PrepareIOPointers(const size_t nChans)
 {
-  if (this->mInputPointers != nullptr)
+  if (this->mInputPointers != nullptr) {
     delete[] this->mInputPointers;
-  if (this->mOutputPointers != nullptr)
+    this->mInputPointers = nullptr;
+  }
+  if (this->mOutputPointers != nullptr) {
     delete[] this->mOutputPointers;
+    this->mOutputPointers = nullptr;
+  }
   this->mInputPointers = new sample*[nChans];
   if (this->mInputPointers == nullptr)
     throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
