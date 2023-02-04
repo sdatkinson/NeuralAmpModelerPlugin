@@ -125,6 +125,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
+  GetParam(kEQActive)->InitBool("ToneStack", false);
 
 //  try {
 //     this->mDSP = get_hard_dsp();
@@ -307,7 +308,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    const bool toneStackIsActive = this->GetParam(kEQActive)->Value() > 0;
+    const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
     const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
     IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
     IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
@@ -406,7 +407,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   this->_PrepareBuffers(nFrames);
   this->_ProcessInput(inputs, nFrames);
   this->_ApplyDSPStaging();
-  const bool toneStackActive = this->GetParam(kEQActive)->Value() > 0;
+  const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
   if (mNAM != nullptr)
   {
