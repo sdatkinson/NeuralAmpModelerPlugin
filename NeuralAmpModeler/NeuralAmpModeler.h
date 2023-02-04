@@ -41,6 +41,7 @@ class NeuralAmpModeler final : public iplug::Plugin
 {
 public:
   NeuralAmpModeler(const iplug::InstanceInfo& info);
+  ~NeuralAmpModeler();
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
   void OnReset() override {
@@ -58,11 +59,15 @@ public:
   void OnUIOpen() override;
   
 private:
+  // Allocates mInputPointers and mOutputPointers
+  void _AllocateIOPointers(const size_t nChans);
   // Moves DSP modules from staging area to the main area.
   // Also deletes DSP modules that are flagged for removal.
   // Exists so that we don't try to use a DSP module that's only
   // partially-instantiated.
   void _ApplyDSPStaging();
+  // Deallocates mInputPointers and mOutputPointers
+  void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(const int nFrames);
   // Sizes based on mInputArray

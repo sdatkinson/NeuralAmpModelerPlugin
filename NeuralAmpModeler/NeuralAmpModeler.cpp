@@ -400,6 +400,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   };
 }
 
+NeuralAmpModeler::~NeuralAmpModeler()
+{
+  this->_DeallocateIOPointers();
+}
+
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
   // TODO clean up the types here
@@ -510,6 +515,20 @@ void NeuralAmpModeler::OnUIOpen()
 
 // Private methods ============================================================
 
+void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
+{
+  if (this->mInputPointers != nullptr)
+    throw std::runtime_error("Tried to re-allocate mInputPointers without freeing");
+  this->mInputPointers = new sample*[nChans];
+  if (this->mInputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Tried to re-allocate mOutputPointers without freeing");
+  this->mOutputPointers = new sample*[nChans];
+  if (this->mOutputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+}
+
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
   // Move things from staged to live
@@ -537,6 +556,22 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
+}
+
+void NeuralAmpModeler::_DeallocateIOPointers()
+{
+  if (this->mInputPointers != nullptr) {
+    delete[] this->mInputPointers;
+    this->mInputPointers = nullptr;
+  }
+  if (this->mInputPointers != nullptr)
+    throw std::runtime_error("Failed to deallocate pointer to input buffer!\n");
+  if (this->mOutputPointers != nullptr) {
+    delete[] this->mOutputPointers;
+    this->mOutputPointers = nullptr;
+  }
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Failed to deallocate pointer to output buffer!\n");
 }
 
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)
@@ -652,21 +687,21 @@ void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
   const size_t nChans = this->NOutChansConnected();
   const bool updateChannels = nChans != this->_GetBufferNumChannels();
   const bool updateFrames = updateChannels || (this->_GetBufferNumFrames() != nFrames);
-//  if (!updateChannels && !updateFrames)
+//  if (!updateChannels && !updateFrames)  // Could we do this?
 //    return;
   
-  if (updateChannels) {  // Does channels *and* frames just to be safe.
+  if (updateChannels) {
     this->_PrepareIOPointers(nChans);
     this->mInputArray.resize(nChans);
     this->mOutputArray.resize(nChans);
   }
-  if (updateFrames) { // and not update channels
+  if (updateFrames) {
     for (int c=0; c<nChans; c++) {
       this->mInputArray[c].resize(nFrames);
       this->mOutputArray[c].resize(nFrames);
     }
   }
-  // Would these ever change?
+  // Would these ever get changed by something?
   for (auto c=0; c<this->mInputArray.size(); c++) {
     this->mInputPointers[c] = this->mInputArray[c].data();
     this->mOutputPointers[c] = this->mOutputArray[c].data();
@@ -675,20 +710,8 @@ void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
 
 void NeuralAmpModeler::_PrepareIOPointers(const size_t nChans)
 {
-  if (this->mInputPointers != nullptr) {
-    delete[] this->mInputPointers;
-    this->mInputPointers = nullptr;
-  }
-  if (this->mOutputPointers != nullptr) {
-    delete[] this->mOutputPointers;
-    this->mOutputPointers = nullptr;
-  }
-  this->mInputPointers = new sample*[nChans];
-  if (this->mInputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
-  this->mOutputPointers = new sample*[nChans];
-  if (this->mOutputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+  this->_DeallocateIOPointers();
+  this->_AllocateIOPointers(nChans);
 }
 
 void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
