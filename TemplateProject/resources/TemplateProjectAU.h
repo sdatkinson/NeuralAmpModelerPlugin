@@ -8,8 +8,8 @@
 
 #define IPLUG_AUVIEWCONTROLLER IPlugAUViewController_vTemplateProject
 #define IPLUG_AUAUDIOUNIT IPlugAUAudioUnit_vTemplateProject
-#import <TemplateProjectAU/IPlugAUAudioUnit.h>
 #import <TemplateProjectAU/IPlugAUViewController.h>
+#import <TemplateProjectAU/IPlugAUAudioUnit.h>
 
 //! Project version number for TemplateProjectAU.
 FOUNDATION_EXPORT double TemplateProjectAUVersionNumber;
