@@ -88,13 +88,24 @@ private:
       return this->mNAM != nullptr;
   };
   // Prepare the input & output buffers
-  void _PrepareBuffers(const int nFrames);
+  void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
   void _PrepareIOPointers(const size_t nChans);
   // Copy the input buffer to the object, applying input level.
-  void _ProcessInput(iplug::sample** inputs, const int nFrames);
+  // :param nChansIn: In from external
+  // :param nChansOut: Out to the internal of the DSP routine
+  void _ProcessInput(iplug::sample** inputs,
+                     const size_t nFrames,
+                     const size_t nChansIn,
+                     const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
-  void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const int nFrames);
+  // :param nChansIn: In from internal
+  // :param nChansOut: Out to external
+  void _ProcessOutput(iplug::sample** inputs,
+                      iplug::sample** outputs,
+                      const size_t nFrames,
+                      const size_t nChansIn,
+                      const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
   void _SetIRMsg(const WDL_String& irPath);
   void _UnsetModelMsg();
@@ -103,9 +114,16 @@ private:
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const int nFrames);
+  void _UpdateMeters(iplug::sample** inputPointer,
+                     iplug::sample** outputPointer,
+                     const size_t nFrames,
+                     const size_t nChansIn,
+                     const size_t nChansOut);
 
   // Member data
+  
+  // The plugin is mono inside
+  const size_t mNUM_INTERNAL_CHANNELS = 1;
     
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
