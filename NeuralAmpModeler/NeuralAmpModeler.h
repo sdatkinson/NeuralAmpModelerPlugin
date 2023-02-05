@@ -1,21 +1,17 @@
 #pragma once
 
-#include "choc_DisableAllWarnings.h"
-#include "dsp.h"
-#include "choc_ReenableAllWarnings.h"
-#include "dsp/RecursiveLinearFilter.h"
-#include "dsp/ImpulseResponse.h"
-
 #include "IPlug_include_in_plug_hdr.h"
-
 #include "ISender.h"
-
+#include "choc_DisableAllWarnings.h"
+#include "choc_ReenableAllWarnings.h"
+#include "dsp.h"
+#include "dsp/ImpulseResponse.h"
+#include "dsp/RecursiveLinearFilter.h"
 #include "dsp/wav.h"
 
 const int kNumPresets = 1;
 
-enum EParams
-{
+enum EParams {
   kInputLevel = 0,
   kToneBass,
   kToneMid,
@@ -27,8 +23,7 @@ enum EParams
 
 const int numKnobs = 5;
 
-enum ECtrlTags
-{
+enum ECtrlTags {
   kCtrlTagModelName = 0,
   kCtrlTagIRName,
   kCtrlTagInputMeter,
@@ -37,13 +32,13 @@ enum ECtrlTags
   kNumCtrlTags
 };
 
-class NeuralAmpModeler final : public iplug::Plugin
-{
+class NeuralAmpModeler final : public iplug::Plugin {
 public:
-  NeuralAmpModeler(const iplug::InstanceInfo& info);
+  NeuralAmpModeler(const iplug::InstanceInfo &info);
   ~NeuralAmpModeler();
 
-  void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
+  void ProcessBlock(iplug::sample **inputs, iplug::sample **outputs,
+                    int nFrames) override;
   void OnReset() override {
     const auto sampleRate = this->GetSampleRate();
     this->mInputSender.Reset(sampleRate);
@@ -53,11 +48,11 @@ public:
     this->mInputSender.TransmitData(*this);
     this->mOutputSender.TransmitData(*this);
   }
-  
-  bool SerializeState(iplug::IByteChunk& chunk) const override;
-  int UnserializeState(const iplug::IByteChunk& chunk, int startPos) override;
+
+  bool SerializeState(iplug::IByteChunk &chunk) const override;
+  int UnserializeState(const iplug::IByteChunk &chunk, int startPos) override;
   void OnUIOpen() override;
-  
+
 private:
   // Allocates mInputPointers and mOutputPointers
   void _AllocateIOPointers(const size_t nChans);
@@ -75,18 +70,16 @@ private:
   size_t _GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
   // Returns a bool for whether the operation was successful.
-  bool _GetNAM(const WDL_String& dspFile);
+  bool _GetNAM(const WDL_String &dspFile);
   // Legacy load from directory containing "config.json" and "weights.npy"
-  bool _GetNAMLegacy(const WDL_String& dspDirectory);
+  bool _GetNAMLegacy(const WDL_String &dspDirectory);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
-  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
+  dsp::wav::LoadReturnCode _GetIR(const WDL_String &irPath);
   // Update the message about which model is loaded.
-  void _SetModelMsg(const WDL_String& dspPath);
-  bool _HaveModel() const {
-      return this->mNAM != nullptr;
-  };
+  void _SetModelMsg(const WDL_String &dspPath);
+  bool _HaveModel() const { return this->mNAM != nullptr; };
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
@@ -94,45 +87,39 @@ private:
   // Copy the input buffer to the object, applying input level.
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(iplug::sample** inputs,
-                     const size_t nFrames,
-                     const size_t nChansIn,
-                     const size_t nChansOut);
+  void _ProcessInput(iplug::sample **inputs, const size_t nFrames,
+                     const size_t nChansIn, const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
   // :param nChansOut: Out to external
-  void _ProcessOutput(iplug::sample** inputs,
-                      iplug::sample** outputs,
-                      const size_t nFrames,
-                      const size_t nChansIn,
+  void _ProcessOutput(iplug::sample **inputs, iplug::sample **outputs,
+                      const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
-  void _SetIRMsg(const WDL_String& irPath);
+  void _SetIRMsg(const WDL_String &irPath);
   void _UnsetModelMsg();
   void _UnsetIRMsg();
-  void _UnsetMsg(const int tag, const WDL_String& msg);
+  void _UnsetMsg(const int tag, const WDL_String &msg);
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(iplug::sample** inputPointer,
-                     iplug::sample** outputPointer,
-                     const size_t nFrames,
-                     const size_t nChansIn,
-                     const size_t nChansOut);
+  void _UpdateMeters(iplug::sample **inputPointer,
+                     iplug::sample **outputPointer, const size_t nFrames,
+                     const size_t nChansIn, const size_t nChansOut);
 
   // Member data
-  
+
   // The plugin is mono inside
   const size_t mNUM_INTERNAL_CHANNELS = 1;
-    
+
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
   // Output from NAM
   std::vector<std::vector<iplug::sample>> mOutputArray;
   // Pointer versions
-  iplug::sample** mInputPointers;
-  iplug::sample** mOutputPointers;
-  
+  iplug::sample **mInputPointers;
+  iplug::sample **mOutputPointers;
+
   // The Neural Amp Model (NAM) actually being used:
   std::unique_ptr<DSP> mNAM;
   // And the IR
@@ -145,24 +132,22 @@ private:
   bool mFlagRemoveIR;
   const WDL_String mDefaultNAMString;
   const WDL_String mDefaultIRString;
-  
+
   // Tone stack modules
   recursive_linear_filter::LowShelf mToneBass;
   recursive_linear_filter::Peaking mToneMid;
   recursive_linear_filter::HighShelf mToneTreble;
-  
+
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
   // Legacy
   WDL_String mNAMLegacyPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
-  
-  std::unordered_map<std::string, double> mNAMParams = {
-    { "Input", 0.0 },
-    { "Output", 0.0 }
-  };
-  
+
+  std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0},
+                                                        {"Output", 0.0}};
+
   iplug::IPeakAvgSender<> mInputSender;
   iplug::IPeakAvgSender<> mOutputSender;
 };

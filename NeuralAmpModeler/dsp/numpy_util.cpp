@@ -6,8 +6,7 @@
 #include "cnpy.h"
 #include "numpy_util.h"
 
-std::vector<float> numpy_util::load_to_vector(std::filesystem::path path)
-{
+std::vector<float> numpy_util::load_to_vector(std::filesystem::path path) {
   cnpy::NpyArray x = cnpy::npy_load(path.string());
   if (x.shape.size() != 1)
     throw std::runtime_error("Expected 1D array.\n");
