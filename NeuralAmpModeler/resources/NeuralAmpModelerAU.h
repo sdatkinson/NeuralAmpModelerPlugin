@@ -8,8 +8,8 @@
 
 #define IPLUG_AUVIEWCONTROLLER IPlugAUViewController_vNeuralAmpModeler
 #define IPLUG_AUAUDIOUNIT IPlugAUAudioUnit_vNeuralAmpModeler
-#import <NeuralAmpModelerAU/IPlugAUAudioUnit.h>
 #import <NeuralAmpModelerAU/IPlugAUViewController.h>
+#import <NeuralAmpModelerAU/IPlugAUAudioUnit.h>
 
 //! Project version number for NeuralAmpModelerAU.
 FOUNDATION_EXPORT double NeuralAmpModelerAUVersionNumber;
