@@ -699,10 +699,14 @@ void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t nu
     this->mOutputArray.resize(numChannels);
   }
   if (updateFrames) {
-    for (auto c=0; c<this->mInputArray.size(); c++)
+    for (auto c=0; c<this->mInputArray.size(); c++) {
       this->mInputArray[c].resize(numFrames);
-    for (auto c=0; c<this->mOutputArray.size(); c++)
+      std::fill(this->mInputArray[c].begin(), this->mInputArray[c].end(), 0.0);
+    }
+    for (auto c=0; c<this->mOutputArray.size(); c++) {
       this->mOutputArray[c].resize(numFrames);
+      std::fill(this->mOutputArray[c].begin(), this->mOutputArray[c].end(), 0.0);
+    }
   }
   // Would these ever get changed by something?
   for (auto c=0; c<this->mInputArray.size(); c++)
