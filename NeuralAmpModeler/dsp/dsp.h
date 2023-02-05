@@ -398,6 +398,12 @@ namespace dsp {
   protected:
     // Methods
     
+    // Allocate mOutputPointers.
+    // Assumes it's already null (Use _DeallocateOutputPointers()).
+    void _AllocateOutputPointers(const size_t numChannels);
+    // Ensure mOutputPointers is freed.
+    void _DeallocateOutputPointers();
+    
     size_t _GetNumChannels() const {return this->mOutputs.size();};
     // Return a pointer-to-pointers for the DSP's output buffers (all channels)
     // Assumes that ._PrepareBuffers()  was called recently enough.

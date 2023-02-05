@@ -107,24 +107,28 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mInputPointers(nullptr),
   mOutputPointers(nullptr),
   mNAM(nullptr),
+  mIR(nullptr),
   mStagedNAM(nullptr),
-  mToneBass(),
-  mToneMid(),
-  mToneTreble(),
-  mIR(),
-  mNAMPath(),
-  mNAMLegacyPath(),
-  mIRPath(),
+  mStagedIR(nullptr),
   mFlagRemoveNAM(false),
   mFlagRemoveIR(false),
   mDefaultNAMString("Select model..."),
-  mDefaultIRString("Select IR...")
+  mDefaultIRString("Select IR..."),
+  mToneBass(),
+  mToneMid(),
+  mToneTreble(),
+  mNAMPath(),
+  mNAMLegacyPath(),
+  mIRPath(),
+  mInputSender(),
+  mOutputSender()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
+  GetParam(kEQActive)->InitBool("ToneStack", false);
 
 //  try {
 //     this->mDSP = get_hard_dsp();
@@ -307,7 +311,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     
     // The knobs
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    const bool toneStackIsActive = this->GetParam(kEQActive)->Value() > 0;
+    const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
     const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
     IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
     IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
@@ -396,23 +400,30 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   };
 }
 
+NeuralAmpModeler::~NeuralAmpModeler()
+{
+  this->_DeallocateIOPointers();
+}
+
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
-  // TODO clean up the types here
-  const int nChans = this->NOutChansConnected();
-  const size_t numChannels = (size_t)nChans;
+  const size_t numChannelsExternalIn = (size_t) this->NInChansConnected();
+  const size_t numChannelsExternalOut = (size_t) this->NOutChansConnected();
+  const size_t numChannelsInternal = this->mNUM_INTERNAL_CHANNELS;
   const size_t numFrames = (size_t)nFrames;
 
-  this->_PrepareBuffers(nFrames);
-  this->_ProcessInput(inputs, nFrames);
+  this->_PrepareBuffers(numChannelsInternal, numFrames);
+  // Input is collapsed to mono in preparation for the NAM.
+  this->_ProcessInput(inputs, numFrames, numChannelsExternalIn, numChannelsInternal);
   this->_ApplyDSPStaging();
-  const bool toneStackActive = this->GetParam(kEQActive)->Value() > 0;
+  const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
   if (mNAM != nullptr)
   {
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
+    const int nChans = (int) numChannelsInternal;
     mNAM->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mNAMParams);
     mNAM->finalize_(nFrames);
   }
@@ -449,21 +460,22 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
       this->mToneBass.SetParams(bassParams);
       this->mToneMid.SetParams(midParams);
       this->mToneTreble.SetParams(trebleParams);
-      sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannels, numFrames);
-      sample** midPointers = this->mToneMid.Process(bassPointers, numChannels, numFrames);
-      sample** treblePointers = this->mToneTreble.Process(midPointers, numChannels, numFrames);
+      sample** bassPointers = this->mToneBass.Process(this->mOutputPointers, numChannelsInternal, numFrames);
+      sample** midPointers = this->mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
+      sample** treblePointers = this->mToneTreble.Process(midPointers, numChannelsInternal, numFrames);
       toneStackOutPointers = treblePointers;
   }
   
   sample** irPointers = toneStackOutPointers;
   if (this->mIR != nullptr)
-    irPointers = this->mIR->Process(toneStackOutPointers, numChannels, numFrames);
+    irPointers = this->mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
   
   // Let's get outta here
-  this->_ProcessOutput(irPointers, outputs, nFrames);
+  // This is where we exit mono for whatever the output requires.
+  this->_ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
-  this->_UpdateMeters(this->mInputPointers, outputs, nFrames);
+  this->_UpdateMeters(this->mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
 }
 
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
@@ -506,6 +518,20 @@ void NeuralAmpModeler::OnUIOpen()
 
 // Private methods ============================================================
 
+void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
+{
+  if (this->mInputPointers != nullptr)
+    throw std::runtime_error("Tried to re-allocate mInputPointers without freeing");
+  this->mInputPointers = new sample*[nChans];
+  if (this->mInputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Tried to re-allocate mOutputPointers without freeing");
+  this->mOutputPointers = new sample*[nChans];
+  if (this->mOutputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+}
+
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
   // Move things from staged to live
@@ -535,11 +561,27 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   }
 }
 
+void NeuralAmpModeler::_DeallocateIOPointers()
+{
+  if (this->mInputPointers != nullptr) {
+    delete[] this->mInputPointers;
+    this->mInputPointers = nullptr;
+  }
+  if (this->mInputPointers != nullptr)
+    throw std::runtime_error("Failed to deallocate pointer to input buffer!\n");
+  if (this->mOutputPointers != nullptr) {
+    delete[] this->mOutputPointers;
+    this->mOutputPointers = nullptr;
+  }
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Failed to deallocate pointer to output buffer!\n");
+}
+
 void NeuralAmpModeler::_FallbackDSP(const int nFrames)
 {
-  const int nChans = this->NOutChansConnected();
-  for (int c=0; c<nChans; c++)
-    for (int s=0; s<nFrames; s++)
+  const size_t nChans = this->mNUM_INTERNAL_CHANNELS;
+  for (auto c=0; c<nChans; c++)
+    for (auto s=0; s<nFrames; s++)
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 
@@ -633,6 +675,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const
 {
+  // Assumes input=output (no mono->stereo effects)
   return this->mInputArray.size();
 }
 
@@ -643,64 +686,70 @@ size_t NeuralAmpModeler::_GetBufferNumFrames() const
   return this->mInputArray[0].size();
 }
 
-void NeuralAmpModeler::_PrepareBuffers(const int nFrames)
+void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
 {
-  const size_t nChans = this->NOutChansConnected();
-  const bool updateChannels = nChans != this->_GetBufferNumChannels();
-  const bool updateFrames = updateChannels || (this->_GetBufferNumFrames() != nFrames);
-//  if (!updateChannels && !updateFrames)
+  const bool updateChannels = numChannels != this->_GetBufferNumChannels();
+  const bool updateFrames = updateChannels || (this->_GetBufferNumFrames() != numFrames);
+//  if (!updateChannels && !updateFrames)  // Could we do this?
 //    return;
   
-  if (updateChannels) {  // Does channels *and* frames just to be safe.
-    this->_PrepareIOPointers(nChans);
-    this->mInputArray.resize(nChans);
-    this->mOutputArray.resize(nChans);
+  if (updateChannels) {
+    this->_PrepareIOPointers(numChannels);
+    this->mInputArray.resize(numChannels);
+    this->mOutputArray.resize(numChannels);
   }
-  if (updateFrames) { // and not update channels
-    for (int c=0; c<nChans; c++) {
-      this->mInputArray[c].resize(nFrames);
-      this->mOutputArray[c].resize(nFrames);
-    }
+  if (updateFrames) {
+    for (auto c=0; c<this->mInputArray.size(); c++)
+      this->mInputArray[c].resize(numFrames);
+    for (auto c=0; c<this->mOutputArray.size(); c++)
+      this->mOutputArray[c].resize(numFrames);
   }
-  // Would these ever change?
-  for (auto c=0; c<this->mInputArray.size(); c++) {
+  // Would these ever get changed by something?
+  for (auto c=0; c<this->mInputArray.size(); c++)
     this->mInputPointers[c] = this->mInputArray[c].data();
+  for (auto c=0; c<this->mOutputArray.size(); c++)
     this->mOutputPointers[c] = this->mOutputArray[c].data();
+}
+
+void NeuralAmpModeler::_PrepareIOPointers(const size_t numChannels)
+{
+  this->_DeallocateIOPointers();
+  this->_AllocateIOPointers(numChannels);
+}
+
+void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs,
+                                     const size_t nFrames,
+                                     const size_t nChansIn,
+                                     const size_t nChansOut)
+{
+  // Assume _PrepareBuffers() was already called
+  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
+  if (nChansOut <= nChansIn)  // Many->few: Drop additional channels
+    for (size_t c=0; c<nChansOut; c++)
+      for (size_t s=0; s<nFrames; s++)
+        this->mInputArray[c][s] = gain * inputs[c][s];
+  else {
+    // Something is wrong--this is a mono plugin. How could there be fewer
+    // incoming channels?
+    throw std::runtime_error("Unexpected input processing--sees fewer than 1 incoming channel?");
   }
 }
 
-void NeuralAmpModeler::_PrepareIOPointers(const size_t nChans)
-{
-  if (this->mInputPointers != nullptr)
-    delete[] this->mInputPointers;
-  if (this->mOutputPointers != nullptr)
-    delete[] this->mOutputPointers;
-  this->mInputPointers = new sample*[nChans];
-  if (this->mInputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to input buffer!\n");
-  this->mOutputPointers = new sample*[nChans];
-  if (this->mOutputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
-}
-
-void NeuralAmpModeler::_ProcessInput(iplug::sample **inputs, const int nFrames)
-{
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
-  const size_t nChans = this->NOutChansConnected();
-  // Assume _PrepareBuffers() was already called
-  for (int c=0; c<nChans; c++)
-    for (int s=0; s<nFrames; s++)
-      this->mInputArray[c][s] = gain * inputs[c][s];
-}
-
-void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample **outputs, const int nFrames)
+void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs,
+                                      iplug::sample **outputs,
+                                      const size_t nFrames,
+                                      const size_t nChansIn,
+                                      const size_t nChansOut)
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
-  const size_t nChans = this->NOutChansConnected();
   // Assume _PrepareBuffers() was already called
-  for (int c=0; c<nChans; c++)
-    for (int s=0; s<nFrames; s++)
-      outputs[c][s] = std::clamp(gain * inputs[c][s], -1.0, 1.0);
+  if (nChansIn != 1)
+    throw std::runtime_error("Plugin is supposed to process in mono.");
+  // Broadcast the internal mono stream to all output channels.
+  const size_t cin = 0;
+  for (auto cout=0; cout<nChansOut; cout++)
+    for (auto s=0; s<nFrames; s++)
+      outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
@@ -739,8 +788,20 @@ void NeuralAmpModeler::_UnsetMsg(const int tag, const WDL_String &msg)
   SendControlMsgFromDelegate(tag, 0, int(strlen(msg.Get())), msg.Get());
 }
 
-void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const int nFrames)
+void NeuralAmpModeler::_UpdateMeters(sample** inputPointer,
+                                     sample** outputPointer,
+                                     const size_t nFrames,
+                                     const size_t nChansIn,
+                                     const size_t nChansOut)
 {
-  this->mInputSender.ProcessBlock(inputPointer, nFrames, kCtrlTagInputMeter);
-  this->mOutputSender.ProcessBlock(outputPointer, nFrames, kCtrlTagOutputMeter);
+  // Right now, we didn't specify MAXNC when we initialized these, so it's 1.
+  const int nChansHack = 1;
+  this->mInputSender.ProcessBlock(inputPointer,
+                                  (int) nFrames,
+                                  kCtrlTagInputMeter,
+                                  nChansHack);
+  this->mOutputSender.ProcessBlock(outputPointer,
+                                   (int) nFrames,
+                                   kCtrlTagOutputMeter,
+                                   nChansHack);
 }
