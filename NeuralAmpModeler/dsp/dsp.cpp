@@ -206,12 +206,12 @@ void tanh_(Eigen::MatrixXf &x) { tanh_(x, 0, x.rows(), 0, x.cols()); }
 
 void Conv1D::set_params_(std::vector<float>::iterator &params) {
   if (this->_weight.size() > 0) {
-    const int out_channels = this->_weight[0].rows();
-    const int in_channels = this->_weight[0].cols();
+    const long out_channels = this->_weight[0].rows();
+    const long in_channels = this->_weight[0].cols();
     // Crazy ordering because that's how it gets flattened.
-    for (int i = 0; i < out_channels; i++)
-      for (int j = 0; j < in_channels; j++)
-        for (int k = 0; k < this->_weight.size(); k++)
+    for (auto i = 0; i < out_channels; i++)
+      for (auto j = 0; j < in_channels; j++)
+        for (auto k = 0; k < this->_weight.size(); k++)
           this->_weight[k](i, j) = *(params++);
   }
   for (int i = 0; i < this->_bias.size(); i++)
@@ -319,7 +319,7 @@ void convnet::BatchNorm::process_(Eigen::MatrixXf &x, const long i_start,
                                   const long i_end) const {
   // todo using colwise?
   // #speed but conv probably dominates
-  for (int i = i_start; i < i_end; i++) {
+  for (auto i = i_start; i < i_end; i++) {
     x.col(i) = x.col(i).cwiseProduct(this->scale);
     x.col(i) += this->loc;
   }
@@ -356,7 +356,7 @@ void convnet::ConvNetBlock::process_(const Eigen::MatrixXf &input,
     throw std::runtime_error("Unrecognized activation");
 }
 
-int convnet::ConvNetBlock::get_out_channels() const {
+long convnet::ConvNetBlock::get_out_channels() const {
   return this->conv.get_out_channels();
 }
 
@@ -384,7 +384,6 @@ convnet::ConvNet::ConvNet(const int channels, const std::vector<int> &dilations,
   this->_verify_params(channels, dilations, batchnorm, params.size());
   this->_blocks.resize(dilations.size());
   std::vector<float>::iterator it = params.begin();
-  int in_channels = 1;
   for (int i = 0; i < dilations.size(); i++)
     this->_blocks[i].set_params_(i == 0 ? 1 : channels, channels, dilations[i],
                                  batchnorm, activation, it);
@@ -399,13 +398,13 @@ convnet::ConvNet::ConvNet(const int channels, const std::vector<int> &dilations,
 void convnet::ConvNet::_process_core_() {
   this->_update_buffers_();
   // Main computation!
-  const int i_start = this->_input_buffer_offset;
+  const long i_start = this->_input_buffer_offset;
   const long num_frames = this->_input_post_gain.size();
   const long i_end = i_start + num_frames;
   // TODO one unnecessary copy :/ #speed
-  for (int i = i_start; i < i_end; i++)
+  for (auto i = i_start; i < i_end; i++)
     this->_block_vals[0](0, i) = this->_input_buffer[i];
-  for (long i = 0; i < this->_blocks.size(); i++)
+  for (auto i = 0; i < this->_blocks.size(); i++)
     this->_blocks[i].process_(this->_block_vals[i], this->_block_vals[i + 1],
                               i_start, i_end);
   // TODO clean up this allocation
@@ -421,7 +420,7 @@ void convnet::ConvNet::_process_core_() {
 void convnet::ConvNet::_verify_params(const int channels,
                                       const std::vector<int> &dilations,
                                       const bool batchnorm,
-                                      const int actual_params) {
+                                      const size_t actual_params) {
   // TODO
 }
 

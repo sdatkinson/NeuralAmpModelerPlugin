@@ -31,10 +31,10 @@ public:
   void process_(const Eigen::MatrixXf &input, const Eigen::MatrixXf &condition,
                 Eigen::MatrixXf &head_input, Eigen::MatrixXf &output,
                 const long i_start, const long j_start);
-  void set_num_frames_(const int num_frames);
-  int get_channels() const { return this->_conv.get_in_channels(); };
+  void set_num_frames_(const long num_frames);
+  long get_channels() const { return this->_conv.get_in_channels(); };
   int get_dilation() const { return this->_conv.get_dilation(); };
-  int get_kernel_size() const { return this->_conv.get_kernel_size(); };
+  long get_kernel_size() const { return this->_conv.get_kernel_size(); };
 
 private:
   // The dilated convolution at the front of the block
@@ -89,7 +89,7 @@ public:
   // Rewind buffers if needed
   // Shift index to prepare
   //
-  void prepare_for_frames_(const int num_frames);
+  void prepare_for_frames_(const long num_frames);
 
   // All arrays are "short".
   void process_(const Eigen::MatrixXf &layer_inputs, // Short
@@ -98,7 +98,7 @@ public:
                 Eigen::MatrixXf &head_inputs,        // Sum up on this.
                 Eigen::MatrixXf &head_outputs        // post head-rechannel
   );
-  void set_num_frames_(const int num_frames);
+  void set_num_frames_(const long num_frames);
   void set_params_(std::vector<float>::iterator &it);
 
   long get_receptive_field() const;
@@ -121,7 +121,7 @@ private:
   long _get_buffer_size() const {
     return this->_layer_buffers.size() > 0 ? this->_layer_buffers[0].cols() : 0;
   };
-  int _get_channels() const;
+  long _get_channels() const;
   long _get_receptive_field() const;
   void _rewind_buffers_();
 };
@@ -136,7 +136,7 @@ public:
   // NOTE: the head transforms the provided input by applying a nonlinearity
   // to it in-place!
   void process_(Eigen::MatrixXf &inputs, Eigen::MatrixXf &outputs);
-  void set_num_frames_(const int num_frames);
+  void set_num_frames_(const long num_frames);
 
 private:
   int _channels;
@@ -168,7 +168,7 @@ public:
   void set_params_(std::vector<float> &params);
 
 private:
-  int _num_frames;
+  long _num_frames;
   std::vector<_LayerArray> _layer_arrays;
   // Their outputs
   std::vector<Eigen::MatrixXf> _layer_array_outputs;
@@ -188,12 +188,12 @@ private:
   void _advance_buffers_(const int num_frames);
   // Get the info from the parametric config
   void _init_parametric_(nlohmann::json &parametric);
-  void _prepare_for_frames_(const int num_frames);
+  void _prepare_for_frames_(const long num_frames);
   // Reminder: From ._input_post_gain to ._core_dsp_output
   void _process_core_() override;
 
   // Ensure that all buffer arrays are the right size for this num_frames
-  void _set_num_frames_(const int num_frames);
+  void _set_num_frames_(const long num_frames);
 
   // The net starts with random parameters inside; we need to wait for a full
   // receptive field to pass through before we can count on the output being

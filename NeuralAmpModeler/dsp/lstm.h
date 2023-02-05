@@ -42,8 +42,8 @@ private:
   // Cell state
   Eigen::VectorXf _c;
 
-  int _get_hidden_size() const { return this->_b.size() / 4; };
-  int _get_input_size() const {
+  long _get_hidden_size() const { return this->_b.size() / 4; };
+  long _get_input_size() const {
     return this->_xh.size() - this->_get_hidden_size();
   };
 };

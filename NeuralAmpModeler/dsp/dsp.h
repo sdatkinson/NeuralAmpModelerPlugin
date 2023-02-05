@@ -196,7 +196,7 @@ public:
   // :return: (N,Cout) or (Cout,), respectively
   Eigen::MatrixXf process(const Eigen::MatrixXf &input) const;
 
-  int get_out_channels() const { return this->_weight.rows(); };
+  long get_out_channels() const { return this->_weight.rows(); };
 
 private:
   Eigen::MatrixXf _weight;
@@ -239,7 +239,7 @@ public:
                    std::vector<float>::iterator &params);
   void process_(const Eigen::MatrixXf &input, Eigen::MatrixXf &output,
                 const long i_start, const long i_end) const;
-  int get_out_channels() const;
+  long get_out_channels() const;
   Conv1D conv;
 
 private:
@@ -272,7 +272,7 @@ protected:
   Eigen::VectorXf _head_output;
   _Head _head;
   void _verify_params(const int channels, const std::vector<int> &dilations,
-                      const bool batchnorm, const int actual_params);
+                      const bool batchnorm, const size_t actual_params);
   void _update_buffers_() override;
   void _rewind_buffers_() override;
 
