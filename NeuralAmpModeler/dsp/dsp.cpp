@@ -52,7 +52,10 @@ void DSP::_get_params_(const std::unordered_map<std::string, double>& input_para
   }
 }
 
-void DSP::_apply_input_level_(iplug::sample** inputs, const int num_channels, const int num_frames, const double gain)
+void DSP::_apply_input_level_(iplug::sample** inputs,
+                              const int num_channels,
+                              const int num_frames,
+                              const double gain)
 {
   // Must match exactly; we're going to use the size of _input_post_gain later for num_frames.
   if (this->_input_post_gain.size() != num_frames)
@@ -578,9 +581,29 @@ mOutputPointersSize(0)
 
 dsp::DSP::~DSP()
 {
-  if (this->mOutputPointers != nullptr)
-    delete[] this->mOutputPointers;
+  this->_DeallocateOutputPointers();
 };
+
+void dsp::DSP::_AllocateOutputPointers(const size_t numChannels)
+{
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Tried to re-allocate over non-null mOutputPointers");
+  this->mOutputPointers = new iplug::sample*[numChannels];
+  if (this->mOutputPointers == nullptr)
+    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+  this->mOutputPointersSize = numChannels;
+}
+
+void dsp::DSP::_DeallocateOutputPointers()
+{
+  if (this->mOutputPointers != nullptr) {
+    delete[] this->mOutputPointers;
+    this->mOutputPointers = nullptr;
+  }
+  if (this->mOutputPointers != nullptr)
+    throw std::runtime_error("Failed to deallocate output pointer!");
+  this->mOutputPointersSize = 0;
+}
 
 iplug::sample** dsp::DSP::_GetPointers()
 {
@@ -605,12 +628,8 @@ void dsp::DSP::_ResizePointers(const size_t numChannels)
 {
   if (this->mOutputPointersSize == numChannels)
     return;
-  if (this->mOutputPointers != nullptr)
-    delete[] this->mOutputPointers;
-  this->mOutputPointers = new iplug::sample*[numChannels];
-  if (this->mOutputPointers == nullptr)
-    throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
-  this->mOutputPointersSize = numChannels;
+  this->_DeallocateOutputPointers();
+  this->_AllocateOutputPointers(numChannels);
 }
 
 dsp::History::History() :
