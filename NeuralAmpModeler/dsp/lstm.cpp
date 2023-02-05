@@ -5,8 +5,8 @@
 #include "activations.h"
 #include "lstm.h"
 
-lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size, std::vector<float>::iterator& params)
-{
+lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size,
+                         std::vector<float>::iterator &params) {
   // Resize arrays
   this->_w.resize(4 * hidden_size, input_size + hidden_size);
   this->_b.resize(4 * hidden_size);
@@ -28,8 +28,7 @@ lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size, std::vecto
     this->_c[i] = *(params++);
 }
 
-void lstm::LSTMCell::process_(const Eigen::VectorXf& x)
-{
+void lstm::LSTMCell::process_(const Eigen::VectorXf &x) {
   const int hidden_size = this->_get_hidden_size();
   const int input_size = this->_get_input_size();
   // Assign inputs
@@ -42,18 +41,24 @@ void lstm::LSTMCell::process_(const Eigen::VectorXf& x)
   const int g_offset = 2 * hidden_size;
   const int o_offset = 3 * hidden_size;
   for (int i = 0; i < hidden_size; i++)
-    this->_c[i] = activations::sigmoid(this->_ifgo[i + f_offset]) * this->_c[i] + activations::sigmoid(this->_ifgo[i + i_offset]) * tanhf(this->_ifgo[i + g_offset]);
+    this->_c[i] =
+        activations::sigmoid(this->_ifgo[i + f_offset]) * this->_c[i] +
+        activations::sigmoid(this->_ifgo[i + i_offset]) *
+            tanhf(this->_ifgo[i + g_offset]);
   const int h_offset = input_size;
   for (int i = 0; i < hidden_size; i++)
-    this->_xh[i + h_offset] = activations::sigmoid(this->_ifgo[i + o_offset]) * tanhf(this->_c[i]);
+    this->_xh[i + h_offset] =
+        activations::sigmoid(this->_ifgo[i + o_offset]) * tanhf(this->_c[i]);
 }
 
-lstm::LSTM::LSTM(const int num_layers, const int input_size, const int hidden_size, std::vector<float>& params, nlohmann::json& parametric)
-{
+lstm::LSTM::LSTM(const int num_layers, const int input_size,
+                 const int hidden_size, std::vector<float> &params,
+                 nlohmann::json &parametric) {
   this->_init_parametric(parametric);
   std::vector<float>::iterator it = params.begin();
   for (int i = 0; i < num_layers; i++)
-    this->_layers.push_back(LSTMCell(i == 0 ? input_size : hidden_size, hidden_size, it));
+    this->_layers.push_back(
+        LSTMCell(i == 0 ? input_size : hidden_size, hidden_size, it));
   this->_head_weight.resize(hidden_size);
   for (int i = 0; i < hidden_size; i++)
     this->_head_weight[i] = *(it++);
@@ -61,43 +66,46 @@ lstm::LSTM::LSTM(const int num_layers, const int input_size, const int hidden_si
   assert(it == params.end());
 }
 
-void lstm::LSTM::_init_parametric(nlohmann::json& parametric)
-{
+void lstm::LSTM::_init_parametric(nlohmann::json &parametric) {
   std::vector<std::string> parametric_names;
-  for (nlohmann::json::iterator it = parametric.begin(); it != parametric.end(); ++it) {
+  for (nlohmann::json::iterator it = parametric.begin(); it != parametric.end();
+       ++it) {
     parametric_names.push_back(it.key());
   }
   std::sort(parametric_names.begin(), parametric_names.end());
   {
     int i = 1;
-    for (std::vector<std::string>::iterator it = parametric_names.begin(); it != parametric_names.end(); ++it, i++)
+    for (std::vector<std::string>::iterator it = parametric_names.begin();
+         it != parametric_names.end(); ++it, i++)
       this->_parametric_map[*it] = i;
   }
 
   this->_input_and_params.resize(1 + parametric.size()); // TODO amp parameters
 }
 
-void lstm::LSTM::_process_core_()
-{
+void lstm::LSTM::_process_core_() {
   // Get params into the input vector before starting
-  if (this->_stale_params)
-  {
-    for (std::unordered_map<std::string, double>::iterator it = this->_params.begin(); it != this->_params.end(); ++it)
+  if (this->_stale_params) {
+    for (std::unordered_map<std::string, double>::iterator it =
+             this->_params.begin();
+         it != this->_params.end(); ++it)
       this->_input_and_params[this->_parametric_map[it->first]] = it->second;
     this->_stale_params = false;
   }
   // Process samples, placing results in the required output location
   for (int i = 0; i < this->_input_post_gain.size(); i++)
-    this->_core_dsp_output[i] = this->_process_sample(this->_input_post_gain[i]);
+    this->_core_dsp_output[i] =
+        this->_process_sample(this->_input_post_gain[i]);
 }
 
-float lstm::LSTM::_process_sample(const float x)
-{
+float lstm::LSTM::_process_sample(const float x) {
   if (this->_layers.size() == 0)
     return x;
   this->_input_and_params(0) = x;
   this->_layers[0].process_(this->_input_and_params);
   for (int i = 1; i < this->_layers.size(); i++)
     this->_layers[i].process_(this->_layers[i - 1].get_hidden_state());
-  return this->_head_weight.dot(this->_layers[this->_layers.size() - 1].get_hidden_state()) + this->_head_bias;
+  return this->_head_weight.dot(
+             this->_layers[this->_layers.size() - 1].get_hidden_state()) +
+         this->_head_bias;
 }
