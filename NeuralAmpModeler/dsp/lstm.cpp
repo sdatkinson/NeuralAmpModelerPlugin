@@ -15,7 +15,6 @@ lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size,
   this->_c.resize(hidden_size);
 
   // Assign in row-major because that's how PyTorch goes.
-  int count = 0;
   for (int i = 0; i < this->_w.rows(); i++)
     for (int j = 0; j < this->_w.cols(); j++)
       this->_w(i, j) = *(params++);
@@ -29,23 +28,23 @@ lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size,
 }
 
 void lstm::LSTMCell::process_(const Eigen::VectorXf &x) {
-  const int hidden_size = this->_get_hidden_size();
-  const int input_size = this->_get_input_size();
+  const long hidden_size = this->_get_hidden_size();
+  const long input_size = this->_get_input_size();
   // Assign inputs
   this->_xh(Eigen::seq(0, input_size - 1)) = x;
   // The matmul
   this->_ifgo = this->_w * this->_xh + this->_b;
   // Elementwise updates (apply nonlinearities here)
-  const int i_offset = 0;
-  const int f_offset = hidden_size;
-  const int g_offset = 2 * hidden_size;
-  const int o_offset = 3 * hidden_size;
-  for (int i = 0; i < hidden_size; i++)
+  const long i_offset = 0;
+  const long f_offset = hidden_size;
+  const long g_offset = 2 * hidden_size;
+  const long o_offset = 3 * hidden_size;
+  for (auto i = 0; i < hidden_size; i++)
     this->_c[i] =
         activations::sigmoid(this->_ifgo[i + f_offset]) * this->_c[i] +
         activations::sigmoid(this->_ifgo[i + i_offset]) *
             tanhf(this->_ifgo[i + g_offset]);
-  const int h_offset = input_size;
+  const long h_offset = input_size;
   for (int i = 0; i < hidden_size; i++)
     this->_xh[i + h_offset] =
         activations::sigmoid(this->_ifgo[i + o_offset]) * tanhf(this->_c[i]);

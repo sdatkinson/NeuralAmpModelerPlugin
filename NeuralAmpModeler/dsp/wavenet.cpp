@@ -49,7 +49,7 @@ void wavenet::_Layer::process_(const Eigen::MatrixXf &input,
       this->_1x1.process(this->_z.topRows(channels));
 }
 
-void wavenet::_Layer::set_num_frames_(const int num_frames) {
+void wavenet::_Layer::set_num_frames_(const long num_frames) {
   this->_z.resize(this->_conv.get_out_channels(), num_frames);
 }
 
@@ -87,7 +87,7 @@ long wavenet::_LayerArray::get_receptive_field() const {
   return result;
 }
 
-void wavenet::_LayerArray::prepare_for_frames_(const int num_frames) {
+void wavenet::_LayerArray::prepare_for_frames_(const long num_frames) {
   if (this->_buffer_start + num_frames > this->_get_buffer_size())
     this->_rewind_buffers_();
 }
@@ -99,8 +99,8 @@ void wavenet::_LayerArray::process_(const Eigen::MatrixXf &layer_inputs,
                                     Eigen::MatrixXf &head_outputs) {
   this->_layer_buffers[0].middleCols(this->_buffer_start, layer_inputs.cols()) =
       this->_rechannel.process(layer_inputs);
-  const int last_layer = this->_layers.size() - 1;
-  for (int i = 0; i < this->_layers.size(); i++) {
+  const long last_layer = this->_layers.size() - 1;
+  for (auto i = 0; i < this->_layers.size(); i++) {
     this->_layers[i].process_(
         this->_layer_buffers[i], condition, head_inputs,
         i == last_layer ? layer_outputs : this->_layer_buffers[i + 1],
@@ -109,7 +109,7 @@ void wavenet::_LayerArray::process_(const Eigen::MatrixXf &layer_inputs,
   head_outputs = this->_head_rechannel.process(head_inputs);
 }
 
-void wavenet::_LayerArray::set_num_frames_(const int num_frames) {
+void wavenet::_LayerArray::set_num_frames_(const long num_frames) {
   // Wavenet checks for unchanged num_frames; if we made it here, there's
   // something to do.
   if (LAYER_ARRAY_BUFFER_SIZE - num_frames < this->_get_receptive_field()) {
@@ -131,7 +131,7 @@ void wavenet::_LayerArray::set_params_(std::vector<float>::iterator &params) {
   this->_head_rechannel.set_params_(params);
 }
 
-int wavenet::_LayerArray::_get_channels() const {
+long wavenet::_LayerArray::_get_channels() const {
   return this->_layers.size() > 0 ? this->_layers[0].get_channels() : 0;
 }
 
@@ -181,7 +181,7 @@ void wavenet::_Head::set_params_(std::vector<float>::iterator &params) {
 
 void wavenet::_Head::process_(Eigen::MatrixXf &inputs,
                               Eigen::MatrixXf &outputs) {
-  const int num_layers = this->_layers.size();
+  const size_t num_layers = this->_layers.size();
   this->_apply_activation_(inputs);
   if (num_layers == 1)
     outputs = this->_layers[0].process(inputs);
@@ -197,7 +197,7 @@ void wavenet::_Head::process_(Eigen::MatrixXf &inputs,
   }
 }
 
-void wavenet::_Head::set_num_frames_(const int num_frames) {
+void wavenet::_Head::set_num_frames_(const long num_frames) {
   for (int i = 0; i < this->_buffers.size(); i++)
     this->_buffers[i].resize(this->_channels, num_frames);
 }
@@ -290,8 +290,8 @@ void wavenet::WaveNet::_init_parametric_(nlohmann::json &parametric) {
   std::sort(this->_param_names.begin(), this->_param_names.end());
 }
 
-void wavenet::WaveNet::_prepare_for_frames_(const int num_frames) {
-  for (int i = 0; i < this->_layer_arrays.size(); i++)
+void wavenet::WaveNet::_prepare_for_frames_(const long num_frames) {
+  for (auto i = 0; i < this->_layer_arrays.size(); i++)
     this->_layer_arrays[i].prepare_for_frames_(num_frames);
 }
 
@@ -328,7 +328,7 @@ void wavenet::WaveNet::_process_core_() {
   //  Hack: apply head scale here; revisit when/if I activate the head.
   //  assert(this->_head_output.rows() == 1);
 
-  const int final_head_array = this->_head_arrays.size() - 1;
+  const long final_head_array = this->_head_arrays.size() - 1;
   assert(this->_head_arrays[final_head_array].rows() == 1);
   for (int s = 0; s < num_frames; s++)
     this->_core_dsp_output[s] =
@@ -337,7 +337,7 @@ void wavenet::WaveNet::_process_core_() {
   this->_anti_pop_();
 }
 
-void wavenet::WaveNet::_set_num_frames_(const int num_frames) {
+void wavenet::WaveNet::_set_num_frames_(const long num_frames) {
   if (num_frames == this->_num_frames)
     return;
 
