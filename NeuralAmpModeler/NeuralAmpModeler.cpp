@@ -492,7 +492,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
     const double time = 0.01;
     const double threshold =
         this->GetParam(kNoiseGateThreshold)->Value(); // GetParam...
-    const double ratio = 1.5;
+    const double ratio = 0.1;                         // Quadratic...
     const double openTime = 0.005;
     const double holdTime = 0.01;
     const double closeTime = 0.05;

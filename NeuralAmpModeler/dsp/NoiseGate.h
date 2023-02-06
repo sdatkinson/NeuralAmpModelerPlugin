@@ -106,8 +106,10 @@ private:
 
   double _GetGainReduction(const double levelDB) const {
     const double threshold = this->mParams.GetThreshold();
+    // Quadratic gain reduction? :)
     return levelDB < threshold
-               ? (this->mParams.GetRatio() - 1.0) * (levelDB - threshold)
+               ? -(this->mParams.GetRatio()) * (levelDB - threshold) *
+                     (levelDB - threshold)
                : 0.0;
   }
   double _GetMaxGainReduction() const {
