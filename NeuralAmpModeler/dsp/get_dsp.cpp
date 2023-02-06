@@ -9,32 +9,26 @@
 #include "wavenet.h"
 
 void verify_config_version(const std::string version) {
-  const std::unordered_set<std::string> supported_versions(
-      {"0.2.0", "0.2.1", "0.3.0", "0.3.1", "0.4.0", "0.5.0"});
-  if (supported_versions.find(version) == supported_versions.end())
-    throw std::runtime_error("Unsupported config version");
+  const std::unordered_set<std::string> supported_versions({"0.5.0"});
+  if (supported_versions.find(version) == supported_versions.end()) {
+    std::stringstream ss;
+    ss << "Model config is an unsupported version " << version
+       << ". Try either converting the model to a more recent version, or "
+          "update your version of the NAM plugin.";
+    throw std::runtime_error(ss.str());
+  }
 }
 
 std::vector<float> _get_weights(nlohmann::json const &j,
                                 const std::filesystem::path config_path) {
-  if (j.find("weights") != j.end()) { // New-style model
+  if (j.find("weights") != j.end()) {
     auto weight_list = j["weights"];
     std::vector<float> weights;
     for (auto it = weight_list.begin(); it != weight_list.end(); ++it)
       weights.push_back(*it);
     return weights;
-  } else { // Old-style config.json + weights.npy
-    std::filesystem::path weights_path =
-        config_path.parent_path() / std::filesystem::path("weights.npy");
-    if (!std::filesystem::exists(weights_path)) {
-      std::stringstream s;
-      s << "No weights in model file, and could not find accompanying weights "
-           "at expected location "
-        << weights_path;
-      throw std::runtime_error(s.str());
-    }
-    return numpy_util::load_to_vector(weights_path);
-  }
+  } else
+    throw std::runtime_error("Corrupted model file is missing weights.");
 }
 
 std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path model_dir) {
