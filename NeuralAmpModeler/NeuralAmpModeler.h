@@ -70,8 +70,8 @@ private:
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
-  // Returns a bool for whether the operation was successful.
-  bool _GetNAM(const WDL_String &dspFile);
+  // Returns an emptry string on success, or an error message on failure.
+  std::string _GetNAM(const WDL_String &dspFile);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
