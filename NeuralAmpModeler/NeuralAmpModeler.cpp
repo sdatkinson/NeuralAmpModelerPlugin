@@ -111,6 +111,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   GetParam(kEQActive)->InitBool("ToneStack", false);
 
+  this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
+
   //  try {
   //     this->mDSP = get_hard_dsp();
   //  }
@@ -482,7 +484,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   // Noise gate trigger
   sample **triggerOutput;
   {
-    const double time = 0.05;
+    const double time = 0.01;
     const double threshold = -40.0; // GetParam...
     const double ratio = 1.5;
     const double openTime = 0.005;
@@ -508,8 +510,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
     this->_FallbackDSP(triggerOutput, this->mOutputPointers,
                        numChannelsInternal, numFrames);
   }
+  // Apply the noise gate
+  sample **gateGainOutput = this->mNoiseGateGain.Process(
+      this->mOutputPointers, numChannelsInternal, numFrames);
 
-  sample **toneStackOutPointers = this->mOutputPointers;
+  sample **toneStackOutPointers = gateGainOutput;
   if (toneStackActive) {
     // Translate params from knob 0-10 to dB.
     // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as

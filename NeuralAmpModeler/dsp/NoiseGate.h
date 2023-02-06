@@ -9,6 +9,7 @@
 #define NoiseGate_h
 
 #include <cmath>
+#include <unordered_set>
 #include <vector>
 
 #include "dsp.h"
@@ -23,6 +24,26 @@ namespace noise_gate {
 // reduction).
 const double MINIMUM_LOUDNESS_DB = -120.0;
 const double MINIMUM_LOUDNESS_POWER = pow(10.0, MINIMUM_LOUDNESS_DB / 10.0);
+
+// Parts 2: The gain module.
+// This applies the gain reduction taht was determined by the trigger.
+// It's declared first so that the trigger can define listeners without a
+// forward declaration.
+
+// The class that applies the gain reductions calculated by a trigger instance.
+class Gain : public DSP {
+public:
+  iplug::sample **Process(iplug::sample **inputs, const size_t numChannels,
+                          const size_t numFrames) override;
+
+  void SetGainReductionDB(std::vector<std::vector<double>> &gainReductionDB) {
+    this->mGainReductionDB = gainReductionDB;
+  }
+
+private:
+  std::vector<std::vector<double>> mGainReductionDB;
+};
+
 // Part 1 of the noise gate: the trigger.
 // This listens to a stream of incoming audio and determines how much gain
 // to apply based on the loudness of the signal.
@@ -70,6 +91,15 @@ public:
   void SetSampleRate(const double sampleRate) {
     this->mSampleRate = sampleRate;
   }
+  std::vector<std::vector<double>> GetGainReductionDB() const {
+    return this->mGainReductionDB;
+  };
+
+  void AddListener(Gain *gain) {
+    // This might be risky dropping a raw pointer, but I don't think that the
+    // gain would be destructed, so probably ok.
+    this->mGainListeners.insert(gain);
+  }
 
 private:
   enum class State { MOVING = 0, HOLDING };
@@ -98,7 +128,10 @@ private:
   double mSampleRate;
   // How long we've been holding
   std::vector<double> mTimeHeld;
+
+  std::unordered_set<Gain *> mGainListeners;
 };
+
 }; // namespace noise_gate
 }; // namespace dsp
 

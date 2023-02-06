@@ -123,6 +123,7 @@ private:
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
+  dsp::noise_gate::Gain mNoiseGateGain;
   // The Neural Amp Model (NAM) actually being used:
   std::unique_ptr<DSP> mNAM;
   // And the IR

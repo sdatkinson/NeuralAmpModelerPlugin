@@ -509,13 +509,18 @@ iplug::sample **dsp::DSP::_GetPointers() {
 
 void dsp::DSP::_PrepareBuffers(const size_t numChannels,
                                const size_t numFrames) {
-  if (this->_GetNumChannels() != numChannels) {
+  const size_t oldFrames = this->_GetNumFrames();
+  const size_t oldChannels = this->_GetNumChannels();
+
+  const bool resizeChannels = oldChannels != numChannels;
+  const bool resizeFrames = resizeChannels || (oldFrames != numFrames);
+  if (resizeChannels) {
     this->mOutputs.resize(numChannels);
-    for (auto c = 0; c < numChannels; c++) {
-      this->mOutputs[c].resize(numFrames);
-    }
     this->_ResizePointers(numChannels);
   }
+  if (resizeFrames)
+    for (auto c = 0; c < numChannels; c++)
+      this->mOutputs[c].resize(numFrames);
 }
 
 void dsp::DSP::_ResizePointers(const size_t numChannels) {

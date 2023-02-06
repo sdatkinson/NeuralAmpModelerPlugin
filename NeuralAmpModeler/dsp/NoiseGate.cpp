@@ -9,6 +9,10 @@
 
 #include "NoiseGate.h"
 
+double _LevelToDB(const double db) { return 10.0 * log10(db); }
+
+double _DBToLevel(const double level) { return pow(10.0, level / 10.0); }
+
 dsp::noise_gate::Trigger::Trigger()
     : mParams(0.05, -60.0, 1.5, 0.002, 0.050, 0.050), mSampleRate(0) {}
 
@@ -39,7 +43,7 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
       this->mLevel[c] = std::clamp(alpha * this->mLevel[c] +
                                        beta * (inputs[c][s] * inputs[c][s]),
                                    MINIMUM_LOUDNESS_POWER, 1000.0);
-      const double levelDB = 10.0 * log10(this->mLevel[c]);
+      const double levelDB = _LevelToDB(this->mLevel[c]);
       if (this->mState[c] == dsp::noise_gate::Trigger::State::HOLDING) {
         this->mGainReductionDB[c][s] = 0.0;
         this->mLastGainReductionDB[c] = 0.0;
@@ -53,14 +57,20 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
       } else { // Moving
         const double targetGainReduction = this->_GetGainReduction(levelDB);
         if (targetGainReduction > this->mLastGainReductionDB[c]) {
-          this->mLastGainReductionDB[c] += dOpen;
+          const double dGain = std::clamp(
+              0.5 * (targetGainReduction - this->mLastGainReductionDB[c]), 0.0,
+              dOpen);
+          this->mLastGainReductionDB[c] += dGain;
           if (this->mLastGainReductionDB[c] >= 0.0) {
             this->mLastGainReductionDB[c] = 0.0;
             this->mState[c] = dsp::noise_gate::Trigger::State::HOLDING;
             this->mTimeHeld[c] = 0.0;
           }
         } else if (targetGainReduction < this->mLastGainReductionDB[c]) {
-          this->mLastGainReductionDB[c] += dClose;
+          const double dGain = std::clamp(
+              0.5 * (targetGainReduction - this->mLastGainReductionDB[c]),
+              dClose, 0.0);
+          this->mLastGainReductionDB[c] += dGain;
           if (this->mLastGainReductionDB[c] < maxGainReduction) {
             this->mLastGainReductionDB[c] = maxGainReduction;
           }
@@ -69,6 +79,11 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
       }
     }
   }
+
+  // Share the results with gain objects that are listening to this trigger:
+  for (auto gain = this->mGainListeners.begin();
+       gain != this->mGainListeners.end(); ++gain)
+    (*gain)->SetGainReductionDB(this->mGainReductionDB);
 
   // Copy input to output
   for (auto c = 0; c < numChannels; c++)
@@ -110,4 +125,41 @@ void dsp::noise_gate::Trigger::_PrepareBuffers(const size_t numChannels,
       }
     }
   }
+}
+
+// Gain========================================================================
+
+iplug::sample **dsp::noise_gate::Gain::Process(iplug::sample **inputs,
+                                               const size_t numChannels,
+                                               const size_t numFrames) {
+  // Assume that SetGainReductionDB() was just called to get data from a
+  // trigger. Could use listeners...
+  this->_PrepareBuffers(numChannels, numFrames);
+
+  if (this->mGainReductionDB.size() != numChannels) {
+    std::stringstream ss;
+    ss << "Gain module expected to operate on " << this->mGainReductionDB.size()
+       << "channels, but " << numChannels << " were provided.";
+    throw std::runtime_error(ss.str());
+  }
+  if ((this->mGainReductionDB.size() == 0) && (numFrames > 0)) {
+    std::stringstream ss;
+    ss << "No channels expected by gain module, yet " << numFrames
+       << " were provided?";
+    throw std::runtime_error(ss.str());
+  } else if (this->mGainReductionDB[0].size() != numFrames) {
+    std::stringstream ss;
+    ss << "Gain module expected to operate on "
+       << this->mGainReductionDB[0].size() << "frames, but " << numFrames
+       << " were provided.";
+    throw std::runtime_error(ss.str());
+  }
+
+  // Apply gain!
+  for (auto c = 0; c < numChannels; c++)
+    for (auto s = 0; s < numFrames; s++)
+      this->mOutputs[c][s] =
+          _DBToLevel(this->mGainReductionDB[c][s]) * inputs[c][s];
+
+  return this->_GetPointers();
 }
