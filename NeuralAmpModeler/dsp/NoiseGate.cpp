@@ -20,7 +20,8 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
   this->_PrepareBuffers(numChannels, numFrames);
 
   // A bunch of numbers we'll use a few times.
-  const double alpha = pow(0.5, -this->mParams.GetTime() * this->mSampleRate);
+  const double alpha =
+      pow(0.5, 1.0 / (this->mParams.GetTime() * this->mSampleRate));
   const double beta = 1.0 - alpha;
   const double threshold = this->mParams.GetThreshold();
   const double dt = 1.0 / this->mSampleRate;
@@ -46,6 +47,8 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
           this->mTimeHeld[c] += dt;
           if (this->mTimeHeld[c] >= maxHold)
             this->mState[c] = dsp::noise_gate::Trigger::State::MOVING;
+        } else {
+          this->mTimeHeld[c] = 0.0;
         }
       } else { // Moving
         const double targetGainReduction = this->_GetGainReduction(levelDB);
@@ -54,6 +57,7 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
           if (this->mLastGainReductionDB[c] >= 0.0) {
             this->mLastGainReductionDB[c] = 0.0;
             this->mState[c] = dsp::noise_gate::Trigger::State::HOLDING;
+            this->mTimeHeld[c] = 0.0;
           }
         } else if (targetGainReduction < this->mLastGainReductionDB[c]) {
           this->mLastGainReductionDB[c] += dClose;
@@ -79,23 +83,31 @@ void dsp::noise_gate::Trigger::_PrepareBuffers(const size_t numChannels,
   const size_t oldFrames = this->_GetNumFrames();
   this->DSP::_PrepareBuffers(numChannels, numFrames);
 
-  if (numChannels != oldChannels) {
-    this->mGainReductionDB.resize(numChannels);
-    this->mLastGainReductionDB.resize(numChannels);
-    std::fill(this->mLastGainReductionDB.begin(),
-              this->mLastGainReductionDB.end(), this->_GetMaxGainReduction());
-    this->mState.resize(numChannels);
-    std::fill(this->mState.begin(), this->mState.end(),
-              dsp::noise_gate::Trigger::State::MOVING);
-    this->mLevel.resize(numChannels);
-    std::fill(this->mLevel.begin(), this->mLevel.end(), MINIMUM_LOUDNESS_POWER);
-  }
+  const bool updateChannels = numChannels != oldChannels;
+  const bool updateFrames = updateChannels || numFrames != oldFrames;
 
-  if (numChannels != oldChannels || numFrames != oldFrames) {
-    for (auto i = 0; i < this->mGainReductionDB.size(); i++) {
-      this->mGainReductionDB[i].resize(numFrames);
-      std::fill(this->mGainReductionDB[i].begin(),
-                this->mGainReductionDB[i].end(), 0.0);
+  if (updateChannels || updateFrames) {
+    const double maxGainReduction = this->_GetMaxGainReduction();
+    if (updateChannels) {
+      this->mGainReductionDB.resize(numChannels);
+      this->mLastGainReductionDB.resize(numChannels);
+      std::fill(this->mLastGainReductionDB.begin(),
+                this->mLastGainReductionDB.end(), maxGainReduction);
+      this->mState.resize(numChannels);
+      std::fill(this->mState.begin(), this->mState.end(),
+                dsp::noise_gate::Trigger::State::MOVING);
+      this->mLevel.resize(numChannels);
+      std::fill(this->mLevel.begin(), this->mLevel.end(),
+                MINIMUM_LOUDNESS_POWER);
+      this->mTimeHeld.resize(numChannels);
+      std::fill(this->mTimeHeld.begin(), this->mTimeHeld.end(), 0.0);
+    }
+    if (updateFrames) {
+      for (auto i = 0; i < this->mGainReductionDB.size(); i++) {
+        this->mGainReductionDB[i].resize(numFrames);
+        std::fill(this->mGainReductionDB[i].begin(),
+                  this->mGainReductionDB[i].end(), maxGainReduction);
+      }
     }
   }
 }

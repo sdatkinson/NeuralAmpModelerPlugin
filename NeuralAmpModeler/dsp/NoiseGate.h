@@ -32,8 +32,8 @@ public:
   TriggerParams(const double time, const double threshold, const double ratio,
                 const double openTime, const double holdTime,
                 const double closeTime)
-      : mTime(time), mRatio(ratio), mOpenTime(openTime), mHoldTime(holdTime),
-        mCloseTime(closeTime){};
+      : mTime(time), mThreshold(threshold), mRatio(ratio), mOpenTime(openTime),
+        mHoldTime(holdTime), mCloseTime(closeTime){};
 
   double GetTime() const { return this->mTime; };
   double GetThreshold() const { return this->mThreshold; };
@@ -76,9 +76,9 @@ private:
 
   double _GetGainReduction(const double levelDB) const {
     const double threshold = this->mParams.GetThreshold();
-    return levelDB < threshold ? this->mParams.GetRatio() *
-                                     (levelDB - this->mParams.GetThreshold())
-                               : 0.0;
+    return levelDB < threshold
+               ? (this->mParams.GetRatio() - 1.0) * (levelDB - threshold)
+               : 0.0;
   }
   double _GetMaxGainReduction() const {
     return this->_GetGainReduction(MINIMUM_LOUDNESS_DB);

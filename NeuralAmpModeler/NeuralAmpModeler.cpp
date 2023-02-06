@@ -98,8 +98,8 @@ const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
-      mInputPointers(nullptr), mOutputPointers(nullptr), mNAM(nullptr),
-      mIR(nullptr), mStagedNAM(nullptr), mStagedIR(nullptr),
+      mInputPointers(nullptr), mOutputPointers(nullptr), mNoiseGateTrigger(),
+      mNAM(nullptr), mIR(nullptr), mStagedNAM(nullptr), mStagedIR(nullptr),
       mFlagRemoveNAM(false), mFlagRemoveIR(false),
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
@@ -470,6 +470,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   const size_t numChannelsExternalOut = (size_t)this->NOutChansConnected();
   const size_t numChannelsInternal = this->mNUM_INTERNAL_CHANNELS;
   const size_t numFrames = (size_t)nFrames;
+  const double sampleRate = this->GetSampleRate();
 
   this->_PrepareBuffers(numChannelsInternal, numFrames);
   // Input is collapsed to mono in preparation for the NAM.
@@ -478,22 +479,38 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   this->_ApplyDSPStaging();
   const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
+  // Noise gate trigger
+  sample **triggerOutput;
+  {
+    const double time = 0.05;
+    const double threshold = -40.0; // GetParam...
+    const double ratio = 1.5;
+    const double openTime = 0.005;
+    const double holdTime = 0.01;
+    const double closeTime = 0.05;
+    const dsp::noise_gate::TriggerParams triggerParams(
+        time, threshold, ratio, openTime, holdTime, closeTime);
+    this->mNoiseGateTrigger.SetParams(triggerParams);
+    this->mNoiseGateTrigger.SetSampleRate(sampleRate);
+    triggerOutput = this->mNoiseGateTrigger.Process(
+        mInputPointers, numChannelsInternal, numFrames);
+  }
+
   if (mNAM != nullptr) {
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     const int nChans = (int)numChannelsInternal;
-    mNAM->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames,
+    mNAM->process(triggerOutput, this->mOutputPointers, nChans, nFrames,
                   inputGain, outputGain, mNAMParams);
     mNAM->finalize_(nFrames);
   } else {
-    this->_FallbackDSP(nFrames);
+    this->_FallbackDSP(triggerOutput, this->mOutputPointers,
+                       numChannelsInternal, numFrames);
   }
 
   sample **toneStackOutPointers = this->mOutputPointers;
   if (toneStackActive) {
-    // Tone stack
-    const double sampleRate = this->GetSampleRate();
     // Translate params from knob 0-10 to dB.
     // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
     // much swing as bass can use.
@@ -637,10 +654,12 @@ void NeuralAmpModeler::_DeallocateIOPointers() {
         "Failed to deallocate pointer to output buffer!\n");
 }
 
-void NeuralAmpModeler::_FallbackDSP(const int nFrames) {
-  const size_t nChans = this->mNUM_INTERNAL_CHANNELS;
-  for (auto c = 0; c < nChans; c++)
-    for (auto s = 0; s < nFrames; s++)
+void NeuralAmpModeler::_FallbackDSP(iplug::sample **inputs,
+                                    iplug::sample **outputs,
+                                    const size_t numChannels,
+                                    const size_t numFrames) {
+  for (auto c = 0; c < numChannels; c++)
+    for (auto s = 0; s < numFrames; s++)
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 
