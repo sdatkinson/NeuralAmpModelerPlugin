@@ -116,7 +116,9 @@ void cnpy::parse_npy_header(unsigned char *buffer, size_t &word_size,
   loc1 = header.find("descr") + 9;
   bool littleEndian =
       (header[loc1] == '<' || header[loc1] == '|' ? true : false);
-  assert(littleEndian);
+  if (!littleEndian)
+    throw std::runtime_error(
+        "Little-endian format is required, but big-endian was found instead!");
 
   // char type = header[loc1+1];
   // assert(type == map_type(T));
@@ -172,7 +174,9 @@ void cnpy::parse_npy_header(FILE *fp, size_t &word_size,
   loc1 += 9;
   bool littleEndian =
       (header[loc1] == '<' || header[loc1] == '|' ? true : false);
-  assert(littleEndian);
+  if (!littleEndian)
+    throw std::runtime_error(
+        "Little-endian format is required, but big-endian was found instead!");
 
   // char type = header[loc1+1];
   // assert(type == map_type(T));
