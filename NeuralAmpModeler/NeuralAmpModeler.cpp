@@ -98,26 +98,22 @@ const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     : Plugin(info, MakeConfig(kNumParams, kNumPresets)),
-      mInputPointers(nullptr), mOutputPointers(nullptr), mNAM(nullptr),
-      mIR(nullptr), mStagedNAM(nullptr), mStagedIR(nullptr),
+      mInputPointers(nullptr), mOutputPointers(nullptr), mNoiseGateTrigger(),
+      mNAM(nullptr), mIR(nullptr), mStagedNAM(nullptr), mStagedIR(nullptr),
       mFlagRemoveNAM(false), mFlagRemoveIR(false),
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
       mInputSender(), mOutputSender() {
-  GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
-  GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
-  GetParam(kEQActive)->InitBool("ToneStack", false);
+  this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  this->GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
+  this->GetParam(kNoiseGateThreshold)
+      ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
+  this->GetParam(kEQActive)->InitBool("ToneStack", false);
 
-  //  try {
-  //     this->mDSP = get_hard_dsp();
-  //  }
-  //  catch (std::exception& e) {
-  //    std::cerr << "Failed to read hard coded DSP" << std::endl;
-  //    std::cerr << e.what() << std::endl;
-  //  }
+  this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
   mMakeGraphicsFunc = [&]() {
     return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS,
@@ -138,15 +134,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const float titleHeight = 50.0f;
     const auto titleLabel = content.GetFromTop(titleHeight);
 
-    // Areas for knobs
+    // Area for the Noise gate knob
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
+    const float noiseGateKnobHeight = 80.0f;
+    const float noiseGateKnobWidth = 100.0f;
+    const IRECT noiseGateArea =
+        content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
+
+    // Areas for knobs
+    const float knobsExtraSpaceBelowTitle = 25.0f;
     const float knobHalfHeight = 70.0f;
     const float knobHeight = 2.0f * knobHalfHeight;
-    const auto knobs = content.GetFromTop(knobHeight)
-                           .GetReducedFromLeft(knobPad)
-                           .GetReducedFromRight(knobPad)
-                           .GetTranslated(0.0f, titleHeight);
+    const auto knobs =
+        content.GetFromTop(knobHeight)
+            .GetReducedFromLeft(knobPad)
+            .GetReducedFromRight(knobPad)
+            .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
     const IRECT inputKnobArea =
         knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
     const IRECT bassKnobArea =
@@ -326,6 +330,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
 
+    // Noise gate
+    pGraphics->AttachControl(
+        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
     // The knobs
     pGraphics->AttachControl(
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));
@@ -366,7 +373,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     toneStackSlider->SetActionFunction(toneStackAction);
 
     // The meters
-    const float meterMin = -60.0f;
+    const float meterMin = -90.0f;
     const float meterMax = -0.01f;
     pGraphics
         ->AttachControl(
@@ -470,6 +477,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   const size_t numChannelsExternalOut = (size_t)this->NOutChansConnected();
   const size_t numChannelsInternal = this->mNUM_INTERNAL_CHANNELS;
   const size_t numFrames = (size_t)nFrames;
+  const double sampleRate = this->GetSampleRate();
 
   this->_PrepareBuffers(numChannelsInternal, numFrames);
   // Input is collapsed to mono in preparation for the NAM.
@@ -478,22 +486,42 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   this->_ApplyDSPStaging();
   const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
+  // Noise gate trigger
+  sample **triggerOutput;
+  {
+    const double time = 0.01;
+    const double threshold =
+        this->GetParam(kNoiseGateThreshold)->Value(); // GetParam...
+    const double ratio = 0.1;                         // Quadratic...
+    const double openTime = 0.005;
+    const double holdTime = 0.01;
+    const double closeTime = 0.05;
+    const dsp::noise_gate::TriggerParams triggerParams(
+        time, threshold, ratio, openTime, holdTime, closeTime);
+    this->mNoiseGateTrigger.SetParams(triggerParams);
+    this->mNoiseGateTrigger.SetSampleRate(sampleRate);
+    triggerOutput = this->mNoiseGateTrigger.Process(
+        mInputPointers, numChannelsInternal, numFrames);
+  }
+
   if (mNAM != nullptr) {
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     const int nChans = (int)numChannelsInternal;
-    mNAM->process(this->mInputPointers, this->mOutputPointers, nChans, nFrames,
+    mNAM->process(triggerOutput, this->mOutputPointers, nChans, nFrames,
                   inputGain, outputGain, mNAMParams);
     mNAM->finalize_(nFrames);
   } else {
-    this->_FallbackDSP(nFrames);
+    this->_FallbackDSP(triggerOutput, this->mOutputPointers,
+                       numChannelsInternal, numFrames);
   }
+  // Apply the noise gate
+  sample **gateGainOutput = this->mNoiseGateGain.Process(
+      this->mOutputPointers, numChannelsInternal, numFrames);
 
-  sample **toneStackOutPointers = this->mOutputPointers;
+  sample **toneStackOutPointers = gateGainOutput;
   if (toneStackActive) {
-    // Tone stack
-    const double sampleRate = this->GetSampleRate();
     // Translate params from knob 0-10 to dB.
     // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
     // much swing as bass can use.
@@ -524,8 +552,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
     this->mToneBass.SetParams(bassParams);
     this->mToneMid.SetParams(midParams);
     this->mToneTreble.SetParams(trebleParams);
-    sample **bassPointers = this->mToneBass.Process(
-        this->mOutputPointers, numChannelsInternal, numFrames);
+    sample **bassPointers =
+        this->mToneBass.Process(gateGainOutput, numChannelsInternal, numFrames);
     sample **midPointers =
         this->mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
     sample **treblePointers =
@@ -637,10 +665,12 @@ void NeuralAmpModeler::_DeallocateIOPointers() {
         "Failed to deallocate pointer to output buffer!\n");
 }
 
-void NeuralAmpModeler::_FallbackDSP(const int nFrames) {
-  const size_t nChans = this->mNUM_INTERNAL_CHANNELS;
-  for (auto c = 0; c < nChans; c++)
-    for (auto s = 0; s < nFrames; s++)
+void NeuralAmpModeler::_FallbackDSP(iplug::sample **inputs,
+                                    iplug::sample **outputs,
+                                    const size_t numChannels,
+                                    const size_t numFrames) {
+  for (auto c = 0; c < numChannels; c++)
+    for (auto s = 0; s < numFrames; s++)
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 

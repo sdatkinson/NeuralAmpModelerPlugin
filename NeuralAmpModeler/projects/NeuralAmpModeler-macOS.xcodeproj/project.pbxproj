@@ -391,6 +391,18 @@
 		4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F81588E205D50EB00393585 /* vstnoteexpressiontypes.cpp */; };
 		AA355E2D295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		AA355E2E295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
+		AA9F7C412990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C422990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C432990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C442990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C452990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C462990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C472990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C482990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C492990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C4A2990859B00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C402990859B00D99615 /* NoiseGate.cpp */; };
+		AA9F7C4E299085D600D99615 /* NoiseGate.h in Headers */ = {isa = PBXBuildFile; fileRef = AA9F7C4D299085D600D99615 /* NoiseGate.h */; };
+		AA9F7C4F299085D600D99615 /* NoiseGate.h in Headers */ = {isa = PBXBuildFile; fileRef = AA9F7C4D299085D600D99615 /* NoiseGate.h */; };
 		AAD9F83B295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F83A295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp */; };
 		AAD9F83C295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F83A295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp */; };
 		AAD9F83D295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F83A295E6C8D009DBBA2 /* RecursiveLinearFilter.cpp */; };
@@ -977,6 +989,8 @@
 		4FFF72B8214BB71400839091 /* main.rc */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.rc; path = ../resources/main.rc; sourceTree = "<group>"; };
 		52FBBED30D0CF143001C8B8A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		AA355E2C295B688F0061AA3D /* Colors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Colors.h; path = ../Colors.h; sourceTree = "<group>"; };
+		AA9F7C402990859B00D99615 /* NoiseGate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseGate.cpp; sourceTree = "<group>"; };
+		AA9F7C4D299085D600D99615 /* NoiseGate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NoiseGate.h; sourceTree = "<group>"; };
 		AAD2484E29542F2800F55DD4 /* APPRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APPRelease.entitlements; sourceTree = "<group>"; };
 		AAD2484F2954325200F55DD4 /* AUv3Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3Release.entitlements; sourceTree = "<group>"; };
 		AAD248502954339400F55DD4 /* AUv3AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3AppRelease.entitlements; sourceTree = "<group>"; };
@@ -1280,6 +1294,8 @@
 				AAD9F84D295F75F6009DBBA2 /* ImpulseResponse.cpp */,
 				4F3EF8AE28DE03ED002972F2 /* lstm.h */,
 				4F3EF8B128DE03ED002972F2 /* lstm.cpp */,
+				AA9F7C402990859B00D99615 /* NoiseGate.cpp */,
+				AA9F7C4D299085D600D99615 /* NoiseGate.h */,
 				4F3EF8B728DE03ED002972F2 /* numpy_util.h */,
 				4F3EF8B428DE03ED002972F2 /* numpy_util.cpp */,
 				AAD9F845295E6CB7009DBBA2 /* RecursiveLinearFilter.h */,
@@ -1919,6 +1935,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA9F7C4F299085D600D99615 /* NoiseGate.h in Headers */,
 				4F3EF8CD28DE03ED002972F2 /* lstm.h in Headers */,
 				4F4856862773C3B5005BCF8E /* IPlugAUAudioUnit.h in Headers */,
 				4F3EF8E228DE03ED002972F2 /* dsp.h in Headers */,
@@ -1959,6 +1976,7 @@
 				4F6369EA20A466470022C370 /* IControl.h in Headers */,
 				4F03A5D520A4621100EBDFFB /* IGraphicsConstants.h in Headers */,
 				4FF3205820B2BFAB00269268 /* IPlugPaths.h in Headers */,
+				AA9F7C4E299085D600D99615 /* NoiseGate.h in Headers */,
 				4F03A5B720A4621100EBDFFB /* IGraphics.h in Headers */,
 				4F6FD2B022675B6300FC59E6 /* IGraphicsCoreText.h in Headers */,
 				4F03A5D220A4621100EBDFFB /* IGraphicsPopupMenu.h in Headers */,
@@ -2540,6 +2558,7 @@
 				4FB1F59020E4B010004157C8 /* IGraphicsMac_view.mm in Sources */,
 				4F3EF8BC28DE03ED002972F2 /* util.cpp in Sources */,
 				AAD9F850295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
+				AA9F7C422990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4F993F7223055C96000313AF /* IPlugProcessor.cpp in Sources */,
 				4F35DEAE207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
 				4F6FD2B222675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
@@ -2561,6 +2580,7 @@
 				4F3EF8E928DE03ED002972F2 /* numpy_util.cpp in Sources */,
 				4F3EF8F328DE03ED002972F2 /* wavenet.cpp in Sources */,
 				AAD9F8682960D4BA009DBBA2 /* wav.cpp in Sources */,
+				AA9F7C472990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4F3EF8DE28DE03ED002972F2 /* lstm.cpp in Sources */,
 				4F3EF8D428DE03ED002972F2 /* cnpy.cpp in Sources */,
 			);
@@ -2581,6 +2601,7 @@
 				4FD52131202A5B9B00A4D22A /* IPlugAU_view_factory.mm in Sources */,
 				4F993F7423055C96000313AF /* IPlugProcessor.cpp in Sources */,
 				4F8C10E320BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
+				AA9F7C442990859B00D99615 /* NoiseGate.cpp in Sources */,
 				AAD9F852295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
 				AAD9F8652960D4BA009DBBA2 /* wav.cpp in Sources */,
 				4F3EF8D128DE03ED002972F2 /* cnpy.cpp in Sources */,
@@ -2628,6 +2649,7 @@
 				4F7C496D255DDFCB00DF7588 /* IControls.cpp in Sources */,
 				4F3EE1D2231438D000004786 /* swell-misc.mm in Sources */,
 				4F3EE1D3231438D000004786 /* swell-wnd.mm in Sources */,
+				AA9F7C4A2990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4F3EE1D4231438D000004786 /* swell.cpp in Sources */,
 				4F3EF8FF28DE03ED002972F2 /* get_dsp.cpp in Sources */,
 				4F3EE1D5231438D000004786 /* IPlugAPP_host.cpp in Sources */,
@@ -2687,6 +2709,7 @@
 				4F78BE2822E7406D00AD537E /* IPlugParameter.cpp in Sources */,
 				4F78BE2922E7406D00AD537E /* IPlugTimer.cpp in Sources */,
 				4F3EF8EA28DE03ED002972F2 /* numpy_util.cpp in Sources */,
+				AA9F7C492990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4F78BE2A22E7406D00AD537E /* IPlugPaths.mm in Sources */,
 				4F7C496B255DDFCB00DF7588 /* IPopupMenuControl.cpp in Sources */,
 			);
@@ -2717,6 +2740,7 @@
 				4F815995205D51F000393585 /* vstpresetfile.cpp in Sources */,
 				4F3EF8F928DE03ED002972F2 /* get_dsp.cpp in Sources */,
 				4F815983205D50EB00393585 /* timer.cpp in Sources */,
+				AA9F7C432990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4F815989205D50EB00393585 /* funknown.cpp in Sources */,
 				4FB1F58B20E4B006004157C8 /* IGraphicsMac.mm in Sources */,
 				4F81598E205D51F000393585 /* vstbus.cpp in Sources */,
@@ -2791,6 +2815,7 @@
 				4F6FD2B522675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
 				4FB600281567CB0A0020189A /* IPlugAAX_Describe.cpp in Sources */,
 				4F3EF8E728DE03ED002972F2 /* numpy_util.cpp in Sources */,
+				AA9F7C452990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4FB1F58D20E4B007004157C8 /* IGraphicsMac.mm in Sources */,
 				4F7C4962255DDFC600DF7588 /* IPopupMenuControl.cpp in Sources */,
 			);
@@ -2809,6 +2834,7 @@
 				4F6369F120A466470022C370 /* IControl.cpp in Sources */,
 				4F6FD2B722675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
 				4F8C10E620BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
+				AA9F7C482990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4FC3EFF92086CE5700BD11FA /* parameterchanges.cpp in Sources */,
 				4FC3EFCE2086C35D00BD11FA /* IPlugPluginBase.cpp in Sources */,
 				4F7C4965255DDFC800DF7588 /* IPopupMenuControl.cpp in Sources */,
@@ -2846,6 +2872,7 @@
 				4F7C4955255DDFC300DF7588 /* IControls.cpp in Sources */,
 				4FD16D4013B635A0001D0217 /* swell-misc.mm in Sources */,
 				4FD16D4213B635AB001D0217 /* swell-wnd.mm in Sources */,
+				AA9F7C412990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4FD16D4413B635B2001D0217 /* swell.cpp in Sources */,
 				4F3EF8F728DE03ED002972F2 /* get_dsp.cpp in Sources */,
 				4F690CA3203A45C700A4A13E /* IPlugAPP_host.cpp in Sources */,
@@ -2890,6 +2917,7 @@
 				4F3EF8F228DE03ED002972F2 /* wavenet.cpp in Sources */,
 				4FFBB90F20863B0E00DDD0E7 /* IPlugParameter.cpp in Sources */,
 				AAD9F854295F75F6009DBBA2 /* ImpulseResponse.cpp in Sources */,
+				AA9F7C462990859B00D99615 /* NoiseGate.cpp in Sources */,
 				4FFBB91020863B0E00DDD0E7 /* pluginview.cpp in Sources */,
 				4FFBB91120863B0E00DDD0E7 /* fstring.cpp in Sources */,
 				4FFBB91320863B0E00DDD0E7 /* vstpresetfile.cpp in Sources */,

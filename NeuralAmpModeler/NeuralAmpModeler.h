@@ -2,6 +2,7 @@
 
 #include "dsp.h"
 #include "dsp/ImpulseResponse.h"
+#include "dsp/NoiseGate.h"
 #include "dsp/RecursiveLinearFilter.h"
 
 #include "IPlug_include_in_plug_hdr.h"
@@ -13,11 +14,15 @@
 const int kNumPresets = 1;
 
 enum EParams {
+  // These need to be the first ones because I use their indices to place
+  // their rects in the GUI.
   kInputLevel = 0,
   kToneBass,
   kToneMid,
   kToneTreble,
   kOutputLevel,
+  // The rest is fine though.
+  kNoiseGateThreshold,
   kEQActive,
   kNumParams
 };
@@ -65,7 +70,8 @@ private:
   // Deallocates mInputPointers and mOutputPointers
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
-  void _FallbackDSP(const int nFrames);
+  void _FallbackDSP(iplug::sample **inputs, iplug::sample **outputs,
+                    const size_t numChannels, const size_t numFrames);
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
@@ -119,6 +125,9 @@ private:
   iplug::sample **mInputPointers;
   iplug::sample **mOutputPointers;
 
+  // Noise gates
+  dsp::noise_gate::Trigger mNoiseGateTrigger;
+  dsp::noise_gate::Gain mNoiseGateGain;
   // The Neural Amp Model (NAM) actually being used:
   std::unique_ptr<DSP> mNAM;
   // And the IR
