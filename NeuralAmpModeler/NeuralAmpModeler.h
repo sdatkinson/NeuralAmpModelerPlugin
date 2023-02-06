@@ -14,11 +14,15 @@
 const int kNumPresets = 1;
 
 enum EParams {
+  // These need to be the first ones because I use their indices to place
+  // their rects in the GUI.
   kInputLevel = 0,
   kToneBass,
   kToneMid,
   kToneTreble,
   kOutputLevel,
+  // The rest is fine though.
+  kNoiseGateThreshold,
   kEQActive,
   kNumParams
 };

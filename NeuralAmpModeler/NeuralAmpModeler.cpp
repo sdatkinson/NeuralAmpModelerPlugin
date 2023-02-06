@@ -104,22 +104,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
       mInputSender(), mOutputSender() {
-  GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
-  GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
-  GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
-  GetParam(kEQActive)->InitBool("ToneStack", false);
+  this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  this->GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
+  this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
+  this->GetParam(kNoiseGateThreshold)
+      ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
+  this->GetParam(kEQActive)->InitBool("ToneStack", false);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
-
-  //  try {
-  //     this->mDSP = get_hard_dsp();
-  //  }
-  //  catch (std::exception& e) {
-  //    std::cerr << "Failed to read hard coded DSP" << std::endl;
-  //    std::cerr << e.what() << std::endl;
-  //  }
 
   mMakeGraphicsFunc = [&]() {
     return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS,
@@ -140,15 +134,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const float titleHeight = 50.0f;
     const auto titleLabel = content.GetFromTop(titleHeight);
 
-    // Areas for knobs
+    // Area for the Noise gate knob
     const float knobHalfPad = 10.0f;
     const float knobPad = 2.0f * knobHalfPad;
+    const float noiseGateKnobHeight = 80.0f;
+    const float noiseGateKnobWidth = 100.0f;
+    const IRECT noiseGateArea =
+        content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
+
+    // Areas for knobs
+    const float knobsExtraSpaceBelowTitle = 25.0f;
     const float knobHalfHeight = 70.0f;
     const float knobHeight = 2.0f * knobHalfHeight;
-    const auto knobs = content.GetFromTop(knobHeight)
-                           .GetReducedFromLeft(knobPad)
-                           .GetReducedFromRight(knobPad)
-                           .GetTranslated(0.0f, titleHeight);
+    const auto knobs =
+        content.GetFromTop(knobHeight)
+            .GetReducedFromLeft(knobPad)
+            .GetReducedFromRight(knobPad)
+            .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
     const IRECT inputKnobArea =
         knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
     const IRECT bassKnobArea =
@@ -328,6 +330,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
 
+    // Noise gate
+    pGraphics->AttachControl(
+        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
     // The knobs
     pGraphics->AttachControl(
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));
@@ -368,7 +373,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     toneStackSlider->SetActionFunction(toneStackAction);
 
     // The meters
-    const float meterMin = -60.0f;
+    const float meterMin = -90.0f;
     const float meterMax = -0.01f;
     pGraphics
         ->AttachControl(
@@ -485,7 +490,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   sample **triggerOutput;
   {
     const double time = 0.01;
-    const double threshold = -40.0; // GetParam...
+    const double threshold =
+        this->GetParam(kNoiseGateThreshold)->Value(); // GetParam...
     const double ratio = 1.5;
     const double openTime = 0.005;
     const double holdTime = 0.01;
