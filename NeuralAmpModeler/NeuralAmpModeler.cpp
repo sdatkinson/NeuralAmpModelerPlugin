@@ -552,8 +552,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
     this->mToneBass.SetParams(bassParams);
     this->mToneMid.SetParams(midParams);
     this->mToneTreble.SetParams(trebleParams);
-    sample **bassPointers = this->mToneBass.Process(
-        this->mOutputPointers, numChannelsInternal, numFrames);
+    sample **bassPointers =
+        this->mToneBass.Process(gateGainOutput, numChannelsInternal, numFrames);
     sample **midPointers =
         this->mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
     sample **treblePointers =
