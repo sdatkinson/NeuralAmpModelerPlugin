@@ -338,6 +338,9 @@ protected:
   void _DeallocateOutputPointers();
 
   size_t _GetNumChannels() const { return this->mOutputs.size(); };
+  size_t _GetNumFrames() const {
+    return this->mOutputs.size() > 0 ? this->mOutputs[0].size() : 0;
+  }
   // Return a pointer-to-pointers for the DSP's output buffers (all channels)
   // Assumes that ._PrepareBuffers()  was called recently enough.
   iplug::sample **_GetPointers();

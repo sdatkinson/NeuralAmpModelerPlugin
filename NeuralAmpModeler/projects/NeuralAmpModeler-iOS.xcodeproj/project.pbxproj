@@ -72,6 +72,7 @@
 		4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D752267CE540007B686 /* AppDelegate.m */; };
 		4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D7D2267CEBA0007B686 /* IPlugAUPlayer.mm */; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA9F7C4C299085BE00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */; };
 		AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */; };
 		AAD9F85D295F762B009DBBA2 /* ImpulseResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */; };
 		AAD9F86E2960D4D0009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F86C2960D4D0009DBBA2 /* wav.cpp */; };
@@ -318,6 +319,8 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseGate.cpp; sourceTree = "<group>"; };
+		AA9F7C50299085DA00D99615 /* NoiseGate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NoiseGate.h; sourceTree = "<group>"; };
 		AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RecursiveLinearFilter.cpp; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.cpp; sourceTree = "<absolute>"; };
 		AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecursiveLinearFilter.h; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.h; sourceTree = "<absolute>"; };
 		AAD9F85B295F761C009DBBA2 /* ImpulseResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImpulseResponse.h; sourceTree = "<group>"; };
@@ -377,6 +380,8 @@
 				AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */,
 				4F3EF90928DE0BA7002972F2 /* lstm.h */,
 				4F3EF90C28DE0BA7002972F2 /* lstm.cpp */,
+				AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */,
+				AA9F7C50299085DA00D99615 /* NoiseGate.h */,
 				4F3EF91228DE0BA7002972F2 /* numpy_util.h */,
 				4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */,
 				AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */,
@@ -960,6 +965,7 @@
 				4F914A4C26B4911A00E19BD1 /* IPlugAUViewController.mm in Sources */,
 				4FA61F8E22E89B4300A92C58 /* IGraphicsIOS.mm in Sources */,
 				4FA61F9022E8A1F500A92C58 /* IGraphics.cpp in Sources */,
+				AA9F7C4C299085BE00D99615 /* NoiseGate.cpp in Sources */,
 				AAD9F85D295F762B009DBBA2 /* ImpulseResponse.cpp in Sources */,
 				AAD9F86E2960D4D0009DBBA2 /* wav.cpp in Sources */,
 				4F3EF91928DE0BA7002972F2 /* cnpy.cpp in Sources */,
