@@ -101,6 +101,8 @@ public:
   void set_num_frames_(const long num_frames);
   void set_params_(std::vector<float>::iterator &it);
 
+  // "Zero-indexed" receptive field.
+  // E.g. a 1x1 convolution has a z.i.r.f. of zero.
   long get_receptive_field() const;
 
 private:
@@ -122,6 +124,9 @@ private:
     return this->_layer_buffers.size() > 0 ? this->_layer_buffers[0].cols() : 0;
   };
   long _get_channels() const;
+  // "One-indexed" receptive field
+  // TODO remove!
+  // E.g. a 1x1 convolution has a o.i.r.f. of one.
   long _get_receptive_field() const;
   void _rewind_buffers_();
 };
