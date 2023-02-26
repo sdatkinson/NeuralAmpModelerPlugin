@@ -111,7 +111,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   this->GetParam(kNoiseGateThreshold)
       ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
-  this->GetParam(kEQActive)->InitBool("ToneStack", false);
+  this->GetParam(kEQActive)->InitBool("ToneStack", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
