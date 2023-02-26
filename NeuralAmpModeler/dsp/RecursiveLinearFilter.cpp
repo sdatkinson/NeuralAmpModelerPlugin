@@ -7,6 +7,7 @@
 // See: https://webaudio.github.io/Audio-EQ-Cookbook/audio-eq-cookbook.html
 
 #include <algorithm> // std::fill
+#include <cmath>     // isnan
 #include <stdexcept>
 
 #include "RecursiveLinearFilter.h"
@@ -53,6 +54,9 @@ iplug::sample **recursive_linear_filter::Base::Process(iplug::sample **inputs,
       for (auto i = 1; i < outputDegree; i++)
         out += this->mOutputCoefficients[i] *
                this->mOutputHistory[c][(outputStart + i) % outputDegree];
+      // Prevent a NaN from jamming the filter!
+      if (isnan(out))
+        out = 0.0;
       // Store the output!
       if (outputDegree >= 1)
         this->mOutputHistory[c][outputStart] = out;

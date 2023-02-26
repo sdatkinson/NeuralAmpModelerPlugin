@@ -69,9 +69,11 @@ wavenet::_LayerArray::_LayerArray(const int input_size,
     this->_layers.push_back(_Layer(condition_size, channels, kernel_size,
                                    dilations[i], activation, gated));
   const long receptive_field = this->_get_receptive_field();
-  for (int i = 0; i < dilations.size(); i++)
+  for (int i = 0; i < dilations.size(); i++) {
     this->_layer_buffers.push_back(Eigen::MatrixXf(
         channels, LAYER_ARRAY_BUFFER_SIZE + receptive_field - 1));
+    this->_layer_buffers[i].setZero();
+  }
   this->_buffer_start = this->_get_receptive_field() - 1;
 }
 
@@ -88,6 +90,13 @@ long wavenet::_LayerArray::get_receptive_field() const {
 }
 
 void wavenet::_LayerArray::prepare_for_frames_(const long num_frames) {
+  // Example:
+  // _buffer_start = 0
+  // num_frames = 64
+  // buffer_size = 64
+  // -> this will write on indices 0 through 63, inclusive.
+  // -> No illegal writes.
+  // -> no rewind needed.
   if (this->_buffer_start + num_frames > this->_get_buffer_size())
     this->_rewind_buffers_();
 }
@@ -136,6 +145,7 @@ long wavenet::_LayerArray::_get_channels() const {
 }
 
 long wavenet::_LayerArray::_get_receptive_field() const {
+  // TODO remove this and use get_receptive_field() instead!
   long res = 1;
   for (int i = 0; i < this->_layers.size(); i++)
     res += (this->_layers[i].get_kernel_size() - 1) *
@@ -300,6 +310,11 @@ void wavenet::WaveNet::_process_core_() {
   this->_set_num_frames_(num_frames);
   this->_prepare_for_frames_(num_frames);
 
+  // NOTE: During warm-up, weird things can happen that NaN out the layers.
+  // We could solve this by anti-popping the *input*. But, it's easier to check
+  // the outputs for NaNs and zero them out.
+  // They'll flush out eventually because the model doesn't use any feedback.
+
   // Fill into condition array:
   // Clumsy...
   for (int j = 0; j < num_frames; j++) {
@@ -330,9 +345,13 @@ void wavenet::WaveNet::_process_core_() {
 
   const long final_head_array = this->_head_arrays.size() - 1;
   assert(this->_head_arrays[final_head_array].rows() == 1);
-  for (int s = 0; s < num_frames; s++)
-    this->_core_dsp_output[s] =
-        this->_head_scale * this->_head_arrays[final_head_array](0, s);
+  for (int s = 0; s < num_frames; s++) {
+    float out = this->_head_scale * this->_head_arrays[final_head_array](0, s);
+    // This is the NaN check that we could fix with anti-popping the input
+    if (isnan(out))
+      out = 0.0;
+    this->_core_dsp_output[s] = out;
+  }
   // Apply anti-pop
   this->_anti_pop_();
 }
