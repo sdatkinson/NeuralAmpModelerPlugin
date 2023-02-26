@@ -164,6 +164,9 @@
     <ClCompile Include="..\dsp\wav.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\dsp\NoiseGate.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
@@ -422,6 +425,9 @@
       <Filter>dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\dsp\Resample.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp\NoiseGate.h">
       <Filter>dsp</Filter>
     </ClInclude>
   </ItemGroup>

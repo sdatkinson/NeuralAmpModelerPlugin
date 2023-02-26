@@ -301,6 +301,7 @@
     <ClInclude Include="..\dsp\HardCodedModel.h" />
     <ClInclude Include="..\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\dsp\lstm.h" />
+    <ClInclude Include="..\dsp\NoiseGate.h" />
     <ClInclude Include="..\dsp\numpy_util.h" />
     <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
     <ClInclude Include="..\dsp\Resample.h" />
@@ -346,6 +347,7 @@
     <ClCompile Include="..\dsp\get_dsp.cpp" />
     <ClCompile Include="..\dsp\ImpulseResponse.cpp" />
     <ClCompile Include="..\dsp\lstm.cpp" />
+    <ClCompile Include="..\dsp\NoiseGate.cpp" />
     <ClCompile Include="..\dsp\numpy_util.cpp" />
     <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp" />
     <ClCompile Include="..\dsp\util.cpp" />
