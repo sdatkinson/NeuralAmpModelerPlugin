@@ -202,7 +202,16 @@ void tanh_(Eigen::MatrixXf &x, const long j_start, const long j_end) {
   tanh_(x, 0, x.rows(), j_start, j_end);
 }
 
-void tanh_(Eigen::MatrixXf &x) { tanh_(x, 0, x.rows(), 0, x.cols()); }
+void tanh_(Eigen::MatrixXf& x) {
+    float* ptr = x.data();
+
+    long size = x.rows() * x.cols();
+
+    for (long pos = 0; pos < size; pos++)
+    {
+        ptr[pos] = tanh(ptr[pos]);
+    }
+}
 
 void Conv1D::set_params_(std::vector<float>::iterator &params) {
   if (this->_weight.size() > 0) {
