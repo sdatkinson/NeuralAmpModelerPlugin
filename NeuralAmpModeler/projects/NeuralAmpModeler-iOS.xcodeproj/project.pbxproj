@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 47;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -21,70 +21,76 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		4F0D965B23099F5A00BFDED0 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103420A0E55900D3092F /* IPlugProcessor.cpp */; };
 		4F10E7C020B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F10E7BF20B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard */; };
 		4F1115CF2296DA95000CFCBF /* NeuralAmpModeler-iOS-MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F10E7BF20B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard */; };
-		4F32AE7D231431BD00710734 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; };
 		4F3E0F6A20A0BCD900A9C2BE /* NeuralAmpModeler-iOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */; };
 		4F3E0F6B20A0BCE300A9C2BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6820A0BCAF00A9C2BE /* Images.xcassets */; };
-		4F3EF91628DE0BA7002972F2 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90728DE0BA7002972F2 /* util.cpp */; };
-		4F3EF91728DE0BA7002972F2 /* dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90828DE0BA7002972F2 /* dsp.cpp */; };
-		4F3EF91828DE0BA7002972F2 /* lstm.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90928DE0BA7002972F2 /* lstm.h */; };
-		4F3EF91928DE0BA7002972F2 /* cnpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */; };
-		4F3EF91A28DE0BA7002972F2 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90B28DE0BA7002972F2 /* wavenet.h */; };
-		4F3EF91B28DE0BA7002972F2 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90C28DE0BA7002972F2 /* lstm.cpp */; };
-		4F3EF91C28DE0BA7002972F2 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90D28DE0BA7002972F2 /* util.h */; };
-		4F3EF91D28DE0BA7002972F2 /* dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF90E28DE0BA7002972F2 /* dsp.h */; };
-		4F3EF91E28DE0BA7002972F2 /* numpy_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */; };
-		4F3EF91F28DE0BA7002972F2 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91028DE0BA7002972F2 /* activations.h */; };
-		4F3EF92028DE0BA7002972F2 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF91128DE0BA7002972F2 /* wavenet.cpp */; };
-		4F3EF92128DE0BA7002972F2 /* numpy_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91228DE0BA7002972F2 /* numpy_util.h */; };
-		4F3EF92228DE0BA7002972F2 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */; };
-		4F3EF92328DE0BA7002972F2 /* cnpy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EF91428DE0BA7002972F2 /* cnpy.h */; };
 		4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F4856832773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m */; };
-		4F4856872773C41E005BCF8E /* IPlugAUViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105620A0E57100D3092F /* IPlugAUViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4F4856882773C41E005BCF8E /* IPlugAUAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105420A0E57000D3092F /* IPlugAUAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4F7C499B255DE03500DF7588 /* IPopupMenuControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4972255DE01F00DF7588 /* IPopupMenuControl.cpp */; };
-		4F7C499C255DE03500DF7588 /* ITextEntryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4976255DE01F00DF7588 /* ITextEntryControl.cpp */; };
-		4F7C4A15255DE23D00DF7588 /* IControls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4970255DE01F00DF7588 /* IControls.cpp */; };
-		4F914A4C26B4911A00E19BD1 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		4F9A81382929A0F400042B60 /* NeuralAmpModelerAU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4FA61F7522E899B500A92C58 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */; };
-		4FA61F7C22E89A5900A92C58 /* NeuralAmpModelerAU.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4FA61F7E22E89AFF00A92C58 /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF106620A0E58600D3092F /* IPlugPluginBase.cpp */; };
-		4FA61F7F22E89AFF00A92C58 /* IPlugAPIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103A20A0E55900D3092F /* IPlugAPIBase.cpp */; };
-		4FA61F8122E89AFF00A92C58 /* IPlugParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103220A0E55900D3092F /* IPlugParameter.cpp */; };
-		4FA61F8222E89AFF00A92C58 /* IPlugTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103920A0E55900D3092F /* IPlugTimer.cpp */; };
-		4FA61F8322E89AFF00A92C58 /* IPlugPaths.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FA758452186222E00F1BCC3 /* IPlugPaths.mm */; };
-		4FA61F8522E89B2000A92C58 /* IPlugAUAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105320A0E57000D3092F /* IPlugAUAudioUnit.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		4FA61F8622E89B2000A92C58 /* IPlugAUv3.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105820A0E57100D3092F /* IPlugAUv3.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		4FA61F8B22E89B3700A92C58 /* IGraphicsEditorDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE8F3AF20BA273800BF938F /* IGraphicsEditorDelegate.cpp */; };
-		4FA61F8C22E89B3700A92C58 /* IControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F6369E520A466320022C370 /* IControl.cpp */; };
-		4FA61F8D22E89B4300A92C58 /* IGraphicsCoreText.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D6A2267CDBE0007B686 /* IGraphicsCoreText.mm */; };
-		4FA61F8E22E89B4300A92C58 /* IGraphicsIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F63698E20A463AF0022C370 /* IGraphicsIOS.mm */; };
-		4FA61F8F22E89B4300A92C58 /* IGraphicsIOS_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F63699120A463AF0022C370 /* IGraphicsIOS_view.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		4FA61F9022E8A1F500A92C58 /* IGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F63699420A463AF0022C370 /* IGraphics.cpp */; };
-		4FA61F9122E8A2A700A92C58 /* IGraphicsNanoVG_src.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D7DCB224AE821002A1A2A /* IGraphicsNanoVG_src.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		4FA61F9222E8A2B500A92C58 /* NeuralAmpModeler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */; };
 		4FB2269720A0D3A800614769 /* NeuralAmpModeler-iOS-LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4FB2269620A0D3A800614769 /* NeuralAmpModeler-iOS-LaunchScreen.storyboard */; };
+		4FBFBA4429B115F700D1EA89 /* HardCodedModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA2C29B115F700D1EA89 /* HardCodedModel.h */; };
+		4FBFBA4529B115F700D1EA89 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA2D29B115F700D1EA89 /* Resample.h */; };
+		4FBFBA4629B115F700D1EA89 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA2E29B115F700D1EA89 /* util.cpp */; };
+		4FBFBA4729B115F700D1EA89 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA2F29B115F700D1EA89 /* RecursiveLinearFilter.cpp */; };
+		4FBFBA4829B115F700D1EA89 /* wav.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3029B115F700D1EA89 /* wav.h */; };
+		4FBFBA4929B115F700D1EA89 /* NoiseGate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3129B115F700D1EA89 /* NoiseGate.h */; };
+		4FBFBA4A29B115F700D1EA89 /* dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3229B115F700D1EA89 /* dsp.cpp */; };
+		4FBFBA4B29B115F700D1EA89 /* lstm.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3329B115F700D1EA89 /* lstm.h */; };
+		4FBFBA4C29B115F700D1EA89 /* cnpy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3429B115F700D1EA89 /* cnpy.cpp */; };
+		4FBFBA4D29B115F700D1EA89 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3529B115F700D1EA89 /* wavenet.h */; };
+		4FBFBA4E29B115F700D1EA89 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3629B115F700D1EA89 /* lstm.cpp */; };
+		4FBFBA4F29B115F700D1EA89 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3729B115F700D1EA89 /* NoiseGate.cpp */; };
+		4FBFBA5029B115F700D1EA89 /* ImpulseResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3829B115F700D1EA89 /* ImpulseResponse.cpp */; };
+		4FBFBA5129B115F700D1EA89 /* RecursiveLinearFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3929B115F700D1EA89 /* RecursiveLinearFilter.h */; };
+		4FBFBA5229B115F700D1EA89 /* ImpulseResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3A29B115F700D1EA89 /* ImpulseResponse.h */; };
+		4FBFBA5329B115F700D1EA89 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3B29B115F700D1EA89 /* util.h */; };
+		4FBFBA5429B115F700D1EA89 /* dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3C29B115F700D1EA89 /* dsp.h */; };
+		4FBFBA5529B115F700D1EA89 /* numpy_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3D29B115F700D1EA89 /* numpy_util.cpp */; };
+		4FBFBA5629B115F700D1EA89 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA3E29B115F700D1EA89 /* activations.h */; };
+		4FBFBA5729B115F700D1EA89 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA3F29B115F700D1EA89 /* wav.cpp */; };
+		4FBFBA5829B115F700D1EA89 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA4029B115F700D1EA89 /* wavenet.cpp */; };
+		4FBFBA5929B115F700D1EA89 /* numpy_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA4129B115F700D1EA89 /* numpy_util.h */; };
+		4FBFBA5A29B115F700D1EA89 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFBA4229B115F700D1EA89 /* get_dsp.cpp */; };
+		4FBFBA5B29B115F700D1EA89 /* cnpy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBFBA4329B115F700D1EA89 /* cnpy.h */; };
+		4FC69835293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
+		4FC69836293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4FC6983A293BA4F10076EC33 /* NeuralAmpModelerAU.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4FC6983B293BA5020076EC33 /* IPlugAUAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105420A0E57000D3092F /* IPlugAUAudioUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4FC6983C293BA5090076EC33 /* IPlugAUViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF105620A0E57100D3092F /* IPlugAUViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4FC6983D293BA5C40076EC33 /* IPlugAUAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105320A0E57000D3092F /* IPlugAUAudioUnit.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4FC6983E293BA5C40076EC33 /* IPlugAUv3.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105820A0E57100D3092F /* IPlugAUv3.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4FC69840293BA5C40076EC33 /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF106620A0E58600D3092F /* IPlugPluginBase.cpp */; };
+		4FC69841293BA5C40076EC33 /* IPlugAPIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103A20A0E55900D3092F /* IPlugAPIBase.cpp */; };
+		4FC69842293BA5C50076EC33 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103420A0E55900D3092F /* IPlugProcessor.cpp */; };
+		4FC69843293BA5C50076EC33 /* IPlugParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103220A0E55900D3092F /* IPlugParameter.cpp */; };
+		4FC69844293BA5C50076EC33 /* IPlugTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF103920A0E55900D3092F /* IPlugTimer.cpp */; };
+		4FC69845293BA5C50076EC33 /* IPlugPaths.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FA758452186222E00F1BCC3 /* IPlugPaths.mm */; };
+		4FC69846293BA5F90076EC33 /* IGraphicsEditorDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE8F3AF20BA273800BF938F /* IGraphicsEditorDelegate.cpp */; };
+		4FC69847293BA5F90076EC33 /* IPopupMenuControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4972255DE01F00DF7588 /* IPopupMenuControl.cpp */; };
+		4FC69848293BA5F90076EC33 /* IControls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4970255DE01F00DF7588 /* IControls.cpp */; };
+		4FC69849293BA5F90076EC33 /* ITextEntryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C4976255DE01F00DF7588 /* ITextEntryControl.cpp */; };
+		4FC6984A293BA5F90076EC33 /* IGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F63699420A463AF0022C370 /* IGraphics.cpp */; };
+		4FC6984B293BA6010076EC33 /* IGraphicsIOS_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F63699120A463AF0022C370 /* IGraphicsIOS_view.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4FC6984C293BA6010076EC33 /* IGraphicsCoreText.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D6A2267CDBE0007B686 /* IGraphicsCoreText.mm */; };
+		4FC6984D293BA6140076EC33 /* IGraphicsNanoVG_src.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D7DCB224AE821002A1A2A /* IGraphicsNanoVG_src.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4FC6984E293BA61D0076EC33 /* NeuralAmpModeler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */; };
+		4FC6984F293BA6420076EC33 /* IControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F6369E520A466320022C370 /* IControl.cpp */; };
+		4FC69851293BA8770076EC33 /* IGraphicsIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F63698E20A463AF0022C370 /* IGraphicsIOS.mm */; };
+		4FCBE769293CDFB7005D913D /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; };
 		4FDF6D772267CE540007B686 /* AppViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D732267CE540007B686 /* AppViewController.mm */; };
 		4FDF6D792267CE540007B686 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D742267CE540007B686 /* main.m */; };
 		4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D752267CE540007B686 /* AppDelegate.m */; };
 		4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D7D2267CEBA0007B686 /* IPlugAUPlayer.mm */; };
+		4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
+		4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		AA9F7C4C299085BE00D99615 /* NoiseGate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */; };
-		AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */; };
-		AAD9F85D295F762B009DBBA2 /* ImpulseResponse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */; };
-		AAD9F86E2960D4D0009DBBA2 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD9F86C2960D4D0009DBBA2 /* wav.cpp */; };
-		AAD9F873296377A6009DBBA2 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD9F872296377A6009DBBA2 /* Resample.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4FA61F7322E899B500A92C58 /* PBXContainerItemProxy */ = {
+		4FC69833293BA47F0076EC33 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91D3DA0C1B023C03008FFFBB /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4FA61F6D22E899B500A92C58;
+			remoteGlobalIDString = 4FC6982E293BA47F0076EC33;
 			remoteInfo = AUv3Framework;
 		};
 		91236D7F1B08F59300734C5E /* PBXContainerItemProxy */ = {
@@ -110,7 +116,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4F9A81382929A0F400042B60 /* NeuralAmpModelerAU.framework in Embed Frameworks */,
+				4FC69836293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,20 +143,6 @@
 		4F3E0F6520A0BC4000A9C2BE /* NeuralAmpModeler-iOS-AUv3-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-iOS-AUv3-Info.plist"; path = "../resources/NeuralAmpModeler-iOS-AUv3-Info.plist"; sourceTree = "<group>"; };
 		4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "NeuralAmpModeler-iOS.storyboard"; path = "../resources/NeuralAmpModeler-iOS.storyboard"; sourceTree = "<group>"; };
 		4F3E0F6820A0BCAF00A9C2BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../resources/Images.xcassets; sourceTree = "<group>"; };
-		4F3EF90728DE0BA7002972F2 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
-		4F3EF90828DE0BA7002972F2 /* dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dsp.cpp; sourceTree = "<group>"; };
-		4F3EF90928DE0BA7002972F2 /* lstm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lstm.h; sourceTree = "<group>"; };
-		4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cnpy.cpp; sourceTree = "<group>"; };
-		4F3EF90B28DE0BA7002972F2 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet.h; sourceTree = "<group>"; };
-		4F3EF90C28DE0BA7002972F2 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lstm.cpp; sourceTree = "<group>"; };
-		4F3EF90D28DE0BA7002972F2 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		4F3EF90E28DE0BA7002972F2 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
-		4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numpy_util.cpp; sourceTree = "<group>"; };
-		4F3EF91028DE0BA7002972F2 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
-		4F3EF91128DE0BA7002972F2 /* wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet.cpp; sourceTree = "<group>"; };
-		4F3EF91228DE0BA7002972F2 /* numpy_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numpy_util.h; sourceTree = "<group>"; };
-		4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
-		4F3EF91428DE0BA7002972F2 /* cnpy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cnpy.h; sourceTree = "<group>"; };
 		4F4856832773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NeuralAmpModelerAUv3Appex.m; path = ../resources/NeuralAmpModelerAUv3Appex.m; sourceTree = "<group>"; };
 		4F4A44A322D3604800A9D1A1 /* IGraphicsSkia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IGraphicsSkia.h; sourceTree = "<group>"; };
 		4F4A44A422D3604800A9D1A1 /* IGraphicsSkia.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IGraphicsSkia.cpp; sourceTree = "<group>"; };
@@ -204,10 +196,7 @@
 		4F7C4983255DE01F00DF7588 /* ITextEntryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITextEntryControl.h; sourceTree = "<group>"; };
 		4F7C4984255DE01F00DF7588 /* IVNumberBoxControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVNumberBoxControl.h; sourceTree = "<group>"; };
 		4F7C49A5255DE09500DF7588 /* IGraphicsFlexBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IGraphicsFlexBox.cpp; sourceTree = "<group>"; };
-		4F7C49A6255DE09500DF7588 /* IGraphicsImGui_src.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = IGraphicsImGui_src.mm; sourceTree = "<group>"; };
 		4F7C49A7255DE09500DF7588 /* IGraphicsFlexBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IGraphicsFlexBox.h; sourceTree = "<group>"; };
-		4F7C49A8255DE09500DF7588 /* IGraphicsImGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IGraphicsImGui.h; sourceTree = "<group>"; };
-		4F7C49A9255DE09500DF7588 /* IGraphicsImGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IGraphicsImGui.cpp; sourceTree = "<group>"; };
 		4F7C49E1255DE11700DF7588 /* IWebsocketServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IWebsocketServer.cpp; sourceTree = "<group>"; };
 		4F7C49E2255DE11700DF7588 /* IWebsocketServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IWebsocketServer.h; sourceTree = "<group>"; };
 		4F7C49E3255DE11700DF7588 /* IWebsocketEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IWebsocketEditorDelegate.h; sourceTree = "<group>"; };
@@ -256,13 +245,37 @@
 		4F7C4A14255DE11700DF7588 /* Oversampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Oversampler.h; sourceTree = "<group>"; };
 		4F8D7DCB224AE821002A1A2A /* IGraphicsNanoVG_src.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IGraphicsNanoVG_src.m; sourceTree = "<group>"; };
 		4F8D8BD82316701900EFA1FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NeuralAmpModelerAU.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FA61F7A22E89A2700A92C58 /* NeuralAmpModeler-iOS-AUv3Framework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-iOS-AUv3Framework-Info.plist"; path = "../resources/NeuralAmpModeler-iOS-AUv3Framework-Info.plist"; sourceTree = "<group>"; };
 		4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModelerAU.h; path = ../resources/NeuralAmpModelerAU.h; sourceTree = "<group>"; };
 		4FA758452186222E00F1BCC3 /* IPlugPaths.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPlugPaths.mm; path = ../../iPlug2/IPlug/IPlugPaths.mm; sourceTree = "<group>"; };
 		4FB2269620A0D3A800614769 /* NeuralAmpModeler-iOS-LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "NeuralAmpModeler-iOS-LaunchScreen.storyboard"; path = "../resources/NeuralAmpModeler-iOS-LaunchScreen.storyboard"; sourceTree = "<group>"; };
 		4FBBD7F420B6ABE700A37DE2 /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; name = config; path = ../config; sourceTree = "<group>"; };
+		4FBFBA2C29B115F700D1EA89 /* HardCodedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HardCodedModel.h; sourceTree = "<group>"; };
+		4FBFBA2D29B115F700D1EA89 /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resample.h; sourceTree = "<group>"; };
+		4FBFBA2E29B115F700D1EA89 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
+		4FBFBA2F29B115F700D1EA89 /* RecursiveLinearFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecursiveLinearFilter.cpp; sourceTree = "<group>"; };
+		4FBFBA3029B115F700D1EA89 /* wav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
+		4FBFBA3129B115F700D1EA89 /* NoiseGate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoiseGate.h; sourceTree = "<group>"; };
+		4FBFBA3229B115F700D1EA89 /* dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dsp.cpp; sourceTree = "<group>"; };
+		4FBFBA3329B115F700D1EA89 /* lstm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lstm.h; sourceTree = "<group>"; };
+		4FBFBA3429B115F700D1EA89 /* cnpy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cnpy.cpp; sourceTree = "<group>"; };
+		4FBFBA3529B115F700D1EA89 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet.h; sourceTree = "<group>"; };
+		4FBFBA3629B115F700D1EA89 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lstm.cpp; sourceTree = "<group>"; };
+		4FBFBA3729B115F700D1EA89 /* NoiseGate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseGate.cpp; sourceTree = "<group>"; };
+		4FBFBA3829B115F700D1EA89 /* ImpulseResponse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImpulseResponse.cpp; sourceTree = "<group>"; };
+		4FBFBA3929B115F700D1EA89 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecursiveLinearFilter.h; sourceTree = "<group>"; };
+		4FBFBA3A29B115F700D1EA89 /* ImpulseResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImpulseResponse.h; sourceTree = "<group>"; };
+		4FBFBA3B29B115F700D1EA89 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		4FBFBA3C29B115F700D1EA89 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
+		4FBFBA3D29B115F700D1EA89 /* numpy_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numpy_util.cpp; sourceTree = "<group>"; };
+		4FBFBA3E29B115F700D1EA89 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
+		4FBFBA3F29B115F700D1EA89 /* wav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wav.cpp; sourceTree = "<group>"; };
+		4FBFBA4029B115F700D1EA89 /* wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet.cpp; sourceTree = "<group>"; };
+		4FBFBA4129B115F700D1EA89 /* numpy_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numpy_util.h; sourceTree = "<group>"; };
+		4FBFBA4229B115F700D1EA89 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
+		4FBFBA4329B115F700D1EA89 /* cnpy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cnpy.h; sourceTree = "<group>"; };
 		4FC46E58231440C8000045E7 /* web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = web; path = ../resources/web; sourceTree = "<group>"; };
+		4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NeuralAmpModelerAU.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FC82B4720BD524700722133 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../resources/img; sourceTree = "<group>"; };
 		4FC82B4820BD524700722133 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../resources/fonts; sourceTree = "<group>"; };
 		4FDA600520B5868D00C49ABA /* NeuralAmpModeler-ios.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "NeuralAmpModeler-ios.xcconfig"; path = "../config/NeuralAmpModeler-ios.xcconfig"; sourceTree = "<group>"; };
@@ -319,19 +332,10 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseGate.cpp; sourceTree = "<group>"; };
-		AA9F7C50299085DA00D99615 /* NoiseGate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NoiseGate.h; sourceTree = "<group>"; };
-		AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RecursiveLinearFilter.cpp; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.cpp; sourceTree = "<absolute>"; };
-		AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecursiveLinearFilter.h; path = /Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.h; sourceTree = "<absolute>"; };
-		AAD9F85B295F761C009DBBA2 /* ImpulseResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImpulseResponse.h; sourceTree = "<group>"; };
-		AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImpulseResponse.cpp; sourceTree = "<group>"; };
-		AAD9F86C2960D4D0009DBBA2 /* wav.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wav.cpp; sourceTree = "<group>"; };
-		AAD9F86D2960D4D0009DBBA2 /* wav.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
-		AAD9F872296377A6009DBBA2 /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resample.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4FA61F6B22E899B500A92C58 /* Frameworks */ = {
+		4FC6982C293BA47F0076EC33 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -342,7 +346,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FA61F7522E899B500A92C58 /* NeuralAmpModelerAU.framework in Frameworks */,
+				4FC69835293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,7 +354,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F32AE7D231431BD00710734 /* NeuralAmpModelerAU.framework in Frameworks */,
+				4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,37 +369,6 @@
 				4FFF102F20A0E54C00D3092F /* WDL */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		4F3EF90528DE0BA7002972F2 /* dsp */ = {
-			isa = PBXGroup;
-			children = (
-				4F3EF91028DE0BA7002972F2 /* activations.h */,
-				4F3EF91428DE0BA7002972F2 /* cnpy.h */,
-				4F3EF90A28DE0BA7002972F2 /* cnpy.cpp */,
-				4F3EF90E28DE0BA7002972F2 /* dsp.h */,
-				4F3EF90828DE0BA7002972F2 /* dsp.cpp */,
-				4F3EF91328DE0BA7002972F2 /* get_dsp.cpp */,
-				AAD9F85B295F761C009DBBA2 /* ImpulseResponse.h */,
-				AAD9F85C295F762B009DBBA2 /* ImpulseResponse.cpp */,
-				4F3EF90928DE0BA7002972F2 /* lstm.h */,
-				4F3EF90C28DE0BA7002972F2 /* lstm.cpp */,
-				AA9F7C4B299085BE00D99615 /* NoiseGate.cpp */,
-				AA9F7C50299085DA00D99615 /* NoiseGate.h */,
-				4F3EF91228DE0BA7002972F2 /* numpy_util.h */,
-				4F3EF90F28DE0BA7002972F2 /* numpy_util.cpp */,
-				AAD9F84A295EC4A0009DBBA2 /* RecursiveLinearFilter.h */,
-				AAD9F848295EC49D009DBBA2 /* RecursiveLinearFilter.cpp */,
-				AAD9F872296377A6009DBBA2 /* Resample.h */,
-				4F3EF90D28DE0BA7002972F2 /* util.h */,
-				4F3EF90728DE0BA7002972F2 /* util.cpp */,
-				4F3EF90B28DE0BA7002972F2 /* wavenet.h */,
-				4F3EF91128DE0BA7002972F2 /* wavenet.cpp */,
-				AAD9F86D2960D4D0009DBBA2 /* wav.h */,
-				AAD9F86C2960D4D0009DBBA2 /* wav.cpp */,
-			);
-			name = dsp;
-			path = ../dsp;
 			sourceTree = "<group>";
 		};
 		4F63697420A463AF0022C370 /* IGraphics */ = {
@@ -503,9 +476,6 @@
 			children = (
 				4F7C49A7255DE09500DF7588 /* IGraphicsFlexBox.h */,
 				4F7C49A5255DE09500DF7588 /* IGraphicsFlexBox.cpp */,
-				4F7C49A8255DE09500DF7588 /* IGraphicsImGui.h */,
-				4F7C49A9255DE09500DF7588 /* IGraphicsImGui.cpp */,
-				4F7C49A6255DE09500DF7588 /* IGraphicsImGui_src.mm */,
 			);
 			path = Extras;
 			sourceTree = "<group>";
@@ -641,6 +611,38 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		4FBFBA2B29B115F700D1EA89 /* dsp */ = {
+			isa = PBXGroup;
+			children = (
+				4FBFBA2C29B115F700D1EA89 /* HardCodedModel.h */,
+				4FBFBA2D29B115F700D1EA89 /* Resample.h */,
+				4FBFBA2E29B115F700D1EA89 /* util.cpp */,
+				4FBFBA2F29B115F700D1EA89 /* RecursiveLinearFilter.cpp */,
+				4FBFBA3029B115F700D1EA89 /* wav.h */,
+				4FBFBA3129B115F700D1EA89 /* NoiseGate.h */,
+				4FBFBA3229B115F700D1EA89 /* dsp.cpp */,
+				4FBFBA3329B115F700D1EA89 /* lstm.h */,
+				4FBFBA3429B115F700D1EA89 /* cnpy.cpp */,
+				4FBFBA3529B115F700D1EA89 /* wavenet.h */,
+				4FBFBA3629B115F700D1EA89 /* lstm.cpp */,
+				4FBFBA3729B115F700D1EA89 /* NoiseGate.cpp */,
+				4FBFBA3829B115F700D1EA89 /* ImpulseResponse.cpp */,
+				4FBFBA3929B115F700D1EA89 /* RecursiveLinearFilter.h */,
+				4FBFBA3A29B115F700D1EA89 /* ImpulseResponse.h */,
+				4FBFBA3B29B115F700D1EA89 /* util.h */,
+				4FBFBA3C29B115F700D1EA89 /* dsp.h */,
+				4FBFBA3D29B115F700D1EA89 /* numpy_util.cpp */,
+				4FBFBA3E29B115F700D1EA89 /* activations.h */,
+				4FBFBA3F29B115F700D1EA89 /* wav.cpp */,
+				4FBFBA4029B115F700D1EA89 /* wavenet.cpp */,
+				4FBFBA4129B115F700D1EA89 /* numpy_util.h */,
+				4FBFBA4229B115F700D1EA89 /* get_dsp.cpp */,
+				4FBFBA4329B115F700D1EA89 /* cnpy.h */,
+			);
+			name = dsp;
+			path = ../dsp;
+			sourceTree = "<group>";
+		};
 		4FDF6D712267CE540007B686 /* iOSApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -720,11 +722,11 @@
 		91D3DA0B1B023C03008FFFBB = {
 			isa = PBXGroup;
 			children = (
-				4F3EF90528DE0BA7002972F2 /* dsp */,
 				4FFF108420A1036200D3092F /* config.h */,
 				4FFF108820A1036200D3092F /* NeuralAmpModeler.h */,
 				4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */,
 				4F8D8BD82316701900EFA1FB /* README.md */,
+				4FBFBA2B29B115F700D1EA89 /* dsp */,
 				4F8BF48D20A12D2E0081DF0A /* Resources */,
 				4F67D51620A121F60061FB8E /* Other Sources */,
 				4F3E0F9B20A0C64100A9C2BE /* Frameworks */,
@@ -737,7 +739,7 @@
 			children = (
 				91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */,
 				91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */,
-				4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */,
+				4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -745,35 +747,40 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		4FA61F6922E899B500A92C58 /* Headers */ = {
+		4FC6982A293BA47F0076EC33 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F3EF91828DE0BA7002972F2 /* lstm.h in Headers */,
-				AAD9F873296377A6009DBBA2 /* Resample.h in Headers */,
-				4F4856882773C41E005BCF8E /* IPlugAUAudioUnit.h in Headers */,
-				4F3EF91D28DE0BA7002972F2 /* dsp.h in Headers */,
-				4F3EF92128DE0BA7002972F2 /* numpy_util.h in Headers */,
-				4FA61F7C22E89A5900A92C58 /* NeuralAmpModelerAU.h in Headers */,
-				4F4856872773C41E005BCF8E /* IPlugAUViewController.h in Headers */,
-				4F3EF91C28DE0BA7002972F2 /* util.h in Headers */,
-				4F3EF91F28DE0BA7002972F2 /* activations.h in Headers */,
-				4F3EF91A28DE0BA7002972F2 /* wavenet.h in Headers */,
-				4F3EF92328DE0BA7002972F2 /* cnpy.h in Headers */,
+				4FBFBA5629B115F700D1EA89 /* activations.h in Headers */,
+				4FBFBA5129B115F700D1EA89 /* RecursiveLinearFilter.h in Headers */,
+				4FC6983C293BA5090076EC33 /* IPlugAUViewController.h in Headers */,
+				4FBFBA4929B115F700D1EA89 /* NoiseGate.h in Headers */,
+				4FBFBA5929B115F700D1EA89 /* numpy_util.h in Headers */,
+				4FBFBA4D29B115F700D1EA89 /* wavenet.h in Headers */,
+				4FBFBA5B29B115F700D1EA89 /* cnpy.h in Headers */,
+				4FBFBA4429B115F700D1EA89 /* HardCodedModel.h in Headers */,
+				4FBFBA4529B115F700D1EA89 /* Resample.h in Headers */,
+				4FBFBA5329B115F700D1EA89 /* util.h in Headers */,
+				4FBFBA5429B115F700D1EA89 /* dsp.h in Headers */,
+				4FBFBA4B29B115F700D1EA89 /* lstm.h in Headers */,
+				4FBFBA4829B115F700D1EA89 /* wav.h in Headers */,
+				4FBFBA5229B115F700D1EA89 /* ImpulseResponse.h in Headers */,
+				4FC6983A293BA4F10076EC33 /* NeuralAmpModelerAU.h in Headers */,
+				4FC6983B293BA5020076EC33 /* IPlugAUAudioUnit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		4FA61F6D22E899B500A92C58 /* NeuralAmpModelerAU */ = {
+		4FC6982E293BA47F0076EC33 /* NeuralAmpModelerAU */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4FA61F7722E899B500A92C58 /* Build configuration list for PBXNativeTarget "NeuralAmpModelerAU" */;
+			buildConfigurationList = 4FC69837293BA47F0076EC33 /* Build configuration list for PBXNativeTarget "NeuralAmpModelerAU" */;
 			buildPhases = (
-				4FA61F6922E899B500A92C58 /* Headers */,
-				4FA61F6A22E899B500A92C58 /* Sources */,
-				4FA61F6B22E899B500A92C58 /* Frameworks */,
-				4FA61F6C22E899B500A92C58 /* Resources */,
+				4FC6982A293BA47F0076EC33 /* Headers */,
+				4FC6982B293BA47F0076EC33 /* Sources */,
+				4FC6982C293BA47F0076EC33 /* Frameworks */,
+				4FC6982D293BA47F0076EC33 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -781,7 +788,7 @@
 			);
 			name = NeuralAmpModelerAU;
 			productName = AUv3Framework;
-			productReference = 4FA61F6E22E899B500A92C58 /* NeuralAmpModelerAU.framework */;
+			productReference = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		91236D0C1B08F42B00734C5E /* App */ = {
@@ -799,8 +806,8 @@
 			);
 			dependencies = (
 				91236D801B08F59300734C5E /* PBXTargetDependency */,
-				4FA61F7422E899B500A92C58 /* PBXTargetDependency */,
 				B87FD2092351C94400CF7307 /* PBXTargetDependency */,
+				4FC69834293BA47F0076EC33 /* PBXTargetDependency */,
 			);
 			name = App;
 			productName = "FilterDemoApp-iOS";
@@ -833,9 +840,8 @@
 				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
-					4FA61F6D22E899B500A92C58 = {
-						DevelopmentTeam = 686EDA2T8T;
-						ProvisioningStyle = Automatic;
+					4FC6982E293BA47F0076EC33 = {
+						CreatedOnToolsVersion = 14.1;
 					};
 					91236D0C1B08F42B00734C5E = {
 						CreatedOnToolsVersion = 7.0;
@@ -884,14 +890,14 @@
 			targets = (
 				91236D0C1B08F42B00734C5E /* App */,
 				91236D761B08F59300734C5E /* AUv3 */,
-				4FA61F6D22E899B500A92C58 /* NeuralAmpModelerAU */,
 				B87FD2032351C90C00CF7307 /* Update plists */,
+				4FC6982E293BA47F0076EC33 /* NeuralAmpModelerAU */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4FA61F6C22E899B500A92C58 /* Resources */ = {
+		4FC6982D293BA47F0076EC33 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -936,6 +942,7 @@
 		};
 		B87FD2072351C91100CF7307 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -950,41 +957,41 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4FA61F6A22E899B500A92C58 /* Sources */ = {
+		4FC6982B293BA47F0076EC33 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F7C4A15255DE23D00DF7588 /* IControls.cpp in Sources */,
-				4FA61F9122E8A2A700A92C58 /* IGraphicsNanoVG_src.m in Sources */,
-				4F3EF91628DE0BA7002972F2 /* util.cpp in Sources */,
-				4FA61F8622E89B2000A92C58 /* IPlugAUv3.mm in Sources */,
-				4FA61F8522E89B2000A92C58 /* IPlugAUAudioUnit.mm in Sources */,
-				4F3EF91728DE0BA7002972F2 /* dsp.cpp in Sources */,
-				4F3EF91E28DE0BA7002972F2 /* numpy_util.cpp in Sources */,
-				4FA61F8F22E89B4300A92C58 /* IGraphicsIOS_view.mm in Sources */,
-				4F914A4C26B4911A00E19BD1 /* IPlugAUViewController.mm in Sources */,
-				4FA61F8E22E89B4300A92C58 /* IGraphicsIOS.mm in Sources */,
-				4FA61F9022E8A1F500A92C58 /* IGraphics.cpp in Sources */,
-				AA9F7C4C299085BE00D99615 /* NoiseGate.cpp in Sources */,
-				AAD9F85D295F762B009DBBA2 /* ImpulseResponse.cpp in Sources */,
-				AAD9F86E2960D4D0009DBBA2 /* wav.cpp in Sources */,
-				4F3EF91928DE0BA7002972F2 /* cnpy.cpp in Sources */,
-				4F3EF92028DE0BA7002972F2 /* wavenet.cpp in Sources */,
-				4FA61F7E22E89AFF00A92C58 /* IPlugPluginBase.cpp in Sources */,
-				4F3EF92228DE0BA7002972F2 /* get_dsp.cpp in Sources */,
-				4FA61F8C22E89B3700A92C58 /* IControl.cpp in Sources */,
-				4FA61F8D22E89B4300A92C58 /* IGraphicsCoreText.mm in Sources */,
-				4F7C499C255DE03500DF7588 /* ITextEntryControl.cpp in Sources */,
-				4FA61F8222E89AFF00A92C58 /* IPlugTimer.cpp in Sources */,
-				4FA61F8B22E89B3700A92C58 /* IGraphicsEditorDelegate.cpp in Sources */,
-				4F3EF91B28DE0BA7002972F2 /* lstm.cpp in Sources */,
-				4FA61F8322E89AFF00A92C58 /* IPlugPaths.mm in Sources */,
-				4FA61F8122E89AFF00A92C58 /* IPlugParameter.cpp in Sources */,
-				4F0D965B23099F5A00BFDED0 /* IPlugProcessor.cpp in Sources */,
-				4FA61F7F22E89AFF00A92C58 /* IPlugAPIBase.cpp in Sources */,
-				4FA61F9222E8A2B500A92C58 /* NeuralAmpModeler.cpp in Sources */,
-				4F7C499B255DE03500DF7588 /* IPopupMenuControl.cpp in Sources */,
-				AAD9F849295EC49D009DBBA2 /* RecursiveLinearFilter.cpp in Sources */,
+				4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */,
+				4FBFBA4A29B115F700D1EA89 /* dsp.cpp in Sources */,
+				4FC6983D293BA5C40076EC33 /* IPlugAUAudioUnit.mm in Sources */,
+				4FBFBA4629B115F700D1EA89 /* util.cpp in Sources */,
+				4FC6983E293BA5C40076EC33 /* IPlugAUv3.mm in Sources */,
+				4FC6984D293BA6140076EC33 /* IGraphicsNanoVG_src.m in Sources */,
+				4FC6984B293BA6010076EC33 /* IGraphicsIOS_view.mm in Sources */,
+				4FBFBA4F29B115F700D1EA89 /* NoiseGate.cpp in Sources */,
+				4FBFBA5A29B115F700D1EA89 /* get_dsp.cpp in Sources */,
+				4FC69851293BA8770076EC33 /* IGraphicsIOS.mm in Sources */,
+				4FC69849293BA5F90076EC33 /* ITextEntryControl.cpp in Sources */,
+				4FC6984C293BA6010076EC33 /* IGraphicsCoreText.mm in Sources */,
+				4FC6984F293BA6420076EC33 /* IControl.cpp in Sources */,
+				4FBFBA4C29B115F700D1EA89 /* cnpy.cpp in Sources */,
+				4FC69848293BA5F90076EC33 /* IControls.cpp in Sources */,
+				4FBFBA5829B115F700D1EA89 /* wavenet.cpp in Sources */,
+				4FC69840293BA5C40076EC33 /* IPlugPluginBase.cpp in Sources */,
+				4FC6984A293BA5F90076EC33 /* IGraphics.cpp in Sources */,
+				4FC69841293BA5C40076EC33 /* IPlugAPIBase.cpp in Sources */,
+				4FC69842293BA5C50076EC33 /* IPlugProcessor.cpp in Sources */,
+				4FC69846293BA5F90076EC33 /* IGraphicsEditorDelegate.cpp in Sources */,
+				4FBFBA4E29B115F700D1EA89 /* lstm.cpp in Sources */,
+				4FBFBA5729B115F700D1EA89 /* wav.cpp in Sources */,
+				4FC69843293BA5C50076EC33 /* IPlugParameter.cpp in Sources */,
+				4FBFBA5029B115F700D1EA89 /* ImpulseResponse.cpp in Sources */,
+				4FC69844293BA5C50076EC33 /* IPlugTimer.cpp in Sources */,
+				4FC69845293BA5C50076EC33 /* IPlugPaths.mm in Sources */,
+				4FC69847293BA5F90076EC33 /* IPopupMenuControl.cpp in Sources */,
+				4FBFBA5529B115F700D1EA89 /* numpy_util.cpp in Sources */,
+				4FC6984E293BA61D0076EC33 /* NeuralAmpModeler.cpp in Sources */,
+				4FBFBA4729B115F700D1EA89 /* RecursiveLinearFilter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1003,6 +1010,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FCBE769293CDFB7005D913D /* IPlugAUViewController.mm in Sources */,
 				4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1010,10 +1018,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4FA61F7422E899B500A92C58 /* PBXTargetDependency */ = {
+		4FC69834293BA47F0076EC33 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4FA61F6D22E899B500A92C58 /* NeuralAmpModelerAU */;
-			targetProxy = 4FA61F7322E899B500A92C58 /* PBXContainerItemProxy */;
+			target = 4FC6982E293BA47F0076EC33 /* NeuralAmpModelerAU */;
+			targetProxy = 4FC69833293BA47F0076EC33 /* PBXContainerItemProxy */;
 		};
 		91236D801B08F59300734C5E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1028,7 +1036,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4FA61F7822E899B500A92C58 /* Debug */ = {
+		4FC69838293BA47F0076EC33 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1036,13 +1044,12 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1056,32 +1063,38 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(AUv3_FRAMEWORK_DEFS)",
-					"$(AUv3_DEFS)",
 					"$(EXTRA_AUv3_DEFS)",
+					"$(AUv3_DEFS)",
+					"$(AUv3_FRAMEWORK_DEFS)",
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-AUv3Framework-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3Framework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		4FA61F7922E899B500A92C58 /* Release */ = {
+		4FC69839293BA47F0076EC33 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1089,13 +1102,12 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1108,9 +1120,9 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(AUv3_FRAMEWORK_DEFS)",
-					"$(AUv3_DEFS)",
 					"$(EXTRA_AUv3_DEFS)",
+					"$(AUv3_DEFS)",
+					"$(AUv3_FRAMEWORK_DEFS)",
 					"$(RELEASE_DEFS)",
 					"$(EXTRA_RELEASE_DEFS)",
 					"$(ALL_DEFS)",
@@ -1118,17 +1130,23 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-AUv3Framework-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3Framework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1174,7 +1192,10 @@
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler;
@@ -1222,12 +1243,16 @@
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler;
 				PRODUCT_NAME = NeuralAmpModeler;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1270,7 +1295,11 @@
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-AUv3-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3;
@@ -1316,13 +1345,18 @@
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/../resources/NeuralAmpModeler-iOS-AUv3-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.StevenAtkinson.NeuralAmpModeler.AUv3;
 				PRODUCT_NAME = NeuralAmpModelerAppExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.2;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1352,6 +1386,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = "NeuralAmpModeler-iOS.entitlements";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1408,6 +1443,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = "NeuralAmpModeler-iOS.entitlements";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = $IPLUG_PATH/IPlugOBJCPrefix.pch;
@@ -1432,7 +1468,8 @@
 					$AUv3_FRAMEWORKS,
 					"$(EXTRA_LNK_FLAGS)",
 				);
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.0;
 				SYMROOT = "../build-ios";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1458,11 +1495,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4FA61F7722E899B500A92C58 /* Build configuration list for PBXNativeTarget "NeuralAmpModelerAU" */ = {
+		4FC69837293BA47F0076EC33 /* Build configuration list for PBXNativeTarget "NeuralAmpModelerAU" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4FA61F7822E899B500A92C58 /* Debug */,
-				4FA61F7922E899B500A92C58 /* Release */,
+				4FC69838293BA47F0076EC33 /* Debug */,
+				4FC69839293BA47F0076EC33 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
