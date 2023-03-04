@@ -204,82 +204,86 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
 
     // Model loader button
     auto loadNAM = [&, pGraphics](IControl *pCaller) {
-      WDL_String filename;
-      WDL_String path(this->mNAMPath.remove_filepart());
-      pGraphics->PromptForFile(filename, path);
-      if (filename.GetLength()) {
-        // Sets mNAMPath and mStagedNAM
-        const std::string msg = this->_GetNAM(filename);
-        // TODO error messages like the IR loader.
-        if (msg.size()) {
-          std::stringstream ss;
-          ss << "Failed to load NAM model. Message:\n\n"
-             << msg << "\n\n"
-             << "If the model is an old \"directory-style\" model, it can be "
-                "converted using the utility at "
-                "https://github.com/sdatkinson/nam-model-utility";
-          pGraphics->ShowMessageBox(ss.str().c_str(), "Failed to load model!",
-                                    kMB_OK);
+      WDL_String initFileName;
+      WDL_String initPath(this->mNAMPath.remove_filepart());
+      pGraphics->PromptForFile(initFileName, initPath, EFileAction::Open, "nam",
+      [&](const WDL_String& fileName, const WDL_String& path){
+        if (fileName.GetLength()) {
+          // Sets mNAMPath and mStagedNAM
+          const std::string msg = this->_GetNAM(fileName);
+          // TODO error messages like the IR loader.
+          if (msg.size()) {
+            std::stringstream ss;
+            ss << "Failed to load NAM model. Message:\n\n"
+               << msg << "\n\n"
+               << "If the model is an old \"directory-style\" model, it can be "
+                  "converted using the utility at "
+                  "https://github.com/sdatkinson/nam-model-utility";
+            pGraphics->ShowMessageBox(ss.str().c_str(), "Failed to load model!",
+                                      kMB_OK);
+          }
         }
-      }
+      });
     };
     // IR loader button
     auto loadIR = [&, pGraphics](IControl *pCaller) {
-      WDL_String fileName;
-      WDL_String path(this->mIRPath.remove_filepart());
-      pGraphics->PromptForFile(fileName, path);
-      if (fileName.GetLength()) {
-        this->mIRPath = fileName;
-        const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
-        if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
-          std::stringstream message;
-          message << "Failed to load IR file " << fileName.Get() << ":\n";
-          switch (retCode) {
-          case (dsp::wav::LoadReturnCode::ERROR_OPENING):
-            message
+      WDL_String initFileName;
+      WDL_String initPath(this->mIRPath.remove_filepart());
+      pGraphics->PromptForFile(initFileName, initPath, EFileAction::Open, "wav",
+                               [&](const WDL_String& fileName, const WDL_String& path){
+        if (fileName.GetLength()) {
+          this->mIRPath = fileName;
+          const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
+          if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
+            std::stringstream message;
+            message << "Failed to load IR file " << fileName.Get() << ":\n";
+            switch (retCode) {
+              case (dsp::wav::LoadReturnCode::ERROR_OPENING):
+                message
                 << "Failed to open file (is it being used by another program?)";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
-            message << "File is not a WAV file.";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
-            message << "File is not a WAV file.";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
-            message << "File is missing expected format chunk.";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
-            message << "WAV file contents are invalid.";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
-            message << "Unsupported file format \"IEEE float\"";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
-            message << "Unsupported file format \"A-law\"";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
-            message << "Unsupported file format \"mu-law\"";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
-            message << "Unsupported file format \"extensible\"";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
-            message << "File is not mono.";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
-            message << "Unsupported bits per sample";
-            break;
-          case (dsp::wav::LoadReturnCode::ERROR_OTHER):
-            message << "???";
-            break;
-          default:
-            message << "???";
-            break;
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
+                message << "File is not a WAV file.";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
+                message << "File is not a WAV file.";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
+                message << "File is missing expected format chunk.";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
+                message << "WAV file contents are invalid.";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
+                message << "Unsupported file format \"IEEE float\"";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
+                message << "Unsupported file format \"A-law\"";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
+                message << "Unsupported file format \"mu-law\"";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
+                message << "Unsupported file format \"extensible\"";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
+                message << "File is not mono.";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
+                message << "Unsupported bits per sample";
+                break;
+              case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+                message << "???";
+                break;
+              default:
+                message << "???";
+                break;
+            }
+            pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!",
+                                      kMB_OK);
           }
-          pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!",
-                                    kMB_OK);
         }
-      }
+      });
     };
     // Model-clearing function
     auto ClearNAM = [&, pGraphics](IControl *pCaller) {
