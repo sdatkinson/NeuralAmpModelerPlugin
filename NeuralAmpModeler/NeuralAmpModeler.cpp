@@ -116,8 +116,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
   mMakeGraphicsFunc = [&]() {
-    return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS,
-                        GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT));
+    
+#ifdef OS_IOS
+  auto scaleFactor = GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT) * 0.85f;
+#else
+  auto scaleFactor = 1.0f;
+#endif
+    
+    return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
   };
 
   mLayoutFunc = [&](IGraphics *pGraphics) {
