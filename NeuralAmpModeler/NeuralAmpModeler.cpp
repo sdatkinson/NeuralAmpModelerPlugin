@@ -111,6 +111,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   this->GetParam(kNoiseGateThreshold)
       ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
+  this->GetParam(kNoiseGateActive)->InitBool("Noise gate active", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
@@ -343,6 +344,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     // Noise gate
     pGraphics->AttachControl(
         new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
+    IVSlideSwitchControl* noiseGateSlider =
+        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Active", style,
+            true, // valueInButton
+            EDirection::Horizontal);
     // The knobs
     pGraphics->AttachControl(
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));

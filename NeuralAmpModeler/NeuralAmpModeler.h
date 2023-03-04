@@ -23,6 +23,7 @@ enum EParams {
   kOutputLevel,
   // The rest is fine though.
   kNoiseGateThreshold,
+  kNoiseGateActive,
   kEQActive,
   kNumParams
 };
