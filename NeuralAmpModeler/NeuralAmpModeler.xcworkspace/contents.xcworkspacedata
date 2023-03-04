@@ -2,12 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.h">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/steve/src/NeuralAmpModelerPlugin/NeuralAmpModeler/dsp/RecursiveLinearFilter.cpp">
-   </FileRef>
-   <FileRef
       location = "group:projects/NeuralAmpModeler-iOS.xcodeproj">
    </FileRef>
    <FileRef
