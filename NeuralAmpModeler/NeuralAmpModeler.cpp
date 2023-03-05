@@ -173,14 +173,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
 
     // Area for EQ toggle
     const float ngAreaHeight = 40.0f;
-    const float ngAreaHalfWidth = noiseGateArea.W();
+    const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
         .GetTranslated(0.0f, ngAreaHeight + singleKnobPad)
         .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
     const float eqAreaHeight = 40.0f;
-    const float eqAreaHalfWidth = 60.0f;
+    const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
     const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
                                    .GetTranslated(0.0f, eqAreaHeight + singleKnobPad)
                                    .GetMidHPadded(eqAreaHalfWidth);
