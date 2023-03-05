@@ -110,8 +110,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   this->GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   this->GetParam(kNoiseGateThreshold)
-      ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
-  this->GetParam(kNoiseGateActive)->InitBool("Noise gate active", true);
+      ->InitGain("Gate", -80.0, -100.0, 0.0, 0.1);
+  this->GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
@@ -142,38 +142,47 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const auto titleLabel = content.GetFromTop(titleHeight);
 
     // Area for the Noise gate knob
-    const float knobHalfPad = 10.0f;
-    const float knobPad = 2.0f * knobHalfPad;
-    const float noiseGateKnobHeight = 80.0f;
-    const float noiseGateKnobWidth = 100.0f;
-    const IRECT noiseGateArea =
-        content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
+    const float allKnobsHalfPad = 10.0f;
+    const float allKnobsPad = 2.0f * allKnobsHalfPad;
+    //const float noiseGateKnobHeight = 80.0f;
+    //const float noiseGateKnobWidth = 100.0f;
+    //const IRECT noiseGateArea =
+    //    content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
 
     // Areas for knobs
     const float knobsExtraSpaceBelowTitle = 25.0f;
     const float knobHalfHeight = 70.0f;
     const float knobHeight = 2.0f * knobHalfHeight;
+    const float singleKnobPad = 10.0f;
     const auto knobs =
         content.GetFromTop(knobHeight)
-            .GetReducedFromLeft(knobPad)
-            .GetReducedFromRight(knobPad)
+            .GetReducedFromLeft(allKnobsPad)
+            .GetReducedFromRight(allKnobsPad)
             .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
     const IRECT inputKnobArea =
-        knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-10);
     const IRECT bassKnobArea =
-        knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT middleKnobArea =
-        knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT trebleKnobArea =
-        knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT outputKnobArea =
-        knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+
+    // Area for EQ toggle
+    const float ngAreaHeight = 40.0f;
+    const float ngAreaHalfWidth = noiseGateArea.W();
+    const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
+        .GetTranslated(0.0f, ngAreaHeight + singleKnobPad)
+        .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
     const float eqAreaHeight = 40.0f;
     const float eqAreaHalfWidth = 60.0f;
-    const IRECT eqToggleArea = knobs.GetFromBottom(eqAreaHeight)
-                                   .GetTranslated(0.0f, eqAreaHeight)
+    const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
+                                   .GetTranslated(0.0f, eqAreaHeight + singleKnobPad)
                                    .GetMidHPadded(eqAreaHalfWidth);
 
     // Areas for model and IR
@@ -188,14 +197,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
 
     // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
-    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad)
-                                     .GetMidHPadded(knobHalfPad)
+    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
+                                     .GetMidHPadded(allKnobsHalfPad)
                                      .GetMidVPadded(meterHalfHeight)
-                                     .GetTranslated(-knobPad, 0.0f);
-    const IRECT outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad)
-                                      .GetMidHPadded(knobHalfPad)
+                                     .GetTranslated(-allKnobsPad, 0.0f);
+    const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
+                                      .GetMidHPadded(allKnobsHalfPad)
                                       .GetMidVPadded(meterHalfHeight)
-                                      .GetTranslated(knobPad, 0.0f);
+                                      .GetTranslated(allKnobsPad, 0.0f);
 
     // auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     // pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(),
@@ -334,6 +343,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                 style.valueText.WithVAlign(EVAlign::Middle))),
         kCtrlTagIRName);
 
+    // NG toggle
+    IVSlideSwitchControl *noiseGateSlider =
+        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Gate", style,
+        true, // valueInButton
+        EDirection::Horizontal);
+    pGraphics->AttachControl(noiseGateSlider);
     // Tone stack toggle
     IVSlideSwitchControl *toneStackSlider =
         new IVSlideSwitchControl(eqToggleArea, kEQActive, "EQ", style,
@@ -341,16 +356,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
 
-    // Noise gate
-    pGraphics->AttachControl(
-        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
-    IVSlideSwitchControl* noiseGateSlider =
-        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Active", style,
-            true, // valueInButton
-            EDirection::Horizontal);
     // The knobs
+    // Input
     pGraphics->AttachControl(
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    // Noise gate
+    const bool noiseGateIsActive = this->GetParam(kNoiseGateActive)->Value();
+    const IVStyle noiseGateStyle =
+        noiseGateIsActive ? style : styleInactive;
+    IVKnobControl* noiseGateControl =
+        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style);
+    pGraphics->AttachControl(noiseGateControl);
+    // Tone stack
     const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
     const IVStyle toneStackInitialStyle =
         toneStackIsActive ? style : styleInactive;
@@ -363,11 +380,26 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(bassControl);
     pGraphics->AttachControl(middleControl);
     pGraphics->AttachControl(trebleControl);
+    // Output
     pGraphics->AttachControl(
         new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 
-    // Extend the slider action function to set the style of the knobs
-    auto setKnobStyles = [&, pGraphics, bassControl, middleControl,
+    // Extend the noise gate action function to set the style of its knob
+    auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {
+        const bool noiseGateActive = pCaller->GetValue() > 0;
+        const IVStyle toneStackStyle = noiseGateActive ? style : styleInactive;
+        noiseGateControl->SetStyle(toneStackStyle);
+        noiseGateControl->SetDirty(false);
+    };
+    auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
+    auto noiseGateAction = [defaultNoiseGateSliderAction,
+        setNoiseGateKnobStyles](IControl* pCaller) {
+        defaultNoiseGateSliderAction(pCaller);
+        setNoiseGateKnobStyles(pCaller);
+    };
+    noiseGateSlider->SetActionFunction(noiseGateAction);
+    // Extend the slider action function to set the style of its knobs
+    auto setToneStackKnobStyles = [&, pGraphics, bassControl, middleControl,
                           trebleControl](IControl *pCaller) {
       const bool toneStackActive = pCaller->GetValue() > 0;
       const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
@@ -381,9 +413,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     };
     auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
     auto toneStackAction = [defaultToneStackSliderAction,
-                            setKnobStyles](IControl *pCaller) {
+                            setToneStackKnobStyles](IControl *pCaller) {
       defaultToneStackSliderAction(pCaller);
-      setKnobStyles(pCaller);
+      setToneStackKnobStyles(pCaller);
     };
     toneStackSlider->SetActionFunction(toneStackAction);
 
@@ -499,10 +531,12 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   this->_ProcessInput(inputs, numFrames, numChannelsExternalIn,
                       numChannelsInternal);
   this->_ApplyDSPStaging();
+  const bool noiseGateActive = this->GetParam(kNoiseGateActive)->Value();
   const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
   // Noise gate trigger
-  sample **triggerOutput;
+  sample **triggerOutput = mInputPointers;
+  if (noiseGateActive)
   {
     const double time = 0.01;
     const double threshold =
@@ -532,8 +566,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
                        numChannelsInternal, numFrames);
   }
   // Apply the noise gate
-  sample **gateGainOutput = this->mNoiseGateGain.Process(
-      this->mOutputPointers, numChannelsInternal, numFrames);
+  sample **gateGainOutput = noiseGateActive ? this->mNoiseGateGain.Process(
+      this->mOutputPointers, numChannelsInternal, numFrames) : this->mOutputPointers;
 
   sample **toneStackOutPointers = gateGainOutput;
   if (toneStackActive) {

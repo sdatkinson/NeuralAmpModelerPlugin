@@ -17,18 +17,18 @@ enum EParams {
   // These need to be the first ones because I use their indices to place
   // their rects in the GUI.
   kInputLevel = 0,
+  kNoiseGateThreshold,
   kToneBass,
   kToneMid,
   kToneTreble,
   kOutputLevel,
   // The rest is fine though.
-  kNoiseGateThreshold,
   kNoiseGateActive,
   kEQActive,
   kNumParams
 };
 
-const int numKnobs = 5;
+const int numKnobs = 6;
 
 enum ECtrlTags {
   kCtrlTagModelName = 0,
