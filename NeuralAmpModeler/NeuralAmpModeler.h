@@ -59,7 +59,10 @@ public:
   bool SerializeState(iplug::IByteChunk &chunk) const override;
   int UnserializeState(const iplug::IByteChunk &chunk, int startPos) override;
   void OnUIOpen() override;
-  bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
+  bool OnHostRequestingSupportedViewConfiguration(int width,
+                                                  int height) override {
+    return true;
+  }
 
 private:
   // Allocates mInputPointers and mOutputPointers
