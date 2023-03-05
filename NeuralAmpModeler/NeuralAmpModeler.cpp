@@ -144,10 +144,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     // Area for the Noise gate knob
     const float allKnobsHalfPad = 10.0f;
     const float allKnobsPad = 2.0f * allKnobsHalfPad;
-    //const float noiseGateKnobHeight = 80.0f;
-    //const float noiseGateKnobWidth = 100.0f;
-    //const IRECT noiseGateArea =
-    //    content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
 
     // Areas for knobs
     const float knobsExtraSpaceBelowTitle = 25.0f;
@@ -362,10 +358,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));
     // Noise gate
     const bool noiseGateIsActive = this->GetParam(kNoiseGateActive)->Value();
-    const IVStyle noiseGateStyle =
+    const IVStyle noiseGateInitialStyle =
         noiseGateIsActive ? style : styleInactive;
     IVKnobControl* noiseGateControl =
-        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style);
+        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
     pGraphics->AttachControl(noiseGateControl);
     // Tone stack
     const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
@@ -387,8 +383,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     // Extend the noise gate action function to set the style of its knob
     auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {
         const bool noiseGateActive = pCaller->GetValue() > 0;
-        const IVStyle toneStackStyle = noiseGateActive ? style : styleInactive;
-        noiseGateControl->SetStyle(toneStackStyle);
+        const IVStyle noiseGateStyle = noiseGateActive ? style : styleInactive;
+        noiseGateControl->SetStyle(noiseGateStyle);
         noiseGateControl->SetDirty(false);
     };
     auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
