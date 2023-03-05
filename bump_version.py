@@ -38,8 +38,10 @@ def main():
             newVersionInfo = currentVersionInfo.bump_minor()
         elif sys.argv[1] == "patch":
             newVersionInfo = currentVersionInfo.bump_patch()
-        else:
+        elif sys.argv[1] == "none":
             newVersionInfo = currentVersionInfo
+        else:
+            raise ValueError(f"Unrecognized version bump for '{sys.argv[1]}'")
     else:
         print("Please supply an argument major, minor or patch")
         exit()
