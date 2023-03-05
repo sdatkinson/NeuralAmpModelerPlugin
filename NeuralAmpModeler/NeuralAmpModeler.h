@@ -17,17 +17,18 @@ enum EParams {
   // These need to be the first ones because I use their indices to place
   // their rects in the GUI.
   kInputLevel = 0,
+  kNoiseGateThreshold,
   kToneBass,
   kToneMid,
   kToneTreble,
   kOutputLevel,
   // The rest is fine though.
-  kNoiseGateThreshold,
+  kNoiseGateActive,
   kEQActive,
   kNumParams
 };
 
-const int numKnobs = 5;
+const int numKnobs = 6;
 
 enum ECtrlTags {
   kCtrlTagModelName = 0,
@@ -58,7 +59,10 @@ public:
   bool SerializeState(iplug::IByteChunk &chunk) const override;
   int UnserializeState(const iplug::IByteChunk &chunk, int startPos) override;
   void OnUIOpen() override;
-  bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
+  bool OnHostRequestingSupportedViewConfiguration(int width,
+                                                  int height) override {
+    return true;
+  }
 
 private:
   // Allocates mInputPointers and mOutputPointers

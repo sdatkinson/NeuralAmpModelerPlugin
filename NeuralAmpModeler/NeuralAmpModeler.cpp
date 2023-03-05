@@ -110,19 +110,20 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
   this->GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   this->GetParam(kNoiseGateThreshold)
-      ->InitGain("Noise Gate", -80.0, -100.0, 0.0, 0.1);
+      ->InitGain("Gate", -80.0, -100.0, 0.0, 0.1);
+  this->GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
   mMakeGraphicsFunc = [&]() {
-    
+
 #ifdef OS_IOS
-  auto scaleFactor = GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT) * 0.85f;
+    auto scaleFactor = GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT) * 0.85f;
 #else
-  auto scaleFactor = 1.0f;
+    auto scaleFactor = 1.0f;
 #endif
-    
+
     return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
   };
 
@@ -141,39 +142,47 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const auto titleLabel = content.GetFromTop(titleHeight);
 
     // Area for the Noise gate knob
-    const float knobHalfPad = 10.0f;
-    const float knobPad = 2.0f * knobHalfPad;
-    const float noiseGateKnobHeight = 80.0f;
-    const float noiseGateKnobWidth = 100.0f;
-    const IRECT noiseGateArea =
-        content.GetFromTop(noiseGateKnobHeight).GetFromLeft(noiseGateKnobWidth);
+    const float allKnobsHalfPad = 10.0f;
+    const float allKnobsPad = 2.0f * allKnobsHalfPad;
 
     // Areas for knobs
     const float knobsExtraSpaceBelowTitle = 25.0f;
     const float knobHalfHeight = 70.0f;
     const float knobHeight = 2.0f * knobHalfHeight;
+    const float singleKnobPad = 10.0f;
     const auto knobs =
         content.GetFromTop(knobHeight)
-            .GetReducedFromLeft(knobPad)
-            .GetReducedFromRight(knobPad)
+            .GetReducedFromLeft(allKnobsPad)
+            .GetReducedFromRight(allKnobsPad)
             .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
-    const IRECT inputKnobArea =
-        knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-10);
+    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs)
+                                    .GetPadded(-singleKnobPad);
+    const IRECT noiseGateArea =
+        knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-10);
     const IRECT bassKnobArea =
-        knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT middleKnobArea =
-        knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-10);
-    const IRECT trebleKnobArea =
-        knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-10);
-    const IRECT outputKnobArea =
-        knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-10);
+        knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
+    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs)
+                                     .GetPadded(-singleKnobPad);
+    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs)
+                                     .GetPadded(-singleKnobPad);
+
+    // Area for EQ toggle
+    const float ngAreaHeight = 40.0f;
+    const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
+    const IRECT ngToggleArea =
+        noiseGateArea.GetFromBottom(ngAreaHeight)
+            .GetTranslated(0.0f, ngAreaHeight + singleKnobPad)
+            .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
     const float eqAreaHeight = 40.0f;
-    const float eqAreaHalfWidth = 60.0f;
-    const IRECT eqToggleArea = knobs.GetFromBottom(eqAreaHeight)
-                                   .GetTranslated(0.0f, eqAreaHeight)
-                                   .GetMidHPadded(eqAreaHalfWidth);
+    const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
+    const IRECT eqToggleArea =
+        middleKnobArea.GetFromBottom(eqAreaHeight)
+            .GetTranslated(0.0f, eqAreaHeight + singleKnobPad)
+            .GetMidHPadded(eqAreaHalfWidth);
 
     // Areas for model and IR
     const float fileWidth = 250.0f;
@@ -187,14 +196,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
 
     // Areas for meters
     const float meterHalfHeight = 0.5f * 250.0f;
-    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(knobHalfPad)
-                                     .GetMidHPadded(knobHalfPad)
+    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
+                                     .GetMidHPadded(allKnobsHalfPad)
                                      .GetMidVPadded(meterHalfHeight)
-                                     .GetTranslated(-knobPad, 0.0f);
-    const IRECT outputMeterArea = outputKnobArea.GetFromRight(knobHalfPad)
-                                      .GetMidHPadded(knobHalfPad)
+                                     .GetTranslated(-allKnobsPad, 0.0f);
+    const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
+                                      .GetMidHPadded(allKnobsHalfPad)
                                       .GetMidVPadded(meterHalfHeight)
-                                      .GetTranslated(knobPad, 0.0f);
+                                      .GetTranslated(allKnobsPad, 0.0f);
 
     // auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     // pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(),
@@ -212,84 +221,90 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     auto loadNAM = [&, pGraphics](IControl *pCaller) {
       WDL_String initFileName;
       WDL_String initPath(this->mNAMPath.remove_filepart());
-      pGraphics->PromptForFile(initFileName, initPath, EFileAction::Open, "nam",
-      [&](const WDL_String& fileName, const WDL_String& path){
-        if (fileName.GetLength()) {
-          // Sets mNAMPath and mStagedNAM
-          const std::string msg = this->_GetNAM(fileName);
-          // TODO error messages like the IR loader.
-          if (msg.size()) {
-            std::stringstream ss;
-            ss << "Failed to load NAM model. Message:\n\n"
-               << msg << "\n\n"
-               << "If the model is an old \"directory-style\" model, it can be "
-                  "converted using the utility at "
-                  "https://github.com/sdatkinson/nam-model-utility";
-            pGraphics->ShowMessageBox(ss.str().c_str(), "Failed to load model!",
-                                      kMB_OK);
-          }
-        }
-      });
+      pGraphics->PromptForFile(
+          initFileName, initPath, EFileAction::Open, "nam",
+          [&](const WDL_String &fileName, const WDL_String &path) {
+            if (fileName.GetLength()) {
+              // Sets mNAMPath and mStagedNAM
+              const std::string msg = this->_GetNAM(fileName);
+              // TODO error messages like the IR loader.
+              if (msg.size()) {
+                std::stringstream ss;
+                ss << "Failed to load NAM model. Message:\n\n"
+                   << msg << "\n\n"
+                   << "If the model is an old \"directory-style\" model, it "
+                      "can be "
+                      "converted using the utility at "
+                      "https://github.com/sdatkinson/nam-model-utility";
+                pGraphics->ShowMessageBox(ss.str().c_str(),
+                                          "Failed to load model!", kMB_OK);
+              }
+            }
+          });
     };
     // IR loader button
     auto loadIR = [&, pGraphics](IControl *pCaller) {
       WDL_String initFileName;
       WDL_String initPath(this->mIRPath.remove_filepart());
-      pGraphics->PromptForFile(initFileName, initPath, EFileAction::Open, "wav",
-                               [&](const WDL_String& fileName, const WDL_String& path){
-        if (fileName.GetLength()) {
-          this->mIRPath = fileName;
-          const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
-          if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
-            std::stringstream message;
-            message << "Failed to load IR file " << fileName.Get() << ":\n";
-            switch (retCode) {
-              case (dsp::wav::LoadReturnCode::ERROR_OPENING):
-                message
-                << "Failed to open file (is it being used by another program?)";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
-                message << "File is not a WAV file.";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
-                message << "File is not a WAV file.";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
-                message << "File is missing expected format chunk.";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
-                message << "WAV file contents are invalid.";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
-                message << "Unsupported file format \"IEEE float\"";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
-                message << "Unsupported file format \"A-law\"";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
-                message << "Unsupported file format \"mu-law\"";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
-                message << "Unsupported file format \"extensible\"";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
-                message << "File is not mono.";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
-                message << "Unsupported bits per sample";
-                break;
-              case (dsp::wav::LoadReturnCode::ERROR_OTHER):
-                message << "???";
-                break;
-              default:
-                message << "???";
-                break;
+      pGraphics->PromptForFile(
+          initFileName, initPath, EFileAction::Open, "wav",
+          [&](const WDL_String &fileName, const WDL_String &path) {
+            if (fileName.GetLength()) {
+              this->mIRPath = fileName;
+              const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
+              if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
+                std::stringstream message;
+                message << "Failed to load IR file " << fileName.Get() << ":\n";
+                switch (retCode) {
+                case (dsp::wav::LoadReturnCode::ERROR_OPENING):
+                  message << "Failed to open file (is it being used by another "
+                             "program?)";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
+                  message << "File is not a WAV file.";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
+                  message << "File is not a WAV file.";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
+                  message << "File is missing expected format chunk.";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
+                  message << "WAV file contents are invalid.";
+                  break;
+                case (dsp::wav::LoadReturnCode::
+                          ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
+                  message << "Unsupported file format \"IEEE float\"";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
+                  message << "Unsupported file format \"A-law\"";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
+                  message << "Unsupported file format \"mu-law\"";
+                  break;
+                case (dsp::wav::LoadReturnCode::
+                          ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
+                  message << "Unsupported file format \"extensible\"";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
+                  message << "File is not mono.";
+                  break;
+                case (dsp::wav::LoadReturnCode::
+                          ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
+                  message << "Unsupported bits per sample";
+                  break;
+                case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+                  message << "???";
+                  break;
+                default:
+                  message << "???";
+                  break;
+                }
+                pGraphics->ShowMessageBox(message.str().c_str(),
+                                          "Failed to load IR!", kMB_OK);
+              }
             }
-            pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!",
-                                      kMB_OK);
-          }
-        }
-      });
+          });
     };
     // Model-clearing function
     auto ClearNAM = [&, pGraphics](IControl *pCaller) {
@@ -333,6 +348,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                 style.valueText.WithVAlign(EVAlign::Middle))),
         kCtrlTagIRName);
 
+    // NG toggle
+    IVSlideSwitchControl *noiseGateSlider =
+        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Gate", style,
+                                 true, // valueInButton
+                                 EDirection::Horizontal);
+    pGraphics->AttachControl(noiseGateSlider);
     // Tone stack toggle
     IVSlideSwitchControl *toneStackSlider =
         new IVSlideSwitchControl(eqToggleArea, kEQActive, "EQ", style,
@@ -340,12 +361,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
 
-    // Noise gate
-    pGraphics->AttachControl(
-        new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
     // The knobs
+    // Input
     pGraphics->AttachControl(
         new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    // Noise gate
+    const bool noiseGateIsActive = this->GetParam(kNoiseGateActive)->Value();
+    const IVStyle noiseGateInitialStyle =
+        noiseGateIsActive ? style : styleInactive;
+    IVKnobControl *noiseGateControl = new IVKnobControl(
+        noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
+    pGraphics->AttachControl(noiseGateControl);
+    // Tone stack
     const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
     const IVStyle toneStackInitialStyle =
         toneStackIsActive ? style : styleInactive;
@@ -358,12 +385,28 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(bassControl);
     pGraphics->AttachControl(middleControl);
     pGraphics->AttachControl(trebleControl);
+    // Output
     pGraphics->AttachControl(
         new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 
-    // Extend the slider action function to set the style of the knobs
-    auto setKnobStyles = [&, pGraphics, bassControl, middleControl,
-                          trebleControl](IControl *pCaller) {
+    // Extend the noise gate action function to set the style of its knob
+    auto setNoiseGateKnobStyles = [&, pGraphics,
+                                   noiseGateControl](IControl *pCaller) {
+      const bool noiseGateActive = pCaller->GetValue() > 0;
+      const IVStyle noiseGateStyle = noiseGateActive ? style : styleInactive;
+      noiseGateControl->SetStyle(noiseGateStyle);
+      noiseGateControl->SetDirty(false);
+    };
+    auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
+    auto noiseGateAction = [defaultNoiseGateSliderAction,
+                            setNoiseGateKnobStyles](IControl *pCaller) {
+      defaultNoiseGateSliderAction(pCaller);
+      setNoiseGateKnobStyles(pCaller);
+    };
+    noiseGateSlider->SetActionFunction(noiseGateAction);
+    // Extend the slider action function to set the style of its knobs
+    auto setToneStackKnobStyles = [&, pGraphics, bassControl, middleControl,
+                                   trebleControl](IControl *pCaller) {
       const bool toneStackActive = pCaller->GetValue() > 0;
       const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
       bassControl->SetStyle(toneStackStyle);
@@ -376,9 +419,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     };
     auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
     auto toneStackAction = [defaultToneStackSliderAction,
-                            setKnobStyles](IControl *pCaller) {
+                            setToneStackKnobStyles](IControl *pCaller) {
       defaultToneStackSliderAction(pCaller);
-      setKnobStyles(pCaller);
+      setToneStackKnobStyles(pCaller);
     };
     toneStackSlider->SetActionFunction(toneStackAction);
 
@@ -494,11 +537,12 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   this->_ProcessInput(inputs, numFrames, numChannelsExternalIn,
                       numChannelsInternal);
   this->_ApplyDSPStaging();
+  const bool noiseGateActive = this->GetParam(kNoiseGateActive)->Value();
   const bool toneStackActive = this->GetParam(kEQActive)->Value();
 
   // Noise gate trigger
-  sample **triggerOutput;
-  {
+  sample **triggerOutput = mInputPointers;
+  if (noiseGateActive) {
     const double time = 0.01;
     const double threshold =
         this->GetParam(kNoiseGateThreshold)->Value(); // GetParam...
@@ -527,8 +571,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
                        numChannelsInternal, numFrames);
   }
   // Apply the noise gate
-  sample **gateGainOutput = this->mNoiseGateGain.Process(
-      this->mOutputPointers, numChannelsInternal, numFrames);
+  sample **gateGainOutput =
+      noiseGateActive
+          ? this->mNoiseGateGain.Process(this->mOutputPointers,
+                                         numChannelsInternal, numFrames)
+          : this->mOutputPointers;
 
   sample **toneStackOutPointers = gateGainOutput;
   if (toneStackActive) {

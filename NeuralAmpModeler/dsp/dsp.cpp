@@ -13,8 +13,7 @@
 #include "util.h"
 
 #define tanh_impl_ std::tanh
-//#define tanh_impl_ fast_tanh_
-
+// #define tanh_impl_ fast_tanh_
 
 constexpr auto _INPUT_BUFFER_SAFETY_FACTOR = 32;
 
@@ -195,17 +194,16 @@ void sigmoid_(Eigen::MatrixXf &x, const long i_start, const long i_end,
       x(i, j) = 1.0 / (1.0 + expf(-x(i, j)));
 }
 
-inline float fast_tanh_(const float x)
-{
-    const float ax = fabs(x);
-    const float x2 = x * x;
+inline float fast_tanh_(const float x) {
+  const float ax = fabs(x);
+  const float x2 = x * x;
 
-    return(x * (2.45550750702956f + 2.45550750702956f * ax +
-        (0.893229853513558f + 0.821226666969744f * ax) * x2) /
-        (2.44506634652299f + (2.44506634652299f + x2) *
-            fabs(x + 0.814642734961073f * x * ax)));
+  return (x *
+          (2.45550750702956f + 2.45550750702956f * ax +
+           (0.893229853513558f + 0.821226666969744f * ax) * x2) /
+          (2.44506634652299f +
+           (2.44506634652299f + x2) * fabs(x + 0.814642734961073f * x * ax)));
 }
-
 
 void tanh_(Eigen::MatrixXf &x, const long i_start, const long i_end,
            const long j_start, const long j_end) {
@@ -218,16 +216,15 @@ void tanh_(Eigen::MatrixXf &x, const long j_start, const long j_end) {
   tanh_(x, 0, x.rows(), j_start, j_end);
 }
 
-void tanh_(Eigen::MatrixXf& x) {
+void tanh_(Eigen::MatrixXf &x) {
 
-    float* ptr = x.data();
+  float *ptr = x.data();
 
-    long size = x.rows() * x.cols();
+  long size = x.rows() * x.cols();
 
-    for (long pos = 0; pos < size; pos++)
-    {
-        ptr[pos] = tanh_impl_(ptr[pos]);
-    }
+  for (long pos = 0; pos < size; pos++) {
+    ptr[pos] = tanh_impl_(ptr[pos]);
+  }
 }
 
 void Conv1D::set_params_(std::vector<float>::iterator &params) {
