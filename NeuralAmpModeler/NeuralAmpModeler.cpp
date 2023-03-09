@@ -104,7 +104,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
       mInputSender(), mOutputSender() {
-  this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
+  this->GetParam(kInputLevel)->InitGain("Input", 0.0, -48.0, 48.0, 0.1);
   this->GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kToneTreble)->InitDouble("Treble", 5.0, 0.0, 10.0, 0.1);
