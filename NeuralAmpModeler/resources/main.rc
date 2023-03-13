@@ -239,3 +239,6 @@ HELP_FN SVG HELP_FN
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+DOWN_ARROW_FN SVG DOWN_ARROW_FN  
+UP_ARROW_FN SVG UP_ARROW_FN  
+

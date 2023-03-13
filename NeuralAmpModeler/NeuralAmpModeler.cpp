@@ -2,6 +2,7 @@
 #include <cmath>
 #include <filesystem>
 #include <iostream>
+#include <set>
 #include <utility>
 
 #include "Colors.h"
@@ -15,6 +16,12 @@
 
 using namespace iplug;
 using namespace igraphics;
+namespace fs = std::filesystem;
+
+std::vector<std::string> _oNams;
+std::string _oCurrentNam;
+std::vector<std::string> _oIRs;
+std::string _oCurrentIR;
 
 class IRolloverSVGButtonControl : public ISVGButtonControl {
 public:
@@ -134,6 +141,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    auto downArrowSVG = pGraphics->LoadSVG(DOWN_ARROW_FN);
+    auto upArrowSVG = pGraphics->LoadSVG(UP_ARROW_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
@@ -238,9 +247,118 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                       "https://github.com/sdatkinson/nam-model-utility";
                 pGraphics->ShowMessageBox(ss.str().c_str(),
                                           "Failed to load model!", kMB_OK);
+              } else {
+                // get all .nams in folder of currently selected .nam
+                _oCurrentNam = fileName.Get();
+                _oNams.clear();
+                const fs::path l_sPath = fs::current_path().u8string();
+                std::set<fs::path> sorted_by_name; // sort listing
+
+                for (const auto &p : fs::directory_iterator(l_sPath)) {
+                  if (!fs::is_directory(p)) {
+                    if (fs::path(p.path()).extension() == ".nam") {
+                      _oNams.push_back(p.path().u8string());
+                    }
+                  }
+                }
+
+                if (_oNams.size() > 1) {
+                  // more than one .nam in current folder, show arrows
+                  IControl *l_oUpArrow =
+                      pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+                  l_oUpArrow->Hide(false);
+                  IControl *l_oDownArrow =
+                      pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+                  l_oDownArrow->Hide(false);
+                } else {
+                  // only one .nam in current folder, hide arrows
+                  IControl *l_oUpArrow =
+                      pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+                  l_oUpArrow->Hide(true);
+                  IControl *l_oDownArrow =
+                      pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+                  l_oDownArrow->Hide(true);
+                }
               }
             }
           });
+    };
+    // Model nav up button
+    auto namNavUp = [&, pGraphics](IControl *pCaller) {
+      int l_iPrevNamIndex = 0;
+
+      // find current .nam in list to set current
+      for (int i = 0; i < _oNams.size(); i++) {
+        if (_oNams[i] == _oCurrentNam) {
+          l_iPrevNamIndex = i - 1;
+          break;
+        }
+      }
+
+      // load .nam that is -1 in list
+      if (l_iPrevNamIndex >= 0) {
+        WDL_String l_sPrevNamPath(_oNams[l_iPrevNamIndex].c_str());
+        const std::string l_sMsg = this->_GetNAM(l_sPrevNamPath);
+
+        // TODO error messages like the IR loader.
+        if (l_sMsg.size()) {
+          std::stringstream l_oSS;
+          l_oSS << "Failed to load NAM model. Message:\n\n"
+                << l_sMsg << "\n\n"
+                << "If the model is an old \"directory-style\" model, it "
+                   "can be "
+                   "converted using the utility at "
+                   "https://github.com/sdatkinson/nam-model-utility";
+          pGraphics->ShowMessageBox(l_oSS.str().c_str(),
+                                    "Failed to load model!", kMB_OK);
+        } else {
+          _oCurrentNam = _oNams[l_iPrevNamIndex];
+        }
+      }
+    };
+    // Model nav down button
+    auto namNavDown = [&, pGraphics](IControl *pCaller) {
+      int l_iNextNamIndex = 0;
+
+      // find current .nam in list to set current
+      for (int i = 0; i < _oNams.size(); i++) {
+        if (_oNams[i] == _oCurrentNam) {
+          l_iNextNamIndex = i + 1;
+          break;
+        }
+      }
+
+      // load .nam that is +1 in list
+      if (l_iNextNamIndex <= (_oNams.size() - 1)) {
+        WDL_String l_sNextNamPath(_oNams[l_iNextNamIndex].c_str());
+        const std::string l_sMsg = this->_GetNAM(l_sNextNamPath);
+
+        // TODO error messages like the IR loader.
+        if (l_sMsg.size()) {
+          std::stringstream l_oSS;
+          l_oSS << "Failed to load NAM model. Message:\n\n"
+                << l_sMsg << "\n\n"
+                << "If the model is an old \"directory-style\" model, it "
+                   "can be "
+                   "converted using the utility at "
+                   "https://github.com/sdatkinson/nam-model-utility";
+          pGraphics->ShowMessageBox(l_oSS.str().c_str(),
+                                    "Failed to load model!", kMB_OK);
+        } else {
+          _oCurrentNam = _oNams[l_iNextNamIndex];
+        }
+      }
+    };
+    // Model-clearing function
+    auto ClearNAM = [&, pGraphics](IControl *pCaller) {
+      this->mFlagRemoveNAM = true;
+      // hide arrows
+      IControl *l_oUpArrow =
+          pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+      l_oUpArrow->Hide(true);
+      IControl *l_oDownArrow =
+          pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+      l_oDownArrow->Hide(true);
     };
     // IR loader button
     auto loadIR = [&, pGraphics](IControl *pCaller) {
@@ -302,17 +420,188 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                 }
                 pGraphics->ShowMessageBox(message.str().c_str(),
                                           "Failed to load IR!", kMB_OK);
+              } else {
+                // get all .wavs in folder of currently selected .wav
+                _oCurrentIR = fileName.Get();
+                _oIRs.clear();
+                const fs::path l_sPath = fs::current_path().u8string();
+                std::set<fs::path> sorted_by_name; // sort listing
+
+                for (const auto &p : fs::directory_iterator(l_sPath)) {
+                  if (!fs::is_directory(p)) {
+                    if (fs::path(p.path()).extension() == ".wav") {
+                      _oIRs.push_back(p.path().u8string());
+                    }
+                  }
+                }
+
+                if (_oIRs.size() > 1) {
+                  // more than one .wav in current folder, show arrows
+                  IControl *l_oUpArrow =
+                      pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+                  l_oUpArrow->Hide(false);
+                  IControl *l_oDownArrow =
+                      pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+                  l_oDownArrow->Hide(false);
+                } else {
+                  // only one .wav in current folder, hide arrows
+                  IControl *l_oUpArrow =
+                      pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+                  l_oUpArrow->Hide(true);
+                  IControl *l_oDownArrow =
+                      pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+                  l_oDownArrow->Hide(true);
+                }
               }
             }
           });
     };
-    // Model-clearing function
-    auto ClearNAM = [&, pGraphics](IControl *pCaller) {
-      this->mFlagRemoveNAM = true;
+    // IR nav up button
+    auto irNavUp = [&, pGraphics](IControl *pCaller) {
+      int l_iPrevIRIndex = 0;
+
+      // find current .wav in list to set current
+      for (int i = 0; i < _oIRs.size(); i++) {
+        if (_oIRs[i] == _oCurrentIR) {
+          l_iPrevIRIndex = i - 1;
+          break;
+        }
+      }
+
+      // load .wav that is -1 in list
+      if (l_iPrevIRIndex >= 0) {
+        WDL_String l_sPrevIRPath(_oIRs[l_iPrevIRIndex].c_str());
+        const dsp::wav::LoadReturnCode retCode = this->_GetIR(l_sPrevIRPath);
+        if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
+          std::stringstream message;
+          message << "Failed to load IR file " << l_sPrevIRPath.Get() << ":\n";
+          switch (retCode) {
+          case (dsp::wav::LoadReturnCode::ERROR_OPENING):
+            message << "Failed to open file (is it being used by another "
+                       "program?)";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
+            message << "File is not a WAV file.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
+            message << "File is not a WAV file.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
+            message << "File is missing expected format chunk.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
+            message << "WAV file contents are invalid.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
+            message << "Unsupported file format \"IEEE float\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
+            message << "Unsupported file format \"A-law\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
+            message << "Unsupported file format \"mu-law\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
+            message << "Unsupported file format \"extensible\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
+            message << "File is not mono.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
+            message << "Unsupported bits per sample";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+            message << "???";
+            break;
+          default:
+            message << "???";
+            break;
+          }
+          pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!",
+                                    kMB_OK);
+        } else {
+          _oCurrentIR = _oIRs[l_iPrevIRIndex];
+        }
+      }
+    };
+    // IR nav down button
+    auto irNavDown = [&, pGraphics](IControl *pCaller) {
+      int l_iNextIRIndex = 0;
+
+      // find current .wav in list to set current
+      for (int i = 0; i < _oIRs.size(); i++) {
+        if (_oIRs[i] == _oCurrentIR) {
+          l_iNextIRIndex = i + 1;
+          break;
+        }
+      }
+
+      // load .wav that is +1 in list
+      if (l_iNextIRIndex <= (_oIRs.size() - 1)) {
+        WDL_String l_sNextIRPath(_oIRs[l_iNextIRIndex].c_str());
+        const dsp::wav::LoadReturnCode retCode = this->_GetIR(l_sNextIRPath);
+        if (retCode != dsp::wav::LoadReturnCode::SUCCESS) {
+          std::stringstream message;
+          message << "Failed to load IR file " << l_sNextIRPath.Get() << ":\n";
+          switch (retCode) {
+          case (dsp::wav::LoadReturnCode::ERROR_OPENING):
+            message << "Failed to open file (is it being used by another "
+                       "program?)";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF):
+            message << "File is not a WAV file.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE):
+            message << "File is not a WAV file.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
+            message << "File is missing expected format chunk.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
+            message << "WAV file contents are invalid.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
+            message << "Unsupported file format \"IEEE float\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
+            message << "Unsupported file format \"A-law\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
+            message << "Unsupported file format \"mu-law\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
+            message << "Unsupported file format \"extensible\"";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO):
+            message << "File is not mono.";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
+            message << "Unsupported bits per sample";
+            break;
+          case (dsp::wav::LoadReturnCode::ERROR_OTHER):
+            message << "???";
+            break;
+          default:
+            message << "???";
+            break;
+          }
+          pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!",
+                                    kMB_OK);
+        } else {
+          _oCurrentIR = _oIRs[l_iNextIRIndex];
+        }
+      }
     };
     // IR-clearing function
     auto ClearIR = [&, pGraphics](IControl *pCaller) {
       this->mFlagRemoveIR = true;
+      // hide arrows
+      IControl *l_oUpArrow =
+          pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+      l_oUpArrow->Hide(true);
+      IControl *l_oDownArrow =
+          pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+      l_oDownArrow->Hide(true);
     };
 
     // Graphics objects for what NAM is loaded
@@ -324,6 +613,75 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
         modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearNAM,
         closeButtonSVG));
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            modelArea.GetFromRightPlusOne(iconWidth).GetPadded(-2.f), namNavUp,
+            upArrowSVG),
+        250); // assign tag 250
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            modelArea.GetFromRightPlusTwo(iconWidth).GetPadded(-2.f),
+            namNavDown, downArrowSVG),
+        251); // assign tag 251
+    //// testing
+    // this->mNAMPath.Set("C:\\Users\\carl\\Downloads\\NeuralAmpModeler\\captures\\5152
+    // Lead + TS9.nam");
+    //  initially show or hide nam nav arrows
+    if (this->mNAMPath.GetLength()) {
+      WDL_String initPath(this->mNAMPath);
+      std::string l_sNamPath = initPath.Get();
+      // remove filename if the mNAMPath contains ".nam"
+      if (l_sNamPath.find(".nam") != std::string::npos) {
+        size_t l_iLastindex = l_sNamPath.find_last_of("\\");
+        l_sNamPath = l_sNamPath.substr(0, l_iLastindex);
+      }
+
+      _oNams.clear();
+      const fs::path l_sPath = l_sNamPath;
+      std::set<fs::path> sorted_by_name; // sort listing
+
+      for (const auto &p : fs::directory_iterator(l_sPath)) {
+        if (!fs::is_directory(p)) {
+          if (fs::path(p.path()).extension() == ".nam") {
+            _oNams.push_back(p.path().u8string());
+          }
+        }
+      }
+
+      // find current .nam in list to set current
+      for (int i = 0; i < _oNams.size(); i++) {
+        if (_oNams[i] == initPath.Get()) {
+          _oCurrentNam = _oNams[i];
+          break;
+        }
+      }
+
+      if (_oNams.size() > 1) {
+        // more than one .nam in current folder, show arrows
+        IControl *l_oUpArrow =
+            pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+        l_oUpArrow->Hide(false);
+        IControl *l_oDownArrow =
+            pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+        l_oDownArrow->Hide(false);
+      } else {
+        // only one .nam in current folder, hide arrows
+        IControl *l_oUpArrow =
+            pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+        l_oUpArrow->Hide(true);
+        IControl *l_oDownArrow =
+            pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+        l_oDownArrow->Hide(true);
+      }
+    } else {
+      // no current .nam, hide arrows
+      IControl *l_oUpArrow =
+          pGraphics->GetControlWithTag(250); // 250 = NAM up arrow
+      l_oUpArrow->Hide(true);
+      IControl *l_oDownArrow =
+          pGraphics->GetControlWithTag(251); // 251 = NAM down arrow
+      l_oDownArrow->Hide(true);
+    }
     pGraphics->AttachControl(
         new IVUpdateableLabelControl(
             modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(
@@ -340,6 +698,75 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
         irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR,
         closeButtonSVG));
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            irArea.GetFromRightPlusOne(iconWidth).GetPadded(-2.f), irNavUp,
+            upArrowSVG),
+        252); // assign tag 252
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            irArea.GetFromRightPlusTwo(iconWidth).GetPadded(-2.f), irNavDown,
+            downArrowSVG),
+        253); // assign tag 253
+    //// testing
+    // this->mIRPath.Set("C:\\Users\\carl\\Downloads\\NeuralAmpModeler\\captures\\Mixes\\OH
+    // 212 ZLFB H75+LYN BOLD-07.wav");
+    //  initially show or hide nam nav arrows
+    if (this->mIRPath.GetLength()) {
+      WDL_String initPath(this->mIRPath);
+      std::string l_sNamPath = initPath.Get();
+      // remove filename if the mIRPath contains ".wav"
+      if (l_sNamPath.find(".wav") != std::string::npos) {
+        size_t l_iLastindex = l_sNamPath.find_last_of("\\");
+        l_sNamPath = l_sNamPath.substr(0, l_iLastindex);
+      }
+
+      _oIRs.clear();
+      const fs::path l_sPath = l_sNamPath;
+      std::set<fs::path> sorted_by_name; // sort listing
+
+      for (const auto &p : fs::directory_iterator(l_sPath)) {
+        if (!fs::is_directory(p)) {
+          if (fs::path(p.path()).extension() == ".wav") {
+            _oIRs.push_back(p.path().u8string());
+          }
+        }
+      }
+
+      // find current .wav in list to set current
+      for (int i = 0; i < _oIRs.size(); i++) {
+        if (_oIRs[i] == initPath.Get()) {
+          _oCurrentIR = _oIRs[i];
+          break;
+        }
+      }
+
+      if (_oIRs.size() > 1) {
+        // more than one .wav in current folder, show arrows
+        IControl *l_oUpArrow =
+            pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+        l_oUpArrow->Hide(false);
+        IControl *l_oDownArrow =
+            pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+        l_oDownArrow->Hide(false);
+      } else {
+        // only one .wav in current folder, hide arrows
+        IControl *l_oUpArrow =
+            pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+        l_oUpArrow->Hide(true);
+        IControl *l_oDownArrow =
+            pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+        l_oDownArrow->Hide(true);
+      }
+    } else {
+      // no current .wav, hide arrows
+      IControl *l_oUpArrow =
+          pGraphics->GetControlWithTag(252); // 252 = IR up arrow
+      l_oUpArrow->Hide(true);
+      IControl *l_oDownArrow =
+          pGraphics->GetControlWithTag(253); // 253 = IR down arrow
+      l_oDownArrow->Hide(true);
+    }
     pGraphics->AttachControl(
         new IVUpdateableLabelControl(
             irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth),
