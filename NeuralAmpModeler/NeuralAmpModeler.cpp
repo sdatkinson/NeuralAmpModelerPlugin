@@ -734,7 +734,7 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample **inputs,
 std::string NeuralAmpModeler::_GetNAM(const WDL_String &modelPath) {
   WDL_String previousNAMPath = this->mNAMPath;
   try {
-    auto dspPath = std::filesystem::path(modelPath.Get());
+    auto dspPath = std::filesystem::path(modelPath.Get());    
     mStagedNAM = get_dsp(dspPath);
     this->_SetModelMsg(modelPath);
     this->mNAMPath = modelPath;

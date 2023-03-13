@@ -32,11 +32,17 @@ std::vector<float> _get_weights(nlohmann::json const &j,
 }
 
 std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path model_dir) {
-  auto config_filename = model_dir / std::filesystem::path("config.json");
-  return get_dsp(config_filename);
+  auto config_filename = model_dir / std::filesystem::path("config.json");  
+  dspData temp;
+  return get_dsp(config_filename, temp);
 }
 
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename) {
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename) {  
+  dspData temp;
+  return get_dsp(config_filename, temp);
+}
+
+std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename, dspData& returnedConfig) {
   if (!std::filesystem::exists(config_filename))
     throw std::runtime_error("Config JSON doesn't exist!\n");
   std::ifstream i(config_filename);
@@ -47,6 +53,27 @@ std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename) {
   auto architecture = j["architecture"];
   nlohmann::json config = j["config"];
   std::vector<float> params = _get_weights(j, config_filename);
+
+  returnedConfig.version = j["version"];
+  returnedConfig.architecture = j["architecture"];
+  returnedConfig.config = j["config"];
+  returnedConfig.params = params;
+
+  /*Copy to a new dsp_config object for get_dsp below,
+  since not sure if params actually get modified as being non-const references on some
+  model constructors inside get_dsp(dsp_config& conf).
+  We need to return unmodified version of dsp_config via returnedConfig.*/
+  dspData conf = returnedConfig;
+
+  return get_dsp(conf);
+}
+
+std::unique_ptr<DSP> get_dsp(dspData& conf) {
+  verify_config_version(conf.version);
+
+  auto architecture = conf.architecture;
+  nlohmann::json config = conf.config;
+  std::vector<float> params = conf.params;
 
   if (architecture == "Linear") {
     const int receptive_field = config["receptive_field"];
