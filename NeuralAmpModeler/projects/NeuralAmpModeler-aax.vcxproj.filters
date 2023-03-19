@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\NeuralAmpModeler.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\AAX\IPlugAAX.cpp">
       <Filter>IPlug\AAX</Filter>
     </ClCompile>
@@ -59,49 +58,47 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.cpp">
       <Filter>IGraphics\Drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\cnpy.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\cnpy.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\dsp.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\get_dsp.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\get_dsp.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\lstm.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\numpy_util.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\lstm.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\util.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\wavenet.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\numpy_util.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\ImpulseResponse.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\util.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\wav.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\dsp\NoiseGate.cpp">
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\resources\resource.h">
       <Filter>resources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX.h">
       <Filter>IPlug\AAX</Filter>
     </ClInclude>
-    <ClInclude Include="..\config.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX_TaperDelegate.h">
       <Filter>IPlug\AAX</Filter>
     </ClInclude>
@@ -243,44 +240,43 @@
     <ClInclude Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.h">
       <Filter>IGraphics\Drawing</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\wavenet.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\activations.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\cnpy.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\dsp.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\HardCodedModel.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\lstm.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\lstm.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\numpy_util.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\numpy_util.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\util.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Colors.h" />
-    <ClInclude Include="..\dsp\RecursiveLinearFilter.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\Resample.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\ImpulseResponse.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\util.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\wav.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\version.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\Resample.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\dsp\NoiseGate.h">
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h">
       <Filter>dsp</Filter>
     </ClInclude>
   </ItemGroup>
@@ -310,7 +306,7 @@
       <UniqueIdentifier>{3c740de7-2371-4065-bf3d-5af9193c7b7d}</UniqueIdentifier>
     </Filter>
     <Filter Include="dsp">
-      <UniqueIdentifier>{dcf8fefc-9f15-46bb-932d-e0b5e2987328}</UniqueIdentifier>
+      <UniqueIdentifier>{6a256439-d389-4777-8f93-a14fe677139f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
