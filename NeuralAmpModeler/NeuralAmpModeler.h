@@ -1,15 +1,13 @@
 #pragma once
 
-#include "dsp.h"
-#include "dsp/ImpulseResponse.h"
-#include "dsp/NoiseGate.h"
-#include "dsp/RecursiveLinearFilter.h"
+#include "NeuralAmpModelerCore/dsp/ImpulseResponse.h"
+#include "NeuralAmpModelerCore/dsp/NoiseGate.h"
+#include "NeuralAmpModelerCore/dsp/RecursiveLinearFilter.h"
+#include "NeuralAmpModelerCore/dsp/dsp.h"
+#include "NeuralAmpModelerCore/dsp/wav.h"
 
 #include "IPlug_include_in_plug_hdr.h"
-
 #include "ISender.h"
-
-#include "dsp/wav.h"
 
 const int kNumPresets = 1;
 

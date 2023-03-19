@@ -327,20 +327,21 @@
     <ClInclude Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_ProcessorBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_View.h" />
     <ClInclude Include="..\Colors.h" />
-    <ClInclude Include="..\dsp\activations.h" />
-    <ClInclude Include="..\dsp\cnpy.h" />
-    <ClInclude Include="..\dsp\dsp.h" />
-    <ClInclude Include="..\dsp\HardCodedModel.h" />
-    <ClInclude Include="..\dsp\ImpulseResponse.h" />
-    <ClInclude Include="..\dsp\lstm.h" />
-    <ClInclude Include="..\dsp\NoiseGate.h" />
-    <ClInclude Include="..\dsp\numpy_util.h" />
-    <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
-    <ClInclude Include="..\dsp\Resample.h" />
-    <ClInclude Include="..\dsp\util.h" />
-    <ClInclude Include="..\dsp\wav.h" />
-    <ClInclude Include="..\dsp\wavenet.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\HardCodedModel.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\lstm.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\numpy_util.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\Resample.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\util.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\version.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wav.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h" />
     <ClInclude Include="..\resources\resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -402,18 +403,18 @@
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugTimer.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_ProcessorBase.cpp" />
-    <ClCompile Include="..\dsp\cnpy.cpp" />
-    <ClCompile Include="..\dsp\dsp.cpp" />
-    <ClCompile Include="..\dsp\get_dsp.cpp" />
-    <ClCompile Include="..\dsp\ImpulseResponse.cpp" />
-    <ClCompile Include="..\dsp\lstm.cpp" />
-    <ClCompile Include="..\dsp\NoiseGate.cpp" />
-    <ClCompile Include="..\dsp\numpy_util.cpp" />
-    <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp" />
-    <ClCompile Include="..\dsp\util.cpp" />
-    <ClCompile Include="..\dsp\wav.cpp" />
-    <ClCompile Include="..\dsp\wavenet.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\cnpy.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\get_dsp.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\lstm.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\numpy_util.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\util.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resources\main.rc" />
