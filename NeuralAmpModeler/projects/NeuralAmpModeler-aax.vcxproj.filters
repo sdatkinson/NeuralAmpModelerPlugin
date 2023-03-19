@@ -249,9 +249,6 @@
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\HardCodedModel.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h">
       <Filter>dsp</Filter>
     </ClInclude>

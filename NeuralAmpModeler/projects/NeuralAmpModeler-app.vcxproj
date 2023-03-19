@@ -322,7 +322,6 @@
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\HardCodedModel.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\lstm.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h" />
