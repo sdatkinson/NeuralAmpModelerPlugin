@@ -78,7 +78,6 @@
 		AA63407029C54D4D00550809 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA63405129C54D4B00550809 /* wav.cpp */; };
 		AA63407129C54D4D00550809 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA63405129C54D4B00550809 /* wav.cpp */; };
 		AA63407229C54D4D00550809 /* wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA63405129C54D4B00550809 /* wav.cpp */; };
-		AA63407329C54D4D00550809 /* HardCodedModel.h in Headers */ = {isa = PBXBuildFile; fileRef = AA63405229C54D4B00550809 /* HardCodedModel.h */; };
 		AA63407429C54D4D00550809 /* NoiseGate.h in Headers */ = {isa = PBXBuildFile; fileRef = AA63405329C54D4C00550809 /* NoiseGate.h */; };
 		AA63407529C54D4D00550809 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA63405429C54D4C00550809 /* lstm.cpp */; };
 		AA63407629C54D4D00550809 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA63405429C54D4C00550809 /* lstm.cpp */; };
@@ -342,7 +341,6 @@
 		AA63404F29C54D4B00550809 /* numpy_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = numpy_util.cpp; path = ../NeuralAmpModelerCore/dsp/numpy_util.cpp; sourceTree = "<group>"; };
 		AA63405029C54D4B00550809 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wavenet.h; path = ../NeuralAmpModelerCore/dsp/wavenet.h; sourceTree = "<group>"; };
 		AA63405129C54D4B00550809 /* wav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wav.cpp; path = ../NeuralAmpModelerCore/dsp/wav.cpp; sourceTree = "<group>"; };
-		AA63405229C54D4B00550809 /* HardCodedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HardCodedModel.h; path = ../NeuralAmpModelerCore/dsp/HardCodedModel.h; sourceTree = "<group>"; };
 		AA63405329C54D4C00550809 /* NoiseGate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NoiseGate.h; path = ../NeuralAmpModelerCore/dsp/NoiseGate.h; sourceTree = "<group>"; };
 		AA63405429C54D4C00550809 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lstm.cpp; path = ../NeuralAmpModelerCore/dsp/lstm.cpp; sourceTree = "<group>"; };
 		AA63405529C54D4C00550809 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = util.cpp; path = ../NeuralAmpModelerCore/dsp/util.cpp; sourceTree = "<group>"; };
@@ -644,7 +642,6 @@
 				AA63405E29C54D4C00550809 /* dsp.cpp */,
 				AA63404929C54D4B00550809 /* dsp.h */,
 				AA63405C29C54D4C00550809 /* get_dsp.cpp */,
-				AA63405229C54D4B00550809 /* HardCodedModel.h */,
 				AA63405B29C54D4C00550809 /* ImpulseResponse.cpp */,
 				AA63405D29C54D4C00550809 /* ImpulseResponse.h */,
 				AA63405429C54D4C00550809 /* lstm.cpp */,
@@ -789,7 +786,6 @@
 				AA63406729C54D4D00550809 /* numpy_util.h in Headers */,
 				AA63408029C54D4D00550809 /* version.h in Headers */,
 				4FC6983A293BA4F10076EC33 /* NeuralAmpModelerAU.h in Headers */,
-				AA63407329C54D4D00550809 /* HardCodedModel.h in Headers */,
 				4FC6983B293BA5020076EC33 /* IPlugAUAudioUnit.h in Headers */,
 				AA63407429C54D4D00550809 /* NoiseGate.h in Headers */,
 				AA63406F29C54D4D00550809 /* wavenet.h in Headers */,

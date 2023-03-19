@@ -377,8 +377,6 @@
 		AA633FF229C54D2000550809 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA633FAB29C54D1E00550809 /* wavenet.cpp */; };
 		AA633FF329C54D2000550809 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA633FAB29C54D1E00550809 /* wavenet.cpp */; };
 		AA633FF429C54D2000550809 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA633FAB29C54D1E00550809 /* wavenet.cpp */; };
-		AA633FF529C54D2000550809 /* HardCodedModel.h in Headers */ = {isa = PBXBuildFile; fileRef = AA633FAC29C54D1E00550809 /* HardCodedModel.h */; };
-		AA633FF629C54D2000550809 /* HardCodedModel.h in Headers */ = {isa = PBXBuildFile; fileRef = AA633FAC29C54D1E00550809 /* HardCodedModel.h */; };
 		AA633FF729C54D2000550809 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = AA633FAD29C54D1F00550809 /* version.h */; };
 		AA633FF829C54D2000550809 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = AA633FAD29C54D1F00550809 /* version.h */; };
 		AA633FF929C54D2000550809 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = AA633FAE29C54D1F00550809 /* wavenet.h */; };
@@ -1001,7 +999,6 @@
 		AA633FA929C54D1E00550809 /* numpy_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = numpy_util.cpp; path = ../NeuralAmpModelerCore/dsp/numpy_util.cpp; sourceTree = "<group>"; };
 		AA633FAA29C54D1E00550809 /* RecursiveLinearFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecursiveLinearFilter.h; path = ../NeuralAmpModelerCore/dsp/RecursiveLinearFilter.h; sourceTree = "<group>"; };
 		AA633FAB29C54D1E00550809 /* wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wavenet.cpp; path = ../NeuralAmpModelerCore/dsp/wavenet.cpp; sourceTree = "<group>"; };
-		AA633FAC29C54D1E00550809 /* HardCodedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HardCodedModel.h; path = ../NeuralAmpModelerCore/dsp/HardCodedModel.h; sourceTree = "<group>"; };
 		AA633FAD29C54D1F00550809 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../NeuralAmpModelerCore/dsp/version.h; sourceTree = "<group>"; };
 		AA633FAE29C54D1F00550809 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wavenet.h; path = ../NeuralAmpModelerCore/dsp/wavenet.h; sourceTree = "<group>"; };
 		AA633FAF29C54D1F00550809 /* numpy_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = numpy_util.h; path = ../NeuralAmpModelerCore/dsp/numpy_util.h; sourceTree = "<group>"; };
@@ -1310,7 +1307,6 @@
 				AA633FB729C54D2000550809 /* dsp.cpp */,
 				AA633FBA29C54D2000550809 /* dsp.h */,
 				AA633FBB29C54D2000550809 /* get_dsp.cpp */,
-				AA633FAC29C54D1E00550809 /* HardCodedModel.h */,
 				AA633FA429C54D1D00550809 /* ImpulseResponse.cpp */,
 				AA633FB929C54D2000550809 /* ImpulseResponse.h */,
 				AA633FA629C54D1E00550809 /* lstm.cpp */,
@@ -1971,7 +1967,6 @@
 				AA633FC829C54D2000550809 /* cnpy.h in Headers */,
 				AA355E2E295B688F0061AA3D /* Colors.h in Headers */,
 				AA63400029C54D2000550809 /* util.h in Headers */,
-				AA633FF629C54D2000550809 /* HardCodedModel.h in Headers */,
 				AA63403829C54D2100550809 /* ImpulseResponse.h in Headers */,
 				AA633FDE29C54D2000550809 /* activations.h in Headers */,
 				AA63403A29C54D2100550809 /* dsp.h in Headers */,
@@ -1982,7 +1977,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA633FF529C54D2000550809 /* HardCodedModel.h in Headers */,
 				AA633FC729C54D2000550809 /* cnpy.h in Headers */,
 				AA355E2D295B688F0061AA3D /* Colors.h in Headers */,
 				AA633FFF29C54D2000550809 /* util.h in Headers */,
