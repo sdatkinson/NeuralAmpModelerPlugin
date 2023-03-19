@@ -91,6 +91,7 @@
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\NeuralAmpModeler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\resources\resource.h">
@@ -279,6 +280,9 @@
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Colors.h" />
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\NeuralAmpModeler.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">

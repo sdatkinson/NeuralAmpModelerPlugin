@@ -409,6 +409,7 @@
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugPluginBase.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugProcessor.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugTimer.cpp" />
+    <ClCompile Include="..\NeuralAmpModeler.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\cnpy.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\get_dsp.cpp" />
@@ -499,6 +500,9 @@
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugUtilities.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_hdr.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_src.h" />
+    <ClInclude Include="..\Colors.h" />
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />

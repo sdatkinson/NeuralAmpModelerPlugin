@@ -272,10 +272,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                 case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE):
                   message << "WAV file contents are invalid.";
                   break;
-                case (dsp::wav::LoadReturnCode::
-                          ERROR_UNSUPPORTED_FORMAT_IEEE_FLOAT):
-                  message << "Unsupported file format \"IEEE float\"";
-                  break;
                 case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
                   message << "Unsupported file format \"A-law\"";
                   break;
