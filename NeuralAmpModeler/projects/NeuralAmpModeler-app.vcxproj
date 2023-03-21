@@ -259,6 +259,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
+    <ClInclude Include="..\..\folderBrowser\folderBrowser.h" />
     <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asio.h" />
     <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrivers.h" />
     <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrvr.h" />
@@ -335,6 +336,7 @@
     <ClInclude Include="..\resources\resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\folderBrowser\folderBrowser.cpp" />
     <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asio.cpp" />
     <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiodrivers.cpp" />
     <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\include\asiolist.cpp" />

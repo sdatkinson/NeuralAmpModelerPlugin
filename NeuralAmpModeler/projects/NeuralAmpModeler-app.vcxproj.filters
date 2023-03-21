@@ -110,6 +110,7 @@
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\folderBrowser\folderBrowser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NeuralAmpModeler.h" />
@@ -331,6 +332,7 @@
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\folderBrowser\folderBrowser.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
