@@ -220,7 +220,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     // Model loader button
     auto loadNAM = [&, pGraphics](IControl *pCaller) {
       WDL_String initFileName;
-      WDL_String initPath(this->mNAMPath.remove_filepart());
+      WDL_String initPath(this->mNAMPath.Get());
+      initPath.remove_filepart();
       pGraphics->PromptForFile(
           initFileName, initPath, EFileAction::Open, "nam",
           [&](const WDL_String &fileName, const WDL_String &path) {
@@ -245,7 +246,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     // IR loader button
     auto loadIR = [&, pGraphics](IControl *pCaller) {
       WDL_String initFileName;
-      WDL_String initPath(this->mIRPath.remove_filepart());
+      WDL_String initPath(this->mIRPath.Get());
+      initPath.remove_filepart();
       pGraphics->PromptForFile(
           initFileName, initPath, EFileAction::Open, "wav",
           [&](const WDL_String &fileName, const WDL_String &path) {
