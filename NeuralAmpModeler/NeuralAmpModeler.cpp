@@ -12,6 +12,7 @@
 #include "NeuralAmpModeler.h"
 #include "IPlug_include_in_plug_src.h"
 // clang-format on
+#include "architecture.hpp";
 
 using namespace iplug;
 using namespace igraphics;
@@ -530,6 +531,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = this->GetSampleRate();
 
+  // Disable floating point denormals
+  std::fenv_t fe_state;
+  std::feholdexcept(&fe_state);
+  disable_denormals();
+
   this->_PrepareBuffers(numChannelsInternal, numFrames);
   // Input is collapsed to mono in preparation for the NAM.
   this->_ProcessInput(inputs, numFrames, numChannelsExternalIn,
@@ -620,6 +626,9 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   if (this->mIR != nullptr)
     irPointers = this->mIR->Process(toneStackOutPointers, numChannelsInternal,
                                     numFrames);
+
+  // restore previous floating point state
+  std::feupdateenv(&fe_state);
 
   // Let's get outta here
   // This is where we exit mono for whatever the output requires.
