@@ -90,7 +90,7 @@ const IVStyle style = IVStyle{true, // Show label
                               DEFAULT_DRAW_FRAME,
                               false,
                               DEFAULT_EMBOSS,
-                              0.2f,
+                              0.1f,
                               2.f,
                               DEFAULT_SHADOW_OFFSET,
                               DEFAULT_WIDGET_FRAC,
