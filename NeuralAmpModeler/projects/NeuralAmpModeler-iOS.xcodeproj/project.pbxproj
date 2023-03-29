@@ -47,6 +47,7 @@
 		4F3345D129D4D31A0030F61B /* numpy_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3345B929D4D31A0030F61B /* numpy_util.h */; };
 		4F3345D229D4D31A0030F61B /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3345BA29D4D31A0030F61B /* get_dsp.cpp */; };
 		4F3345D329D4D31A0030F61B /* cnpy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3345BB29D4D31A0030F61B /* cnpy.h */; };
+		4F33466729D4D85A0030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49F5255DE11700DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4F3E0F6A20A0BCD900A9C2BE /* NeuralAmpModeler-iOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */; };
 		4F3E0F6B20A0BCE300A9C2BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6820A0BCAF00A9C2BE /* Images.xcassets */; };
 		4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F4856832773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m */; };
@@ -978,6 +979,7 @@
 				4FC69848293BA5F90076EC33 /* IControls.cpp in Sources */,
 				4F3345D029D4D31A0030F61B /* wavenet.cpp in Sources */,
 				4FC69840293BA5C40076EC33 /* IPlugPluginBase.cpp in Sources */,
+				4F33466729D4D85A0030F61B /* IPlugWebView.mm in Sources */,
 				4FC6984A293BA5F90076EC33 /* IGraphics.cpp in Sources */,
 				4FC69841293BA5C40076EC33 /* IPlugAPIBase.cpp in Sources */,
 				4FC69842293BA5C50076EC33 /* IPlugProcessor.cpp in Sources */,

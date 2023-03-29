@@ -6,6 +6,7 @@
 
 #include "Colors.h"
 #include "IControls.h"
+#include "IWebViewControl.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
 // a bunch of stuff.
@@ -205,6 +206,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                       .GetMidHPadded(allKnobsHalfPad)
                                       .GetMidVPadded(meterHalfHeight)
                                       .GetTranslated(allKnobsPad, 0.0f);
+
+    const IRECT webViewArea = content.GetReducedFromTop(knobs.B).GetReducedFromBottom(fileHeight * 2 + fileSpace).GetVPadded(-10.0f);
 
     // auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     // pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(),
@@ -448,10 +451,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
         ->As<IVPeakAvgMeterControl<>>()
         ->SetPeakSize(2.0f);
 
+    pGraphics->AttachControl(new IWebViewControl(webViewArea, true, [](IWebViewControl* pWebView) {
+        pWebView->LoadHTML("I am a web view");
+    }), kCtrlTagWebView);
     //     Help/about box
     pGraphics->AttachControl(new IRolloverCircleSVGButtonControl(
         mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
         [pGraphics](IControl *pCaller) {
+          pGraphics->GetControlWithTag(kCtrlTagWebView)->Hide(true);
           pGraphics->GetControlWithTag(kCtrlTagAboutBox)
               ->As<IAboutBoxControl>()
               ->HideAnimated(false);
@@ -498,6 +505,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                       IRECT(), "Train your own model",
                       "https://github.com/sdatkinson/neural-amp-modeler",
                       {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
+                  pParent->AddChildControl(new IURLControl(
+                      IRECT(), "Built with iPlug2",
+                      "https://iPlug2.github.io",
+                      {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
                 },
                 // ResizeFunc
                 [](IContainerBase *pParent, const IRECT &r) {
@@ -513,6 +524,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                       titleLabel.GetVShifted(titleLabel.H() + 20));
                   pParent->GetChild(5)->SetTargetAndDrawRECTs(
                       titleLabel.GetVShifted(titleLabel.H() + 40));
+                  pParent->GetChild(6)->SetTargetAndDrawRECTs(
+                      titleLabel.GetVShifted(titleLabel.H() + 60));
+
                 },
                 // Animation Time
                 0),

@@ -34,6 +34,7 @@ enum ECtrlTags {
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
+  kCtrlTagWebView,
   kNumCtrlTags
 };
 

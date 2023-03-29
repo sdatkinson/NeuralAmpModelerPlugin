@@ -175,6 +175,15 @@
 		4F33465A29D4D32F0030F61B /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3345EB29D4D32F0030F61B /* get_dsp.cpp */; };
 		4F33465B29D4D32F0030F61B /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3345EB29D4D32F0030F61B /* get_dsp.cpp */; };
 		4F33465C29D4D32F0030F61B /* cnpy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3345EC29D4D32F0030F61B /* cnpy.h */; };
+		4F33465D29D4D8430030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33465E29D4D8430030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33465F29D4D8440030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466029D4D8450030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466129D4D8450030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466329D4D8480030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466429D4D8490030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466529D4D84A0030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33466629D4D84A0030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4F35DEAD207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
 		4F35DEAE207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
 		4F35DEAF207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
@@ -2538,6 +2547,7 @@
 				4F7C4958255DDFC400DF7588 /* IControls.cpp in Sources */,
 				4F8D9707209EF5AC006E2A11 /* NeuralAmpModeler.cpp in Sources */,
 				4F33464129D4D32F0030F61B /* wav.cpp in Sources */,
+				4F33465E29D4D8430030F61B /* IPlugWebView.mm in Sources */,
 				4F7C495A255DDFC400DF7588 /* ITextEntryControl.cpp in Sources */,
 				4F78D9BB13B63BA50032E0F3 /* IPlugAPIBase.cpp in Sources */,
 				4F33462A29D4D32F0030F61B /* ImpulseResponse.cpp in Sources */,
@@ -2564,6 +2574,7 @@
 				4F33462629D4D32F0030F61B /* NoiseGate.cpp in Sources */,
 				4F3345FE29D4D32F0030F61B /* RecursiveLinearFilter.cpp in Sources */,
 				4F33465929D4D32F0030F61B /* get_dsp.cpp in Sources */,
+				4F33466329D4D8480030F61B /* IPlugWebView.mm in Sources */,
 				4F33464629D4D32F0030F61B /* wav.cpp in Sources */,
 				4F33462F29D4D32F0030F61B /* ImpulseResponse.cpp in Sources */,
 				4F4856892773CA76005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
@@ -2597,6 +2608,7 @@
 				4FDAC0ED207D76C600299363 /* IPlugTimer.cpp in Sources */,
 				4F33464C29D4D32F0030F61B /* wavenet.cpp in Sources */,
 				4F78D94513B63BA50032E0F3 /* IPlugAPIBase.cpp in Sources */,
+				4F33466029D4D8450030F61B /* IPlugWebView.mm in Sources */,
 				4FB1F59320E4B013004157C8 /* IGraphicsMac_view.mm in Sources */,
 				4FD52136202A5BD000A4D22A /* dfx-au-utilities.c in Sources */,
 				4F7C4960255DDFC500DF7588 /* ITextEntryControl.cpp in Sources */,
@@ -2653,6 +2665,7 @@
 				4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */,
 				4F33460029D4D32F0030F61B /* RecursiveLinearFilter.cpp in Sources */,
 				4F3EE1DD231438D000004786 /* IGraphicsMac.mm in Sources */,
+				4F33466629D4D84A0030F61B /* IPlugWebView.mm in Sources */,
 				4F3EE1DE231438D000004786 /* NeuralAmpModeler.cpp in Sources */,
 				4F3EE1E0231438D000004786 /* IPlugAPIBase.cpp in Sources */,
 				4F3EE1E1231438D000004786 /* IPlugPluginBase.cpp in Sources */,
@@ -2689,6 +2702,7 @@
 				4F78BE2022E7406D00AD537E /* IGraphicsEditorDelegate.cpp in Sources */,
 				4F33462729D4D32F0030F61B /* NoiseGate.cpp in Sources */,
 				4F78BE2122E7406D00AD537E /* IControl.cpp in Sources */,
+				4F33466529D4D84A0030F61B /* IPlugWebView.mm in Sources */,
 				4F78BE2222E7406D00AD537E /* IPlugAUAudioUnit.mm in Sources */,
 				4F33461429D4D32F0030F61B /* cnpy.cpp in Sources */,
 				4F7C496C255DDFCB00DF7588 /* ITextEntryControl.cpp in Sources */,
@@ -2720,6 +2734,7 @@
 				4F6FD2B322675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
 				4F815973205D50EB00393585 /* vstinitiids.cpp in Sources */,
 				4F7C495B255DDFC400DF7588 /* IControls.cpp in Sources */,
+				4F33465F29D4D8440030F61B /* IPlugWebView.mm in Sources */,
 				4F81597E205D50EB00393585 /* fdebug.cpp in Sources */,
 				4F33462B29D4D32F0030F61B /* ImpulseResponse.cpp in Sources */,
 				4F9828B8140A9EB700F3FCC1 /* IPlugAPIBase.cpp in Sources */,
@@ -2795,6 +2810,7 @@
 				4F5F344520C0226200487201 /* IPlugPaths.mm in Sources */,
 				4F33462429D4D32F0030F61B /* NoiseGate.cpp in Sources */,
 				4F1A5285205D914A00CF2908 /* IPlugAAX.cpp in Sources */,
+				4F33466129D4D8450030F61B /* IPlugWebView.mm in Sources */,
 				4F0848292015129A00F9E881 /* IPlugAAX_Parameters.cpp in Sources */,
 				4F33461129D4D32F0030F61B /* cnpy.cpp in Sources */,
 				4FB1F59420E4B014004157C8 /* IGraphicsMac_view.mm in Sources */,
@@ -2816,6 +2832,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F7C4964255DDFC800DF7588 /* IControls.cpp in Sources */,
+				4F33466429D4D8490030F61B /* IPlugWebView.mm in Sources */,
 				4F03A5B220A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F7C4966255DDFC800DF7588 /* ITextEntryControl.cpp in Sources */,
 				4FB1F58F20E4B009004157C8 /* IGraphicsMac.mm in Sources */,
@@ -2872,6 +2889,7 @@
 				4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */,
 				4F3345F829D4D32F0030F61B /* RecursiveLinearFilter.cpp in Sources */,
 				4FB1F58920E4B004004157C8 /* IGraphicsMac.mm in Sources */,
+				4F33465D29D4D8430030F61B /* IPlugWebView.mm in Sources */,
 				4F3862EF2014BBEC0009F402 /* NeuralAmpModeler.cpp in Sources */,
 				4F78D90B13B63BA50032E0F3 /* IPlugAPIBase.cpp in Sources */,
 				4F35DEAD207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
