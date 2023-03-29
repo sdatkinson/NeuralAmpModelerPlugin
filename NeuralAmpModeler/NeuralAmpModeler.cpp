@@ -170,7 +170,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                      .GetPadded(-singleKnobPad);
 
     // Area for EQ toggle
-    const float ngAreaHeight = 40.0f;
+    const float ngAreaHeight = 20.0f;
     const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea =
         noiseGateArea.GetFromBottom(ngAreaHeight)
@@ -178,7 +178,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
             .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
-    const float eqAreaHeight = 40.0f;
+    const float eqAreaHeight = 20.0f;
     const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
     const IRECT eqToggleArea =
         middleKnobArea.GetFromBottom(eqAreaHeight)
@@ -349,13 +349,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
 
     // NG toggle
     IVSlideSwitchControl *noiseGateSlider =
-        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Gate", style,
+        new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Gate", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
                                  true, // valueInButton
                                  EDirection::Horizontal);
     pGraphics->AttachControl(noiseGateSlider);
     // Tone stack toggle
     IVSlideSwitchControl *toneStackSlider =
-        new IVSlideSwitchControl(eqToggleArea, kEQActive, "EQ", style,
+        new IVSlideSwitchControl(eqToggleArea, kEQActive, "EQ", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
                                  true, // valueInButton
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
