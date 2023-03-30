@@ -3,6 +3,9 @@
 #ifndef ARCHITECTURE_HPP
 #define ARCHITECTURE_HPP
 
+#include <cfenv>
+#include <fenv.h>
+
 // check cpu architecture
 
 #if /* x86_64 */ \
