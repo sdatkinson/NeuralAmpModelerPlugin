@@ -6,6 +6,7 @@
 #include "NeuralAmpModelerCore/dsp/dsp.h"
 #include "NeuralAmpModelerCore/dsp/wav.h"
 
+#include <../folderBrowser/folderBrowser.h>
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
 

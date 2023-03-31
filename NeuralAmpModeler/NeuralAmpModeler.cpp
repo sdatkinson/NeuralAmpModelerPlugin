@@ -135,6 +135,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    auto downArrowSVG = pGraphics->LoadSVG(DOWN_ARROW_FN);
+    auto upArrowSVG = pGraphics->LoadSVG(UP_ARROW_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
@@ -218,6 +220,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                            style.WithDrawFrame(false).WithValueText(
                                {30, EAlign::Center, PluginColors::NAM_3})));
 
+     // quick browsing feature
+    FolderBrowser pFolderBrowser(pGraphics);
+    
     // Model loader button
     auto loadNAM = [&, pGraphics](IControl *pCaller) {
       WDL_String initFileName;
@@ -240,9 +245,39 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                       "https://github.com/sdatkinson/nam-model-utility";
                 pGraphics->ShowMessageBox(ss.str().c_str(),
                                           "Failed to load model!", kMB_OK);
+              } else {
+                // init FolderBrowser upon successful selection / load
+                pFolderBrowser.InitializeNAMNav(fileName);
               }
-            }
+            } 
           });
+    };
+    // Model nav up button
+    auto namNavUp = [&, pGraphics](IControl *pCaller) {
+      WDL_String l_oStartNAMNavUpResult = pFolderBrowser.StartNAMNavUp();
+      std::string l_oGetNAMResult = this->_GetNAM(l_oStartNAMNavUpResult);
+      int l_iFinishNAMNavUpResult =
+          pFolderBrowser.FinishNAMNavUp(l_oGetNAMResult);
+
+      // alternate call
+      /* pFolderBrowser.FinishNAMNavUp(
+          this->_GetNAM(pFolderBrowser.StartNAMNavUp()));*/
+    };
+    // Model nav down button
+    auto namNavDown = [&, pGraphics](IControl *pCaller) {
+      WDL_String l_oStartNAMNavDownResult = pFolderBrowser.StartNAMNavDown();
+      std::string l_oGetNAMResult = this->_GetNAM(l_oStartNAMNavDownResult);
+      int l_iFinishNAMNavDownResult =
+          pFolderBrowser.FinishNAMNavDown(l_oGetNAMResult);
+
+      // alternate call
+      /*pFolderBrowser.FinishNAMNavDown(
+          this->_GetNAM(pFolderBrowser.StartNAMNavDown()));*/
+    };
+    // Model-clearing function
+    auto ClearNAM = [&, pGraphics](IControl *pCaller) {
+      this->mFlagRemoveNAM = true;
+      pFolderBrowser.HideNAMArrows();
     };
     // IR loader button
     auto loadIR = [&, pGraphics](IControl *pCaller) {
@@ -301,17 +336,40 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                 }
                 pGraphics->ShowMessageBox(message.str().c_str(),
                                           "Failed to load IR!", kMB_OK);
+              } else {
+                // init FolderBrowser upon successful selection / load
+                pFolderBrowser.InitializeIRNav(fileName);
               }
             }
           });
     };
-    // Model-clearing function
-    auto ClearNAM = [&, pGraphics](IControl *pCaller) {
-      this->mFlagRemoveNAM = true;
+    // IR nav up button
+    auto irNavUp = [&, pGraphics](IControl *pCaller) {
+      WDL_String l_oStartIRNavUpResult = pFolderBrowser.StartIRNavUp();
+      const dsp::wav::LoadReturnCode l_oGetIRResult =
+          this->_GetIR(l_oStartIRNavUpResult);
+      int l_iFinishIRNavUpResult = pFolderBrowser.FinishIRNavUp(l_oGetIRResult);
+
+      // alternate call
+      /* pFolderBrowser.FinishIRNavUp(
+            this->_GetIR(pFolderBrowser.StartIRNavUp()));*/
+    };
+    // IR nav down button
+    auto irNavDown = [&, pGraphics](IControl *pCaller) {
+      WDL_String l_oStartIRNavDownResult = pFolderBrowser.StartIRNavDown();
+      const dsp::wav::LoadReturnCode l_oGetIRResult =
+          this->_GetIR(l_oStartIRNavDownResult);
+      int l_iFinishIRNavDownResult =
+          pFolderBrowser.FinishIRNavDown(l_oGetIRResult);
+
+      // alternate call
+      /* pFolderBrowser.FinishIRNavDown(
+            this->_GetIR(pFolderBrowser.StartIRNavDown()));*/
     };
     // IR-clearing function
     auto ClearIR = [&, pGraphics](IControl *pCaller) {
       this->mFlagRemoveIR = true;
+      pFolderBrowser.HideIRArrows();
     };
 
     // Graphics objects for what NAM is loaded
@@ -323,6 +381,22 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
         modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearNAM,
         closeButtonSVG));
+    pGraphics
+        ->AttachControl(
+            new IRolloverSVGButtonControl(
+                modelArea.GetFromRight(iconWidth).GetPadded(-2.f).GetHShifted(
+                    -(iconWidth)),
+                namNavUp, upArrowSVG),
+            250)
+        ->Hide(true); // assign tag 250
+    pGraphics
+        ->AttachControl(
+            new IRolloverSVGButtonControl(
+                modelArea.GetFromRight(iconWidth).GetPadded(-2.f).GetHShifted(
+                    -(iconWidth + iconWidth)),
+                namNavDown, downArrowSVG),
+            251)
+        ->Hide(true); // assign tag 251
     pGraphics->AttachControl(
         new IVUpdateableLabelControl(
             modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(
@@ -339,6 +413,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
         irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR,
         closeButtonSVG));
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            irArea.GetFromRight(iconWidth).GetPadded(-2.f).GetHShifted(
+                -(iconWidth)),
+            irNavUp, upArrowSVG),
+        252)->Hide(true); // assign tag 252
+    pGraphics->AttachControl(
+        new IRolloverSVGButtonControl(
+            irArea.GetFromRight(iconWidth).GetPadded(-2.f).GetHShifted(
+                -(iconWidth + iconWidth)),
+            irNavDown, downArrowSVG),
+        253)->Hide(true); // assign tag 253
     pGraphics->AttachControl(
         new IVUpdateableLabelControl(
             irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth),
