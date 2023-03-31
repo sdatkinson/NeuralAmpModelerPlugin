@@ -12,7 +12,7 @@
 #include "NeuralAmpModeler.h"
 #include "IPlug_include_in_plug_src.h"
 // clang-format on
-#include "architecture.hpp";
+#include "architecture.hpp"
 
 using namespace iplug;
 using namespace igraphics;
