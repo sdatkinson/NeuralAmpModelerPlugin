@@ -217,16 +217,12 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
   // Input
   AC(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
   // Noise gate
-  const bool noiseGateIsActive = GetParam(kNoiseGateActive)->Value();
-  const IVStyle noiseGateInitialStyle = noiseGateIsActive ? style : styleInactive;
-  AC(new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle));
+  AC(new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
 
   // Tone stack
-  const bool toneStackIsActive = GetParam(kEQActive)->Value();
-  const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
-  AC(new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle));
-  AC(new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle));
-  AC(new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle));
+  AC(new IVKnobControl(bassKnobArea, kToneBass, "", style));
+  AC(new IVKnobControl(middleKnobArea, kToneMid, "", style));
+  AC(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
   // Output
   AC(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
 

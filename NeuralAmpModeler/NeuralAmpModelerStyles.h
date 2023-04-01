@@ -78,18 +78,6 @@ const auto activeColorSpec = IVColorSpec{
   DEFAULT_X3COLOR // Extra 3
 };
 
-const IVColorSpec inactiveColorSpec{
-  DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_1, //.WithOpacity(0.5f),  // Foreground
-  PluginColors::NAM_1, // Pressed
-  PluginColors::NAM_3.WithOpacity(0.5f), // Frame
-  PluginColors::NAM_1, // Highlight
-  DEFAULT_SHCOLOR.WithOpacity(0.5f), // Shadow
-  PluginColors::NAM_2.WithOpacity(0.5f), // Extra 1
-  COLOR_RED.WithOpacity(0.5f), // Extra 2
-  DEFAULT_X3COLOR.WithOpacity(0.5f) // Extra 3
-};
-
 const auto style = IVStyle{true, // Show label
                            true, // Show value
                            activeColorSpec,
@@ -104,5 +92,3 @@ const auto style = IVStyle{true, // Show label
                            DEFAULT_SHADOW_OFFSET,
                            DEFAULT_WIDGET_FRAC,
                            DEFAULT_WIDGET_ANGLE};
-
-const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
