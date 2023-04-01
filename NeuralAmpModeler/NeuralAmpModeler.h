@@ -47,16 +47,18 @@ public:
   ~NeuralAmpModeler();
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
+
   void OnReset() override
   {
-    const auto sampleRate = this->GetSampleRate();
-    this->mInputSender.Reset(sampleRate);
-    this->mOutputSender.Reset(sampleRate);
+    const auto sampleRate = GetSampleRate();
+    mInputSender.Reset(sampleRate);
+    mOutputSender.Reset(sampleRate);
   }
+
   void OnIdle() override
   {
-    this->mInputSender.TransmitData(*this);
-    this->mOutputSender.TransmitData(*this);
+    mInputSender.TransmitData(*this);
+    mOutputSender.TransmitData(*this);
   }
 
   bool SerializeState(iplug::IByteChunk& chunk) const override;
@@ -88,7 +90,7 @@ private:
   dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
-  bool _HaveModel() const { return this->mNAM != nullptr; };
+  bool _HaveModel() const { return mNAM != nullptr; };
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
