@@ -41,7 +41,7 @@ IGraphics* NeuralAmpModeler::CreateGraphics()
 #endif
   return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
 }
-void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
+void NeuralAmpModeler::ProcessBlock(sample** inputs, sample** outputs, int nFrames)
 {
   const size_t numChannelsExternalIn = (size_t)NInChansConnected();
   const size_t numChannelsExternalOut = (size_t)NOutChansConnected();
@@ -53,7 +53,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   std::fenv_t fe_state;
   std::feholdexcept(&fe_state);
   disable_denormals();
-  
+
   PrepareBuffers(numChannelsInternal, numFrames);
   // Input is collapsed to mono in preparation for the NAM.
   ProcessInput(inputs, numFrames, numChannelsExternalIn, numChannelsInternal);
@@ -257,8 +257,7 @@ void NeuralAmpModeler::DeallocateIOPointers()
     throw std::runtime_error("Failed to deallocate pointer to output buffer!\n");
 }
 
-void NeuralAmpModeler::FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels,
-                                   const size_t numFrames)
+void NeuralAmpModeler::FallbackDSP(sample** inputs, sample** outputs, const size_t numChannels, const size_t numFrames)
 {
   for (auto c = 0; c < numChannels; c++)
     for (auto s = 0; s < numFrames; s++)
@@ -383,7 +382,7 @@ void NeuralAmpModeler::PrepareIOPointers(const size_t numChannels)
   AllocateIOPointers(numChannels);
 }
 
-void NeuralAmpModeler::ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn,
+void NeuralAmpModeler::ProcessInput(sample** inputs, const size_t nFrames, const size_t nChansIn,
                                     const size_t nChansOut)
 {
   // Assume _PrepareBuffers() was already called
@@ -400,8 +399,8 @@ void NeuralAmpModeler::ProcessInput(iplug::sample** inputs, const size_t nFrames
   }
 }
 
-void NeuralAmpModeler::ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
-                                     const size_t nChansIn, const size_t nChansOut)
+void NeuralAmpModeler::ProcessOutput(sample** inputs, sample** outputs, const size_t nFrames, const size_t nChansIn,
+                                     const size_t nChansOut)
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
   // Assume _PrepareBuffers() was already called
