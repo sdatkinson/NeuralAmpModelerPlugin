@@ -47,20 +47,8 @@ public:
   ~NeuralAmpModeler();
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
-
-  void OnReset() override
-  {
-    const auto sampleRate = GetSampleRate();
-    mInputSender.Reset(sampleRate);
-    mOutputSender.Reset(sampleRate);
-  }
-
-  void OnIdle() override
-  {
-    mInputSender.TransmitData(*this);
-    mOutputSender.TransmitData(*this);
-  }
-
+  void OnReset() override;
+  void OnIdle() override;
   bool SerializeState(iplug::IByteChunk& chunk) const override;
   int UnserializeState(const iplug::IByteChunk& chunk, int startPos) override;
   void OnUIOpen() override;

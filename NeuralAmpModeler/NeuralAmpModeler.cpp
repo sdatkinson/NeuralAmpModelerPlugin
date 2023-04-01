@@ -583,6 +583,19 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   _UpdateMeters(mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
 }
 
+void NeuralAmpModeler::OnReset()
+{
+  const auto sampleRate = GetSampleRate();
+  mInputSender.Reset(sampleRate);
+  mOutputSender.Reset(sampleRate);
+}
+
+void NeuralAmpModeler::OnIdle() override
+{
+  mInputSender.TransmitData(*this);
+  mOutputSender.TransmitData(*this);
+}
+
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again
