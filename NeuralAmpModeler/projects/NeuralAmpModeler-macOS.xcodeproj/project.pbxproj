@@ -184,6 +184,15 @@
 		4F33466429D4D8490030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4F33466529D4D84A0030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4F33466629D4D84A0030F61B /* IPlugWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F7C49BE255DE0E200DF7588 /* IPlugWebView.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		4F33467329D87BA60030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467429D87FA00030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467529D87FA20030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467629D87FA20030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467729D87FA30030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467829D87FA30030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467929D87FA40030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467A29D87FA50030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
+		4F33467B29D87FA60030F61B /* NeuralAmpModelerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */; };
 		4F35DEAD207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
 		4F35DEAE207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
 		4F35DEAF207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */; };
@@ -440,8 +449,6 @@
 		4FFBB93020863B0E00DDD0E7 /* fbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8158C1205D50EB00393585 /* fbuffer.cpp */; };
 		4FFBB93420863B0E00DDD0E7 /* coreiids.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8158E0205D50EB00393585 /* coreiids.cpp */; };
 		4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F81588E205D50EB00393585 /* vstnoteexpressiontypes.cpp */; };
-		AA355E2D295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
-		AA355E2E295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -652,6 +659,9 @@
 		4F3345EA29D4D32F0030F61B /* numpy_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numpy_util.h; sourceTree = "<group>"; };
 		4F3345EB29D4D32F0030F61B /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4F3345EC29D4D32F0030F61B /* cnpy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cnpy.h; sourceTree = "<group>"; };
+		4F33466F29D878140030F61B /* NeuralAmpModelerControls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModelerControls.h; path = ../NeuralAmpModelerControls.h; sourceTree = "<group>"; };
+		4F33467029D879EC0030F61B /* NeuralAmpModelerStyles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModelerStyles.h; path = ../NeuralAmpModelerStyles.h; sourceTree = "<group>"; };
+		4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NeuralAmpModelerUI.cpp; path = ../NeuralAmpModelerUI.cpp; sourceTree = "<group>"; };
 		4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugPluginBase.cpp; path = ../../iPlug2/IPlug/IPlugPluginBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		4F35DEAC207E5C5A00867D8F /* IPlugPluginBase.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugPluginBase.h; path = ../../iPlug2/IPlug/IPlugPluginBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		4F3862ED2014BBEC0009F402 /* NeuralAmpModeler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NeuralAmpModeler.cpp; path = ../NeuralAmpModeler.cpp; sourceTree = "<group>"; };
@@ -999,7 +1009,6 @@
 		4FFBB94120863E9300DDD0E7 /* IPlugVST3_Parameter.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Parameter.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Parameter.h; sourceTree = "<group>"; tabWidth = 2; };
 		4FFF72B8214BB71400839091 /* main.rc */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.rc; path = ../resources/main.rc; sourceTree = "<group>"; };
 		52FBBED30D0CF143001C8B8A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
-		AA355E2C295B688F0061AA3D /* Colors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Colors.h; path = ../Colors.h; sourceTree = "<group>"; };
 		AAD2484E29542F2800F55DD4 /* APPRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APPRelease.entitlements; sourceTree = "<group>"; };
 		AAD2484F2954325200F55DD4 /* AUv3Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3Release.entitlements; sourceTree = "<group>"; };
 		AAD248502954339400F55DD4 /* AUv3AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3AppRelease.entitlements; sourceTree = "<group>"; };
@@ -1081,13 +1090,15 @@
 		089C166AFE841209C02AAC07 /* IPlugExample */ = {
 			isa = PBXGroup;
 			children = (
-				AA355E2C295B688F0061AA3D /* Colors.h */,
 				AAD248502954339400F55DD4 /* AUv3AppRelease.entitlements */,
 				AAD2484F2954325200F55DD4 /* AUv3Release.entitlements */,
 				AAD2484E29542F2800F55DD4 /* APPRelease.entitlements */,
 				52FBBED30D0CF143001C8B8A /* config.h */,
+				4F33467029D879EC0030F61B /* NeuralAmpModelerStyles.h */,
+				4F33466F29D878140030F61B /* NeuralAmpModelerControls.h */,
 				4F3862EE2014BBEC0009F402 /* NeuralAmpModeler.h */,
 				4F3862ED2014BBEC0009F402 /* NeuralAmpModeler.cpp */,
+				4F33467129D87BA60030F61B /* NeuralAmpModelerUI.cpp */,
 				4F9313232315CA1100DB2383 /* README.md */,
 				4F3345D429D4D32F0030F61B /* dsp */,
 				089C167CFE841241C02AAC07 /* Resources */,
@@ -1953,7 +1964,6 @@
 				4F33465C29D4D32F0030F61B /* cnpy.h in Headers */,
 				4F33460129D4D32F0030F61B /* wav.h in Headers */,
 				4F33463329D4D32F0030F61B /* ImpulseResponse.h in Headers */,
-				AA355E2E295B688F0061AA3D /* Colors.h in Headers */,
 				4F33461629D4D32F0030F61B /* wavenet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1962,7 +1972,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA355E2D295B688F0061AA3D /* Colors.h in Headers */,
 				4FC3EFF02086CE5700BD11FA /* eventlist.h in Headers */,
 				4FC3EFF42086CE5700BD11FA /* module.h in Headers */,
 				4F03A58C20A4621100EBDFFB /* IGraphicsNanoVG.h in Headers */,
@@ -2564,6 +2573,7 @@
 				4F33463729D4D32F0030F61B /* numpy_util.cpp in Sources */,
 				4F78D9C813B63BA50032E0F3 /* IPlugParameter.cpp in Sources */,
 				4F7C4959255DDFC400DF7588 /* IPopupMenuControl.cpp in Sources */,
+				4F33467429D87FA00030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2581,6 +2591,7 @@
 				4F3345F429D4D32F0030F61B /* util.cpp in Sources */,
 				4F33461329D4D32F0030F61B /* cnpy.cpp in Sources */,
 				4F33463C29D4D32F0030F61B /* numpy_util.cpp in Sources */,
+				4F33467929D87FA40030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4F33460929D4D32F0030F61B /* dsp.cpp in Sources */,
 				4F33461D29D4D32F0030F61B /* lstm.cpp in Sources */,
 				4F33464F29D4D32F0030F61B /* wavenet.cpp in Sources */,
@@ -2599,6 +2610,7 @@
 				4F6369EE20A466470022C370 /* IControl.cpp in Sources */,
 				4F1A528C205D916F00CF2908 /* IPlugAU.cpp in Sources */,
 				4F33462329D4D32F0030F61B /* NoiseGate.cpp in Sources */,
+				4F33467629D87FA20030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4F33465629D4D32F0030F61B /* get_dsp.cpp in Sources */,
 				4FD52131202A5B9B00A4D22A /* IPlugAU_view_factory.mm in Sources */,
 				4F993F7423055C96000313AF /* IPlugProcessor.cpp in Sources */,
@@ -2676,6 +2688,7 @@
 				4F33463E29D4D32F0030F61B /* numpy_util.cpp in Sources */,
 				4F3EE1E5231438D000004786 /* IPlugTimer.cpp in Sources */,
 				4F33460B29D4D32F0030F61B /* dsp.cpp in Sources */,
+				4F33467B29D87FA60030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2683,6 +2696,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F33467A29D87FA50030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4F7C496A255DDFCB00DF7588 /* IControls.cpp in Sources */,
 				4F78BE1422E7406D00AD537E /* NeuralAmpModeler.h in Sources */,
 				4F33465A29D4D32F0030F61B /* get_dsp.cpp in Sources */,
@@ -2753,6 +2767,7 @@
 				4F33465529D4D32F0030F61B /* get_dsp.cpp in Sources */,
 				4F35DEAF207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
 				4F33460F29D4D32F0030F61B /* cnpy.cpp in Sources */,
+				4F33467529D87FA20030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4F3345F029D4D32F0030F61B /* util.cpp in Sources */,
 				4F81591E205D50EB00393585 /* macmain.cpp in Sources */,
 				4F993F7323055C96000313AF /* IPlugProcessor.cpp in Sources */,
@@ -2791,6 +2806,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F33467729D87FA30030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4F7C4961255DDFC600DF7588 /* IControls.cpp in Sources */,
 				4F993F7523055C97000313AF /* IPlugProcessor.cpp in Sources */,
 				4F33465729D4D32F0030F61B /* get_dsp.cpp in Sources */,
@@ -2900,6 +2916,7 @@
 				4F33463629D4D32F0030F61B /* numpy_util.cpp in Sources */,
 				4FDAC0EA207D76C600299363 /* IPlugTimer.cpp in Sources */,
 				4F33460329D4D32F0030F61B /* dsp.cpp in Sources */,
+				4F33467329D87BA60030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2943,6 +2960,7 @@
 				4FFBB92420863B0E00DDD0E7 /* vstaudioeffect.cpp in Sources */,
 				4FFBB92520863B0E00DDD0E7 /* vstsinglecomponenteffect.cpp in Sources */,
 				4FFBB92620863B0E00DDD0E7 /* updatehandler.cpp in Sources */,
+				4F33467829D87FA30030F61B /* NeuralAmpModelerUI.cpp in Sources */,
 				4FFBB92820863B0E00DDD0E7 /* vstcomponent.cpp in Sources */,
 				4FFBB92C20863B0E00DDD0E7 /* fstreamer.cpp in Sources */,
 				4F33464E29D4D32F0030F61B /* wavenet.cpp in Sources */,

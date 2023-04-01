@@ -4,9 +4,6 @@
 #include <iostream>
 #include <utility>
 
-#include "Colors.h"
-#include "IControls.h"
-#include "IWebViewControl.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
 // a bunch of stuff.
@@ -14,93 +11,6 @@
 #include "IPlug_include_in_plug_src.h"
 // clang-format on
 #include "architecture.hpp"
-
-using namespace iplug;
-using namespace igraphics;
-
-class IRolloverSVGButtonControl : public ISVGButtonControl
-{
-public:
-  IRolloverSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
-  : ISVGButtonControl(bounds, af, svg, svg)
-  {
-  }
-
-  void Draw(IGraphics& g) override
-  {
-    if (mMouseIsOver)
-      g.FillRect(PluginColors::MOUSEOVER, mRECT);
-
-    ISVGButtonControl::Draw(g);
-  }
-};
-
-class IRolloverCircleSVGButtonControl : public ISVGButtonControl
-{
-public:
-  IRolloverCircleSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
-  : ISVGButtonControl(bounds, af, svg, svg)
-  {
-  }
-
-  void Draw(IGraphics& g) override
-  {
-    if (mMouseIsOver)
-      g.FillEllipse(PluginColors::MOUSEOVER, mRECT);
-
-    ISVGButtonControl::Draw(g);
-  }
-};
-
-class IVUpdateableLabelControl : public IVLabelControl
-{
-public:
-  IVUpdateableLabelControl(const IRECT& bounds, const char* str, const IVStyle& style)
-  : IVLabelControl(bounds, str, style)
-  {
-  }
-
-  void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) { SetStr(reinterpret_cast<const char*>(pData)); }
-};
-
-// Styles
-const IVColorSpec activeColorSpec{
-  DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_1, // Foreground
-  PluginColors::NAM_2.WithOpacity(0.4f), // Pressed
-  PluginColors::NAM_3, // Frame
-  PluginColors::MOUSEOVER, // Highlight
-  DEFAULT_SHCOLOR, // Shadow
-  PluginColors::NAM_2, // Extra 1
-  COLOR_RED, // Extra 2
-  DEFAULT_X3COLOR // Extra 3
-};
-const IVColorSpec inactiveColorSpec{
-  DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_1, //.WithOpacity(0.5f),  // Foreground
-  PluginColors::NAM_1, // Pressed
-  PluginColors::NAM_3.WithOpacity(0.5f), // Frame
-  PluginColors::NAM_1, // Highlight
-  DEFAULT_SHCOLOR.WithOpacity(0.5f), // Shadow
-  PluginColors::NAM_2.WithOpacity(0.5f), // Extra 1
-  COLOR_RED.WithOpacity(0.5f), // Extra 2
-  DEFAULT_X3COLOR.WithOpacity(0.5f) // Extra 3
-};
-const IVStyle style = IVStyle{true, // Show label
-                              true, // Show value
-                              activeColorSpec,
-                              {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3}, // Knob label text
-                              {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3}, // Knob value text
-                              DEFAULT_HIDE_CURSOR,
-                              DEFAULT_DRAW_FRAME,
-                              false,
-                              DEFAULT_EMBOSS,
-                              0.1f,
-                              2.f,
-                              DEFAULT_SHADOW_OFFSET,
-                              DEFAULT_WIDGET_FRAC,
-                              DEFAULT_WIDGET_ANGLE};
-const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -133,348 +43,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
-
-  mMakeGraphicsFunc = [&]() {
-
-#ifdef OS_IOS
-    auto scaleFactor = GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT) * 0.85f;
-#else
-    auto scaleFactor = 1.0f;
-#endif
-
-    return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
-  };
-
-  mLayoutFunc = [&](IGraphics* pGraphics) {
-    pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
-    pGraphics->AttachPanelBackground(COLOR_BLACK);
-    pGraphics->EnableMouseOver(true);
-    auto helpSVG = pGraphics->LoadSVG(HELP_FN);
-    auto fileSVG = pGraphics->LoadSVG(FILE_FN);
-    auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
-    pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
-    const IRECT b = pGraphics->GetBounds();
-    const IRECT mainArea = b.GetPadded(-20);
-    const auto content = mainArea.GetPadded(-10);
-    const float titleHeight = 50.0f;
-    const auto titleLabel = content.GetFromTop(titleHeight);
-
-    // Area for the Noise gate knob
-    const float allKnobsHalfPad = 10.0f;
-    const float allKnobsPad = 2.0f * allKnobsHalfPad;
-
-    // Areas for knobs
-    const float knobsExtraSpaceBelowTitle = 25.0f;
-    const float knobHalfHeight = 70.0f;
-    const float knobHeight = 2.0f * knobHalfHeight;
-    const float singleKnobPad = 10.0f;
-    const auto knobs = content.GetFromTop(knobHeight)
-                         .GetReducedFromLeft(allKnobsPad)
-                         .GetReducedFromRight(allKnobsPad)
-                         .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
-    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-10);
-    const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
-
-    // Area for EQ toggle
-    const float ngAreaHeight = 20.0f;
-    const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
-    const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
-                                 .GetTranslated(0.0f, ngAreaHeight + singleKnobPad)
-                                 .GetMidHPadded(ngAreaHalfWidth);
-
-    // Area for EQ toggle
-    const float eqAreaHeight = 20.0f;
-    const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
-    const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
-                                 .GetTranslated(0.0f, eqAreaHeight + singleKnobPad)
-                                 .GetMidHPadded(eqAreaHalfWidth);
-
-    // Areas for model and IR
-    const float fileWidth = 250.0f;
-    const float fileHeight = 30.0f;
-    const float fileSpace = 10.0f;
-    const IRECT modelArea =
-      content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
-    const IRECT irArea = content.GetFromBottom(fileHeight).GetMidHPadded(fileWidth);
-
-    // Areas for meters
-    const float meterHalfHeight = 0.5f * 250.0f;
-    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
-                                   .GetMidHPadded(allKnobsHalfPad)
-                                   .GetMidVPadded(meterHalfHeight)
-                                   .GetTranslated(-allKnobsPad, 0.0f);
-    const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
-                                    .GetMidHPadded(allKnobsHalfPad)
-                                    .GetMidVPadded(meterHalfHeight)
-                                    .GetTranslated(allKnobsPad, 0.0f);
-
-    const IRECT webViewArea =
-      content.GetReducedFromTop(knobs.B).GetReducedFromBottom(fileHeight * 2 + fileSpace).GetVPadded(-10.0f);
-
-    // auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
-    // pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(),
-    // tolexPNG, kNoParameter))->SetBlend(IBlend(EBlend::Default, 0.5));
-    //  The background inside the outermost border
-    pGraphics->AttachControl(
-      new IVPanelControl(mainArea, "", style.WithColor(kFG, PluginColors::NAM_1))); // .WithContrast(-0.75)
-    pGraphics->AttachControl(
-      new IVLabelControl(titleLabel, "Neural Amp Modeler",
-                         style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::NAM_3})));
-
-    // Model loader button
-    auto loadNAM = [&, pGraphics](IControl* pCaller) {
-      WDL_String initFileName;
-      WDL_String initPath(mNAMPath.Get());
-      initPath.remove_filepart();
-      pGraphics->PromptForFile(
-        initFileName, initPath, EFileAction::Open, "nam", [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            // Sets mNAMPath and mStagedNAM
-            const std::string msg = _GetNAM(fileName);
-            // TODO error messages like the IR loader.
-            if (msg.size())
-            {
-              std::stringstream ss;
-              ss << "Failed to load NAM model. Message:\n\n"
-                 << msg << "\n\n"
-                 << "If the model is an old \"directory-style\" model, it "
-                    "can be "
-                    "converted using the utility at "
-                    "https://github.com/sdatkinson/nam-model-utility";
-              pGraphics->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
-            }
-          }
-        });
-    };
-    // IR loader button
-    auto loadIR = [&, pGraphics](IControl* pCaller) {
-      WDL_String initFileName;
-      WDL_String initPath(mIRPath.Get());
-      initPath.remove_filepart();
-      pGraphics->PromptForFile(
-        initFileName, initPath, EFileAction::Open, "wav", [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            mIRPath = fileName;
-            const dsp::wav::LoadReturnCode retCode = _GetIR(fileName);
-            if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
-            {
-              std::stringstream message;
-              message << "Failed to load IR file " << fileName.Get() << ":\n";
-              switch (retCode)
-              {
-                case (dsp::wav::LoadReturnCode::ERROR_OPENING):
-                  message << "Failed to open file (is it being used by another "
-                             "program?)";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF): message << "File is not a WAV file."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE): message << "File is not a WAV file."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
-                  message << "File is missing expected format chunk.";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE): message << "WAV file contents are invalid."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
-                  message << "Unsupported file format \"A-law\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
-                  message << "Unsupported file format \"mu-law\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
-                  message << "Unsupported file format \"extensible\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO): message << "File is not mono."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
-                  message << "Unsupported bits per sample";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_OTHER): message << "???"; break;
-                default: message << "???"; break;
-              }
-              pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
-            }
-          }
-        });
-    };
-    // Model-clearing function
-    auto ClearNAM = [&, pGraphics](IControl* pCaller) { mFlagRemoveNAM = true; };
-    // IR-clearing function
-    auto ClearIR = [&, pGraphics](IControl* pCaller) { mFlagRemoveIR = true; };
-
-    // Graphics objects for what NAM is loaded
-    const float iconWidth = fileHeight; // Square icon
-    pGraphics->AttachControl(new IVPanelControl(modelArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadNAM, fileSVG));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearNAM, closeButtonSVG));
-    pGraphics->AttachControl(
-      new IVUpdateableLabelControl(
-        modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), mDefaultNAMString.Get(),
-        style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))),
-      kCtrlTagModelName);
-    // IR
-    pGraphics->AttachControl(new IVPanelControl(irArea, "", style.WithColor(kFG, PluginColors::NAM_1)));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-2.f), loadIR, fileSVG));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-2.f), ClearIR, closeButtonSVG));
-    pGraphics->AttachControl(
-      new IVUpdateableLabelControl(
-        irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), mDefaultIRString.Get(),
-        style.WithDrawFrame(false).WithValueText(style.valueText.WithVAlign(EVAlign::Middle))),
-      kCtrlTagIRName);
-
-    // NG toggle
-    IVSlideSwitchControl* noiseGateSlider = new IVSlideSwitchControl(
-      ngToggleArea, kNoiseGateActive, "Gate", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
-      true, // valueInButton
-      EDirection::Horizontal);
-    pGraphics->AttachControl(noiseGateSlider);
-    // Tone stack toggle
-    IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(
-      eqToggleArea, kEQActive, "EQ", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
-      true, // valueInButton
-      EDirection::Horizontal);
-    pGraphics->AttachControl(toneStackSlider);
-
-    // The knobs
-    // Input
-    pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    // Noise gate
-    const bool noiseGateIsActive = GetParam(kNoiseGateActive)->Value();
-    const IVStyle noiseGateInitialStyle = noiseGateIsActive ? style : styleInactive;
-    IVKnobControl* noiseGateControl = new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
-    pGraphics->AttachControl(noiseGateControl);
-    // Tone stack
-    const bool toneStackIsActive = GetParam(kEQActive)->Value();
-    const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
-    IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
-    IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
-    IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
-    pGraphics->AttachControl(bassControl);
-    pGraphics->AttachControl(middleControl);
-    pGraphics->AttachControl(trebleControl);
-    // Output
-    pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
-
-    // Extend the noise gate action function to set the style of its knob
-    auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {
-      const bool noiseGateActive = pCaller->GetValue() > 0;
-      const IVStyle noiseGateStyle = noiseGateActive ? style : styleInactive;
-      noiseGateControl->SetStyle(noiseGateStyle);
-      noiseGateControl->SetDirty(false);
-    };
-    auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
-    auto noiseGateAction = [defaultNoiseGateSliderAction, setNoiseGateKnobStyles](IControl* pCaller) {
-      defaultNoiseGateSliderAction(pCaller);
-      setNoiseGateKnobStyles(pCaller);
-    };
-    noiseGateSlider->SetActionFunction(noiseGateAction);
-    // Extend the slider action function to set the style of its knobs
-    auto setToneStackKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
-      const bool toneStackActive = pCaller->GetValue() > 0;
-      const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
-      bassControl->SetStyle(toneStackStyle);
-      middleControl->SetStyle(toneStackStyle);
-      trebleControl->SetStyle(toneStackStyle);
-
-      bassControl->SetDirty(false);
-      middleControl->SetDirty(false);
-      trebleControl->SetDirty(false);
-    };
-    auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
-    auto toneStackAction = [defaultToneStackSliderAction, setToneStackKnobStyles](IControl* pCaller) {
-      defaultToneStackSliderAction(pCaller);
-      setToneStackKnobStyles(pCaller);
-    };
-    toneStackSlider->SetActionFunction(toneStackAction);
-
-    // The meters
-    const float meterMin = -90.0f;
-    const float meterMax = -0.01f;
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(inputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithColor(kFG, PluginColors::NAM_2),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagInputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(outputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithColor(kFG, PluginColors::NAM_2),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagOutputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
-
-    pGraphics->AttachControl(
-      new IWebViewControl(webViewArea, true, [](IWebViewControl* pWebView) { pWebView->LoadHTML("I am a web view"); }),
-      kCtrlTagWebView);
-    //     Help/about box
-    pGraphics->AttachControl(new IRolloverCircleSVGButtonControl(
-      mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
-      [pGraphics](IControl* pCaller) {
-        pGraphics->GetControlWithTag(kCtrlTagWebView)->Hide(true);
-        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
-      },
-      helpSVG));
-
-    pGraphics
-      ->AttachControl(
-        new IAboutBoxControl(
-          b, COLOR_GRAY,
-          // AttachFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            pParent->AddChildControl(new IPanelControl(
-              IRECT(), IPattern::CreateLinearGradient(
-                         r, EDirection::Vertical, {{PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f}})));
-
-            pParent->AddChildControl(new IVPanelControl(IRECT(), "",
-                                                        style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f))
-                                                          .WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
-
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "Neural Amp Modeler",
-              style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
-
-            WDL_String versionStr{"Version "};
-            versionStr.Append(PLUG_VERSION_STR);
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), versionStr.Get(),
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "By Steven Atkinson",
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IURLControl(IRECT(), "Train your own model",
-                                                     "https://github.com/sdatkinson/neural-amp-modeler",
-                                                     {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-            pParent->AddChildControl(new IURLControl(
-              IRECT(), "Built with iPlug2", "https://iPlug2.github.io", {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-          },
-          // ResizeFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            const IRECT mainArea = r.GetPadded(-20);
-            const auto content = mainArea.GetPadded(-10);
-            const auto titleLabel = content.GetFromTop(50);
-            pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
-            pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
-            pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
-            pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-            pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
-            pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40));
-            pParent->GetChild(6)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60));
-          },
-          // Animation Time
-          0),
-        kCtrlTagAboutBox)
-      ->Hide(true);
-  };
 }
 
 NeuralAmpModeler::~NeuralAmpModeler()
@@ -482,6 +50,15 @@ NeuralAmpModeler::~NeuralAmpModeler()
   _DeallocateIOPointers();
 }
 
+IGraphics* NeuralAmpModeler::CreateGraphics()
+{
+#ifdef OS_IOS
+  auto scaleFactor = GetScaleForScreen(PLUG_WIDTH, PLUG_HEIGHT) * 0.85f;
+#else
+  auto scaleFactor = 1.0f;
+#endif
+  return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
+}
 void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames)
 {
   const size_t numChannelsExternalIn = (size_t)NInChansConnected();
@@ -590,7 +167,7 @@ void NeuralAmpModeler::OnReset()
   mOutputSender.Reset(sampleRate);
 }
 
-void NeuralAmpModeler::OnIdle() override
+void NeuralAmpModeler::OnIdle()
 {
   mInputSender.TransmitData(*this);
   mOutputSender.TransmitData(*this);
@@ -654,11 +231,13 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mNAM = std::move(mStagedNAM);
     mStagedNAM = nullptr;
   }
+
   if (mStagedIR != nullptr)
   {
     mIR = std::move(mStagedIR);
     mStagedIR = nullptr;
   }
+
   // Remove marked modules
   if (mFlagRemoveNAM)
   {
@@ -667,6 +246,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     _UnsetModelMsg();
     mFlagRemoveNAM = false;
   }
+
   if (mFlagRemoveIR)
   {
     mIR = nullptr;

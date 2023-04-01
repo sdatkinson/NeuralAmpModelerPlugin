@@ -9,6 +9,9 @@
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
 
+using namespace iplug;
+using namespace igraphics;
+
 const int kNumPresets = 1;
 
 enum EParams
@@ -40,19 +43,22 @@ enum ECtrlTags
   kNumCtrlTags
 };
 
-class NeuralAmpModeler final : public iplug::Plugin
+class NeuralAmpModeler final : public Plugin
 {
 public:
-  NeuralAmpModeler(const iplug::InstanceInfo& info);
+  NeuralAmpModeler(const InstanceInfo& info);
   ~NeuralAmpModeler();
 
-  void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
+  void ProcessBlock(sample** inputs, sample** outputs, int nFrames) override;
   void OnReset() override;
   void OnIdle() override;
-  bool SerializeState(iplug::IByteChunk& chunk) const override;
-  int UnserializeState(const iplug::IByteChunk& chunk, int startPos) override;
+  bool SerializeState(IByteChunk& chunk) const override;
+  int UnserializeState(const IByteChunk& chunk, int startPos) override;
   void OnUIOpen() override;
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
+
+  IGraphics* CreateGraphics() override;
+  void LayoutUI(IGraphics* pGraphics) override;
 
 private:
   // Allocates mInputPointers and mOutputPointers
@@ -65,7 +71,7 @@ private:
   // Deallocates mInputPointers and mOutputPointers
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
-  void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
+  void _FallbackDSP(sample** inputs, sample** outputs, const size_t numChannels, const size_t numFrames);
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
@@ -86,11 +92,11 @@ private:
   // Copy the input buffer to the object, applying input level.
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
+  void _ProcessInput(sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
   // :param nChansOut: Out to external
-  void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
+  void _ProcessOutput(sample** inputs, sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
   void _SetIRMsg(const WDL_String& irPath);
@@ -100,8 +106,8 @@ private:
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
-                     const size_t nChansIn, const size_t nChansOut);
+  void _UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames, const size_t nChansIn,
+                     const size_t nChansOut);
 
   // Member data
 
@@ -109,12 +115,12 @@ private:
   const size_t mNUM_INTERNAL_CHANNELS = 1;
 
   // Input arrays to NAM
-  std::vector<std::vector<iplug::sample>> mInputArray;
+  std::vector<std::vector<sample>> mInputArray;
   // Output from NAM
-  std::vector<std::vector<iplug::sample>> mOutputArray;
+  std::vector<std::vector<sample>> mOutputArray;
   // Pointer versions
-  iplug::sample** mInputPointers;
-  iplug::sample** mOutputPointers;
+  sample** mInputPointers;
+  sample** mOutputPointers;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
@@ -144,6 +150,6 @@ private:
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
-  iplug::IPeakAvgSender<> mInputSender;
-  iplug::IPeakAvgSender<> mOutputSender;
+  IPeakAvgSender<> mInputSender;
+  IPeakAvgSender<> mOutputSender;
 };
