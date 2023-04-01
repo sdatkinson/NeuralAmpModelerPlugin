@@ -6,7 +6,7 @@
 
 echo "Formatting..."
 
-git ls-files "*.h" "*.cpp" | xargs clang-format --style=llvm -i
+git ls-files "*.h" "*.cpp" | xargs clang-format -i .
 
 echo "Formatting complete!"
 echo "You can stage all of the files using:"
