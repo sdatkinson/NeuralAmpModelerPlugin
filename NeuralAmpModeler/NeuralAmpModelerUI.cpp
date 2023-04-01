@@ -116,7 +116,7 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
         if (fileName.GetLength())
         {
           // Sets mNAMPath and mStagedNAM
-          const std::string msg = _GetNAM(fileName);
+          const std::string msg = GetNAM(fileName);
           // TODO error messages like the IR loader.
           if (msg.size())
           {
@@ -142,7 +142,7 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
         if (fileName.GetLength())
         {
           mIRPath = fileName;
-          const dsp::wav::LoadReturnCode retCode = _GetIR(fileName);
+          const dsp::wav::LoadReturnCode retCode = GetIR(fileName);
           if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
           {
             std::stringstream message;

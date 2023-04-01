@@ -62,52 +62,52 @@ public:
 
 private:
   // Allocates mInputPointers and mOutputPointers
-  void _AllocateIOPointers(const size_t nChans);
+  void AllocateIOPointers(const size_t nChans);
   // Moves DSP modules from staging area to the main area.
   // Also deletes DSP modules that are flagged for removal.
   // Exists so that we don't try to use a DSP module that's only
   // partially-instantiated.
-  void _ApplyDSPStaging();
+  void ApplyDSPStaging();
   // Deallocates mInputPointers and mOutputPointers
-  void _DeallocateIOPointers();
+  void DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
-  void _FallbackDSP(sample** inputs, sample** outputs, const size_t numChannels, const size_t numFrames);
+  void FallbackDSP(sample** inputs, sample** outputs, const size_t numChannels, const size_t numFrames);
   // Sizes based on mInputArray
-  size_t _GetBufferNumChannels() const;
-  size_t _GetBufferNumFrames() const;
+  size_t GetBufferNumChannels() const;
+  size_t GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
   // Returns an emptry string on success, or an error message on failure.
-  std::string _GetNAM(const WDL_String& dspFile);
+  std::string GetNAM(const WDL_String& dspFile);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
-  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
+  dsp::wav::LoadReturnCode GetIR(const WDL_String& irPath);
   // Update the message about which model is loaded.
-  void _SetModelMsg(const WDL_String& dspPath);
-  bool _HaveModel() const { return mNAM != nullptr; };
+  void SetModelMsg(const WDL_String& dspPath);
+  bool HaveModel() const { return mNAM != nullptr; };
   // Prepare the input & output buffers
-  void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
+  void PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
-  void _PrepareIOPointers(const size_t nChans);
+  void PrepareIOPointers(const size_t nChans);
   // Copy the input buffer to the object, applying input level.
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
+  void ProcessInput(sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
   // :param nChansOut: Out to external
-  void _ProcessOutput(sample** inputs, sample** outputs, const size_t nFrames, const size_t nChansIn,
-                      const size_t nChansOut);
+  void ProcessOutput(sample** inputs, sample** outputs, const size_t nFrames, const size_t nChansIn,
+                     const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
-  void _SetIRMsg(const WDL_String& irPath);
-  void _UnsetModelMsg();
-  void _UnsetIRMsg();
-  void _UnsetMsg(const int tag, const WDL_String& msg);
+  void SetIRMsg(const WDL_String& irPath);
+  void UnsetModelMsg();
+  void UnsetIRMsg();
+  void UnsetMsg(const int tag, const WDL_String& msg);
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames, const size_t nChansIn,
-                     const size_t nChansOut);
+  void UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames, const size_t nChansIn,
+                    const size_t nChansOut);
 
   // Member data
 

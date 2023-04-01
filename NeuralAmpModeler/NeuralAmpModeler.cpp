@@ -47,7 +47,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 NeuralAmpModeler::~NeuralAmpModeler()
 {
-  _DeallocateIOPointers();
+  DeallocateIOPointers();
 }
 
 IGraphics* NeuralAmpModeler::CreateGraphics()
@@ -74,8 +74,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   
   PrepareBuffers(numChannelsInternal, numFrames);
   // Input is collapsed to mono in preparation for the NAM.
-  _ProcessInput(inputs, numFrames, numChannelsExternalIn, numChannelsInternal);
-  _ApplyDSPStaging();
+  ProcessInput(inputs, numFrames, numChannelsExternalIn, numChannelsInternal);
+  ApplyDSPStaging();
   const bool noiseGateActive = GetParam(kNoiseGateActive)->Value();
   const bool toneStackActive = GetParam(kEQActive)->Value();
 
@@ -106,7 +106,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   }
   else
   {
-    _FallbackDSP(triggerOutput, mOutputPointers, numChannelsInternal, numFrames);
+    FallbackDSP(triggerOutput, mOutputPointers, numChannelsInternal, numFrames);
   }
   // Apply the noise gate
   sample** gateGainOutput =
@@ -154,10 +154,10 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 
   // Let's get outta here
   // This is where we exit mono for whatever the output requires.
-  _ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+  ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
-  _UpdateMeters(mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+  UpdateMeters(mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
 }
 
 void NeuralAmpModeler::OnReset()
@@ -191,9 +191,9 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
   if (mNAMPath.GetLength())
-    _GetNAM(mNAMPath);
+    GetNAM(mNAMPath);
   if (mIRPath.GetLength())
-    _GetIR(mIRPath);
+    GetIR(mIRPath);
   return retcode;
 }
 
@@ -201,14 +201,15 @@ void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
   if (mNAMPath.GetLength())
-    _SetModelMsg(mNAMPath);
+    SetModelMsg(mNAMPath);
   if (mIRPath.GetLength())
-    _SetIRMsg(mIRPath);
+    SetIRMsg(mIRPath);
 }
 
-// Private methods ============================================================
+#pragma mark -
+#pragma mark Private methods ============================================================
 
-void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
+void NeuralAmpModeler::AllocateIOPointers(const size_t nChans)
 {
   if (mInputPointers != nullptr)
     throw std::runtime_error("Tried to re-allocate mInputPointers without freeing");
@@ -222,7 +223,7 @@ void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
     throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
 }
 
-void NeuralAmpModeler::_ApplyDSPStaging()
+void NeuralAmpModeler::ApplyDSPStaging()
 {
   // Move things from staged to live
   if (mStagedNAM != nullptr)
@@ -243,7 +244,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   {
     mNAM = nullptr;
     mNAMPath.Set("");
-    _UnsetModelMsg();
+    UnsetModelMsg();
     mFlagRemoveNAM = false;
   }
 
@@ -251,12 +252,12 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   {
     mIR = nullptr;
     mIRPath.Set("");
-    _UnsetIRMsg();
+    UnsetIRMsg();
     mFlagRemoveIR = false;
   }
 }
 
-void NeuralAmpModeler::_DeallocateIOPointers()
+void NeuralAmpModeler::DeallocateIOPointers()
 {
   if (mInputPointers != nullptr)
   {
@@ -274,22 +275,22 @@ void NeuralAmpModeler::_DeallocateIOPointers()
     throw std::runtime_error("Failed to deallocate pointer to output buffer!\n");
 }
 
-void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels,
-                                    const size_t numFrames)
+void NeuralAmpModeler::FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels,
+                                   const size_t numFrames)
 {
   for (auto c = 0; c < numChannels; c++)
     for (auto s = 0; s < numFrames; s++)
       mOutputArray[c][s] = mInputArray[c][s];
 }
 
-std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
+std::string NeuralAmpModeler::GetNAM(const WDL_String& modelPath)
 {
   WDL_String previousNAMPath = mNAMPath;
   try
   {
     auto dspPath = std::filesystem::path(modelPath.Get());
     mStagedNAM = get_dsp(dspPath);
-    _SetModelMsg(modelPath);
+    SetModelMsg(modelPath);
     mNAMPath = modelPath;
   }
   catch (std::exception& e)
@@ -309,7 +310,7 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
   return "";
 }
 
-dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
+dsp::wav::LoadReturnCode NeuralAmpModeler::GetIR(const WDL_String& irPath)
 {
   // FIXME it'd be better for the path to be "staged" as well. Just in case the
   // path and the model got caught on opposite sides of the fence...
@@ -330,7 +331,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
 
   if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
   {
-    _SetIRMsg(irPath);
+    SetIRMsg(irPath);
     mIRPath = irPath;
   }
   else
@@ -348,29 +349,29 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
   return wavState;
 }
 
-size_t NeuralAmpModeler::_GetBufferNumChannels() const
+size_t NeuralAmpModeler::GetBufferNumChannels() const
 {
   // Assumes input=output (no mono->stereo effects)
   return mInputArray.size();
 }
 
-size_t NeuralAmpModeler::_GetBufferNumFrames() const
+size_t NeuralAmpModeler::GetBufferNumFrames() const
 {
-  if (_GetBufferNumChannels() == 0)
+  if (GetBufferNumChannels() == 0)
     return 0;
   return mInputArray[0].size();
 }
 
-void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
+void NeuralAmpModeler::PrepareBuffers(const size_t numChannels, const size_t numFrames)
 {
-  const bool updateChannels = numChannels != _GetBufferNumChannels();
-  const bool updateFrames = updateChannels || (_GetBufferNumFrames() != numFrames);
+  const bool updateChannels = numChannels != GetBufferNumChannels();
+  const bool updateFrames = updateChannels || (GetBufferNumFrames() != numFrames);
   //  if (!updateChannels && !updateFrames)  // Could we do this?
   //    return;
 
   if (updateChannels)
   {
-    _PrepareIOPointers(numChannels);
+    PrepareIOPointers(numChannels);
     mInputArray.resize(numChannels);
     mOutputArray.resize(numChannels);
   }
@@ -394,14 +395,14 @@ void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t nu
     mOutputPointers[c] = mOutputArray[c].data();
 }
 
-void NeuralAmpModeler::_PrepareIOPointers(const size_t numChannels)
+void NeuralAmpModeler::PrepareIOPointers(const size_t numChannels)
 {
-  _DeallocateIOPointers();
-  _AllocateIOPointers(numChannels);
+  DeallocateIOPointers();
+  AllocateIOPointers(numChannels);
 }
 
-void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn,
-                                     const size_t nChansOut)
+void NeuralAmpModeler::ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn,
+                                    const size_t nChansOut)
 {
   // Assume _PrepareBuffers() was already called
   const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
@@ -417,8 +418,8 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
   }
 }
 
-void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
-                                      const size_t nChansIn, const size_t nChansOut)
+void NeuralAmpModeler::ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
+                                     const size_t nChansIn, const size_t nChansOut)
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
   // Assume _PrepareBuffers() was already called
@@ -431,7 +432,7 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
       outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
 }
 
-void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
+void NeuralAmpModeler::SetModelMsg(const WDL_String& modelPath)
 {
   auto dspPath = std::filesystem::path(modelPath.Get());
   std::stringstream ss;
@@ -443,7 +444,7 @@ void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
   SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
-void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
+void NeuralAmpModeler::SetIRMsg(const WDL_String& irPath)
 {
   mIRPath = irPath; // This might already be done elsewhere...need to dedup.
   auto dspPath = std::filesystem::path(irPath.Get());
@@ -452,23 +453,23 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
 }
 
-void NeuralAmpModeler::_UnsetModelMsg()
+void NeuralAmpModeler::UnsetModelMsg()
 {
-  _UnsetMsg(kCtrlTagModelName, mDefaultNAMString);
+  UnsetMsg(kCtrlTagModelName, mDefaultNAMString);
 }
 
-void NeuralAmpModeler::_UnsetIRMsg()
+void NeuralAmpModeler::UnsetIRMsg()
 {
-  _UnsetMsg(kCtrlTagIRName, mDefaultIRString);
+  UnsetMsg(kCtrlTagIRName, mDefaultIRString);
 }
 
-void NeuralAmpModeler::_UnsetMsg(const int tag, const WDL_String& msg)
+void NeuralAmpModeler::UnsetMsg(const int tag, const WDL_String& msg)
 {
   SendControlMsgFromDelegate(tag, 0, int(strlen(msg.Get())), msg.Get());
 }
 
-void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,
-                                     const size_t nChansIn, const size_t nChansOut)
+void NeuralAmpModeler::UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,
+                                    const size_t nChansIn, const size_t nChansOut)
 {
   // Right now, we didn't specify MAXNC when we initialized these, so it's 1.
   const int nChansHack = 1;
