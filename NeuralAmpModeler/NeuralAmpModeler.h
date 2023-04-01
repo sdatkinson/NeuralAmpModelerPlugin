@@ -119,24 +119,24 @@ private:
   // Output from NAM
   std::vector<std::vector<sample>> mOutputArray;
   // Pointer versions
-  sample** mInputPointers;
-  sample** mOutputPointers;
+  sample** mInputPointers = nullptr;
+  sample** mOutputPointers = nullptr;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
   dsp::noise_gate::Gain mNoiseGateGain;
   // The Neural Amp Model (NAM) actually being used:
-  std::unique_ptr<DSP> mNAM;
+  std::unique_ptr<DSP> mNAM = nullptr;
   // And the IR
-  std::unique_ptr<dsp::ImpulseResponse> mIR;
+  std::unique_ptr<dsp::ImpulseResponse> mIR = nullptr;
   // Manages switching what DSP is being used.
-  std::unique_ptr<DSP> mStagedNAM;
-  std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
+  std::unique_ptr<DSP> mStagedNAM = nullptr;
+  std::unique_ptr<dsp::ImpulseResponse> mStagedIR = nullptr;
   // Flags to take away the modules at a safe time.
-  bool mFlagRemoveNAM;
-  bool mFlagRemoveIR;
-  const WDL_String mDefaultNAMString;
-  const WDL_String mDefaultIRString;
+  bool mFlagRemoveNAM = false;
+  bool mFlagRemoveIR = false;
+  const WDL_String mDefaultNAMString {"Select model..."};
+  const WDL_String mDefaultIRString {"Select IR..."};
 
   // Tone stack modules
   recursive_linear_filter::LowShelf mToneBass;

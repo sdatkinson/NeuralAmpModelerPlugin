@@ -14,24 +14,6 @@
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
-, mInputPointers(nullptr)
-, mOutputPointers(nullptr)
-, mNoiseGateTrigger()
-, mNAM(nullptr)
-, mIR(nullptr)
-, mStagedNAM(nullptr)
-, mStagedIR(nullptr)
-, mFlagRemoveNAM(false)
-, mFlagRemoveIR(false)
-, mDefaultNAMString("Select model...")
-, mDefaultIRString("Select IR...")
-, mToneBass()
-, mToneMid()
-, mToneTreble()
-, mNAMPath()
-, mIRPath()
-, mInputSender()
-, mOutputSender()
 {
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
