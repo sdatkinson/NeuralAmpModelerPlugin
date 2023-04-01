@@ -41,6 +41,7 @@ IGraphics* NeuralAmpModeler::CreateGraphics()
 #endif
   return MakeGraphics(*this, PLUG_WIDTH, PLUG_HEIGHT, PLUG_FPS, scaleFactor);
 }
+
 void NeuralAmpModeler::ProcessBlock(sample** inputs, sample** outputs, int nFrames)
 {
   const size_t numChannelsExternalIn = (size_t)NInChansConnected();
@@ -164,19 +165,19 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
   return SerializeParams(chunk);
 }
 
-int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
+int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int pos)
 {
   WDL_String dir;
-  startPos = chunk.GetStr(mNAMPath, startPos);
-  startPos = chunk.GetStr(mIRPath, startPos);
+  pos = chunk.GetStr(mNAMPath, pos);
+  pos = chunk.GetStr(mIRPath, pos);
   mNAM = nullptr;
   mIR = nullptr;
-  int retcode = UnserializeParams(chunk, startPos);
+  pos = UnserializeParams(chunk, pos);
   if (mNAMPath.GetLength())
     GetNAM(mNAMPath);
   if (mIRPath.GetLength())
     GetIR(mIRPath);
-  return retcode;
+  return pos;
 }
 
 void NeuralAmpModeler::OnUIOpen()
