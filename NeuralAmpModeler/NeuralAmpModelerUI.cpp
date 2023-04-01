@@ -5,6 +5,28 @@
 
 #define AC pGraphics->AttachControl
 
+void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
+{
+  if (GetUI())
+  {
+    bool active = GetParam(paramIdx)->Bool();
+    
+    switch (paramIdx)
+    {
+      case kNoiseGateActive:
+        GetUI()->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active);
+        break;
+      case kEQActive:
+        GetUI()->GetControlWithParamIdx(kToneBass)->SetDisabled(!active);
+        GetUI()->GetControlWithParamIdx(kToneMid)->SetDisabled(!active);
+        GetUI()->GetControlWithParamIdx(kToneTreble)->SetDisabled(!active);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
 {
   pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
@@ -182,17 +204,14 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
      kCtrlTagIRName);
 
   // NG toggle
-  IVSlideSwitchControl* noiseGateSlider = new IVSlideSwitchControl(
-    ngToggleArea, kNoiseGateActive, "Gate", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
-    true, // valueInButton
-    EDirection::Horizontal);
-  AC(noiseGateSlider);
+  AC(new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, "Gate",
+                              style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
+                              true, // valueInButton
+                              EDirection::Horizontal));
   // Tone stack toggle
-  IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(
-    eqToggleArea, kEQActive, "EQ", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
+  AC(new IVSlideSwitchControl(eqToggleArea, kEQActive, "EQ", style.WithShowLabel(false).WithValueText(style.valueText.WithSize(13.0f)),
     true, // valueInButton
-    EDirection::Horizontal);
-  AC(toneStackSlider);
+    EDirection::Horizontal));
 
   // The knobs
   // Input
@@ -200,51 +219,16 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
   // Noise gate
   const bool noiseGateIsActive = GetParam(kNoiseGateActive)->Value();
   const IVStyle noiseGateInitialStyle = noiseGateIsActive ? style : styleInactive;
-  IVKnobControl* noiseGateControl = new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
-  AC(noiseGateControl);
+  AC(new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle));
+
   // Tone stack
   const bool toneStackIsActive = GetParam(kEQActive)->Value();
   const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
-  IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
-  IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
-  IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
-  AC(bassControl);
-  AC(middleControl);
-  AC(trebleControl);
+  AC(new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle));
+  AC(new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle));
+  AC(new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle));
   // Output
   AC(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
-
-  // Extend the noise gate action function to set the style of its knob
-  auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {
-    const bool noiseGateActive = pCaller->GetValue() > 0;
-    const IVStyle noiseGateStyle = noiseGateActive ? style : styleInactive;
-    noiseGateControl->SetStyle(noiseGateStyle);
-    noiseGateControl->SetDirty(false);
-  };
-  auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
-  auto noiseGateAction = [defaultNoiseGateSliderAction, setNoiseGateKnobStyles](IControl* pCaller) {
-    defaultNoiseGateSliderAction(pCaller);
-    setNoiseGateKnobStyles(pCaller);
-  };
-  noiseGateSlider->SetActionFunction(noiseGateAction);
-  // Extend the slider action function to set the style of its knobs
-  auto setToneStackKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
-    const bool toneStackActive = pCaller->GetValue() > 0;
-    const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
-    bassControl->SetStyle(toneStackStyle);
-    middleControl->SetStyle(toneStackStyle);
-    trebleControl->SetStyle(toneStackStyle);
-
-    bassControl->SetDirty(false);
-    middleControl->SetDirty(false);
-    trebleControl->SetDirty(false);
-  };
-  auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
-  auto toneStackAction = [defaultToneStackSliderAction, setToneStackKnobStyles](IControl* pCaller) {
-    defaultToneStackSliderAction(pCaller);
-    setToneStackKnobStyles(pCaller);
-  };
-  toneStackSlider->SetActionFunction(toneStackAction);
 
   // The meters
   const float meterMin = -90.0f;
@@ -268,62 +252,62 @@ void NeuralAmpModeler::LayoutUI(IGraphics* pGraphics)
 
   //  AC(new IWebViewControl(webViewArea, true, [](IWebViewControl* pWebView) { pWebView->LoadHTML("I am a web view");
   //  }), kCtrlTagWebView);
-    //     Help/about box
-    AC(new IRolloverCircleSVGButtonControl(
-      mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
-      [pGraphics](IControl* pCaller) {
-//        pGraphics->GetControlWithTag(kCtrlTagWebView)->Hide(true);
-        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
-      },
-      helpSVG));
+  //     Help/about box
+  AC(new IRolloverCircleSVGButtonControl(
+    mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
+    [pGraphics](IControl* pCaller) {
+      //        pGraphics->GetControlWithTag(kCtrlTagWebView)->Hide(true);
+      pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
+    },
+    helpSVG));
 
-    pGraphics
-      ->AttachControl(
-        new IAboutBoxControl(
-          b, COLOR_GRAY,
-          // AttachFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            pParent->AddChildControl(new IPanelControl(
-              IRECT(), IPattern::CreateLinearGradient(
-                         r, EDirection::Vertical, {{PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f}})));
+  pGraphics
+    ->AttachControl(
+      new IAboutBoxControl(
+        b, COLOR_GRAY,
+        // AttachFunc
+        [](IContainerBase* pParent, const IRECT& r) {
+          pParent->AddChildControl(new IPanelControl(
+            IRECT(), IPattern::CreateLinearGradient(
+                       r, EDirection::Vertical, {{PluginColors::NAM_3, 0.f}, {PluginColors::NAM_1, 1.f}})));
 
-            pParent->AddChildControl(new IVPanelControl(IRECT(), "",
-                                                        style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f))
-                                                          .WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
+          pParent->AddChildControl(new IVPanelControl(IRECT(), "",
+                                                      style.WithColor(kFR, PluginColors::NAM_3.WithOpacity(0.1f))
+                                                        .WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.1f))));
 
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "Neural Amp Modeler",
-              style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
+          pParent->AddChildControl(new IVLabelControl(
+            IRECT(), "Neural Amp Modeler",
+            style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
 
-            WDL_String versionStr{"Version "};
-            versionStr.Append(PLUG_VERSION_STR);
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), versionStr.Get(),
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "By Steven Atkinson",
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IURLControl(IRECT(), "Train your own model",
-                                                     "https://github.com/sdatkinson/neural-amp-modeler",
-                                                     {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-            pParent->AddChildControl(new IURLControl(
-              IRECT(), "Built with iPlug2", "https://iPlug2.github.io", {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-          },
-          // ResizeFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            const IRECT mainArea = r.GetPadded(-20);
-            const auto content = mainArea.GetPadded(-10);
-            const auto titleLabel = content.GetFromTop(50);
-            pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
-            pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
-            pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
-            pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-            pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
-            pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 50));
-            pParent->GetChild(6)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 100));
-          },
-          // Animation Time
-          0),
-        kCtrlTagAboutBox)
-      ->Hide(true);
+          WDL_String versionStr{"Version "};
+          versionStr.Append(PLUG_VERSION_STR);
+          pParent->AddChildControl(new IVLabelControl(
+            IRECT(), versionStr.Get(),
+            style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+          pParent->AddChildControl(new IVLabelControl(
+            IRECT(), "By Steven Atkinson",
+            style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+          pParent->AddChildControl(new IURLControl(IRECT(), "Train your own model",
+                                                   "https://github.com/sdatkinson/neural-amp-modeler",
+                                                   {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
+          pParent->AddChildControl(new IURLControl(
+            IRECT(), "Built with iPlug2", "https://iPlug2.github.io", {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
+        },
+        // ResizeFunc
+        [](IContainerBase* pParent, const IRECT& r) {
+          const IRECT mainArea = r.GetPadded(-20);
+          const auto content = mainArea.GetPadded(-10);
+          const auto titleLabel = content.GetFromTop(50);
+          pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
+          pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
+          pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
+          pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
+          pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
+          pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 50));
+          pParent->GetChild(6)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 100));
+        },
+        // Animation Time
+        0),
+      kCtrlTagAboutBox)
+    ->Hide(true);
 }

@@ -56,7 +56,7 @@ public:
   int UnserializeState(const IByteChunk& chunk, int startPos) override;
   void OnUIOpen() override;
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
-
+  void OnParamChangeUI(int paramIdx, EParamSource source) override;
   IGraphics* CreateGraphics() override;
   void LayoutUI(IGraphics* pGraphics) override;
 
