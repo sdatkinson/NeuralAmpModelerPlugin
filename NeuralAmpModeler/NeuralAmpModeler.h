@@ -23,6 +23,7 @@ enum EParams {
   // The rest is fine though.
   kNoiseGateActive,
   kEQActive,
+  kOutNorm,
   kNumParams
 };
 
