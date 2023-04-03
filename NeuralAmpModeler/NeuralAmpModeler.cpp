@@ -873,7 +873,11 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample **inputs,
   const size_t cin = 0;
   for (auto cout = 0; cout < nChansOut; cout++)
     for (auto s = 0; s < nFrames; s++)
+#ifdef APP_API  // Ensure valid output to interface
       outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
+#else  // In a DAW, other things may come next and should be able to handle large values.
+      outputs[cout][s] = gain * inputs[cin][s];
+#endif
 }
 
 void NeuralAmpModeler::_SetModelMsg(const WDL_String &modelPath) {
