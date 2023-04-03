@@ -331,6 +331,15 @@
     <ClInclude Include="..\dsp\NoiseGate.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\filesystem\include\ghc\filesystem.hpp">
+      <Filter>ghc fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\filesystem\include\ghc\fs_fwd.hpp">
+      <Filter>ghc fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\filesystem\include\ghc\fs_impl.hpp">
+      <Filter>ghc fs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -365,6 +374,9 @@
     </Filter>
     <Filter Include="dsp">
       <UniqueIdentifier>{96493837-2d8c-41a6-9077-5bcd87c5e328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ghc fs">
+      <UniqueIdentifier>{75e63372-6e00-4340-9401-0bfc797431bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

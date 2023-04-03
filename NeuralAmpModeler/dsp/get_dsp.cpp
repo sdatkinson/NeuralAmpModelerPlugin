@@ -1,3 +1,6 @@
+
+#include "ghc/fs_std_impl.hpp"
+
 #include <fstream>
 #include <unordered_set>
 
@@ -20,7 +23,7 @@ void verify_config_version(const std::string version) {
 }
 
 std::vector<float> _get_weights(nlohmann::json const &j,
-                                const std::filesystem::path config_path) {
+                                const fs::path config_path) {
   if (j.find("weights") != j.end()) {
     auto weight_list = j["weights"];
     std::vector<float> weights;
@@ -31,31 +34,30 @@ std::vector<float> _get_weights(nlohmann::json const &j,
     throw std::runtime_error("Corrupted model file is missing weights.");
 }
 
-std::unique_ptr<DSP> get_dsp_legacy(const std::filesystem::path model_dir) {
-  auto config_filename = model_dir / std::filesystem::path("config.json");  
+std::unique_ptr<DSP> get_dsp_legacy(const fs::path model_dir) {
+  auto config_filename = model_dir / fs::path("config.json");  
   dspData temp;
   return get_dsp(config_filename, temp);
 }
 
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename) {  
+std::unique_ptr<DSP> get_dsp(const fs::path config_filename) {  
   dspData temp;
   return get_dsp(config_filename, temp);
 }
 
-std::unique_ptr<DSP> get_dsp(const std::filesystem::path config_filename, dspData& returnedConfig) {
-  if (!std::filesystem::exists(config_filename))
+std::unique_ptr<DSP> get_dsp(const fs::path config_filename, dspData& returnedConfig) {
+  if (!fs::exists(config_filename))
     throw std::runtime_error("Config JSON doesn't exist!\n");
   std::ifstream i(config_filename);
   nlohmann::json j;
   i >> j;
   verify_config_version(j["version"]);
 
-  auto architecture = j["architecture"];
   nlohmann::json config = j["config"];
   std::vector<float> params = _get_weights(j, config_filename);
 
-  returnedConfig.version = j["version"];
-  returnedConfig.architecture = j["architecture"];
+  returnedConfig.version = j["version"].get<std::string>();
+  returnedConfig.architecture = j["architecture"].get<std::string>();
   returnedConfig.config = j["config"];
   returnedConfig.params = params;
 

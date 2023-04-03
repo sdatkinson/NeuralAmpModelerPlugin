@@ -9,6 +9,14 @@
 
 #include "NoiseGate.h"
 
+double clamp(double v, double lo, double hi) {
+  if (v < lo)
+    return lo;
+  if (v > hi)
+    return hi;
+  return v;
+}
+
 double _LevelToDB(const double db) { return 10.0 * log10(db); }
 
 double _DBToLevel(const double level) { return pow(10.0, level / 10.0); }
@@ -40,7 +48,7 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
   // The main algorithm: compute the gain reduction
   for (auto c = 0; c < numChannels; c++) {
     for (auto s = 0; s < numFrames; s++) {
-      this->mLevel[c] = std::clamp(alpha * this->mLevel[c] +
+      this->mLevel[c] = clamp(alpha * this->mLevel[c] +
                                        beta * (inputs[c][s] * inputs[c][s]),
                                    MINIMUM_LOUDNESS_POWER, 1000.0);
       const double levelDB = _LevelToDB(this->mLevel[c]);
@@ -57,7 +65,7 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
       } else { // Moving
         const double targetGainReduction = this->_GetGainReduction(levelDB);
         if (targetGainReduction > this->mLastGainReductionDB[c]) {
-          const double dGain = std::clamp(
+          const double dGain = clamp(
               0.5 * (targetGainReduction - this->mLastGainReductionDB[c]), 0.0,
               dOpen);
           this->mLastGainReductionDB[c] += dGain;
@@ -67,7 +75,7 @@ iplug::sample **dsp::noise_gate::Trigger::Process(iplug::sample **inputs,
             this->mTimeHeld[c] = 0.0;
           }
         } else if (targetGainReduction < this->mLastGainReductionDB[c]) {
-          const double dGain = std::clamp(
+          const double dGain = clamp(
               0.5 * (targetGainReduction - this->mLastGainReductionDB[c]),
               dClose, 0.0);
           this->mLastGainReductionDB[c] += dGain;

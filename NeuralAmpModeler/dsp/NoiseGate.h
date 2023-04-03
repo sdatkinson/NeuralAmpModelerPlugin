@@ -137,4 +137,6 @@ private:
 }; // namespace noise_gate
 }; // namespace dsp
 
+double clamp(double v, double lo, double hi);
+
 #endif /* NoiseGate_h */
