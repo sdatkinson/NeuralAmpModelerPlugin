@@ -95,8 +95,10 @@ inline void disable_denormals() noexcept {
 			_mm_setcsr(_mm_getcsr() | 0x8040);
 		#endif
 	#elif defined(ARCH_ARM)
-		#if __has_builtin(__builtin_arm_set_fpscr) && __has_builtin(__builtin_arm_get_fpscr)
-			__builtin_arm_set_fpscr(__builtin_arm_get_fpscr() | (1 << 24));
+		#if defined __has_builtin
+			#if __has_builtin(__builtin_arm_set_fpscr) && __has_builtin(__builtin_arm_get_fpscr)
+				__builtin_arm_set_fpscr(__builtin_arm_get_fpscr() | (1 << 24));
+			#endif
 		#endif
 	#endif
 
