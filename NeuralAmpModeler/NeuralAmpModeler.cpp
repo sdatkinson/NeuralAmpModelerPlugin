@@ -192,8 +192,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const float outNormAreaHalfWidth = 0.5f * outputKnobArea.W();
     const IRECT outNormToggleArea =
         outputKnobArea.GetFromBottom(outNormAreaHeight)
-        .GetTranslated(0.0f, outNormAreaHeight + singleKnobPad)
-        .GetMidHPadded(outNormAreaHalfWidth);
+            .GetTranslated(0.0f, outNormAreaHeight + singleKnobPad)
+            .GetMidHPadded(outNormAreaHalfWidth);
 
     // Areas for model and IR
     const float fileWidth = 250.0f;
@@ -370,10 +370,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
     // NG toggle
-    IVSlideSwitchControl* outputNormSlider =
-        new IVSlideSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style,
-            true, // valueInButton
-            EDirection::Horizontal);
+    IVSlideSwitchControl *outputNormSlider = new IVSlideSwitchControl(
+        outNormToggleArea, kOutNorm, "Normalize", style,
+        true, // valueInButton
+        EDirection::Horizontal);
     pGraphics->AttachControl(outputNormSlider);
 
     // The knobs
