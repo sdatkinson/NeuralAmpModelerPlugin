@@ -40,9 +40,9 @@ const iplug::igraphics::IColor
 // const iplug::igraphics::IColor MOUSEOVER = NAM_5.WithOpacity(0.3);
 
 // My 3 colors (purple)
-// const iplug::igraphics::IColor NAM_1(255, 18, 17, 19);    // Smoky Black
+// const iplug::igraphics::IColor NAM_1(255, 18, 17, 19);  // Smoky Black
 // const iplug::igraphics::IColor NAM_2(255, 115, 93, 120);  // Old Lavendar
-// const iplug::igraphics::IColor NAM_3(255, 189, 185, 196); // Lavendar Gray
+// const iplug::igraphics::IColor NAM_3(255, 189, 185, 196);  // Lavendar Gray
 // Alts
 // const iplug::igraphics::IColor NAM_2(255, 34, 39, 37);  // Charleston Green
 // const iplug::igraphics::IColor NAM_2(255, 114, 161, 229);  // Little Boy Blue
@@ -54,8 +54,7 @@ const iplug::igraphics::IColor
 // Blue mode
 const iplug::igraphics::IColor NAM_1(255, 29, 26, 31);    // Raisin Black
 const iplug::igraphics::IColor NAM_2(255, 80, 133, 232);  // Azure
-const iplug::igraphics::IColor NAM_3(255, 162, 178, 191); // Cadet Blue
-// Crayola
+const iplug::igraphics::IColor NAM_3(255, 162, 178, 191); // Cadet Blue Crayola
 // Alts
 // const iplug::igraphics::IColor NAM_1(255, 18, 17, 19);  // Smoky Black
 // const iplug::igraphics::IColor NAM_2(255, 126, 188, 230);  // Camel
