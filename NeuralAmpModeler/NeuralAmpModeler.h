@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NeuralAmpModelerCore/NAM/dsp.h"
 #include "NeuralAmpModelerCore/dsp/ImpulseResponse.h"
 #include "NeuralAmpModelerCore/dsp/NoiseGate.h"
 #include "NeuralAmpModelerCore/dsp/RecursiveLinearFilter.h"

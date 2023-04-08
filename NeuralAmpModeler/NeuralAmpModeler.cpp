@@ -786,7 +786,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String &irPath) {
   dsp::wav::LoadReturnCode wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
   try {
     this->mStagedIR =
-        std::make_unique<dsp::ImpulseResponse>(irPath, sampleRate);
+        std::make_unique<dsp::ImpulseResponse>(irPath.Get(), sampleRate);
     wavState = this->mStagedIR->GetWavState();
   } catch (std::exception &e) {
     wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
