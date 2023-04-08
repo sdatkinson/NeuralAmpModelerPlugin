@@ -114,6 +114,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
       ->InitGain("Gate", -80.0, -100.0, 0.0, 0.1);
   this->GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
+  this->GetParam(kOutNorm)->InitBool("OutNorm", false);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
@@ -169,8 +170,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
     const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs)
                                      .GetPadded(-singleKnobPad);
 
-    // Area for EQ toggle
-    const float ngAreaHeight = 40.0f;
+    const float toggleHeight = 40.0f;
+    // Area for noise gate toggle
+    const float ngAreaHeight = toggleHeight;
     const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea =
         noiseGateArea.GetFromBottom(ngAreaHeight)
@@ -178,12 +180,20 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
             .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
-    const float eqAreaHeight = 40.0f;
+    const float eqAreaHeight = toggleHeight;
     const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
     const IRECT eqToggleArea =
         middleKnobArea.GetFromBottom(eqAreaHeight)
             .GetTranslated(0.0f, eqAreaHeight + singleKnobPad)
             .GetMidHPadded(eqAreaHalfWidth);
+
+    // Area for output normalization toggle
+    const float outNormAreaHeight = toggleHeight;
+    const float outNormAreaHalfWidth = 0.5f * outputKnobArea.W();
+    const IRECT outNormToggleArea =
+        outputKnobArea.GetFromBottom(outNormAreaHeight)
+            .GetTranslated(0.0f, outNormAreaHeight + singleKnobPad)
+            .GetMidHPadded(outNormAreaHalfWidth);
 
     // Areas for model and IR
     const float fileWidth = 250.0f;
@@ -359,6 +369,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
                                  true, // valueInButton
                                  EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
+    // NG toggle
+    IVSlideSwitchControl *outputNormSlider = new IVSlideSwitchControl(
+        outNormToggleArea, kOutNorm, "Normalize", style,
+        true, // valueInButton
+        EDirection::Horizontal);
+    pGraphics->AttachControl(outputNormSlider);
 
     // The knobs
     // Input
@@ -563,6 +579,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample **inputs,
   }
 
   if (mNAM != nullptr) {
+    mNAM->SetNormalize(this->GetParam(kOutNorm)->Value());
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
@@ -769,7 +786,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String &irPath) {
   dsp::wav::LoadReturnCode wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
   try {
     this->mStagedIR =
-        std::make_unique<dsp::ImpulseResponse>(irPath, sampleRate);
+        std::make_unique<dsp::ImpulseResponse>(irPath.Get(), sampleRate);
     wavState = this->mStagedIR->GetWavState();
   } catch (std::exception &e) {
     wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
