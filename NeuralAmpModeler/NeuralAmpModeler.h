@@ -12,7 +12,8 @@
 
 const int kNumPresets = 1;
 
-enum EParams {
+enum EParams
+{
   // These need to be the first ones because I use their indices to place
   // their rects in the GUI.
   kInputLevel = 0,
@@ -30,7 +31,8 @@ enum EParams {
 
 const int numKnobs = 6;
 
-enum ECtrlTags {
+enum ECtrlTags
+{
   kCtrlTagModelName = 0,
   kCtrlTagIRName,
   kCtrlTagInputMeter,
@@ -39,30 +41,29 @@ enum ECtrlTags {
   kNumCtrlTags
 };
 
-class NeuralAmpModeler final : public iplug::Plugin {
+class NeuralAmpModeler final : public iplug::Plugin
+{
 public:
-  NeuralAmpModeler(const iplug::InstanceInfo &info);
+  NeuralAmpModeler(const iplug::InstanceInfo& info);
   ~NeuralAmpModeler();
 
-  void ProcessBlock(iplug::sample **inputs, iplug::sample **outputs,
-                    int nFrames) override;
-  void OnReset() override {
+  void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
+  void OnReset() override
+  {
     const auto sampleRate = this->GetSampleRate();
     this->mInputSender.Reset(sampleRate);
     this->mOutputSender.Reset(sampleRate);
   }
-  void OnIdle() override {
+  void OnIdle() override
+  {
     this->mInputSender.TransmitData(*this);
     this->mOutputSender.TransmitData(*this);
   }
 
-  bool SerializeState(iplug::IByteChunk &chunk) const override;
-  int UnserializeState(const iplug::IByteChunk &chunk, int startPos) override;
+  bool SerializeState(iplug::IByteChunk& chunk) const override;
+  int UnserializeState(const iplug::IByteChunk& chunk, int startPos) override;
   void OnUIOpen() override;
-  bool OnHostRequestingSupportedViewConfiguration(int width,
-                                                  int height) override {
-    return true;
-  }
+  bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
 
 private:
   // Allocates mInputPointers and mOutputPointers
@@ -75,20 +76,19 @@ private:
   // Deallocates mInputPointers and mOutputPointers
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
-  void _FallbackDSP(iplug::sample **inputs, iplug::sample **outputs,
-                    const size_t numChannels, const size_t numFrames);
+  void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
   // Returns an emptry string on success, or an error message on failure.
-  std::string _GetNAM(const WDL_String &dspFile);
+  std::string _GetNAM(const WDL_String& dspFile);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
-  dsp::wav::LoadReturnCode _GetIR(const WDL_String &irPath);
+  dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
   // Update the message about which model is loaded.
-  void _SetModelMsg(const WDL_String &dspPath);
+  void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const { return this->mNAM != nullptr; };
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
@@ -97,24 +97,21 @@ private:
   // Copy the input buffer to the object, applying input level.
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(iplug::sample **inputs, const size_t nFrames,
-                     const size_t nChansIn, const size_t nChansOut);
+  void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
   // :param nChansOut: Out to external
-  void _ProcessOutput(iplug::sample **inputs, iplug::sample **outputs,
-                      const size_t nFrames, const size_t nChansIn,
+  void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
-  void _SetIRMsg(const WDL_String &irPath);
+  void _SetIRMsg(const WDL_String& irPath);
   void _UnsetModelMsg();
   void _UnsetIRMsg();
-  void _UnsetMsg(const int tag, const WDL_String &msg);
+  void _UnsetMsg(const int tag, const WDL_String& msg);
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(iplug::sample **inputPointer,
-                     iplug::sample **outputPointer, const size_t nFrames,
+  void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
                      const size_t nChansIn, const size_t nChansOut);
 
   // Member data
@@ -127,8 +124,8 @@ private:
   // Output from NAM
   std::vector<std::vector<iplug::sample>> mOutputArray;
   // Pointer versions
-  iplug::sample **mInputPointers;
-  iplug::sample **mOutputPointers;
+  iplug::sample** mInputPointers;
+  iplug::sample** mOutputPointers;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
@@ -156,8 +153,7 @@ private:
   // Path to IR (.wav file)
   WDL_String mIRPath;
 
-  std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0},
-                                                        {"Output", 0.0}};
+  std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   iplug::IPeakAvgSender<> mInputSender;
   iplug::IPeakAvgSender<> mOutputSender;

@@ -25,9 +25,9 @@
 // choc_DisableAllWarnings.h and choc_ReenableAllWarnings.h
 
 #if __clang__
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
 #elif __GNUC__
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 #else
-#pragma warning(pop)
+  #pragma warning(pop)
 #endif

@@ -36,43 +36,43 @@
 */
 
 #if __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Weverything"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Weverything"
 #elif __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wextra"
-#pragma GCC diagnostic ignored "-Wshadow"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#pragma GCC diagnostic ignored "-Wfloat-conversion"
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wredundant-decls"
-#pragma GCC diagnostic ignored "-Wsubobject-linkage"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#pragma GCC diagnostic ignored "-Wredundant-move"
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#pragma GCC diagnostic ignored "-Wc99-extensions"
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#pragma GCC diagnostic ignored "-Wcast-function-type"
-#pragma GCC diagnostic ignored "-Wunused-label"
-#pragma GCC diagnostic ignored "-Wnarrowing"
-#pragma GCC diagnostic ignored "-Wparentheses"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wall"
+  #pragma GCC diagnostic ignored "-Wpragmas"
+  #pragma GCC diagnostic ignored "-Wextra"
+  #pragma GCC diagnostic ignored "-Wshadow"
+  #pragma GCC diagnostic ignored "-Wunused-parameter"
+  #pragma GCC diagnostic ignored "-Wconversion"
+  #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #pragma GCC diagnostic ignored "-Wsign-compare"
+  #pragma GCC diagnostic ignored "-Wfloat-conversion"
+  #pragma GCC diagnostic ignored "-Wswitch-enum"
+  #pragma GCC diagnostic ignored "-Wswitch"
+  #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+  #pragma GCC diagnostic ignored "-Wunused-variable"
+  #pragma GCC diagnostic ignored "-Wredundant-decls"
+  #pragma GCC diagnostic ignored "-Wsubobject-linkage"
+  #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+  #pragma GCC diagnostic ignored "-Wredundant-move"
+  #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  #pragma GCC diagnostic ignored "-Woverloaded-virtual"
+  #pragma GCC diagnostic ignored "-Wc99-extensions"
+  #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+  #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+  #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+  #pragma GCC diagnostic ignored "-Wcast-function-type"
+  #pragma GCC diagnostic ignored "-Wunused-label"
+  #pragma GCC diagnostic ignored "-Wnarrowing"
+  #pragma GCC diagnostic ignored "-Wparentheses"
 
-#ifndef __MINGW32__
-#pragma GCC diagnostic ignored "-Wredundant-move"
-#endif
+  #ifndef __MINGW32__
+    #pragma GCC diagnostic ignored "-Wredundant-move"
+  #endif
 #else
-#pragma warning(push, 0)
-#pragma warning(disable : 4702)
-#pragma warning(disable : 4706)
+  #pragma warning(push, 0)
+  #pragma warning(disable : 4702)
+  #pragma warning(disable : 4706)
 #endif
