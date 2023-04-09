@@ -457,6 +457,16 @@
 		AAB1D0DA29E1025600EAAFE1 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB1D09129E1025600EAAFE1 /* lstm.cpp */; };
 		AAB1D0DB29E1025600EAAFE1 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB1D09229E1025600EAAFE1 /* activations.h */; };
 		AAB1D0DC29E1025600EAAFE1 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB1D09229E1025600EAAFE1 /* activations.h */; };
+		AAF6A30429E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30529E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30629E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30729E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30829E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30929E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30A29E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30B29E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30C29E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
+		AAF6A30D29E2874700B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30329E2874700B080A4 /* activations.cpp */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -1018,6 +1028,7 @@
 		AAD2484E29542F2800F55DD4 /* APPRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APPRelease.entitlements; sourceTree = "<group>"; };
 		AAD2484F2954325200F55DD4 /* AUv3Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3Release.entitlements; sourceTree = "<group>"; };
 		AAD248502954339400F55DD4 /* AUv3AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AUv3AppRelease.entitlements; sourceTree = "<group>"; };
+		AAF6A30329E2874700B080A4 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = activations.cpp; path = ../../NeuralAmpModelerCore/NAM/activations.cpp; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1937,6 +1948,7 @@
 		AAB1D08529E1023800EAAFE1 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
+				AAF6A30329E2874700B080A4 /* activations.cpp */,
 				AAB1D09229E1025600EAAFE1 /* activations.h */,
 				AAB1D08929E1025600EAAFE1 /* convnet.cpp */,
 				AAB1D08A29E1025600EAAFE1 /* convnet.h */,
@@ -2597,6 +2609,7 @@
 				4F35DEAE207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
 				AA63401A29C54D2100550809 /* NoiseGate.cpp in Sources */,
 				4F6FD2B222675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
+				AAF6A30529E2874700B080A4 /* activations.cpp in Sources */,
 				4F78D9C813B63BA50032E0F3 /* IPlugParameter.cpp in Sources */,
 				4F7C4959255DDFC400DF7588 /* IPopupMenuControl.cpp in Sources */,
 			);
@@ -2612,6 +2625,7 @@
 				AAB1D0B329E1025600EAAFE1 /* util.cpp in Sources */,
 				AA633FC329C54D2000550809 /* ImpulseResponse.cpp in Sources */,
 				AAB1D0D729E1025600EAAFE1 /* lstm.cpp in Sources */,
+				AAF6A30A29E2874700B080A4 /* activations.cpp in Sources */,
 				AAB1D0C129E1025600EAAFE1 /* wavenet.cpp in Sources */,
 				4F4856892773CA76005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
 				AA63401529C54D2100550809 /* RecursiveLinearFilter.cpp in Sources */,
@@ -2630,6 +2644,7 @@
 				4F03A5AF20A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F6369E020A464BB0022C370 /* IGraphicsNanoVG_src.m in Sources */,
 				4F6369EE20A466470022C370 /* IControl.cpp in Sources */,
+				AAF6A30729E2874700B080A4 /* activations.cpp in Sources */,
 				4F1A528C205D916F00CF2908 /* IPlugAU.cpp in Sources */,
 				AA63401229C54D2100550809 /* RecursiveLinearFilter.cpp in Sources */,
 				4FD52131202A5B9B00A4D22A /* IPlugAU_view_factory.mm in Sources */,
@@ -2682,6 +2697,7 @@
 				4F7C496E255DDFCB00DF7588 /* IPopupMenuControl.cpp in Sources */,
 				4F3EE1D1231438D000004786 /* swell-appstub.mm in Sources */,
 				4F7C496D255DDFCB00DF7588 /* IControls.cpp in Sources */,
+				AAF6A30D29E2874700B080A4 /* activations.cpp in Sources */,
 				4F3EE1D2231438D000004786 /* swell-misc.mm in Sources */,
 				AA633FC629C54D2000550809 /* ImpulseResponse.cpp in Sources */,
 				4F3EE1D3231438D000004786 /* swell-wnd.mm in Sources */,
@@ -2730,6 +2746,7 @@
 				4F78BE1E22E7406D00AD537E /* IGraphicsNanoVG_src.m in Sources */,
 				4F78BE1F22E7406D00AD537E /* IGraphics.cpp in Sources */,
 				4F78BE2022E7406D00AD537E /* IGraphicsEditorDelegate.cpp in Sources */,
+				AAF6A30C29E2874700B080A4 /* activations.cpp in Sources */,
 				AAB1D0C329E1025600EAAFE1 /* wavenet.cpp in Sources */,
 				4F78BE2122E7406D00AD537E /* IControl.cpp in Sources */,
 				4F78BE2222E7406D00AD537E /* IPlugAUAudioUnit.mm in Sources */,
@@ -2756,6 +2773,7 @@
 			files = (
 				4F81597C205D50EB00393585 /* baseiids.cpp in Sources */,
 				4FDAC0EC207D76C600299363 /* IPlugTimer.cpp in Sources */,
+				AAF6A30629E2874700B080A4 /* activations.cpp in Sources */,
 				4F7C495D255DDFC400DF7588 /* ITextEntryControl.cpp in Sources */,
 				B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */,
 				4F3862F12014BBEC0009F402 /* NeuralAmpModeler.cpp in Sources */,
@@ -2836,6 +2854,7 @@
 				4F03A5B020A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F35DEB1207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
 				4F5F344520C0226200487201 /* IPlugPaths.mm in Sources */,
+				AAF6A30829E2874700B080A4 /* activations.cpp in Sources */,
 				AAB1D0BF29E1025600EAAFE1 /* wavenet.cpp in Sources */,
 				4F1A5285205D914A00CF2908 /* IPlugAAX.cpp in Sources */,
 				4F0848292015129A00F9E881 /* IPlugAAX_Parameters.cpp in Sources */,
@@ -2881,6 +2900,7 @@
 				4F7C4965255DDFC800DF7588 /* IPopupMenuControl.cpp in Sources */,
 				AA633FC429C54D2000550809 /* ImpulseResponse.cpp in Sources */,
 				4F722021225C1EB100FF0E7C /* commoniids.cpp in Sources */,
+				AAF6A30B29E2874700B080A4 /* activations.cpp in Sources */,
 				4FB1F59620E4B017004157C8 /* IGraphicsMac_view.mm in Sources */,
 				4F472103209B294400A0A0A8 /* IPlugVST3_Controller.cpp in Sources */,
 				AAB1D0A829E1025600EAAFE1 /* convnet.cpp in Sources */,
@@ -2912,6 +2932,7 @@
 				4F7C4956255DDFC300DF7588 /* IPopupMenuControl.cpp in Sources */,
 				4F5C5F6B21BED08700E024A7 /* swell-appstub.mm in Sources */,
 				4F7C4955255DDFC300DF7588 /* IControls.cpp in Sources */,
+				AAF6A30429E2874700B080A4 /* activations.cpp in Sources */,
 				4FD16D4013B635A0001D0217 /* swell-misc.mm in Sources */,
 				AA633FBD29C54D2000550809 /* ImpulseResponse.cpp in Sources */,
 				4FD16D4213B635AB001D0217 /* swell-wnd.mm in Sources */,
@@ -2992,6 +3013,7 @@
 				AAB1D0C029E1025600EAAFE1 /* wavenet.cpp in Sources */,
 				4FFBB93420863B0E00DDD0E7 /* coreiids.cpp in Sources */,
 				AA63402829C54D2100550809 /* dsp.cpp in Sources */,
+				AAF6A30929E2874700B080A4 /* activations.cpp in Sources */,
 				4F5F344720C0226200487201 /* IPlugPaths.mm in Sources */,
 				4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */,
 			);
@@ -4326,7 +4348,7 @@
 					"$(APP_FRAMEWORKS)",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.app.${BINARY_NAME}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.StevenAtkinson.app.--BINARY-NAME-2";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				WRAPPER_EXTENSION = app;
