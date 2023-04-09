@@ -11,7 +11,7 @@ Check the [Releases](https://github.com/sdatkinson/NeuralAmpModelerPlugin/releas
 
 ## Supported Platforms
 
-The Neural Amp Modeler plugin currently supports Windows 10 (64bit) or later, and MacOs 10.15 (Catalina) or later.
+The Neural Amp Modeler plugin currently supports Windows 10 (64bit) or later, and macOS 10.15 (Catalina) or later.
 
 For Linux support, there is an LV2 plugin available: https://github.com/mikeoliphant/neural-amp-modeler-lv2.
 
