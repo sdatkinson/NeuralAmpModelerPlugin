@@ -61,3 +61,6 @@
 #define CLOSE_BUTTON_FN "close-button.svg"
 #define TOLEX_FN "tolex.jpeg"
 #define TOLEX2X_FN "tolex@2x.jpeg"
+#define LEFT_ARROW_FN "left-arrow.svg"
+#define RIGHT_ARROW_FN "right-arrow.svg"
+#define TOGGLE_FN "switch.png"
