@@ -11,10 +11,10 @@
 
 #include "IGraphicsStructs.h"
 
-namespace PluginColors {
+namespace PluginColors
+{
 // COLORS!
-const iplug::igraphics::IColor
-    OFF_WHITE(255, 243, 246, 249); // Material UI because Heidi said so
+const iplug::igraphics::IColor OFF_WHITE(255, 243, 246, 249); // Material UI because Heidi said so
 
 // From group photo
 // const iplug::igraphics::IColor NAM_5(255, 206, 194, 224);  // Languid
@@ -52,8 +52,8 @@ const iplug::igraphics::IColor
 // Lavender Blue
 
 // Blue mode
-const iplug::igraphics::IColor NAM_1(255, 29, 26, 31);    // Raisin Black
-const iplug::igraphics::IColor NAM_2(255, 80, 133, 232);  // Azure
+const iplug::igraphics::IColor NAM_1(255, 29, 26, 31); // Raisin Black
+const iplug::igraphics::IColor NAM_2(255, 80, 133, 232); // Azure
 const iplug::igraphics::IColor NAM_3(255, 162, 178, 191); // Cadet Blue Crayola
 // Alts
 // const iplug::igraphics::IColor NAM_1(255, 18, 17, 19);  // Smoky Black
