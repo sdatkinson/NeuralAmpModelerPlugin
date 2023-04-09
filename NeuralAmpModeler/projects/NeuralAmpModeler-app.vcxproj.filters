@@ -110,6 +110,9 @@
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\wavenet.cpp">
       <Filter>NAM</Filter>
     </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NeuralAmpModeler.h" />

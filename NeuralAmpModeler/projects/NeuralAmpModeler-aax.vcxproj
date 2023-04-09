@@ -422,6 +422,7 @@
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\convnet.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\dsp.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>

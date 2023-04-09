@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 
+#include "NeuralAmpModelerCore/NAM/activations.h"
 #include "Colors.h"
 #include "IControls.h"
 // clang-format off
@@ -105,6 +106,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
       mInputSender(), mOutputSender() {
+  activations::Activation::enable_fast_tanh();
   this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   this->GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
