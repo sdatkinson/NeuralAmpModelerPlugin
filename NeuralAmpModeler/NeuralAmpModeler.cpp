@@ -6,6 +6,7 @@
 
 #include "Colors.h"
 #include "IControls.h"
+#include "NeuralAmpModelerCore/NAM/activations.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
 // a bunch of stuff.
@@ -105,6 +106,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo &info)
       mDefaultNAMString("Select model..."), mDefaultIRString("Select IR..."),
       mToneBass(), mToneMid(), mToneTreble(), mNAMPath(), mIRPath(),
       mInputSender(), mOutputSender() {
+  activations::Activation::enable_fast_tanh();
   this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   this->GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   this->GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
@@ -890,9 +892,10 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample **inputs,
   const size_t cin = 0;
   for (auto cout = 0; cout < nChansOut; cout++)
     for (auto s = 0; s < nFrames; s++)
-#ifdef APP_API  // Ensure valid output to interface
+#ifdef APP_API // Ensure valid output to interface
       outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
-#else  // In a DAW, other things may come next and should be able to handle large values.
+#else // In a DAW, other things may come next and should be able to handle large
+      // values.
       outputs[cout][s] = gain * inputs[cin][s];
 #endif
 }

@@ -105,6 +105,9 @@
 		AAB1D10129E1026800EAAFE1 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB1D0E229E1026700EAAFE1 /* wavenet.cpp */; };
 		AAB1D10229E1026800EAAFE1 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB1D0E229E1026700EAAFE1 /* wavenet.cpp */; };
 		AAB1D10329E1026800EAAFE1 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB1D0E629E1026700EAAFE1 /* wavenet.h */; };
+		AAF6A30F29E2875400B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30E29E2875400B080A4 /* activations.cpp */; };
+		AAF6A31029E2875400B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30E29E2875400B080A4 /* activations.cpp */; };
+		AAF6A31129E2875400B080A4 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAF6A30E29E2875400B080A4 /* activations.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -354,6 +357,7 @@
 		AAB1D0E829E1026700EAAFE1 /* dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dsp.cpp; path = ../../NeuralAmpModelerCore/NAM/dsp.cpp; sourceTree = "<group>"; };
 		AAB1D0E929E1026800EAAFE1 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dsp.h; path = ../../NeuralAmpModelerCore/NAM/dsp.h; sourceTree = "<group>"; };
 		AAB1D0EA29E1026800EAAFE1 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../../NeuralAmpModelerCore/NAM/version.h; sourceTree = "<group>"; };
+		AAF6A30E29E2875400B080A4 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = activations.cpp; path = ../../../NeuralAmpModelerCore/NAM/activations.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -757,6 +761,7 @@
 		AAB1D0DD29E1026700EAAFE1 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
+				AAF6A30E29E2875400B080A4 /* activations.cpp */,
 				AAB1D0DF29E1026700EAAFE1 /* activations.h */,
 				AAB1D0E729E1026700EAAFE1 /* convnet.cpp */,
 				AAB1D0E029E1026700EAAFE1 /* convnet.h */,
@@ -996,6 +1001,7 @@
 				AAB1D0F929E1026800EAAFE1 /* lstm.cpp in Sources */,
 				4FC6983D293BA5C40076EC33 /* IPlugAUAudioUnit.mm in Sources */,
 				AA63406329C54D4D00550809 /* RecursiveLinearFilter.cpp in Sources */,
+				AAF6A31129E2875400B080A4 /* activations.cpp in Sources */,
 				4FC6983E293BA5C40076EC33 /* IPlugAUv3.mm in Sources */,
 				4FC6984D293BA6140076EC33 /* IGraphicsNanoVG_src.m in Sources */,
 				AAB1D0EE29E1026800EAAFE1 /* convnet.cpp in Sources */,
@@ -1034,6 +1040,7 @@
 				AAB1D0F429E1026800EAAFE1 /* get_dsp.cpp in Sources */,
 				4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */,
 				AA63408B29C54D4D00550809 /* dsp.cpp in Sources */,
+				AAF6A30F29E2875400B080A4 /* activations.cpp in Sources */,
 				AAB1D0F729E1026800EAAFE1 /* lstm.cpp in Sources */,
 				4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */,
 				AAB1D0F029E1026800EAAFE1 /* dsp.cpp in Sources */,
@@ -1056,6 +1063,7 @@
 				AAB1D0ED29E1026800EAAFE1 /* convnet.cpp in Sources */,
 				AAB1D0F829E1026800EAAFE1 /* lstm.cpp in Sources */,
 				AA63408C29C54D4D00550809 /* dsp.cpp in Sources */,
+				AAF6A31029E2875400B080A4 /* activations.cpp in Sources */,
 				AA63406229C54D4D00550809 /* RecursiveLinearFilter.cpp in Sources */,
 				AA63407C29C54D4D00550809 /* NoiseGate.cpp in Sources */,
 				AAB1D0F529E1026800EAAFE1 /* get_dsp.cpp in Sources */,
