@@ -66,7 +66,7 @@ public:
 // Styles
 const IVColorSpec activeColorSpec{
   DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_3.WithOpacity(0.15f), // Foreground
+  PluginColors::NAM_2, // Foreground
   PluginColors::NAM_2.WithOpacity(0.3f), // Pressed
   PluginColors::NAM_2.WithOpacity(0.4f), // Frame
   PluginColors::MOUSEOVER, // Highlight
@@ -77,7 +77,7 @@ const IVColorSpec activeColorSpec{
 };
 const IVColorSpec inactiveColorSpec{
   DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_0, //.WithOpacity(0.5f),  // Foreground
+  PluginColors::NAM_3.WithOpacity(0.3f),  // Foreground
   PluginColors::NAM_2.WithOpacity(0.3f), // Pressed
   PluginColors::NAM_0.WithOpacity(0.4f), // Frame
   PluginColors::NAM_2.WithOpacity(0.2f), // Highlight
@@ -89,8 +89,8 @@ const IVColorSpec inactiveColorSpec{
 const IVStyle style = IVStyle{true, // Show label
                               true, // Show value
                               activeColorSpec,
-                              {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Middle, PluginColors::NAM_3}, // Knob label text
-                              {DEFAULT_TEXT_SIZE + 5.f, EVAlign::Bottom, PluginColors::NAM_3}, // Knob value text
+                              {DEFAULT_TEXT_SIZE + 3.f, EVAlign::Middle, PluginColors::NAM_3}, // Knob label text5
+                              {DEFAULT_TEXT_SIZE + 3.f, EVAlign::Bottom, PluginColors::NAM_3}, // Knob value text
                               DEFAULT_HIDE_CURSOR,
                               DEFAULT_DRAW_FRAME,
                               false,
@@ -156,7 +156,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    // const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), 2, true);
+    const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), 2, true);
+    const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
@@ -172,13 +173,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float knobsExtraSpaceBelowTitle = 25.0f;
     const float knobHalfHeight = 70.0f;
     const float knobHeight = 2.0f * knobHalfHeight;
-    const float singleKnobPad = 10.0f;
+    const float singleKnobPad = 12.0f;
     const auto knobs = content.GetFromTop(knobHeight)
                          .GetReducedFromLeft(allKnobsPad)
                          .GetReducedFromRight(allKnobsPad)
                          .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
     const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-10);
+    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
@@ -189,14 +190,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float ngAreaHeight = toggleHeight;
     const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
-                                 .GetTranslated(0.0f, ngAreaHeight + singleKnobPad - 15.f)
+                                 .GetTranslated(0.0f, ngAreaHeight + singleKnobPad - 14.f)
                                  .GetMidHPadded(ngAreaHalfWidth);
 
     // Area for EQ toggle
     const float eqAreaHeight = toggleHeight;
     const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
     const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
-                                 .GetTranslated(0.0f, eqAreaHeight + singleKnobPad - 15.f)
+                                 .GetTranslated(0.0f, eqAreaHeight + singleKnobPad - 14.f)
                                  .GetMidHPadded(eqAreaHalfWidth);
 
     // Area for output normalization toggle
@@ -425,31 +426,43 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       kCtrlTagIRName);
 
     // NG toggle
-    // IBSwitchControl *noiseGateSlider = new IBSwitchControl(ngToggleArea, switchBitmap);
-    // pGraphics->AttachControl(new IBSwitchControl(ngToggleArea, switchBitmap), kNoTag, "bcontrols");
+    // IBSwitchControl* noiseGateSlider = new IBSwitchControl(ngToggleArea, switchBitmap, kNoiseGateActive);
     IVSlideSwitchControl* noiseGateSlider = new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, " ", style,
                                                                      true, // valueInButton
                                                                      EDirection::Horizontal);
     pGraphics->AttachControl(noiseGateSlider);
+    //pGraphics->AttachControl(
+    //  new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kNoiseGateActive),
+    //  kNoiseGateActive, "bcontrols");
     // Tone stack toggle
     IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(eqToggleArea, kEQActive, " ", style,
                                                                      true, // valueInButton
                                                                      EDirection::Horizontal);
     pGraphics->AttachControl(toneStackSlider);
+    //pGraphics->AttachControl(
+    //  new IBSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kEQActive), kEQActive,
+    //  "bcontrols");
     // Normalisation toggle
     IVSlideSwitchControl* outputNormSlider = new IVSlideSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style,
                                                                       true, // valueInButton
                                                                       EDirection::Horizontal);
     pGraphics->AttachControl(outputNormSlider);
+    //pGraphics->AttachControl(
+    //  new IBSwitchControl(outNormToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kOutNorm), kOutNorm,
+    //  "bcontrols");
 
     // The knobs
     // Input
     pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(inputKnobArea, knobRotateBitmap, kInputLevel), kNoTag, "kInputLevel");
     // Noise gate
     const bool noiseGateIsActive = this->GetParam(kNoiseGateActive)->Value();
     const IVStyle noiseGateInitialStyle = noiseGateIsActive ? style : styleInactive;
     IVKnobControl* noiseGateControl = new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
     pGraphics->AttachControl(noiseGateControl);
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(noiseGateArea, knobRotateBitmap, kNoiseGateThreshold), kNoTag, "kNoiseGateThreshold");
     // Tone stack
     const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
     const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
@@ -459,8 +472,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(bassControl);
     pGraphics->AttachControl(middleControl);
     pGraphics->AttachControl(trebleControl);
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(bassKnobArea, knobRotateBitmap, kToneBass), kNoTag, "kToneBass");
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(middleKnobArea, knobRotateBitmap, kToneMid), kNoTag, "kToneMid");
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(trebleKnobArea, knobRotateBitmap, kToneTreble), kNoTag, "kToneTreble");
     // Output
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
+    pGraphics->AttachControl(
+      new IBKnobRotaterControl(outputKnobArea, knobRotateBitmap, kOutputLevel), kNoTag, "kOutputLevel");
 
     // Extend the noise gate action function to set the style of its knob
     auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {

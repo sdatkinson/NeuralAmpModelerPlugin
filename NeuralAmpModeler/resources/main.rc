@@ -238,6 +238,7 @@ CLOSE_BUTTON_FN SVG CLOSE_BUTTON_FN
 HELP_FN SVG HELP_FN
 LEFT_ARROW_FN SVG LEFT_ARROW_FN 
 RIGHT_ARROW_FN SVG RIGHT_ARROW_FN
+TOGGLE_FN PNG TOGGLE_FN
+KNOB_FN PNG KNOB_FN
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

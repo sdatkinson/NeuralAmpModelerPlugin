@@ -69,6 +69,7 @@ const iplug::igraphics::IColor OFF_WHITE(255, 243, 246, 249); // Material UI bec
 
 const iplug::igraphics::IColor NAM_0(0, 18, 17, 19); // Transparent
 const iplug::igraphics::IColor NAM_2(255, 236, 7, 23); // Red
+// const iplug::igraphics::IColor NAM_2(255, 24, 205, 238); // Teal
 const iplug::igraphics::IColor NAM_3(255, 242, 242, 242); // Dark Ehite
 
 // Misc
