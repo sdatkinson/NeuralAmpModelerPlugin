@@ -170,6 +170,7 @@
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp">
       <Filter>NAM</Filter>
     </ClCompile>
+    <ClCompile Include="..\folderBrowser\folderBrowser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
@@ -433,6 +434,7 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h">
       <Filter>NAM</Filter>
     </ClInclude>
+    <ClInclude Include="..\folderBrowser\folderBrowser.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">

@@ -236,6 +236,8 @@ FILE_FN SVG FILE_FN
 FOLDER_FN SVG FOLDER_FN
 CLOSE_BUTTON_FN SVG CLOSE_BUTTON_FN
 HELP_FN SVG HELP_FN
+LEFT_ARROW_FN SVG LEFT_ARROW_FN 
+RIGHT_ARROW_FN SVG RIGHT_ARROW_FN
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

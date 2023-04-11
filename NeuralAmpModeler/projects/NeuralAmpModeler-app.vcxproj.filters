@@ -113,6 +113,9 @@
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp">
       <Filter>NAM</Filter>
     </ClCompile>
+    <ClCompile Include="..\folderBrowser\folderBrowser.cpp">
+      <Filter>folderBrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NeuralAmpModeler.h" />
@@ -334,6 +337,9 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h">
       <Filter>NAM</Filter>
     </ClInclude>
+    <ClInclude Include="..\folderBrowser\folderBrowser.h">
+      <Filter>folderBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -371,6 +377,9 @@
     </Filter>
     <Filter Include="NAM">
       <UniqueIdentifier>{3adb1e7a-68f8-4b41-8563-9bcf2bb0c8da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="folderBrowser">
+      <UniqueIdentifier>{3aa091dd-ade5-4f75-a0cf-f0516f98a54d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
