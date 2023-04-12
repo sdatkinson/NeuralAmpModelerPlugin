@@ -77,7 +77,7 @@ const IVColorSpec activeColorSpec{
 };
 const IVColorSpec inactiveColorSpec{
   DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_3.WithOpacity(0.3f),  // Foreground
+  PluginColors::NAM_3.WithOpacity(0.3f), // Foreground
   PluginColors::NAM_2.WithOpacity(0.3f), // Pressed
   PluginColors::NAM_0.WithOpacity(0.4f), // Frame
   PluginColors::NAM_2.WithOpacity(0.2f), // Highlight
@@ -232,10 +232,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     //  The background inside the outermost border
     pGraphics->AttachControl(new IVPanelControl(
       mainArea, "", style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_0))); // .WithContrast(-0.75)
-    // pGraphics->AttachControl(
-    //     new IVLabelControl(titleLabel, "Neural Amp Modeler",
-    //                        style.WithDrawFrame(false).WithValueText(
-    //                            {30, EAlign::Center, PluginColors::NAM_3})));
 
     // Model loader button
     auto loadNAM = [&, pGraphics](IControl* pCaller) {
@@ -379,8 +375,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float iconWidth = fileHeight; // Square icon
     pGraphics->AttachControl(
       new IVPanelControl(modelArea, "", style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_0)));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(modelArea.GetFromLeft(iconWidth).GetPadded(-5.f), loadNAM, fileSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(
+      modelArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadNAM, fileSVG));
     pGraphics->AttachControl(
       new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearNAM, closeButtonSVG));
     pGraphics
@@ -403,8 +399,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // IR
     pGraphics->AttachControl(
       new IVPanelControl(irArea, "", style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_0)));
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromLeft(iconWidth).GetPadded(-5.f), loadIR, fileSVG));
+    pGraphics->AttachControl(new IRolloverSVGButtonControl(
+      irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG));
     pGraphics->AttachControl(
       new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG));
     pGraphics
@@ -426,30 +422,29 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       kCtrlTagIRName);
 
     // NG toggle
-    // IBSwitchControl* noiseGateSlider = new IBSwitchControl(ngToggleArea, switchBitmap, kNoiseGateActive);
-    IVSlideSwitchControl* noiseGateSlider = new IVSlideSwitchControl(ngToggleArea, kNoiseGateActive, " ", style,
-                                                                     true, // valueInButton
-                                                                     EDirection::Horizontal);
+    // underlaying background in theme color for ON state
+    pGraphics->AttachControl(
+      new IVPanelControl(ngToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
+                         style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_2.WithOpacity(0.9f))));
+    IBSwitchControl* noiseGateSlider =
+      new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kNoiseGateActive);
     pGraphics->AttachControl(noiseGateSlider);
-    //pGraphics->AttachControl(
-    //  new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kNoiseGateActive),
-    //  kNoiseGateActive, "bcontrols");
     // Tone stack toggle
-    IVSlideSwitchControl* toneStackSlider = new IVSlideSwitchControl(eqToggleArea, kEQActive, " ", style,
-                                                                     true, // valueInButton
-                                                                     EDirection::Horizontal);
+    pGraphics->AttachControl(
+      new IVPanelControl(eqToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
+                         style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_2.WithOpacity(0.9f))));
+    IBSwitchControl* toneStackSlider =
+      new IBSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kEQActive);
     pGraphics->AttachControl(toneStackSlider);
-    //pGraphics->AttachControl(
-    //  new IBSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kEQActive), kEQActive,
-    //  "bcontrols");
+
     // Normalisation toggle
-    IVSlideSwitchControl* outputNormSlider = new IVSlideSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style,
-                                                                      true, // valueInButton
-                                                                      EDirection::Horizontal);
+    pGraphics->AttachControl(
+      new IVPanelControl(outNormToggleArea.GetPadded(-12.f).GetTranslated(2.0f, -4.0f), "",
+                         style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_2.WithOpacity(0.9f))));
+    IBSwitchControl* outputNormSlider =
+      new IBSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), switchBitmap, kOutNorm);
     pGraphics->AttachControl(outputNormSlider);
-    //pGraphics->AttachControl(
-    //  new IBSwitchControl(outNormToggleArea.GetFromTop(60.f).GetPadded(-18.f), switchBitmap, kOutNorm), kOutNorm,
-    //  "bcontrols");
+    pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f), "Normalize", style.labelText));
 
     // The knobs
     // Input
@@ -472,10 +467,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(bassControl);
     pGraphics->AttachControl(middleControl);
     pGraphics->AttachControl(trebleControl);
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(bassKnobArea, knobRotateBitmap, kToneBass), kNoTag, "kToneBass");
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(middleKnobArea, knobRotateBitmap, kToneMid), kNoTag, "kToneMid");
+    pGraphics->AttachControl(new IBKnobRotaterControl(bassKnobArea, knobRotateBitmap, kToneBass), kNoTag, "kToneBass");
+    pGraphics->AttachControl(new IBKnobRotaterControl(middleKnobArea, knobRotateBitmap, kToneMid), kNoTag, "kToneMid");
     pGraphics->AttachControl(
       new IBKnobRotaterControl(trebleKnobArea, knobRotateBitmap, kToneTreble), kNoTag, "kToneTreble");
     // Output
@@ -491,8 +484,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       noiseGateControl->SetDirty(false);
     };
     auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
-    auto noiseGateAction = [defaultNoiseGateSliderAction, setNoiseGateKnobStyles](IControl* pCaller) {
-      defaultNoiseGateSliderAction(pCaller);
+    // hacky attempt to fix IBSwitchControl action function
+    auto noiseGateAction = [/* defaultNoiseGateSliderAction, */ setNoiseGateKnobStyles](IControl* pCaller) {
+      // defaultNoiseGateSliderAction(pCaller);
       setNoiseGateKnobStyles(pCaller);
     };
     noiseGateSlider->SetActionFunction(noiseGateAction);
@@ -509,8 +503,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       trebleControl->SetDirty(false);
     };
     auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
-    auto toneStackAction = [defaultToneStackSliderAction, setToneStackKnobStyles](IControl* pCaller) {
-      defaultToneStackSliderAction(pCaller);
+    // hacky attempt to fix IBSwitchControl action function
+    auto toneStackAction = [/* defaultToneStackSliderAction, */ setToneStackKnobStyles](IControl* pCaller) {
+      // defaultToneStackSliderAction(pCaller);
       setToneStackKnobStyles(pCaller);
     };
     toneStackSlider->SetActionFunction(toneStackAction);
@@ -576,6 +571,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                      {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
           },
           // ResizeFunc
+
+          // is it possible to switch to @2x grapics on enlarge ??
+
           [](IContainerBase* pParent, const IRECT& r) {
             const IRECT mainArea = r.GetPadded(-20);
             const auto content = mainArea.GetPadded(-10);
@@ -592,11 +590,20 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         kCtrlTagAboutBox)
       ->Hide(true);
 
-    // is this the right way to initialize on startup ??? cant use FolderBrowser(pGraphics)... in OnUIOpen
+    // is this the right way to initialize d3NNEbs folderBrowser on startup ???
+    //
+    // cant use FolderBrowser(pGraphics)...in OnUIOpen
+    // Even with this there are following issues in the vst plugin:
+    // - if a DAW project is loaded NAM plugin loads the right files, but nav arrows remain hidden
+    // - in DAW when NAM plugin window is closed and reopened, only NAM or IR shows arrow
+    // depending on which one was selected last
+    //
+    // couldnt fix for now
+
     if (this->mNAMPath.GetLength())
       FolderBrowser(pGraphics).InitializeNAMNav(this->mNAMPath);
     if (this->mIRPath.GetLength())
-      FolderBrowser(pGraphics).InitializeIRNav(mIRPath);
+      FolderBrowser(pGraphics).InitializeIRNav(this->mIRPath);
   };
 }
 
@@ -823,8 +830,7 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
     mStagedNAM = get_dsp(dspPath);
     this->_SetModelMsg(modelPath);
 
-    // why ??
-
+    // why ?? - this will only show the containing nam folder in loaded disply when vst is reopened
     // carlo
     /* std::string fullPathOnly = modelPath.Get();
      size_t last_pos = fullPathOnly.find_last_of("\\");
@@ -873,8 +879,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
   {
     this->_SetIRMsg(irPath);
 
-    // why ??
-
+    // why ?? - this will only show the containing nam folder in loaded disply when vst is reopened
     // carlo
     /* std::string fullPathOnly = irPath.Get();
      size_t last_pos = fullPathOnly.find_last_of("\\");
