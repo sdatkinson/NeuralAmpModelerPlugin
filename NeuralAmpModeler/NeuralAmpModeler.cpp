@@ -79,8 +79,8 @@ const IVColorSpec inactiveColorSpec{
   DEFAULT_BGCOLOR, // Background
   PluginColors::NAM_3.WithOpacity(0.3f), // Foreground
   PluginColors::NAM_2.WithOpacity(0.3f), // Pressed
-  PluginColors::NAM_0.WithOpacity(0.4f), // Frame
-  PluginColors::NAM_2.WithOpacity(0.2f), // Highlight
+  PluginColors::NAM_0, // Frame
+  PluginColors::NAM_0, // Highlight
   DEFAULT_SHCOLOR.WithOpacity(0.5f), // Shadow
   PluginColors::NAM_2.WithOpacity(0.5f), // Extra 1
   COLOR_RED.WithOpacity(0.5f), // Extra 2
