@@ -220,11 +220,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
                                    .GetMidHPadded(allKnobsHalfPad)
                                    .GetMidVPadded(meterHalfHeight)
-                                   .GetTranslated(-allKnobsPad - 14.f, 0.0f);
+                                   .GetTranslated(-allKnobsPad - 18.f, 0.0f);
     const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
                                     .GetMidHPadded(allKnobsHalfPad)
                                     .GetMidVPadded(meterHalfHeight)
-                                    .GetTranslated(allKnobsPad + 14.f, 0.0f);
+                                    .GetTranslated(allKnobsPad + 18.f, 0.0f);
 
     auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
     pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), tolexPNG, kNoParameter))
