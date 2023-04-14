@@ -349,7 +349,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     IVSlideSwitchControl* outputNormSlider = new IVSlideSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style,
                                                                       true, // valueInButton
                                                                       EDirection::Horizontal);
-    pGraphics->AttachControl(outputNormSlider);
+    pGraphics->AttachControl(outputNormSlider, kOutNorm);
 
     // The knobs
     // Input
@@ -645,6 +645,8 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     // Move from staged to active DSP
     this->mNAM = std::move(this->mStagedNAM);
     this->mStagedNAM = nullptr;
+    // Disable Normalization toggle when no loudness data in model metadata
+    GetUI()->GetControlWithTag(kOutNorm)->SetDisabled(!mNAM->HasLoudness());
   }
   if (this->mStagedIR != nullptr)
   {
