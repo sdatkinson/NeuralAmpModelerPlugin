@@ -621,6 +621,8 @@ void NeuralAmpModeler::OnUIOpen()
     this->_SetModelMsg(this->mNAMPath);
   if (this->mIRPath.GetLength())
     this->_SetIRMsg(this->mIRPath);
+  if (this->mNAM != nullptr)
+    this->_SetOutputNormalizationDisableState(!this->mNAM->HasLoudness());
 }
 
 // Private methods ============================================================
@@ -672,27 +674,8 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   }
   if (this->mFlagSetDisableNormalization)
   {
-    try
-    {
-      // Disable Normalization toggle when no loudness data in model metadata
-      // Sometimes the UI isn't initialized, so we have to try again later.
-      auto ui = GetUI();
-      if (ui != nullptr)
-      {
-        auto c = ui->GetControlWithTag(kOutNorm);
-        if (c != nullptr)
-        {
-          c->SetDisabled(this->mSetDisableNormalization);
-          if (c->IsDisabled() == this->mSetDisableNormalization)
-          {
-            this->mFlagSetDisableNormalization = false;
-          }
-        }
-      }
-    }
-    catch (std::runtime_error& e)
-    {
-    }
+    if (this->_SetOutputNormalizationDisableState(this->mSetDisableNormalization))
+      this->mFlagSetDisableNormalization = false;
   }
 }
 
@@ -895,6 +878,22 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
   std::stringstream ss;
   ss << "Loaded " << dspPath.filename().stem();
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+}
+
+bool NeuralAmpModeler::_SetOutputNormalizationDisableState(const bool disable)
+{
+  bool success = false;
+  auto ui = this->GetUI();
+  if (ui != nullptr)
+  {
+    auto c = ui->GetControlWithTag(kOutNorm);
+    if (c != nullptr)
+    {
+      c->SetDisabled(disable);
+      success = c->IsDisabled() == disable;
+    }
+  }
+  return success;
 }
 
 void NeuralAmpModeler::_UnsetModelMsg()

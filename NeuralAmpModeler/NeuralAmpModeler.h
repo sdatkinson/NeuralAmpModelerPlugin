@@ -105,6 +105,11 @@ private:
                       const size_t nChansOut);
   // Update the text in the IR area to say what's loaded.
   void _SetIRMsg(const WDL_String& irPath);
+  // Disable Normalization toggle when no loudness data in model metadata
+  // Sometimes the UI isn't initialized, so we have to try again later.
+  //
+  // Returns whether it was successful
+  bool _SetOutputNormalizationDisableState(const bool disable);
   void _UnsetModelMsg();
   void _UnsetIRMsg();
   void _UnsetMsg(const int tag, const WDL_String& msg);
