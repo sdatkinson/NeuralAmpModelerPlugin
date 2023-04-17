@@ -2,6 +2,7 @@
 xcuserdata
 *.RPP-bak
 build-*
+.idea/
 
 *.ipch
 *.db
