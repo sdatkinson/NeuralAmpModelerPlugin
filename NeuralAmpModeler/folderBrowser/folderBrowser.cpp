@@ -17,7 +17,9 @@ void FolderBrowser::InitializeNAMNav(WDL_String fileName)
   _oNAMs.clear();
 
   // get all .nams in folder of currently selected NAM
-  const std::filesystem::path l_sPath = std::filesystem::current_path().u8string();
+  //const std::filesystem::path l_sPath = std::filesystem::current_path().u8string();
+  std::filesystem::path l_sPathWithFilename = _oCurrentNAM;
+  std::filesystem::path l_sPath = l_sPathWithFilename.parent_path().u8string();
   std::set<std::filesystem::path> sorted_by_name; // sort listing
 
   for (const auto& p : std::filesystem::directory_iterator(l_sPath))
@@ -177,7 +179,9 @@ void FolderBrowser::InitializeIRNav(WDL_String fileName)
   _oIRs.clear();
 
   // get all .wavs in folder of currently selected .wav
-  const std::filesystem::path l_sPath = std::filesystem::current_path().u8string();
+  //const std::filesystem::path l_sPath = std::filesystem::current_path().u8string();
+  std::filesystem::path l_sPathWithFilename = _oCurrentIR;
+  std::filesystem::path l_sPath = l_sPathWithFilename.parent_path().u8string();
   std::set<std::filesystem::path> sorted_by_name; // sort listing
 
   for (const auto& p : std::filesystem::directory_iterator(l_sPath))
