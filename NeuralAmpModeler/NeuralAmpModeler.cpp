@@ -113,6 +113,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mStagedIR(nullptr)
 , mFlagRemoveNAM(false)
 , mFlagRemoveIR(false)
+, mFlagSetDisableNormalization(false)
+, mSetDisableNormalization(false)
 , mDefaultNAMString("Select model...")
 , mDefaultIRString("Select IR...")
 , mToneBass()
@@ -645,8 +647,8 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     // Move from staged to active DSP
     this->mNAM = std::move(this->mStagedNAM);
     this->mStagedNAM = nullptr;
-    // Disable Normalization toggle when no loudness data in model metadata
-    GetUI()->GetControlWithTag(kOutNorm)->SetDisabled(!mNAM->HasLoudness());
+    this->mFlagSetDisableNormalization = true;
+    this->mSetDisableNormalization = !mNAM->HasLoudness();
   }
   if (this->mStagedIR != nullptr)
   {
@@ -667,6 +669,30 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->mIRPath.Set("");
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
+  }
+  if (this->mFlagSetDisableNormalization)
+  {
+    try
+    {
+      // Disable Normalization toggle when no loudness data in model metadata
+      // Sometimes the UI isn't initialized, so we have to try again later.
+      auto ui = GetUI();
+      if (ui != nullptr)
+      {
+        auto c = ui->GetControlWithTag(kOutNorm);
+        if (c != nullptr)
+        {
+          c->SetDisabled(this->mSetDisableNormalization);
+          if (c->IsDisabled() == this->mSetDisableNormalization)
+          {
+            this->mFlagSetDisableNormalization = false;
+          }
+        }
+      }
+    }
+    catch (std::runtime_error& e)
+    {
+    }
   }
 }
 
