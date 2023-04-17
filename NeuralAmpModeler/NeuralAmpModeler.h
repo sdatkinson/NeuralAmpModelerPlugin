@@ -142,6 +142,10 @@ private:
   bool mFlagRemoveIR;
   const WDL_String mDefaultNAMString;
   const WDL_String mDefaultIRString;
+  
+  // Try to set the diable state of output normalization
+  bool mFlagSetDisableNormalization;
+  bool mSetDisableNormalization;  // True = Disable
 
   // Tone stack modules
   recursive_linear_filter::LowShelf mToneBass;
