@@ -670,21 +670,28 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
-  if (this->mFlagSetDisableNormalization) {
-    try {
+  if (this->mFlagSetDisableNormalization)
+  {
+    try
+    {
       // Disable Normalization toggle when no loudness data in model metadata
       // Sometimes the UI isn't initialized, so we have to try again later.
       auto ui = GetUI();
-      if (ui != nullptr) {
+      if (ui != nullptr)
+      {
         auto c = ui->GetControlWithTag(kOutNorm);
-        if (c != nullptr) {
+        if (c != nullptr)
+        {
           c->SetDisabled(this->mSetDisableNormalization);
-          if (c->IsDisabled() == this->mSetDisableNormalization){
+          if (c->IsDisabled() == this->mSetDisableNormalization)
+          {
             this->mFlagSetDisableNormalization = false;
           }
         }
       }
-    } catch (std::runtime_error &e) {
+    }
+    catch (std::runtime_error& e)
+    {
     }
   }
 }
