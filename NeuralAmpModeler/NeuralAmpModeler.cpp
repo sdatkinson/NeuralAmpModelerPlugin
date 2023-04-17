@@ -148,6 +148,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   };
 
   mLayoutFunc = [&](IGraphics* pGraphics) {
+    this->mFolderBrowser = FolderBrowser(pGraphics);
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
@@ -259,36 +260,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
             else
             {
               // init FolderBrowser upon successful selection / load
-              FolderBrowser(pGraphics).InitializeNAMNav(fileName);
+              this->mFolderBrowser.InitializeNAMNav(fileName);
             }
           }
         });
     };
     // Model nav up button
     auto namNavUp = [&, pGraphics](IControl* pCaller) {
-      WDL_String l_oStartNAMNavUpResult = FolderBrowser(pGraphics).StartNAMNavUp();
-      std::string l_oGetNAMResult = this->_GetNAM(l_oStartNAMNavUpResult);
-      int l_iFinishNAMNavUpResult = FolderBrowser(pGraphics).FinishNAMNavUp(l_oGetNAMResult);
-
-      // alternate call
-      /* pFolderBrowser.FinishNAMNavUp(
-          this->_GetNAM(pFolderBrowser.StartNAMNavUp()));*/
+      this->mFolderBrowser.FinishNAMNavUp(this->_GetNAM(this->mFolderBrowser.StartNAMNavUp()));
     };
     // Model nav down button
     auto namNavDown = [&, pGraphics](IControl* pCaller) {
-      WDL_String l_oStartNAMNavDownResult = FolderBrowser(pGraphics).StartNAMNavDown();
-      std::string l_oGetNAMResult = this->_GetNAM(l_oStartNAMNavDownResult);
-      int l_iFinishNAMNavDownResult = FolderBrowser(pGraphics).FinishNAMNavDown(l_oGetNAMResult);
-
-      // alternate call
-      /*pFolderBrowser.FinishNAMNavDown(
-          this->_GetNAM(pFolderBrowser.StartNAMNavDown()));*/
+      this->mFolderBrowser.FinishNAMNavDown(this->_GetNAM(this->mFolderBrowser.StartNAMNavDown()));
     };
-
     // Model-clearing function
     auto ClearNAM = [&, pGraphics](IControl* pCaller) {
       this->mFlagRemoveNAM = true;
-      FolderBrowser(pGraphics).HideNAMArrows();
+      this->mFolderBrowser.HideNAMArrows();
     };
 
     // IR loader button
@@ -339,36 +327,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
             else
             {
               // init FolderBrowser upon successful selection / load
-              FolderBrowser(pGraphics).InitializeIRNav(fileName);
+              this->mFolderBrowser.InitializeIRNav(fileName);
             }
           }
         });
     };
     // IR nav up button
     auto irNavUp = [&, pGraphics](IControl* pCaller) {
-      WDL_String l_oStartIRNavUpResult = FolderBrowser(pGraphics).StartIRNavUp();
-      const dsp::wav::LoadReturnCode l_oGetIRResult = this->_GetIR(l_oStartIRNavUpResult);
-      int l_iFinishIRNavUpResult = FolderBrowser(pGraphics).FinishIRNavUp(l_oGetIRResult);
-
-      // alternate call
-      /* pFolderBrowser.FinishIRNavUp(
-            this->_GetIR(pFolderBrowser.StartIRNavUp()));*/
+      this->mFolderBrowser.FinishIRNavUp(this->_GetIR(this->mFolderBrowser.StartIRNavUp()));
     };
     // IR nav down button
     auto irNavDown = [&, pGraphics](IControl* pCaller) {
-      WDL_String l_oStartIRNavDownResult = FolderBrowser(pGraphics).StartIRNavDown();
-      const dsp::wav::LoadReturnCode l_oGetIRResult = this->_GetIR(l_oStartIRNavDownResult);
-      int l_iFinishIRNavDownResult = FolderBrowser(pGraphics).FinishIRNavDown(l_oGetIRResult);
-
-      // alternate call
-      /* pFolderBrowser.FinishIRNavDown(
-            this->_GetIR(pFolderBrowser.StartIRNavDown()));*/
+      this->mFolderBrowser.FinishIRNavDown(this->_GetIR(this->mFolderBrowser.StartIRNavDown()));
     };
-
     // IR-clearing function
     auto ClearIR = [&, pGraphics](IControl* pCaller) {
       this->mFlagRemoveIR = true;
-      FolderBrowser(pGraphics).HideIRArrows();
+      this->mFolderBrowser.HideIRArrows();
     };
 
     // Graphics objects for what NAM is loaded
@@ -382,19 +357,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          modelArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 20.f)), namNavUp, leftArrowSVG),
-        250)
-      ->Hide(true); // assign tag 250
+          modelArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 25.f)), namNavUp, leftArrowSVG),
+        kCtrlTagNAMNavUp)
+      ->Hide(true);
     pGraphics
       ->AttachControl(new IRolloverSVGButtonControl(
-                        modelArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 20.f)), namNavDown,
+                        modelArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 25.f)), namNavDown,
                         rightArrowSVG),
-                      251)
-      ->Hide(true); // assign tag 251
+                      kCtrlTagNAMNavDown)
+      ->Hide(true);
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
-        modelArea.GetReducedFromLeft(iconWidth + 55.f).GetReducedFromRight(iconWidth + 55.f),
-        this->mDefaultNAMString.Get(),
+        modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultNAMString.Get(),
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(15.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagModelName);
     // IR
@@ -407,18 +381,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          irArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 20.f)), irNavUp, leftArrowSVG),
-        252)
-      ->Hide(true); // assign tag 252
+          irArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 25.f)), irNavUp, leftArrowSVG),
+        kCtrlTagIRNavUp)
+      ->Hide(true);
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          irArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 20.f)), irNavDown, rightArrowSVG),
-        253)
-      ->Hide(true); // assign tag 253
+          irArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 25.f)), irNavDown, rightArrowSVG),
+        kCtrlTagIRNavDown)
+      ->Hide(true);
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
-        irArea.GetReducedFromLeft(iconWidth + 55.f).GetReducedFromRight(iconWidth + 55.f), this->mDefaultIRString.Get(),
+        irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(),
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(15.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagIRName);
 
@@ -590,21 +564,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
           0),
         kCtrlTagAboutBox)
       ->Hide(true);
-
-    // is this the right way to initialize d3NNEbs folderBrowser on startup ???
-    //
-    // cant use FolderBrowser(pGraphics)...in OnUIOpen
-    // Even with this there are following issues in the vst plugin:
-    // - if a DAW project is loaded NAM plugin loads the right files, but nav arrows remain hidden
-    // - in DAW when NAM plugin window is closed and reopened, only NAM or IR shows arrow
-    // depending on which one was selected last
-    //
-    // couldnt fix for now
-
-    if (this->mNAMPath.GetLength())
-      FolderBrowser(pGraphics).InitializeNAMNav(this->mNAMPath);
-    if (this->mIRPath.GetLength())
-      FolderBrowser(pGraphics).InitializeIRNav(this->mIRPath);
   };
 }
 
@@ -744,9 +703,15 @@ void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
   if (this->mNAMPath.GetLength())
+  {
     this->_SetModelMsg(this->mNAMPath);
+    this->mFolderBrowser.InitializeNAMNav(this->mNAMPath); // carlo
+  }
   if (this->mIRPath.GetLength())
+  {
     this->_SetIRMsg(this->mIRPath);
+    this->mFolderBrowser.InitializeIRNav(this->mIRPath); // carlo
+  }
 }
 
 // Private methods ============================================================
@@ -830,14 +795,6 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
     auto dspPath = std::filesystem::path(modelPath.Get());
     mStagedNAM = get_dsp(dspPath);
     this->_SetModelMsg(modelPath);
-
-    // why ?? - this will only show the containing nam folder in loaded disply when vst is reopened
-    // carlo
-    /* std::string fullPathOnly = modelPath.Get();
-     size_t last_pos = fullPathOnly.find_last_of("\\");
-     fullPathOnly.replace(last_pos, (fullPathOnly.length() - last_pos), "");
-     this->mNAMPath = WDL_String(fullPathOnly.c_str());*/
-
     this->mNAMPath = modelPath;
   }
   catch (std::exception& e)
@@ -879,14 +836,6 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
   if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
   {
     this->_SetIRMsg(irPath);
-
-    // why ?? - this will only show the containing nam folder in loaded disply when vst is reopened
-    // carlo
-    /* std::string fullPathOnly = irPath.Get();
-     size_t last_pos = fullPathOnly.find_last_of("\\");
-     fullPathOnly.replace(last_pos, (fullPathOnly.length() - last_pos), "");
-     this->mIRPath = WDL_String(fullPathOnly.c_str());*/
-
     this->mIRPath = irPath;
   }
   else

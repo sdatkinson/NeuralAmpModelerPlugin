@@ -12,6 +12,7 @@
 using namespace iplug;
 using namespace igraphics;
 
+// by Carl Oginski 4/16/2023
 class FolderBrowser
 {
 private:
@@ -24,6 +25,8 @@ private:
   inline static std::string _oCurrentIR;
 
 public:
+  FolderBrowser::FolderBrowser();
+
   FolderBrowser::FolderBrowser(IGraphics* pGraphics);
 
   void InitializeNAMNav(WDL_String fileName);

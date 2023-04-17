@@ -37,7 +37,11 @@ enum ECtrlTags {
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
-  kNumCtrlTags
+  kNumCtrlTags,
+  kCtrlTagNAMNavUp, // carlo
+  kCtrlTagNAMNavDown, // carlo
+  kCtrlTagIRNavUp, // carlo
+  kCtrlTagIRNavDown // carlo
 };
 
 class NeuralAmpModeler final : public iplug::Plugin {
@@ -156,6 +160,8 @@ private:
   WDL_String mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
+  // access folder browser
+  NeuralAmpModeler::FolderBrowser mFolderBrowser; // carlo
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0},
                                                         {"Output", 0.0}};
