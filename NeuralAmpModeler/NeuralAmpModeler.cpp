@@ -382,18 +382,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          modelArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 25.f)), namNavUp, leftArrowSVG),
+          modelArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 20.f)), namNavUp, leftArrowSVG),
         250)
       ->Hide(true); // assign tag 250
     pGraphics
       ->AttachControl(new IRolloverSVGButtonControl(
-                        modelArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 25.f)), namNavDown,
+                        modelArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 20.f)), namNavDown,
                         rightArrowSVG),
                       251)
       ->Hide(true); // assign tag 251
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
-        modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultNAMString.Get(),
+        modelArea.GetReducedFromLeft(iconWidth + 55.f).GetReducedFromRight(iconWidth + 55.f),
+        this->mDefaultNAMString.Get(),
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(15.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagModelName);
     // IR
@@ -406,18 +407,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          irArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 25.f)), irNavUp, leftArrowSVG),
+          irArea.GetFromLeft(iconWidth).GetPadded(-10.f).GetHShifted(+(iconWidth + 20.f)), irNavUp, leftArrowSVG),
         252)
       ->Hide(true); // assign tag 252
     pGraphics
       ->AttachControl(
         new IRolloverSVGButtonControl(
-          irArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 25.f)), irNavDown, rightArrowSVG),
+          irArea.GetFromRight(iconWidth).GetPadded(-10.f).GetHShifted(-(iconWidth + 20.f)), irNavDown, rightArrowSVG),
         253)
       ->Hide(true); // assign tag 253
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
-        irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(),
+        irArea.GetReducedFromLeft(iconWidth + 55.f).GetReducedFromRight(iconWidth + 55.f), this->mDefaultIRString.Get(),
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(15.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagIRName);
 
