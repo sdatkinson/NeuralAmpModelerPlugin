@@ -10,4 +10,4 @@ https://github.com/sdatkinson/NeuralAmpModelerPlugin
 02/04/2023 - v0.6.2
 03/05/2023 - v0.7.0
 03/26/2023 - v0.7.1
-04/16/2023 - v0.7.2
+04/17/2023 - v0.7.2
