@@ -2,6 +2,7 @@
 #include <cmath>
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include <utility>
 
 #include "Colors.h"
@@ -592,25 +593,37 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
-  // Model directory (don't serialize the model itself; we'll just load it again
-  // when we unserialize)
   chunk.PutStr(this->mNAMPath.Get());
+  chunk.PutStr(this->mNAMModel.Get());
   chunk.PutStr(this->mIRPath.Get());
+  std::string mIRModel = "";
+  
+  // Take snapshot of current IR response if loaded
+  if (mIR) {
+    auto s = mIR->TakeIRSnapshot();
+    nlohmann::json j = nlohmann::json{ {"mRawAudioSampleRate", s.mRawAudioSampleRate}, {"mRawAudio", s.mRawAudio} };
+    mIRModel = nlohmann::to_string(j);
+  }
+  chunk.PutStr(mIRModel.data());
+  
   return SerializeParams(chunk);
 }
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
-  WDL_String dir;
   startPos = chunk.GetStr(this->mNAMPath, startPos);
+  startPos = chunk.GetStr(this->mNAMModel, startPos);
   startPos = chunk.GetStr(this->mIRPath, startPos);
+  WDL_String irModel;
+  startPos = chunk.GetStr(irModel, startPos);
+  
   this->mNAM = nullptr;
   this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
-  if (this->mNAMPath.GetLength())
-    this->_GetNAM(this->mNAMPath);
-  if (this->mIRPath.GetLength())
-    this->_GetIR(this->mIRPath);
+  if (this->mNAMPath.GetLength() && mNAMModel.GetLength())
+    this->_RecoverNAM(this->mNAMModel, this->mNAMPath);
+  if (this->mIRPath.GetLength() && irModel.GetLength())
+    this->_RecoverIR(irModel, mIRPath);
   return retcode;
 }
 
@@ -711,7 +724,9 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedNAM = get_dsp(dspPath);
+    auto json_model = _ReadConfigFromFile(dspPath);
+    this->mStagedNAM = get_dsp_from_json(json_model);
+    this->mNAMModel.Set(nlohmann::to_string(json_model).data());
     this->_SetModelMsg(modelPath);
     this->mNAMPath = modelPath;
   }
@@ -730,6 +745,24 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
     return e.what();
   }
   return "";
+}
+
+void NeuralAmpModeler::_RecoverNAM(const WDL_String& model, const WDL_String& modelPath)
+{
+  this->mNAMPath = modelPath;
+  try
+  {
+    auto json_model = nlohmann::json::parse(model.Get());
+    this->mStagedNAM = get_dsp_from_json(json_model);
+  }
+  catch (std::exception& e)
+  {
+    std::stringstream ss;
+    ss << "FAILED to recover model";
+    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    this->mNAMPath = nullptr;
+    this->mStagedNAM = nullptr;
+  }
 }
 
 dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
@@ -770,6 +803,17 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
   }
 
   return wavState;
+}
+
+void NeuralAmpModeler::_RecoverIR(const WDL_String &irSnapshot, const WDL_String &irPath)
+{
+  auto json = nlohmann::json::parse(irSnapshot.Get());
+  dsp::ImpulseResponse::IRSnapshot snapshot;
+  snapshot.mRawAudio = json["mRawAudio"].get<std::vector<float>>();
+  snapshot.mRawAudioSampleRate = json["mRawAudioSampleRate"];
+  
+  this->mStagedIR = std::make_unique<dsp::ImpulseResponse>(snapshot, this->GetSampleRate());
+  this->mIRPath = irPath;
 }
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const
@@ -919,4 +963,14 @@ void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPoint
   const int nChansHack = 1;
   this->mInputSender.ProcessBlock(inputPointer, (int)nFrames, kCtrlTagInputMeter, nChansHack);
   this->mOutputSender.ProcessBlock(outputPointer, (int)nFrames, kCtrlTagOutputMeter, nChansHack);
+}
+
+nlohmann::json NeuralAmpModeler::_ReadConfigFromFile(const std::filesystem::path& dspPath)
+{
+  if (!std::filesystem::exists(dspPath))
+    throw std::runtime_error("Config JSON doesn't exist!\n");
+  std::ifstream config_file(dspPath);
+  nlohmann::json json_model;
+  config_file >> json_model;
+  return json_model;
 }

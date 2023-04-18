@@ -83,10 +83,14 @@ private:
   // Gets a new Neural Amp Model object and stores it to mStagedNAM
   // Returns an emptry string on success, or an error message on failure.
   std::string _GetNAM(const WDL_String& dspFile);
+  // Recovers Neural Amp Model from persisted string-serialized config
+  void _RecoverNAM(const WDL_String& model, const WDL_String& modelPath);
   // Gets the IR and stores to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
   dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
+  // Recovers IR object from its persisted snapshot
+  void _RecoverIR(const WDL_String& irSnapshot, const WDL_String &irPath);
   // Update the message about which model is loaded.
   void _SetModelMsg(const WDL_String& dspPath);
   bool _HaveModel() const { return this->mNAM != nullptr; };
@@ -118,6 +122,7 @@ private:
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
                      const size_t nChansIn, const size_t nChansOut);
+  nlohmann::json _ReadConfigFromFile(const std::filesystem::path& config_filename);
 
   // Member data
 
@@ -159,6 +164,8 @@ private:
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
+  // String representation of NAM model config json
+  WDL_String mNAMModel;
   // Path to IR (.wav file)
   WDL_String mIRPath;
 
