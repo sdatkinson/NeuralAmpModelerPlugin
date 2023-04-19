@@ -14,7 +14,7 @@
 
 #define SHARED_RESOURCES_SUBPATH "NeuralAmpModeler"
 
-#define PLUG_CHANNEL_IO "1-1 1-2"
+#define PLUG_CHANNEL_IO "1-1"
 
 #define PLUG_LATENCY 0
 #define PLUG_TYPE 0
