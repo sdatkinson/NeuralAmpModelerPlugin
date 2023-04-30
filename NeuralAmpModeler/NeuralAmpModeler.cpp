@@ -218,17 +218,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                     .GetMidVPadded(meterHalfHeight)
                                     .GetTranslated(allKnobsPad + 18.f, 0.0f);
 
-    // auto tolexPNG = pGraphics->LoadBitmap(TOLEX_FN);
-    // pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(),
-    // tolexPNG, kNoParameter))->SetBlend(IBlend(EBlend::Default, 0.5));
-    //  The background inside the outermost border
-    // pGraphics->AttachControl(
-    //   new IVPanelControl(mainArea, "", style.WithColor(kFG, PluginColors::NAM_1))); // .WithContrast(-0.75)
-    // pGraphics->AttachControl(
-    //   new IVLabelControl(titleLabel, "Neural Amp Modeler",
-    //                      style.WithDrawFrame(false).WithValueText({30, EAlign::Center,
-    //                      PluginColors::NAM_THEMEFONTCOLOR})));
-
     auto themeBG = pGraphics->LoadBitmap(EH_SKIN_FN);
     pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), themeBG, kNoParameter))
       ->SetBlend(IBlend(EBlend::Default, 1.0));

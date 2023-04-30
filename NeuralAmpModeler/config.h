@@ -57,8 +57,6 @@
 #define FILE_FN "SkinEHeritage_File.svg"
 #define FOLDER_FN "folder.svg"
 #define CLOSE_BUTTON_FN "SkinEHeritage_Close-button.svg"
-#define TOLEX_FN "tolex.jpeg"
-#define TOLEX2X_FN "tolex@2x.jpeg"
 #define LEFT_ARROW_FN "SkinEHeritage_ArrowLeft.svg"
 #define RIGHT_ARROW_FN "SkinEHeritage_ArrowRight.svg"
 #define EH_SKIN_FN "SkinEHeritage_BG.jpeg"
