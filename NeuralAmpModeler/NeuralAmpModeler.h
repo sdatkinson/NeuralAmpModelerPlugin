@@ -66,6 +66,7 @@ public:
   void OnUIOpen() override;
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
 
+  void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
 private:
   // Allocates mInputPointers and mOutputPointers
   void _AllocateIOPointers(const size_t nChans);

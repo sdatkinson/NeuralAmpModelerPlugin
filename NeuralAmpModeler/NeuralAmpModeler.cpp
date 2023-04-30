@@ -64,7 +64,7 @@ public:
 };
 
 // Styles
-const IVColorSpec activeColorSpec{
+const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
   PluginColors::NAM_THEMECOLOR, // Foreground
   PluginColors::NAM_THEMECOLOR.WithOpacity(0.3f), // Pressed
@@ -75,21 +75,11 @@ const IVColorSpec activeColorSpec{
   COLOR_RED, // Extra 2 --> color for clipping in meters
   DEFAULT_X3COLOR // Extra 3
 };
-const IVColorSpec inactiveColorSpec{
-  DEFAULT_BGCOLOR, // Background
-  PluginColors::NAM_THEMEFONTCOLOR.WithOpacity(0.3f), // Foreground
-  PluginColors::NAM_THEMECOLOR.WithOpacity(0.3f), // Pressed
-  PluginColors::NAM_0, // Frame
-  PluginColors::NAM_0, // Highlight
-  DEFAULT_SHCOLOR.WithOpacity(0.5f), // Shadow
-  PluginColors::NAM_THEMECOLOR.WithOpacity(0.5f), // Extra 1
-  COLOR_RED.WithOpacity(0.5f), // Extra 2
-  DEFAULT_X3COLOR.WithOpacity(0.5f) // Extra 3
-};
+
 const IVStyle style =
   IVStyle{true, // Show label
           true, // Show value
-          activeColorSpec,
+          colorSpec,
           {DEFAULT_TEXT_SIZE + 3.f, EVAlign::Middle, PluginColors::NAM_THEMEFONTCOLOR}, // Knob label text5
           {DEFAULT_TEXT_SIZE + 3.f, EVAlign::Bottom, PluginColors::NAM_THEMEFONTCOLOR}, // Knob value text
           DEFAULT_HIDE_CURSOR,
@@ -101,7 +91,6 @@ const IVStyle style =
           DEFAULT_SHADOW_OFFSET,
           DEFAULT_WIDGET_FRAC,
           DEFAULT_WIDGET_ANGLE};
-const IVStyle styleInactive = style.WithColors(inactiveColorSpec);
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -354,9 +343,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(
       new IVPanelControl(ngToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
                          style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.9f))));
-    IBSwitchControl* noiseGateSlider =
-      new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kNoiseGateActive);
-    pGraphics->AttachControl(noiseGateSlider);
+    pGraphics->AttachControl(new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kNoiseGateActive));
     // Tone stack toggle
     pGraphics->AttachControl(
       new IVPanelControl(eqToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
@@ -369,9 +356,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(
       new IVPanelControl(outNormToggleArea.GetPadded(-12.f).GetTranslated(2.0f, -4.0f), "", style.WithDrawFrame(false)),
       kOutNormPanel);
-    IBSwitchControl* outputNormSlider =
-      new IBSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), switchBitmap, kOutNorm);
-    pGraphics->AttachControl(outputNormSlider, kOutNorm);
+    pGraphics->AttachControl(new IBSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), switchBitmap));
     pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f), "Normalize", style.labelText));
 
     // The knobs
@@ -380,21 +365,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(
       new IBKnobRotaterControl(inputKnobArea, knobRotateBitmap, kInputLevel), kNoTag, "kInputLevel");
     // Noise gate
-    const bool noiseGateIsActive = this->GetParam(kNoiseGateActive)->Value();
-    const IVStyle noiseGateInitialStyle = noiseGateIsActive ? style : styleInactive;
-    IVKnobControl* noiseGateControl = new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", noiseGateInitialStyle);
-    pGraphics->AttachControl(noiseGateControl);
+    pGraphics->AttachControl(new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
     pGraphics->AttachControl(
       new IBKnobRotaterControl(noiseGateArea, knobRotateBitmap, kNoiseGateThreshold), kNoTag, "kNoiseGateThreshold");
     // Tone stack
-    const bool toneStackIsActive = this->GetParam(kEQActive)->Value();
-    const IVStyle toneStackInitialStyle = toneStackIsActive ? style : styleInactive;
-    IVKnobControl* bassControl = new IVKnobControl(bassKnobArea, kToneBass, "", toneStackInitialStyle);
-    IVKnobControl* middleControl = new IVKnobControl(middleKnobArea, kToneMid, "", toneStackInitialStyle);
-    IVKnobControl* trebleControl = new IVKnobControl(trebleKnobArea, kToneTreble, "", toneStackInitialStyle);
-    pGraphics->AttachControl(bassControl);
-    pGraphics->AttachControl(middleControl);
-    pGraphics->AttachControl(trebleControl);
+    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
+    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
+    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
     pGraphics->AttachControl(new IBKnobRotaterControl(bassKnobArea, knobRotateBitmap, kToneBass), kNoTag, "kToneBass");
     pGraphics->AttachControl(new IBKnobRotaterControl(middleKnobArea, knobRotateBitmap, kToneMid), kNoTag, "kToneMid");
     pGraphics->AttachControl(
@@ -403,40 +380,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
     pGraphics->AttachControl(
       new IBKnobRotaterControl(outputKnobArea, knobRotateBitmap, kOutputLevel), kNoTag, "kOutputLevel");
-
-    // Extend the noise gate action function to set the style of its knob
-    auto setNoiseGateKnobStyles = [&, pGraphics, noiseGateControl](IControl* pCaller) {
-      const bool noiseGateActive = pCaller->GetValue() > 0;
-      const IVStyle noiseGateStyle = noiseGateActive ? style : styleInactive;
-      noiseGateControl->SetStyle(noiseGateStyle);
-      noiseGateControl->SetDirty(false);
-    };
-    auto defaultNoiseGateSliderAction = noiseGateSlider->GetActionFunction();
-    // hacky attempt to fix IBSwitchControl action function
-    auto noiseGateAction = [/* defaultNoiseGateSliderAction, */ setNoiseGateKnobStyles](IControl* pCaller) {
-      // defaultNoiseGateSliderAction(pCaller);
-      setNoiseGateKnobStyles(pCaller);
-    };
-    noiseGateSlider->SetActionFunction(noiseGateAction);
-    // Extend the slider action function to set the style of its knobs
-    auto setToneStackKnobStyles = [&, pGraphics, bassControl, middleControl, trebleControl](IControl* pCaller) {
-      const bool toneStackActive = pCaller->GetValue() > 0;
-      const IVStyle toneStackStyle = toneStackActive ? style : styleInactive;
-      bassControl->SetStyle(toneStackStyle);
-      middleControl->SetStyle(toneStackStyle);
-      trebleControl->SetStyle(toneStackStyle);
-
-      bassControl->SetDirty(false);
-      middleControl->SetDirty(false);
-      trebleControl->SetDirty(false);
-    };
-    auto defaultToneStackSliderAction = toneStackSlider->GetActionFunction();
-    // hacky attempt to fix IBSwitchControl action function
-    auto toneStackAction = [/* defaultToneStackSliderAction, */ setToneStackKnobStyles](IControl* pCaller) {
-      // defaultToneStackSliderAction(pCaller);
-      setToneStackKnobStyles(pCaller);
-    };
-    toneStackSlider->SetActionFunction(toneStackAction);
 
     // The meters
     const float meterMin = -90.0f;
@@ -659,6 +602,28 @@ void NeuralAmpModeler::OnUIOpen()
     this->_SetIRMsg(this->mIRPath);
   if (this->mNAM != nullptr)
     this->_SetOutputNormalizationDisableState(!this->mNAM->HasLoudness());
+}
+
+void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
+{
+  if (auto pGraphics = GetUI())
+  {
+    bool active = GetParam(paramIdx)->Bool();
+    
+    switch (paramIdx)
+    {
+      case kNoiseGateActive:
+        pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active);
+        break;
+      case kEQActive:
+        pGraphics->GetControlWithParamIdx(kToneBass)->SetDisabled(!active);
+        pGraphics->GetControlWithParamIdx(kToneMid)->SetDisabled(!active);
+        pGraphics->GetControlWithParamIdx(kToneTreble)->SetDisabled(!active);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 // Private methods ============================================================
