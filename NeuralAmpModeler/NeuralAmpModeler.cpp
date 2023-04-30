@@ -63,6 +63,28 @@ public:
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) { SetStr(reinterpret_cast<const char*>(pData)); }
 };
 
+class NamKnobControl : public IVKnobControl
+                     , public IBitmapBase
+{
+public:
+  NamKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
+  : IVKnobControl(bounds, paramIdx, label, style)
+  , IBitmapBase(bitmap)
+  {
+  }
+  
+  void DrawWidget(IGraphics& g) override
+  {
+    float widgetRadius = GetRadius();
+    const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
+    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.f );
+    const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
+    g.FillEllipse(GetColor(mMouseIsOver ? kX3 : kX1), knobHandleBounds);
+    DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
+    g.DrawRotatedBitmap(mBitmap, mRECT.MW(), mRECT.MH(), angle);
+  }
+};
+
 // Styles
 const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
@@ -73,7 +95,7 @@ const IVColorSpec colorSpec{
   DEFAULT_SHCOLOR, // Shadow
   PluginColors::NAM_THEMECOLOR, // Extra 1
   COLOR_RED, // Extra 2 --> color for clipping in meters
-  DEFAULT_X3COLOR // Extra 3
+  PluginColors::NAM_THEMECOLOR.WithContrast(0.1f), // Extra 3
 };
 
 const IVStyle style =
@@ -349,26 +371,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f), "Normalize", style.labelText));
 
     // The knobs
-    // Input
-    pGraphics->AttachControl(new IVKnobControl(inputKnobArea, kInputLevel, "", style));
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(inputKnobArea, knobRotateBitmap, kInputLevel), kNoTag, "kInputLevel");
-    // Noise gate
-    pGraphics->AttachControl(new IVKnobControl(noiseGateArea, kNoiseGateThreshold, "", style));
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(noiseGateArea, knobRotateBitmap, kNoiseGateThreshold), kNoTag, "kNoiseGateThreshold");
-    // Tone stack
-    pGraphics->AttachControl(new IVKnobControl(bassKnobArea, kToneBass, "", style));
-    pGraphics->AttachControl(new IVKnobControl(middleKnobArea, kToneMid, "", style));
-    pGraphics->AttachControl(new IVKnobControl(trebleKnobArea, kToneTreble, "", style));
-    pGraphics->AttachControl(new IBKnobRotaterControl(bassKnobArea, knobRotateBitmap, kToneBass), kNoTag, "kToneBass");
-    pGraphics->AttachControl(new IBKnobRotaterControl(middleKnobArea, knobRotateBitmap, kToneMid), kNoTag, "kToneMid");
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(trebleKnobArea, knobRotateBitmap, kToneTreble), kNoTag, "kToneTreble");
-    // Output
-    pGraphics->AttachControl(new IVKnobControl(outputKnobArea, kOutputLevel, "", style));
-    pGraphics->AttachControl(
-      new IBKnobRotaterControl(outputKnobArea, knobRotateBitmap, kOutputLevel), kNoTag, "kOutputLevel");
+    pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // The meters
     const float meterMin = -90.0f;
