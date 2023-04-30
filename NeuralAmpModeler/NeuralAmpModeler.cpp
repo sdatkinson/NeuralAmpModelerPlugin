@@ -136,6 +136,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   this->GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
   this->GetParam(kOutNorm)->InitBool("OutNorm", false);
+  this->GetParam(kIRToggle)->InitBool("IRToggle", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
@@ -160,6 +161,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), 2, true);
+    const IBitmap irSwitch = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
@@ -438,6 +440,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     };
     toneStackSlider->SetActionFunction(toneStackAction);
 
+    // toggle IR on / off
+    IBSwitchControl* toggleIRactive = new IBSwitchControl(IRECT(46.f, 343.f, irSwitch), irSwitch, kIRToggle);
+    pGraphics->AttachControl(toggleIRactive, kIRToggle);
+    // dim IR dispaly
+    pGraphics
+      ->AttachControl(new IVPanelControl(IRECT(100.f, 344.f, 500.f, 364), "",
+                                         style.WithDrawFrame(false).WithColor(kFG, COLOR_BLACK.WithOpacity(0.75f))),
+                      kCtrlTagOverlay, "NAM_OVERLAY")
+      ->Hide(true);
+    
     // The meters
     const float meterMin = -90.0f;
     const float meterMax = -0.01f;
@@ -618,6 +630,24 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   // restore previous floating point state
   std::feupdateenv(&fe_state);
 
+  // IR Toggle
+  const bool IRToggleIsActive = this->GetParam(kIRToggle)->Value();
+  if (IRToggleIsActive)
+  {
+    if (this->mIR == nullptr && this->mIRPath.GetLength())
+      this->_GetIR(this->mIRPath);
+  }
+  else
+    this->mIR = nullptr;
+
+  auto ui = this->GetUI();
+  if (ui != nullptr)
+  {
+    auto o = ui->GetControlWithTag(kCtrlTagOverlay);
+    if (o != nullptr)
+      IRToggleIsActive ? o->Hide(true) : o->Hide(false);
+  }
+  
   // Let's get outta here
   // This is where we exit mono for whatever the output requires.
   this->_ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);

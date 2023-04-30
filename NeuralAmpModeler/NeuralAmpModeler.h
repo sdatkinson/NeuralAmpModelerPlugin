@@ -27,6 +27,7 @@ enum EParams
   kEQActive,
   kOutNorm,
   kOutNormPanel,
+  kIRToggle,
   kNumParams
 };
 
@@ -39,6 +40,7 @@ enum ECtrlTags
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
+  kCtrlTagOverlay,
   kNumCtrlTags
 };
 
