@@ -100,9 +100,9 @@ public:
   {
     // OL: arg, pixels :-(
     if (GetValue() > 0.5f)
-      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f);
+      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
     else
-      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f);
+      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
 
     DrawTrack(g, mWidgetBounds);
     DrawHandle(g, mHandleBounds);
@@ -110,12 +110,12 @@ public:
     
   void DrawTrack(IGraphics& g, const IRECT& filledArea) override
   {
-    g.DrawBitmap(mBitmap, mRECT);
+    g.DrawBitmap(mBitmap, mRECT, 0, &mBlend);
   }
   
   void DrawHandle(IGraphics& g, const IRECT& filledArea) override
   {
-    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0));
+    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0), 0, &mBlend);
   }
 private:
   IBitmap mHandleBitmap;
@@ -161,8 +161,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mStagedIR(nullptr)
 , mFlagRemoveNAM(false)
 , mFlagRemoveIR(false)
-, mFlagSetDisableNormalization(false)
-, mSetDisableNormalization(false)
 , mDefaultNAMString("Select model...")
 , mDefaultIRString("Select IR...")
 , mToneBass()
@@ -386,8 +384,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     pGraphics->AttachControl(new NamSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
     pGraphics->AttachControl(new NamSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f).GetTranslated(0.0, 14.f), "Normalize", style.labelText));
+    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "", style, switchBitmap, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
     pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
@@ -585,6 +582,27 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   this->_UpdateMeters(this->mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
 }
 
+void NeuralAmpModeler::OnReset()
+{
+  const auto sampleRate = this->GetSampleRate();
+  this->mInputSender.Reset(sampleRate);
+  this->mOutputSender.Reset(sampleRate);
+}
+
+void NeuralAmpModeler::OnIdle()
+{
+  this->mInputSender.TransmitData(*this);
+  this->mOutputSender.TransmitData(*this);
+  
+  if (this->mNewNAMLoadedInDSP)
+  {
+    if (GetUI())
+      this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
+    
+    this->mNewNAMLoadedInDSP = false;
+  }
+}
+
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // Model directory (don't serialize the model itself; we'll just load it again
@@ -617,7 +635,7 @@ void NeuralAmpModeler::OnUIOpen()
   if (this->mIRPath.GetLength())
     this->_SetIRMsg(this->mIRPath);
   if (this->mNAM != nullptr)
-    this->_SetOutputNormalizationDisableState(!this->mNAM->HasLoudness());
+    this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
@@ -666,8 +684,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     // Move from staged to active DSP
     this->mNAM = std::move(this->mStagedNAM);
     this->mStagedNAM = nullptr;
-    this->mFlagSetDisableNormalization = true;
-    this->mSetDisableNormalization = !mNAM->HasLoudness();
+    this->mNewNAMLoadedInDSP = true;
   }
   if (this->mStagedIR != nullptr)
   {
@@ -688,11 +705,6 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->mIRPath.Set("");
     this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
-  }
-  if (this->mFlagSetDisableNormalization)
-  {
-    if (this->_SetOutputNormalizationDisableState(this->mSetDisableNormalization))
-      this->mFlagSetDisableNormalization = false;
   }
 }
 
@@ -902,30 +914,6 @@ void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
   //  ss << "Loaded " << dspPath.filename().stem();
   ss << dspPath.filename().stem().string(); // /path/to/ir.wav -> ir;
   SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
-}
-
-bool NeuralAmpModeler::_SetOutputNormalizationDisableState(const bool disable)
-{
-  bool success = false;
-  auto ui = this->GetUI();
-  if (ui != nullptr)
-  {
-    auto c = ui->GetControlWithTag(kOutNorm);
-    if (c != nullptr)
-    {
-      c->SetDisabled(disable);
-      success = c->IsDisabled() == disable;
-    }
-    // also hide the themecolored panel behind the toggle for the ON-stae
-    auto p = ui->GetControlWithTag(kOutNormPanel);
-    if (p != nullptr)
-    {
-      const IVStyle normtoggleStyle =
-        c->IsDisabled() ? style.WithColor(kFG, PluginColors::NAM_0).WithColor(kFR, PluginColors::NAM_0) : style;
-      p->As<IVectorBase>()->SetStyle(normtoggleStyle);
-    }
-  }
-  return success;
 }
 
 void NeuralAmpModeler::_UnsetModelMsg()
