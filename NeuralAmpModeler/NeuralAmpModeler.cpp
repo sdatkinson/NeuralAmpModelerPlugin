@@ -863,18 +863,22 @@ void NeuralAmpModeler::_PrepareIOPointers(const size_t numChannels)
 void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn,
                                      const size_t nChansOut)
 {
+  // We'll assume that the main processing is mono for now. We'll handle dual amps later.
+  // See also: this->mNUM_INTERNAL_CHANNELS
+  if (nChansOut != 1) {        
+    std::stringstream ss;
+    ss << "Expected mono output, but " << nChansOut << " output channels are requested!";
+    throw std::runtime_error(ss.str());
+  }
+      
   // Assume _PrepareBuffers() was already called
   const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
-  if (nChansOut <= nChansIn) // Many->few: Drop additional channels
-    for (size_t c = 0; c < nChansOut; c++)
-      for (size_t s = 0; s < nFrames; s++)
-        this->mInputArray[c][s] = gain * inputs[c][s];
-  else
-  {
-    // Something is wrong--this is a mono plugin. How could there be fewer
-    // incoming channels?
-    throw std::runtime_error("Unexpected input processing--sees fewer than 1 incoming channel?");
-  }
+  for (size_t c = 0; c < nChansIn; c++)
+    for (size_t s = 0; s < nFrames; s++)
+      if (c == 0)
+        this->mInputArray[0][s] = gain * inputs[c][s];
+      else
+        this->mInputArray[0][s] += gain * inputs[c][s];
 }
 
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
