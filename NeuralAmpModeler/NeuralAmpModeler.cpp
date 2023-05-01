@@ -85,6 +85,42 @@ public:
   }
 };
 
+class NamSwitchControl : public IVSlideSwitchControl
+                       , public IBitmapBase
+{
+public:
+  NamSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap, IBitmap handleBitmap)
+  : IVSlideSwitchControl({bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
+  , IBitmapBase(bitmap)
+  , mHandleBitmap(handleBitmap)
+  {
+  }
+  
+  void DrawWidget(IGraphics& g) override
+  {
+    // OL: arg, pixels :-(
+    if (GetValue() > 0.5f)
+      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f);
+    else
+      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f);
+
+    DrawTrack(g, mWidgetBounds);
+    DrawHandle(g, mHandleBounds);
+  }
+    
+  void DrawTrack(IGraphics& g, const IRECT& filledArea) override
+  {
+    g.DrawBitmap(mBitmap, mRECT);
+  }
+  
+  void DrawHandle(IGraphics& g, const IRECT& filledArea) override
+  {
+    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0));
+  }
+private:
+  IBitmap mHandleBitmap;
+};
+
 // Styles
 const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
@@ -170,7 +206,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), 2, true);
+    const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
+    const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     const IRECT b = pGraphics->GetBounds();
@@ -204,21 +241,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float ngAreaHeight = toggleHeight;
     const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
-                                 .GetTranslated(0.0f, ngAreaHeight + singleKnobPad - 14.f)
-                                 .GetMidHPadded(ngAreaHalfWidth);
-
+      .GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
     // Area for EQ toggle
     const float eqAreaHeight = toggleHeight;
     const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
     const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
-                                 .GetTranslated(0.0f, eqAreaHeight + singleKnobPad - 14.f)
+                                 .GetTranslated(-10.f, eqAreaHeight + singleKnobPad - 14.f)
                                  .GetMidHPadded(eqAreaHalfWidth);
 
     // Area for output normalization toggle
     const float outNormAreaHeight = toggleHeight;
     const float outNormAreaHalfWidth = 0.5f * outputKnobArea.W();
     const IRECT outNormToggleArea = outputKnobArea.GetFromBottom(outNormAreaHeight)
-                                      .GetTranslated(0.0f, outNormAreaHeight + singleKnobPad)
+                                      .GetTranslated(-10.f, outNormAreaHeight + singleKnobPad - 14.f)
                                       .GetMidHPadded(outNormAreaHalfWidth);
 
     // Areas for model and IR
@@ -349,26 +384,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagIRName);
 
-    // NG toggle
-    // underlaying background in theme color for ON state
-    pGraphics->AttachControl(
-      new IVPanelControl(ngToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
-                         style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.9f))));
-    pGraphics->AttachControl(new IBSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kNoiseGateActive));
-    // Tone stack toggle
-    pGraphics->AttachControl(
-      new IVPanelControl(eqToggleArea.GetPadded(-12.f).GetTranslated(2.f, 10.0f), "",
-                         style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.9f))));
-    IBSwitchControl* toneStackSlider =
-      new IBSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), switchBitmap, kEQActive);
-    pGraphics->AttachControl(toneStackSlider);
-
-    // Normalisation toggle
-    pGraphics->AttachControl(
-      new IVPanelControl(outNormToggleArea.GetPadded(-12.f).GetTranslated(2.0f, -4.0f), "", style.WithDrawFrame(false)),
-      kOutNormPanel);
-    pGraphics->AttachControl(new IBSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), switchBitmap));
-    pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f), "Normalize", style.labelText));
+    pGraphics->AttachControl(new NamSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
+    pGraphics->AttachControl(new NamSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
+    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "", style, switchBitmap, switchHandleBitmap));
+    pGraphics->AttachControl(new ITextControl(outNormToggleArea.GetFromTop(70.f).GetTranslated(0.0, 14.f), "Normalize", style.labelText));
 
     // The knobs
     pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
