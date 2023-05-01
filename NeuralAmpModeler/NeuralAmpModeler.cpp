@@ -79,7 +79,7 @@ public:
     const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
     IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.f );
     const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
-    g.FillEllipse(GetColor(mMouseIsOver ? kX3 : kX1), knobHandleBounds);
+    g.FillEllipse(GetColor(mMouseIsOver ? kX3 : kX1), knobHandleBounds, &mBlend);
     DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
     g.DrawRotatedBitmap(mBitmap, mRECT.MW(), mRECT.MH(), angle);
   }
