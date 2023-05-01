@@ -157,7 +157,7 @@ cat > ${TARGET_DIR}/distribution.xml << XMLEND
     ${AAX_PKG_REF}
     ${APP_PKG_REF}
     ${RES_PKG_REF}
-    <options require-scripts="false" customize="always" />
+    <options require-scripts="false" customize="always" hostArchitectures="arm64,x86_64"/>
     <choices-outline>
         ${VST2_CHOICE}
         ${VST3_CHOICE}

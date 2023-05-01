@@ -80,13 +80,22 @@ def main():
         os.system("cat " + os.path.join(PROJECT_ROOT, "installer", "changelog.txt"))
         print("\n\n--------------------")
 
+    tagname = f"v{newVersionInfo}"
+    remove_tag = input(
+        f"\nAttempt to remove existing tag for {tagname}? Y/N: "
+    )
+
+    if remove_tag == "y" or remove_tag == "Y":
+        os.system(f"git tag -d {tagname}")
+        os.system(f"git push --delete origin {tagname}")
+
     edit = input(
         "\nTag version and git push to origin (will prompt for commit message)? Y/N: "
     )
 
     if edit == "y" or edit == "Y":
         os.system("git commit -a --allow-empty")
-        os.system("git tag v" + str(newVersionInfo))
+        os.system("git tag " + tagname)
         os.system("git push && git push --tags")
 
 

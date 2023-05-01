@@ -134,38 +134,41 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp">
       <Filter>IGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\cnpy.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\get_dsp.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\lstm.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\numpy_util.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\util.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp">
-      <Filter>dsp</Filter>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\convnet.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\dsp.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\get_dsp.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\lstm.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\util.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\wavenet.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp">
+      <Filter>NAM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -391,25 +394,13 @@
       <Filter>IGraphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Colors.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h">
       <Filter>dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\lstm.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\numpy_util.h">
       <Filter>dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.h">
@@ -418,17 +409,29 @@
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\Resample.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\util.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\version.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h">
-      <Filter>dsp</Filter>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\activations.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\convnet.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\dsp.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\lstm.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\util.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\version.h">
+      <Filter>NAM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h">
+      <Filter>NAM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -491,6 +494,9 @@
     </Filter>
     <Filter Include="dsp">
       <UniqueIdentifier>{982fc658-4802-43b8-95dd-f18fb814e389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NAM">
+      <UniqueIdentifier>{3d65ee8b-86ee-4713-a5ec-d73919c6419c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

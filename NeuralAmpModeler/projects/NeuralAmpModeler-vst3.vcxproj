@@ -328,19 +328,19 @@
     <ClInclude Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_View.h" />
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\activations.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\cnpy.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\lstm.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\numpy_util.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\Resample.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\util.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\version.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\wav.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wavenet.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\activations.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\convnet.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\dsp.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\lstm.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\util.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\version.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h" />
     <ClInclude Include="..\resources\resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -403,17 +403,32 @@
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_ProcessorBase.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\cnpy.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\get_dsp.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\lstm.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\numpy_util.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\util.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp" />
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wavenet.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\convnet.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\dsp.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\get_dsp.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\lstm.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\util.cpp" />
+    <ClCompile Include="..\NeuralAmpModelerCore\NAM\wavenet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resources\main.rc" />

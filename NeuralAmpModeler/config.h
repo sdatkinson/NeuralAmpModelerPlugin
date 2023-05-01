@@ -1,7 +1,7 @@
 #define PLUG_NAME "NeuralAmpModeler"
 #define PLUG_MFR "Steven Atkinson"
-#define PLUG_VERSION_HEX 0x00000701
-#define PLUG_VERSION_STR "0.7.1"
+#define PLUG_VERSION_HEX 0x00000702
+#define PLUG_VERSION_STR "0.7.2"
 #define PLUG_UNIQUE_ID '1YEo'
 #define PLUG_MFR_ID 'SDAa'
 #define PLUG_URL_STR "https://github.com/sdatkinson/NeuralAmpModelerPlugin"
@@ -56,8 +56,16 @@
 
 #define ROBOTO_FN "Roboto-Regular.ttf"
 #define HELP_FN "help.svg"
-#define FILE_FN "file.svg"
+#define FILE_FN "SkinEHeritage_File.svg"
 #define FOLDER_FN "folder.svg"
-#define CLOSE_BUTTON_FN "close-button.svg"
+#define CLOSE_BUTTON_FN "SkinEHeritage_Close-button.svg"
 #define TOLEX_FN "tolex.jpeg"
 #define TOLEX2X_FN "tolex@2x.jpeg"
+#define LEFT_ARROW_FN "SkinEHeritage_ArrowLeft.svg"
+#define RIGHT_ARROW_FN "SkinEHeritage_ArrowRight.svg"
+#define EH_SKIN_FN "SkinEHeritage_BG.jpeg"
+#define EH_SKIN2X_FN "SkinEHeritage_BG@2x.jpeg"
+#define KNOB_FN "SkinEHeritage_Knob.png"
+#define KNOB2X_FN "SkinEHeritage_Knob@2x.png"
+#define TOGGLE_FN "SkinEHeritage_Toggle.png"
+#define TOGGLE2X_FN "SkinEHeritage_Toggle@2x.png"
