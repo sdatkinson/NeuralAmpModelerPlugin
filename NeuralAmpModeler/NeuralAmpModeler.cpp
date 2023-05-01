@@ -212,6 +212,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                       .GetTranslated(0.0f, outNormAreaHeight + singleKnobPad)
                                       .GetMidHPadded(outNormAreaHalfWidth);
 
+    // Area for IR bypass toggle
+    const float irBypassToggleX = 46.f;
+    const float irBypassToggleY = 343.f;
+    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitch);
+
+    // Area for IR bypass toggle
+    const float dimPanelOpacity = 0.75f;
+    const IRECT irBypassDimPanel = IRECT(100.f, 344.f, 500.f, 364.f); // left, top, right, bottom
+
     // Areas for model and IR
     const float fileWidth = 200.0f;
     const float fileHeight = 30.0f;
@@ -441,15 +450,25 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     toneStackSlider->SetActionFunction(toneStackAction);
 
     // toggle IR on / off
-    IBSwitchControl* toggleIRactive = new IBSwitchControl(IRECT(46.f, 343.f, irSwitch), irSwitch, kIRToggle);
+    IBSwitchControl* toggleIRactive = new IBSwitchControl(irBypassToggleArea, irSwitch, kIRToggle);
     pGraphics->AttachControl(toggleIRactive, kIRToggle);
     // dim IR dispaly
     pGraphics
-      ->AttachControl(new IVPanelControl(IRECT(100.f, 344.f, 500.f, 364), "",
-                                         style.WithDrawFrame(false).WithColor(kFG, COLOR_BLACK.WithOpacity(0.75f))),
-                      kCtrlTagOverlay, "NAM_OVERLAY")
-      ->Hide(true);
-    
+      ->AttachControl(
+        new IVPanelControl(
+          irBypassDimPanel, "", style.WithDrawFrame(false).WithColor(kFG, COLOR_BLACK.WithOpacity(dimPanelOpacity))),
+        kNoTag, "NAM_OVERLAY")
+      ->Hide(this->GetParam(kIRToggle)->Value());
+
+    // Extend the ir toggle action function to set dim panel visible or not
+    auto setIRdimPanelVisibility = [&, pGraphics, irBypassDimPanel](IControl* pCaller) {
+      const bool irActive = pCaller->GetValue() > 0;
+      pGraphics->ForControlInGroup(
+        "NAM_OVERLAY", [&](IControl* pControl) { irActive ? pControl->Hide(true) : pControl->Hide(false); });
+    };
+    auto toggleIRactiveAction = [setIRdimPanelVisibility](IControl* pCaller) { setIRdimPanelVisibility(pCaller); };
+    toggleIRactive->SetActionFunction(toggleIRactiveAction);
+
     // The meters
     const float meterMin = -90.0f;
     const float meterMax = -0.01f;
@@ -624,30 +643,12 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   }
 
   sample** irPointers = toneStackOutPointers;
-  if (this->mIR != nullptr)
+  if (this->mIR != nullptr && this->GetParam(kIRToggle)->Value())
     irPointers = this->mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
 
   // restore previous floating point state
   std::feupdateenv(&fe_state);
 
-  // IR Toggle
-  const bool IRToggleIsActive = this->GetParam(kIRToggle)->Value();
-  if (IRToggleIsActive)
-  {
-    if (this->mIR == nullptr && this->mIRPath.GetLength())
-      this->_GetIR(this->mIRPath);
-  }
-  else
-    this->mIR = nullptr;
-
-  auto ui = this->GetUI();
-  if (ui != nullptr)
-  {
-    auto o = ui->GetControlWithTag(kCtrlTagOverlay);
-    if (o != nullptr)
-      IRToggleIsActive ? o->Hide(true) : o->Hide(false);
-  }
-  
   // Let's get outta here
   // This is where we exit mono for whatever the output requires.
   this->_ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);

@@ -40,7 +40,6 @@ enum ECtrlTags
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
-  kCtrlTagOverlay,
   kNumCtrlTags
 };
 
