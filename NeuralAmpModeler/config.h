@@ -28,10 +28,8 @@
 #define PLUG_FPS 60
 #define PLUG_SHARED_RESOURCES 0
 #define PLUG_HOST_RESIZE 0
-#define PLUG_MIN_WIDTH 250
-#define PLUG_MIN_HEIGHT 150
-#define PLUG_MAX_WIDTH 1000
-#define PLUG_MAX_HEIGHT 600
+#define PLUG_MAX_WIDTH PLUG_WIDTH * 4
+#define PLUG_MAX_HEIGHT PLUG_HEIGHT * 4
 
 #define AUV2_ENTRY NeuralAmpModeler_Entry
 #define AUV2_ENTRY_STR "NeuralAmpModeler_Entry"
