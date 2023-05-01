@@ -865,12 +865,13 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
 {
   // We'll assume that the main processing is mono for now. We'll handle dual amps later.
   // See also: this->mNUM_INTERNAL_CHANNELS
-  if (nChansOut != 1) {        
+  if (nChansOut != 1)
+  {
     std::stringstream ss;
     ss << "Expected mono output, but " << nChansOut << " output channels are requested!";
     throw std::runtime_error(ss.str());
   }
-      
+
   // Assume _PrepareBuffers() was already called
   const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
   for (size_t c = 0; c < nChansIn; c++)

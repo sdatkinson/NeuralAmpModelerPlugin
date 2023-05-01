@@ -13,34 +13,44 @@ projectpath = os.path.abspath(os.path.join(scriptpath, os.pardir))
 
 IPLUG2_ROOT = "../../iPlug2"
 
-sys.path.insert(0, os.path.join(os.getcwd(), IPLUG2_ROOT + '/Scripts'))
+sys.path.insert(0, os.path.join(os.getcwd(), IPLUG2_ROOT + "/Scripts"))
 
 from parse_config import parse_config
 
+
 def main():
-  config = parse_config(projectpath)
+    config = parse_config(projectpath)
 
-  print("Copying resources ...")
+    print("Copying resources ...")
 
-  if config['PLUG_SHARED_RESOURCES']:
-    dst = os.path.expanduser("~") + "/Music/" + config['SHARED_RESOURCES_SUBPATH'] + "/Resources"
-  else:
-    dst = os.environ["TARGET_BUILD_DIR"] + os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
+    if config["PLUG_SHARED_RESOURCES"]:
+        dst = (
+            os.path.expanduser("~")
+            + "/Music/"
+            + config["SHARED_RESOURCES_SUBPATH"]
+            + "/Resources"
+        )
+    else:
+        dst = (
+            os.environ["TARGET_BUILD_DIR"]
+            + os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
+        )
 
-  if os.path.exists(dst) == False:
-    os.makedirs(dst + "/", 0o0755 )
+    if os.path.exists(dst) == False:
+        os.makedirs(dst + "/", 0o0755)
 
-  if os.path.exists(projectpath + "/resources/img/"):
-    imgs = os.listdir(projectpath + "/resources/img/")
-    for img in imgs:
-      print("copying " + img + " to " + dst)
-      shutil.copy(projectpath + "/resources/img/" + img, dst)
+    if os.path.exists(projectpath + "/resources/img/"):
+        imgs = os.listdir(projectpath + "/resources/img/")
+        for img in imgs:
+            print("copying " + img + " to " + dst)
+            shutil.copy(projectpath + "/resources/img/" + img, dst)
 
-  if os.path.exists(projectpath + "/resources/fonts/"):
-    fonts = os.listdir(projectpath + "/resources/fonts/")
-    for font in fonts:
-      print("copying " + font + " to " + dst)
-      shutil.copy(projectpath + "/resources/fonts/" + font, dst)
+    if os.path.exists(projectpath + "/resources/fonts/"):
+        fonts = os.listdir(projectpath + "/resources/fonts/")
+        for font in fonts:
+            print("copying " + font + " to " + dst)
+            shutil.copy(projectpath + "/resources/fonts/" + font, dst)
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()

@@ -81,9 +81,7 @@ def main():
         print("\n\n--------------------")
 
     tagname = f"v{newVersionInfo}"
-    remove_tag = input(
-        f"\nAttempt to remove existing tag for {tagname}? Y/N: "
-    )
+    remove_tag = input(f"\nAttempt to remove existing tag for {tagname}? Y/N: ")
 
     if remove_tag == "y" or remove_tag == "Y":
         os.system(f"git tag -d {tagname}")
