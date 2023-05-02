@@ -24,7 +24,7 @@ EXTRA_LNK_FLAGS = -framework Accelerate -framework Metal -framework MetalKit // 
 
 //------------------------------
 // PREPROCESSOR MACROS
-EXTRA_ALL_DEFS = OBJC_PREFIX=vNeuralAmpModeler SWELL_APP_PREFIX=Swell_vNeuralAmpModeler IGRAPHICS_NANOVG IGRAPHICS_METAL
+EXTRA_ALL_DEFS = OBJC_PREFIX=vNeuralAmpModeler SWELL_APP_PREFIX=Swell_vNeuralAmpModeler IGRAPHICS_NANOVG IGRAPHICS_METAL GRAYED_ALPHA=0.5f
 //EXTRA_DEBUG_DEFS =
 //EXTRA_RELEASE_DEFS =
 //EXTRA_TRACER_DEFS =
