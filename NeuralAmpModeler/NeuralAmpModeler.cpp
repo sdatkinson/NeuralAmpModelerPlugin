@@ -874,8 +874,16 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
     throw std::runtime_error(ss.str());
   }
 
-  // Assume _PrepareBuffers() was already called
+  // On the standalone, we can probably assume that the user has plugged into only one input and they expect it to be
+  // carried straight through. Don't apply any division over nCahnsIn because we're just "catching anything out there."
+  // However, in a DAW, it's probably something providing stereo, and we want to take the average in order to avoid
+  // doubling the loudness.
+#ifdef APP_API
   const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
+#else
+  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0) / (float)nChansIn;
+#endif
+  // Assume _PrepareBuffers() was already called
   for (size_t c = 0; c < nChansIn; c++)
     for (size_t s = 0; s < nFrames; s++)
       if (c == 0)
