@@ -63,8 +63,7 @@ public:
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) { SetStr(reinterpret_cast<const char*>(pData)); }
 };
 
-class NamKnobControl : public IVKnobControl
-                     , public IBitmapBase
+class NamKnobControl : public IVKnobControl, public IBitmapBase
 {
 public:
   NamKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
@@ -72,12 +71,12 @@ public:
   , IBitmapBase(bitmap)
   {
   }
-  
+
   void DrawWidget(IGraphics& g) override
   {
     float widgetRadius = GetRadius();
     const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
-    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.f );
+    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.f);
     const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
     g.FillEllipse(GetColor(mMouseIsOver ? kX3 : kX1), knobHandleBounds, &mBlend);
     DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
@@ -85,17 +84,18 @@ public:
   }
 };
 
-class NamSwitchControl : public IVSlideSwitchControl
-                       , public IBitmapBase
+class NamSwitchControl : public IVSlideSwitchControl, public IBitmapBase
 {
 public:
-  NamSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap, IBitmap handleBitmap)
-  : IVSlideSwitchControl({bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
+  NamSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
+                   IBitmap handleBitmap)
+  : IVSlideSwitchControl(
+    {bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
   , IBitmapBase(bitmap)
   , mHandleBitmap(handleBitmap)
   {
   }
-  
+
   void DrawWidget(IGraphics& g) override
   {
     // OL: arg, pixels :-(
@@ -107,16 +107,14 @@ public:
     DrawTrack(g, mWidgetBounds);
     DrawHandle(g, mHandleBounds);
   }
-    
-  void DrawTrack(IGraphics& g, const IRECT& filledArea) override
-  {
-    g.DrawBitmap(mBitmap, mRECT, 0, &mBlend);
-  }
-  
+
+  void DrawTrack(IGraphics& g, const IRECT& filledArea) override { g.DrawBitmap(mBitmap, mRECT, 0, &mBlend); }
+
   void DrawHandle(IGraphics& g, const IRECT& filledArea) override
   {
     g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0), 0, &mBlend);
   }
+
 private:
   IBitmap mHandleBitmap;
 };
@@ -238,8 +236,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Area for noise gate toggle
     const float ngAreaHeight = toggleHeight;
     const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
-    const IRECT ngToggleArea = noiseGateArea.GetFromBottom(ngAreaHeight)
-      .GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
+    const IRECT ngToggleArea =
+      noiseGateArea.GetFromBottom(ngAreaHeight).GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
     // Area for EQ toggle
     const float eqAreaHeight = toggleHeight;
     const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
@@ -382,9 +380,23 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagIRName);
 
-    pGraphics->AttachControl(new NamSwitchControl(ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "", style, switchBitmap, switchHandleBitmap), kCtrlTagOutNorm);
+    // TODO all these magic numbers
+    pGraphics->AttachControl(new NamSwitchControl(
+      ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
+    pGraphics->AttachControl(new NamSwitchControl(
+      eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
+    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
+                                                  style, switchBitmap, switchHandleBitmap),
+                             kCtrlTagOutNorm);
+    // Get those labels on
+    {
+      const float labelNudgeX = 11.f;
+      const float labelNudgeY = 15.f;
+      pGraphics->AttachControl(
+        new ITextControl(eqToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "EQ", style.labelText));
+      pGraphics->AttachControl(new ITextControl(
+        outNormToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "Normalize", style.labelText));
+    }
 
     // The knobs
     pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
@@ -593,12 +605,12 @@ void NeuralAmpModeler::OnIdle()
 {
   this->mInputSender.TransmitData(*this);
   this->mOutputSender.TransmitData(*this);
-  
+
   if (this->mNewNAMLoadedInDSP)
   {
     if (GetUI())
       this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
-    
+
     this->mNewNAMLoadedInDSP = false;
   }
 }
@@ -643,19 +655,16 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
   if (auto pGraphics = GetUI())
   {
     bool active = GetParam(paramIdx)->Bool();
-    
+
     switch (paramIdx)
     {
-      case kNoiseGateActive:
-        pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active);
-        break;
+      case kNoiseGateActive: pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active); break;
       case kEQActive:
         pGraphics->GetControlWithParamIdx(kToneBass)->SetDisabled(!active);
         pGraphics->GetControlWithParamIdx(kToneMid)->SetDisabled(!active);
         pGraphics->GetControlWithParamIdx(kToneTreble)->SetDisabled(!active);
         break;
-      default:
-        break;
+      default: break;
     }
   }
 }
