@@ -26,7 +26,6 @@ enum EParams
   kNoiseGateActive,
   kEQActive,
   kOutNorm,
-  kOutNormPanel,
   kNumParams
 };
 
@@ -39,6 +38,7 @@ enum ECtrlTags
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
+  kCtrlTagOutNorm,
   kNumCtrlTags
 };
 
@@ -49,23 +49,15 @@ public:
   ~NeuralAmpModeler();
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
-  void OnReset() override
-  {
-    const auto sampleRate = this->GetSampleRate();
-    this->mInputSender.Reset(sampleRate);
-    this->mOutputSender.Reset(sampleRate);
-  }
-  void OnIdle() override
-  {
-    this->mInputSender.TransmitData(*this);
-    this->mOutputSender.TransmitData(*this);
-  }
+  void OnReset() override;
+  void OnIdle() override;
 
   bool SerializeState(iplug::IByteChunk& chunk) const override;
   int UnserializeState(const iplug::IByteChunk& chunk, int startPos) override;
   void OnUIOpen() override;
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
 
+  void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
 private:
   // Allocates mInputPointers and mOutputPointers
   void _AllocateIOPointers(const size_t nChans);
@@ -109,8 +101,6 @@ private:
   // Disable Normalization toggle when no loudness data in model metadata
   // Sometimes the UI isn't initialized, so we have to try again later.
   //
-  // Returns whether it was successful
-  bool _SetOutputNormalizationDisableState(const bool disable);
   void _UnsetModelMsg();
   void _UnsetIRMsg();
   void _UnsetMsg(const int tag, const WDL_String& msg);
@@ -148,10 +138,7 @@ private:
   bool mFlagRemoveIR;
   const WDL_String mDefaultNAMString;
   const WDL_String mDefaultIRString;
-
-  // Try to set the diable state of output normalization
-  bool mFlagSetDisableNormalization;
-  bool mSetDisableNormalization; // True = Disable
+  std::atomic<bool> mNewNAMLoadedInDSP = false;
 
   // Tone stack modules
   recursive_linear_filter::LowShelf mToneBass;
