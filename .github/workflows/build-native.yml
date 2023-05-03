@@ -1,7 +1,7 @@
 name: Build Native
 
 on:
-  workflow_dispatch
+  [workflow_dispatch, push, pull_request]
   #push:
     # tags:
     #   - "v*"
