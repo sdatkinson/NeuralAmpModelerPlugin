@@ -413,9 +413,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // The knobs
     pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
     pGraphics->AttachControl(new NamKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
@@ -675,9 +675,9 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
     {
       case kNoiseGateActive: pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active); break;
       case kEQActive:
-        pGraphics->GetControlWithParamIdx(kToneBass)->SetDisabled(!active);
-        pGraphics->GetControlWithParamIdx(kToneMid)->SetDisabled(!active);
-        pGraphics->GetControlWithParamIdx(kToneTreble)->SetDisabled(!active);
+        pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl){
+          pControl->SetDisabled(!active);
+        });
         break;
       case kIRToggle:
         pGraphics->ForControlInGroup("IR_CONTROLS", [active](IControl* pControl){
