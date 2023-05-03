@@ -14,7 +14,7 @@
 
 #define SHARED_RESOURCES_SUBPATH "NeuralAmpModeler"
 
-#define PLUG_CHANNEL_IO "1-1 1-2"
+#define PLUG_CHANNEL_IO "1-1 1-2 2-2"
 
 #define PLUG_LATENCY 0
 #define PLUG_TYPE 0
@@ -28,10 +28,8 @@
 #define PLUG_FPS 60
 #define PLUG_SHARED_RESOURCES 0
 #define PLUG_HOST_RESIZE 0
-#define PLUG_MIN_WIDTH 250
-#define PLUG_MIN_HEIGHT 150
-#define PLUG_MAX_WIDTH 1000
-#define PLUG_MAX_HEIGHT 600
+#define PLUG_MAX_WIDTH PLUG_WIDTH * 4
+#define PLUG_MAX_HEIGHT PLUG_HEIGHT * 4
 
 #define AUV2_ENTRY NeuralAmpModeler_Entry
 #define AUV2_ENTRY_STR "NeuralAmpModeler_Entry"
@@ -59,8 +57,6 @@
 #define FILE_FN "SkinEHeritage_File.svg"
 #define FOLDER_FN "folder.svg"
 #define CLOSE_BUTTON_FN "SkinEHeritage_Close-button.svg"
-#define TOLEX_FN "tolex.jpeg"
-#define TOLEX2X_FN "tolex@2x.jpeg"
 #define LEFT_ARROW_FN "SkinEHeritage_ArrowLeft.svg"
 #define RIGHT_ARROW_FN "SkinEHeritage_ArrowRight.svg"
 #define EH_SKIN_FN "SkinEHeritage_BG.jpeg"
@@ -71,3 +67,5 @@
 #define TOGGLE2X_FN "SkinEHeritage_Toggle@2x.png"
 #define TOGGLEIR_FN "SkinEHeritage_IR_Toggle.png"
 #define TOGGLEIR2X_FN "SkinEHeritage_IR_Toggle@2x.png"
+#define TOGGLE_HANDLE_FN "SkinEHeritage_ToggleHandle.png"
+#define TOGGLE_HANDLE2X_FN "SkinEHeritage_ToggleHandle@2x.png"
