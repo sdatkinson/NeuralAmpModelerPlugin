@@ -26,6 +26,7 @@ enum EParams
   kNoiseGateActive,
   kEQActive,
   kOutNorm,
+  kIRToggle,
   kNumParams
 };
 

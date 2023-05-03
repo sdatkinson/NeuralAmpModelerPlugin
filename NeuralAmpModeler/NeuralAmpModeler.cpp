@@ -184,6 +184,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   this->GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   this->GetParam(kEQActive)->InitBool("ToneStack", true);
   this->GetParam(kOutNorm)->InitBool("OutNorm", false);
+  this->GetParam(kIRToggle)->InitBool("IRToggle", true);
 
   this->mNoiseGateTrigger.AddListener(&this->mNoiseGateGain);
 
@@ -207,6 +208,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
+    const IBitmap irSwitch = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
@@ -256,6 +258,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT outNormToggleArea = outputKnobArea.GetFromBottom(outNormAreaHeight)
                                       .GetTranslated(-10.f, outNormAreaHeight + singleKnobPad - 14.f)
                                       .GetMidHPadded(outNormAreaHalfWidth);
+
+    // Area for IR bypass toggle
+    const float irBypassToggleX = 46.f;
+    const float irBypassToggleY = 343.f;
+    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitch);
+
+    // Area for IR bypass toggle
+    const float dimPanelOpacity = 0.75f;
+    const IRECT irBypassDimPanel = IRECT(100.f, 344.f, 500.f, 364.f); // left, top, right, bottom
 
     // Areas for model and IR
     const float fileWidth = 200.0f;
@@ -410,6 +421,26 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap));
     pGraphics->AttachControl(new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap));
     pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
+
+    // toggle IR on / off
+    IBSwitchControl* toggleIRactive = new IBSwitchControl(irBypassToggleArea, irSwitch, kIRToggle);
+    pGraphics->AttachControl(toggleIRactive, kIRToggle);
+    // dim IR dispaly
+    pGraphics
+      ->AttachControl(
+        new IVPanelControl(
+          irBypassDimPanel, "", style.WithDrawFrame(false).WithColor(kFG, COLOR_BLACK.WithOpacity(dimPanelOpacity))),
+        kNoTag, "NAM_OVERLAY")
+      ->Hide(this->GetParam(kIRToggle)->Value());
+
+    // Extend the ir toggle action function to set dim panel visible or not
+    auto setIRdimPanelVisibility = [&, pGraphics, irBypassDimPanel](IControl* pCaller) {
+      const bool irActive = pCaller->GetValue() > 0;
+      pGraphics->ForControlInGroup(
+        "NAM_OVERLAY", [&](IControl* pControl) { irActive ? pControl->Hide(true) : pControl->Hide(false); });
+    };
+    auto toggleIRactiveAction = [setIRdimPanelVisibility](IControl* pCaller) { setIRdimPanelVisibility(pCaller); };
+    toggleIRactive->SetActionFunction(toggleIRactiveAction);
 
     // The meters
     const float meterMin = -90.0f;
@@ -585,7 +616,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   }
 
   sample** irPointers = toneStackOutPointers;
-  if (this->mIR != nullptr)
+  if (this->mIR != nullptr && this->GetParam(kIRToggle)->Value())
     irPointers = this->mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
 
   // restore previous floating point state

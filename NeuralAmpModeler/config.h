@@ -65,5 +65,7 @@
 #define KNOB2X_FN "SkinEHeritage_Knob@2x.png"
 #define TOGGLE_FN "SkinEHeritage_Toggle.png"
 #define TOGGLE2X_FN "SkinEHeritage_Toggle@2x.png"
+#define TOGGLEIR_FN "SkinEHeritage_IR_Toggle.png"
+#define TOGGLEIR2X_FN "SkinEHeritage_IR_Toggle@2x.png"
 #define TOGGLE_HANDLE_FN "SkinEHeritage_ToggleHandle.png"
 #define TOGGLE_HANDLE2X_FN "SkinEHeritage_ToggleHandle@2x.png"
