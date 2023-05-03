@@ -208,7 +208,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    const IBitmap irSwitch = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
+    const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
@@ -262,7 +262,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Area for IR bypass toggle
     const float irBypassToggleX = 46.f;
     const float irBypassToggleY = 343.f;
-    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitch);
+    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitchBitmap);
 
     // Area for IR bypass toggle
     const float dimPanelOpacity = 0.75f;
@@ -372,8 +372,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Graphics objects for what NAM is loaded
     const float iconWidth = fileHeight; // Square icon
-    pGraphics->AttachControl(
-      new IVPanelControl(modelArea, "", style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_0)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
       modelArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadNAM, fileSVG));
     pGraphics->AttachControl(
@@ -384,17 +382,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
       kCtrlTagModelName);
     // IR
-    pGraphics->AttachControl(
-      new IVPanelControl(irArea, "", style.WithDrawFrame(false).WithColor(kFG, PluginColors::NAM_0)));
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
-      irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG));
+      irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG), -1, "IR_CONTROLS");
     pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG));
+      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG), -1, "IR_CONTROLS");
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
         irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(),
         style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
-      kCtrlTagIRName);
+      kCtrlTagIRName, "IR_CONTROLS");
 
     // TODO all these magic numbers
     pGraphics->AttachControl(new NamSwitchControl(
@@ -423,24 +419,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
-    IBSwitchControl* toggleIRactive = new IBSwitchControl(irBypassToggleArea, irSwitch, kIRToggle);
-    pGraphics->AttachControl(toggleIRactive, kIRToggle);
-    // dim IR dispaly
-    pGraphics
-      ->AttachControl(
-        new IVPanelControl(
-          irBypassDimPanel, "", style.WithDrawFrame(false).WithColor(kFG, COLOR_BLACK.WithOpacity(dimPanelOpacity))),
-        kNoTag, "NAM_OVERLAY")
-      ->Hide(this->GetParam(kIRToggle)->Value());
-
-    // Extend the ir toggle action function to set dim panel visible or not
-    auto setIRdimPanelVisibility = [&, pGraphics, irBypassDimPanel](IControl* pCaller) {
-      const bool irActive = pCaller->GetValue() > 0;
-      pGraphics->ForControlInGroup(
-        "NAM_OVERLAY", [&](IControl* pControl) { irActive ? pControl->Hide(true) : pControl->Hide(false); });
-    };
-    auto toggleIRactiveAction = [setIRdimPanelVisibility](IControl* pCaller) { setIRdimPanelVisibility(pCaller); };
-    toggleIRactive->SetActionFunction(toggleIRactiveAction);
+    pGraphics->AttachControl(new IBSwitchControl(irBypassToggleArea, irSwitchBitmap, kIRToggle));
 
     // The meters
     const float meterMin = -90.0f;
@@ -700,6 +679,10 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
         pGraphics->GetControlWithParamIdx(kToneMid)->SetDisabled(!active);
         pGraphics->GetControlWithParamIdx(kToneTreble)->SetDisabled(!active);
         break;
+      case kIRToggle:
+        pGraphics->ForControlInGroup("IR_CONTROLS", [active](IControl* pControl){
+          pControl->SetDisabled(!active);
+        });
       default: break;
     }
   }
