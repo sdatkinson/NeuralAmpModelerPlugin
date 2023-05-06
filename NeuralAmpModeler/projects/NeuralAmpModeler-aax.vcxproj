@@ -518,6 +518,7 @@
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\config.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
+    <ClInclude Include="..\NeuralAmpModelerControls.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h" />
