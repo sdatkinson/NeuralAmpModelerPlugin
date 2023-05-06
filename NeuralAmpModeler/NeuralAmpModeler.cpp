@@ -498,6 +498,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
           0),
         kCtrlTagAboutBox)
       ->Hide(true);
+    
+    pGraphics->ForAllControlsFunc([](IControl* pControl){
+      pControl->SetMouseEventsWhenDisabled(true);
+      pControl->SetMouseOverWhenDisabled(true);
+    });
   };
 }
 
