@@ -1,7 +1,10 @@
 name: Build Native
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  pull_request:
+  schedule:
+    - cron: '0 8 * * 2'
   #push:
     # tags:
     #   - "v*"
