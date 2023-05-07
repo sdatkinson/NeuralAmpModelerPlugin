@@ -84,7 +84,11 @@ public:
     float data[2][2];
     RadialPoints(angle, cx + 1, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
     g.PathCircle(data[1][0], data[1][1], 3);
-    g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f, {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f}, {GetColor(mMouseIsOver ? kX3 : kX1), 0.8f}, {COLOR_TRANSPARENT, 1.0f}}), {}, &mBlend);
+    g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f,
+                                              {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f},
+                                               {GetColor(mMouseIsOver ? kX3 : kX1), 0.8f},
+                                               {COLOR_TRANSPARENT, 1.0f}}),
+               {}, &mBlend);
     g.DrawCircle(COLOR_BLACK.WithOpacity(0.5f), data[1][0], data[1][1], 3, &mBlend);
   }
 };
@@ -383,9 +387,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       kCtrlTagModelName);
     // IR
     pGraphics->AttachControl(new IRolloverSVGButtonControl(
-      irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG), -1, "IR_CONTROLS");
+                               irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG),
+                             -1, "IR_CONTROLS");
     pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG), -1, "IR_CONTROLS");
+      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG), -1,
+      "IR_CONTROLS");
     pGraphics->AttachControl(
       new IVUpdateableLabelControl(
         irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(),
@@ -415,7 +421,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NamKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
     pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(
+      new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
@@ -498,8 +505,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
           0),
         kCtrlTagAboutBox)
       ->Hide(true);
-    
-    pGraphics->ForAllControlsFunc([](IControl* pControl){
+
+    pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);
       pControl->SetMouseOverWhenDisabled(true);
     });
@@ -680,14 +687,10 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
     {
       case kNoiseGateActive: pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active); break;
       case kEQActive:
-        pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl){
-          pControl->SetDisabled(!active);
-        });
+        pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
       case kIRToggle:
-        pGraphics->ForControlInGroup("IR_CONTROLS", [active](IControl* pControl){
-          pControl->SetDisabled(!active);
-        });
+        pGraphics->ForControlInGroup("IR_CONTROLS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
       default: break;
     }
   }
