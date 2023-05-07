@@ -225,11 +225,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                        fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG), kCtrlTagIRFileBrowser);
 
     // TODO all these magic numbers
-    pGraphics->AttachControl(new NamSwitchControl(
+    pGraphics->AttachControl(new NAMSwitchControl(
       ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(
+    pGraphics->AttachControl(new NAMSwitchControl(
       eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
+    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
                                                   style, switchBitmap, switchHandleBitmap),
                              kCtrlTagOutNorm);
     // Get those labels on
@@ -243,13 +243,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     }
 
     // The knobs
-    pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(
-      new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
     pGraphics->AttachControl(new IBSwitchControl(irBypassToggleArea, irSwitchBitmap, kIRToggle));
@@ -277,7 +276,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->SetPeakSize(2.0f);
 
     //     Help/about box
-    pGraphics->AttachControl(new IRolloverCircleSVGButtonControl(
+    pGraphics->AttachControl(new NAMCircleButtonControl(
       mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
       [pGraphics](IControl* pCaller) {
         pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);

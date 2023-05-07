@@ -5,10 +5,10 @@
 using namespace iplug;
 using namespace igraphics;
 
-class IRolloverSVGButtonControl : public ISVGButtonControl
+class NAMSquareButtonControl : public ISVGButtonControl
 {
 public:
-  IRolloverSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
+  NAMSquareButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
   : ISVGButtonControl(bounds, af, svg, svg)
   {
   }
@@ -22,10 +22,10 @@ public:
   }
 };
 
-class IRolloverCircleSVGButtonControl : public ISVGButtonControl
+class NAMCircleButtonControl : public ISVGButtonControl
 {
 public:
-  IRolloverCircleSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
+  NAMCircleButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
   : ISVGButtonControl(bounds, af, svg, svg)
   {
   }
@@ -39,10 +39,10 @@ public:
   }
 };
 
-class NamKnobControl : public IVKnobControl, public IBitmapBase
+class NAMKnobControl : public IVKnobControl, public IBitmapBase
 {
 public:
-  NamKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
+  NAMKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
   : IVKnobControl(bounds, paramIdx, label, style, true)
   , IBitmapBase(bitmap)
   {
@@ -65,10 +65,10 @@ public:
   }
 };
 
-class NamSwitchControl : public IVSlideSwitchControl, public IBitmapBase
+class NAMSwitchControl : public IVSlideSwitchControl, public IBitmapBase
 {
 public:
-  NamSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
+  NAMSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
                    IBitmap handleBitmap)
   : IVSlideSwitchControl(
     {bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
@@ -236,15 +236,15 @@ public:
     const auto rightButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto fileNameButtonBounds = padded;
     
-    AddChildControl(new IRolloverSVGButtonControl(loadFileButtonBounds, DefaultClickActionFunc, mLoadSVG))
+    AddChildControl(new NAMSquareButtonControl(loadFileButtonBounds, DefaultClickActionFunc, mLoadSVG))
     ->SetAnimationEndActionFunction(loadFileFunc);
-    AddChildControl(new IRolloverSVGButtonControl(leftButtonBounds, DefaultClickActionFunc, mLeftSVG))
+    AddChildControl(new NAMSquareButtonControl(leftButtonBounds, DefaultClickActionFunc, mLeftSVG))
     ->SetAnimationEndActionFunction(prevFileFunc);
-    AddChildControl(new IRolloverSVGButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
+    AddChildControl(new NAMSquareButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
     ->SetAnimationEndActionFunction(nextFileFunc);
     AddChildControl(mFileNameControl = new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle))
     ->SetAnimationEndActionFunction(chooseFileFunc);
-    AddChildControl(new IRolloverSVGButtonControl(clearButtonBounds, DefaultClickActionFunc, mClearSVG))
+    AddChildControl(new NAMSquareButtonControl(clearButtonBounds, DefaultClickActionFunc, mClearSVG))
     ->SetAnimationEndActionFunction(clearFileFunc);
     
     mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
