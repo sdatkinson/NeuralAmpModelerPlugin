@@ -51,6 +51,12 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Patch VST3 SDK script
+      run: |
+        cd scripts
+        ./patch-sdk-download.sh
+      shell: bash
+
     - name: Get VST3 SDK
       run: |
         cd iPlug2/Dependencies/IPlug
