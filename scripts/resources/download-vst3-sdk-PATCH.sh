@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# THIS IS A COPY OF iPlug2/Dependencies/IPlug/downlaod-vst3-sdk.sh
+# Line 21 is new.
 
 # 1st argument = tag name
 # 2nd argument = "build-validator" to build the vst3-validator
