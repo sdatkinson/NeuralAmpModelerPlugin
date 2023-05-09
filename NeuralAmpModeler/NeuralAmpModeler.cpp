@@ -67,7 +67,7 @@ class NamKnobControl : public IVKnobControl, public IBitmapBase
 {
 public:
   NamKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
-  : IVKnobControl(bounds, paramIdx, label, style)
+  : IVKnobControl(bounds, paramIdx, label, style, true)
   , IBitmapBase(bitmap)
   {
     mInnerPointerFrac = 0.6;
