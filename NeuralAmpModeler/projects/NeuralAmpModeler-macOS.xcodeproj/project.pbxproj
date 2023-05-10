@@ -1241,17 +1241,17 @@
 		4F2FB1392A0047420027AB66 /* dsp */ = {
 			isa = PBXGroup;
 			children = (
-				4F2FB13A2A0047420027AB66 /* Resample.h */,
-				4F2FB13B2A0047420027AB66 /* RecursiveLinearFilter.cpp */,
-				4F2FB13C2A0047420027AB66 /* wav.h */,
-				4F2FB13D2A0047420027AB66 /* NoiseGate.h */,
 				4F2FB13E2A0047420027AB66 /* dsp.cpp */,
-				4F2FB13F2A0047420027AB66 /* NoiseGate.cpp */,
-				4F2FB1402A0047420027AB66 /* ImpulseResponse.cpp */,
-				4F2FB1412A0047420027AB66 /* RecursiveLinearFilter.h */,
-				4F2FB1422A0047420027AB66 /* ImpulseResponse.h */,
 				4F2FB1432A0047420027AB66 /* dsp.h */,
+				4F2FB1402A0047420027AB66 /* ImpulseResponse.cpp */,
+				4F2FB1422A0047420027AB66 /* ImpulseResponse.h */,
+				4F2FB13F2A0047420027AB66 /* NoiseGate.cpp */,
+				4F2FB13D2A0047420027AB66 /* NoiseGate.h */,
+				4F2FB13B2A0047420027AB66 /* RecursiveLinearFilter.cpp */,
+				4F2FB1412A0047420027AB66 /* RecursiveLinearFilter.h */,
+				4F2FB13A2A0047420027AB66 /* Resample.h */,
 				4F2FB1442A0047420027AB66 /* wav.cpp */,
+				4F2FB13C2A0047420027AB66 /* wav.h */,
 			);
 			name = dsp;
 			path = ../NeuralAmpModelerCore/dsp;
@@ -1260,20 +1260,20 @@
 		4F2FB1452A0047420027AB66 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
-				4F2FB1462A0047420027AB66 /* util.cpp */,
-				4F2FB1472A0047420027AB66 /* version.h */,
-				4F2FB1482A0047420027AB66 /* dsp.cpp */,
-				4F2FB1492A0047420027AB66 /* convnet.h */,
-				4F2FB14A2A0047420027AB66 /* lstm.h */,
-				4F2FB14B2A0047420027AB66 /* convnet.cpp */,
-				4F2FB14C2A0047420027AB66 /* wavenet.h */,
-				4F2FB14D2A0047420027AB66 /* lstm.cpp */,
-				4F2FB14E2A0047420027AB66 /* util.h */,
-				4F2FB14F2A0047420027AB66 /* dsp.h */,
-				4F2FB1502A0047420027AB66 /* activations.h */,
 				4F2FB1512A0047420027AB66 /* activations.cpp */,
-				4F2FB1522A0047420027AB66 /* wavenet.cpp */,
+				4F2FB1502A0047420027AB66 /* activations.h */,
+				4F2FB14B2A0047420027AB66 /* convnet.cpp */,
+				4F2FB1492A0047420027AB66 /* convnet.h */,
+				4F2FB1482A0047420027AB66 /* dsp.cpp */,
+				4F2FB14F2A0047420027AB66 /* dsp.h */,
 				4F2FB1532A0047420027AB66 /* get_dsp.cpp */,
+				4F2FB14D2A0047420027AB66 /* lstm.cpp */,
+				4F2FB14A2A0047420027AB66 /* lstm.h */,
+				4F2FB1462A0047420027AB66 /* util.cpp */,
+				4F2FB14E2A0047420027AB66 /* util.h */,
+				4F2FB1472A0047420027AB66 /* version.h */,
+				4F2FB1522A0047420027AB66 /* wavenet.cpp */,
+				4F2FB14C2A0047420027AB66 /* wavenet.h */,
 			);
 			name = NAM;
 			path = ../NeuralAmpModelerCore/NAM;
