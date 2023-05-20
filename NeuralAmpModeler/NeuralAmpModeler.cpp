@@ -49,6 +49,12 @@ const IVStyle style =
           DEFAULT_WIDGET_FRAC,
           DEFAULT_WIDGET_ANGLE};
 
+const IVStyle titleStyle =
+DEFAULT_STYLE
+.WithValueText(IText(24, COLOR_WHITE, "Ronduit-Light"))
+.WithDrawFrame(false)
+.WithShadowOffset(2.f);
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
@@ -80,9 +86,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mLayoutFunc = [&](IGraphics* pGraphics) {
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachTextEntryControl();
-    pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->EnableMouseOver(true);
-    pGraphics->EnableTooltips(true);
+    pGraphics->EnableTooltips(true);    
+    
+    pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
+    pGraphics->LoadFont("Ronduit-Light", RONDUIT_FN);
+    
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
@@ -92,11 +101,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
-    pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
+    
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
-    const float titleHeight = 50.0f;
+    const auto titleHeight = 50.0f;
+    const auto titleArea = content.GetFromTop(titleHeight);
 
     // Area for the Noise gate knob
     const float allKnobsHalfPad = 10.0f;
@@ -202,6 +212,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         }
       }
     };
+
+    pGraphics->AttachBackground(BACKGROUND_FN);
+    pGraphics->AttachControl(new IVLabelControl(titleArea, "Neural Amp Modeler", titleStyle));
 
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
