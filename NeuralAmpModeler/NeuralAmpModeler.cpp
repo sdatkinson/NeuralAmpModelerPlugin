@@ -99,6 +99,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
+    pGraphics->EnableTooltips(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
