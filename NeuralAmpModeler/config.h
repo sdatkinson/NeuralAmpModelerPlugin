@@ -74,6 +74,10 @@
 #define TOGGLE_HANDLE_FN "SkinEHeritage_ToggleHandle.png"
 #define TOGGLE_HANDLE2X_FN "SkinEHeritage_ToggleHandle@2x.png"
 
+#define BACKGROUND_FN "Background.jpg"
+#define BACKGROUND2X_FN "Background@2x.jpg"
+#define BACKGROUND3X_FN "Background@3x.jpg"
+
 // Issue 291
 // On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
 // user to pick a directory instead of the file in the directory.
