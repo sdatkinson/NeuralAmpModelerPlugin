@@ -96,7 +96,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mLayoutFunc = [&](IGraphics* pGraphics) {
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachTextEntryControl();
-    pGraphics->AttachPanelBackground(COLOR_BLACK);
+    pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->EnableMouseOver(true);
     pGraphics->EnableTooltips(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
@@ -179,10 +179,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                     .GetMidHPadded(allKnobsHalfPad)
                                     .GetMidVPadded(meterHalfHeight)
                                     .GetTranslated(allKnobsPad + 18.f, 0.0f);
-
-    auto themeBG = pGraphics->LoadBitmap(EH_SKIN_FN);
-    pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), themeBG, kNoParameter))
-      ->SetBlend(IBlend(EBlend::Default, 1.0));
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
