@@ -16,7 +16,7 @@ public:
   void Draw(IGraphics& g) override
   {
     if (mMouseIsOver)
-      g.FillRect(PluginColors::MOUSEOVER, mRECT);
+      g.FillRoundRect(PluginColors::MOUSEOVER, mRECT, 2.f);
 
     ISVGButtonControl::Draw(g);
   }
