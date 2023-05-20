@@ -57,6 +57,8 @@
 #define APP_SIGNAL_VECTOR_SIZE 64
 
 #define ROBOTO_FN "Roboto-Regular.ttf"
+#define MICHROMA_FN "Michroma-Regular.ttf"
+
 #define HELP_FN "help.svg"
 #define FILE_FN "SkinEHeritage_File.svg"
 #define FOLDER_FN "folder.svg"
