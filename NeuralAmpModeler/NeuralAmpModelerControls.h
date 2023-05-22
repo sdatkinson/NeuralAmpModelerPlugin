@@ -46,19 +46,19 @@ public:
   : IVKnobControl(bounds, paramIdx, label, style, true)
   , IBitmapBase(bitmap)
   {
-    mInnerPointerFrac = 0.6;
+    mInnerPointerFrac = 0.55;
   }
 
   void DrawWidget(IGraphics& g) override
   {
-    float widgetRadius = GetRadius();
-    const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
-    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.5f);
+    float widgetRadius = GetRadius() * 0.73;
+    auto knobRect = mWidgetBounds.GetCentredInside(mWidgetBounds.W(), mWidgetBounds.W());
+    const float cx = knobRect.MW(), cy = knobRect.MH();
     const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
-    DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
-    g.DrawBitmap(mBitmap, knobHandleBounds.GetTranslated(4, 3), 0, 0);
+    DrawIndicatorTrack(g, angle, cx+0.5, cy, widgetRadius);
+    g.DrawFittedBitmap(mBitmap, knobRect);
     float data[2][2];
-    RadialPoints(angle, cx + 1, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
+    RadialPoints(angle, cx, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
     g.PathCircle(data[1][0], data[1][1], 3);
     g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f,
                                               {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f},
