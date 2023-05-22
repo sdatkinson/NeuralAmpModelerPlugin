@@ -77,6 +77,9 @@
 #define BACKGROUND_FN "Background.jpg"
 #define BACKGROUND2X_FN "Background@2x.jpg"
 #define BACKGROUND3X_FN "Background@3x.jpg"
+#define KNOBBACKGROUND_FN "KnobBackground.png"
+#define KNOBBACKGROUND2X_FN "KnobBackground@2x.png"
+#define KNOBBACKGROUND3X_FN "KnobBackground@3x.png"
 
 // Issue 291
 // On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
