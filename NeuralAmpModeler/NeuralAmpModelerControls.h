@@ -72,36 +72,87 @@ public:
 class NAMSwitchControl : public IVSlideSwitchControl, public IBitmapBase
 {
 public:
-  NAMSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
-                   IBitmap handleBitmap)
-  : IVSlideSwitchControl(
-    {bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
+  NAMSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
+  : IVSlideSwitchControl(bounds, paramIdx, label, style
+                         .WithRoundness(0.666f)
+                         .WithShowValue(false)
+                         .WithEmboss(true)
+                         .WithShadowOffset(1.5f)
+                         .WithDrawShadows(false)
+                         .WithColor(kFR, COLOR_BLACK)
+                         .WithFrameThickness(0.5f)
+                         .WithWidgetFrac(0.5f)
+                         .WithLabelOrientation(EOrientation::South))
   , IBitmapBase(bitmap)
-  , mHandleBitmap(handleBitmap)
   {
   }
 
   void DrawWidget(IGraphics& g) override
   {
-    // OL: arg, pixels :-(
-    if (GetValue() > 0.5f)
-      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-    else
-      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-
     DrawTrack(g, mWidgetBounds);
     DrawHandle(g, mHandleBounds);
   }
 
-  void DrawTrack(IGraphics& g, const IRECT& filledArea) override { g.DrawBitmap(mBitmap, mRECT, 0, &mBlend); }
+  void DrawTrack(IGraphics& g, const IRECT& bounds) override
+  {
+    IRECT handleBounds = GetAdjustedHandleBounds(bounds);
+    handleBounds = IRECT(handleBounds.L, handleBounds.T, handleBounds.R, handleBounds.T + mBitmap.H());
+    IRECT centreBounds = handleBounds.GetPadded(-mStyle.shadowOffset);
+    IRECT shadowBounds = handleBounds.GetTranslated(mStyle.shadowOffset, mStyle.shadowOffset);
+//    const float contrast = mDisabled ? -GRAYED_ALPHA : 0.f;
+    float cR = 7.f;
+    const float tlr = cR;
+    const float trr = cR;
+    const float blr = cR;
+    const float brr = cR;
+        
+    // outer shadow
+    if (mStyle.drawShadows)
+      g.FillRoundRect(GetColor(kSH), shadowBounds, tlr, trr, blr, brr, &mBlend);
+
+    // Embossed style unpressed
+    if (mStyle.emboss)
+    {
+      // Positive light
+      g.FillRoundRect(GetColor(kPR), handleBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Negative light
+      g.FillRoundRect(GetColor(kSH), shadowBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Fill in foreground
+      g.FillRoundRect(GetValue() > 0.5 ? GetColor(kX1) : COLOR_BLACK, centreBounds, tlr, trr, blr, brr, &mBlend);
+
+      // Shade when hovered
+      if (mMouseIsOver)
+        g.FillRoundRect(GetColor(kHL), centreBounds, tlr, trr, blr, brr, &mBlend);
+    }
+    else
+    {
+      g.FillRoundRect(GetValue() > 0.5 ? GetColor(kX1) : COLOR_BLACK, handleBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Shade when hovered
+      if (mMouseIsOver)
+        g.FillRoundRect(GetColor(kHL), handleBounds, tlr, trr, blr, brr, &mBlend);
+    }
+
+    if (mStyle.drawFrame)
+      g.DrawRoundRect(GetColor(kFR), handleBounds, tlr, trr, blr, brr, &mBlend, mStyle.frameThickness);
+  }
 
   void DrawHandle(IGraphics& g, const IRECT& filledArea) override
   {
-    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0), 0, &mBlend);
+    IRECT r;
+    if (GetSelectedIdx() == 0)
+    {
+      r = filledArea.GetFromLeft(mBitmap.W());
+    }
+    else
+    {
+      r = filledArea.GetFromRight(mBitmap.W());
+    }
+    
+    g.DrawBitmap(mBitmap, r.GetTranslated(1, 1), 0, 0, nullptr);
   }
-
-private:
-  IBitmap mHandleBitmap;
 };
 
 class NAMFileNameControl : public IVButtonControl
