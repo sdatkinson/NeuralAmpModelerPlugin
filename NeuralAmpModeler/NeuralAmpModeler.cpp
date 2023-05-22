@@ -73,6 +73,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mIRPath()
 , mInputSender()
 , mOutputSender()
+, mHighLightColor(PluginColors::NAM_THEMECOLOR.ToColorCode())
 {
   activations::Activation::enable_fast_tanh();
   this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
@@ -113,6 +114,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
+    
+    const IBitmap bgBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobBackground = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
@@ -269,57 +272,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMCircleButtonControl(
       mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
       [pGraphics](IControl* pCaller) {
-        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
+        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
       },
       helpSVG));
 
-    pGraphics
-      ->AttachControl(
-        new IAboutBoxControl(
-          b, COLOR_GRAY,
-          // AttachFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            pParent->AddChildControl(new IPanelControl(
-              IRECT(),
-              IPattern::CreateLinearGradient(
-                r, EDirection::Vertical, {{PluginColors::NAM_THEMEFONTCOLOR, 0.f}, {PluginColors::NAM_0, 1.f}})));
-
-            pParent->AddChildControl(new IVPanelControl(IRECT(), "",
-                                                        style.WithColor(kFR, PluginColors::NAM_1.WithOpacity(0.9f))
-                                                          .WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.9f))));
-
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "Neural Amp Modeler",
-              style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
-
-            WDL_String versionStr{"Version "};
-            versionStr.Append(PLUG_VERSION_STR);
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), versionStr.Get(),
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "By Steven Atkinson",
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IURLControl(IRECT(), "Train your own model",
-                                                     "https://github.com/sdatkinson/neural-amp-modeler",
-                                                     {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-          },
-          // ResizeFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            const IRECT mainArea = r.GetPadded(-20);
-            const auto content = mainArea.GetPadded(-10);
-            const auto titleLabel = content.GetFromTop(50);
-            pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
-            pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
-            pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
-            pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-            pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
-            pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40));
-          },
-          // Animation Time
-          0),
-        kCtrlTagAboutBox)
-      ->Hide(true);
+    pGraphics->AttachControl(new NAMAboutBoxControl(b, bgBitmap, style), kCtrlTagAboutBox)->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);
@@ -519,6 +476,29 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
   {
     case kMsgTagClearModel: mFlagRemoveNAM = true; return true;
     case kMsgTagClearIR: mFlagRemoveIR = true; return true;
+    case kMsgTagHighlightColor:
+    {
+      mHighLightColor.Set((const char*) pData);
+      
+      if (GetUI())
+      {
+        GetUI()->ForStandardControlsFunc([&](IControl* pControl){
+          
+          if (auto* pVectorBase = pControl->As<IVectorBase>())
+          {
+            IColor color = IColor::FromColorCodeStr(mHighLightColor.Get());
+
+            pVectorBase->SetColor(kX1, color);
+            pVectorBase->SetColor(kPR, color.WithOpacity(0.3f));
+            pVectorBase->SetColor(kFR, color.WithOpacity(0.4f));
+            pVectorBase->SetColor(kX3, color.WithContrast(0.1f));
+          }
+          pControl->GetUI()->SetAllControlsDirty();
+        });
+      }
+      
+      return true;
+    }
     default: return false;
   }
 }

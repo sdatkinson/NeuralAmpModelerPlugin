@@ -2,6 +2,8 @@
 
 #include "IControls.h"
 
+#define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
+
 using namespace iplug;
 using namespace igraphics;
 
@@ -385,3 +387,133 @@ private:
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
   int mClearMsgTag;
 };
+
+class NAMAboutBoxControl : public IContainerBase
+{
+public:
+  NAMAboutBoxControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  : IContainerBase(bounds)
+  , mAnimationTime(0)
+  , mBitmap(bitmap)
+  , mStyle(style)
+  {
+    mIgnoreMouse = false;
+  }
+  
+  bool OnKeyDown(float x, float y, const IKeyPress& key) override
+  {
+    if (key.VK == kVK_ESCAPE)
+    {
+      HideAnimated(true);
+      return true;
+    }
+    
+    return false;
+  }
+  
+  void OnMouseDown(float x, float y, const IMouseMod& mod) override
+  {
+    HideAnimated(true);
+  }
+  
+  void HideAnimated(bool hide)
+  {
+    mWillHide = hide;
+
+    if (hide == false)
+    {
+      mHide = false;
+    }
+    else // hide subcontrols immediately
+    {
+      ForAllChildrenFunc([hide](int childIdx, IControl* pChild) {
+        pChild->Hide(hide);
+      });
+    }
+
+    SetAnimation([&](IControl* pCaller) {
+      auto progress = static_cast<float>(pCaller->GetAnimationProgress());
+
+      if (mWillHide)
+        SetBlend(IBlend(EBlend::Default, 1.0f-progress));
+      else
+        SetBlend(IBlend(EBlend::Default, progress));
+
+      if (progress > 1.0f)
+      {
+        pCaller->OnEndAnimation();
+        IContainerBase::Hide(mWillHide);
+        GetUI()->SetAllControlsDirty();
+        return;
+      }
+
+    }, mAnimationTime);
+
+    SetDirty(true);
+  }
+
+  void OnAttached() override
+  {
+    AddChildControl(new IBitmapControl(IRECT(), mBitmap))->SetIgnoreMouse(true);
+
+    const IVStyle titleStyle =
+    DEFAULT_STYLE
+    .WithValueText(IText(24, COLOR_WHITE, "Ronduit-Light"))
+    .WithDrawFrame(false)
+    .WithShadowOffset(2.f);
+    
+    AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", titleStyle));
+
+    WDL_String verStr, buildInfoStr;
+    PLUG()->GetPluginVersionStr(verStr);
+    
+    buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
+    
+    AddChildControl(new IVLabelControl(
+      IRECT(), "By Steven Atkinson",
+      mStyle.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+    AddChildControl(new IVLabelControl(
+      IRECT(), buildInfoStr.Get(),
+      mStyle.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+    AddChildControl(new IVLabelControl(
+      IRECT(), "Plug-in developed using iPlug2 with some help from Oli Larkin",
+      mStyle.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
+    AddChildControl(new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com",
+                                    {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
+
+    AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
+
+      WDL_String colorCodeStr;
+      color.ToColorCodeStr(colorCodeStr, false);
+      this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(), colorCodeStr.Get());
+
+    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
+
+    OnResize();
+  }
+  
+  void OnResize() override
+  {
+    if (NChildren())
+    {
+      const IRECT mainArea = mRECT.GetPadded(-20);
+      const auto content = mainArea.GetPadded(-10);
+      const auto titleLabel = content.GetFromTop(50);
+      GetChild(0)->SetTargetAndDrawRECTs(mRECT);
+      GetChild(1)->SetTargetAndDrawRECTs(titleLabel);
+      GetChild(2)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
+      GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
+      GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(5));
+      GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
+      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
+    }
+  }
+
+  
+private:
+  IBitmap mBitmap;
+  IVStyle mStyle;
+  int mAnimationTime = 200;
+  bool mWillHide = false;
+};
+
