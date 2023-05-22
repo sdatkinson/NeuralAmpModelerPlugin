@@ -115,8 +115,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
-    const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
-    
+    const IBitmap knobBackground = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
@@ -129,9 +128,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Areas for knobs
     const float knobsExtraSpaceBelowTitle = 25.0f;
-    const float knobHalfHeight = 70.0f;
-    const float knobHeight = 2.0f * knobHalfHeight;
-    const float singleKnobPad = 12.0f;
+    const float knobHeight = 120.f;
+    const float singleKnobPad = -2.0f;
     const auto knobs = content.GetFromTop(knobHeight)
                          .GetReducedFromLeft(allKnobsPad)
                          .GetReducedFromRight(allKnobsPad)
@@ -139,7 +137,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
+    const IRECT midKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
@@ -237,16 +235,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
-    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackground));
+    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackground));
+    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackground), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackground), -1, "EQ_KNOBS");
     pGraphics->AttachControl(
-      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
-
-    // toggle IR on / off
-    pGraphics->AttachControl(new IBSwitchControl(irBypassToggleArea, irSwitchBitmap, kIRToggle));
+      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackground), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackground));
 
     // The meters
     const float meterMin = -90.0f;
