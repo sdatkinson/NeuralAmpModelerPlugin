@@ -199,12 +199,13 @@ class NAMFileBrowserControl : public IDirBrowseControlBase
 public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
                         IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
-                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG)
+                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap)
   : IDirBrowseControlBase(bounds, fileExtension, false, false)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
   , mCompletionHandlerFunc(ch)
   , mStyle(style.WithColor(kFG, COLOR_TRANSPARENT).WithDrawFrame(false))
+  , mBitmap(bitmap)
   , mLoadSVG(loadSVG)
   , mClearSVG(clearSVG)
   , mLeftSVG(leftSVG)
@@ -212,9 +213,10 @@ public:
   {
     mIgnoreMouse = true;
   }
-
+  
   void Draw(IGraphics& g) override
-  { /* NO-OP */
+  {
+    g.DrawFittedBitmap(mBitmap, mRECT);
   }
 
   void OnPopupMenuSelection(IPopupMenu* pSelectedMenu, int valIdx) override
@@ -306,7 +308,7 @@ public:
       }
     };
 
-    IRECT padded = mRECT.GetPadded(-5.f);
+    IRECT padded = mRECT.GetPadded(-6.f).GetHPadded(-2.f);
     const auto buttonWidth = padded.H();
     const auto loadFileButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto clearButtonBounds = padded.ReduceFromRight(buttonWidth);
@@ -384,6 +386,7 @@ private:
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
   NAMFileNameControl* mFileNameControl = nullptr;
   IVStyle mStyle;
+  IBitmap mBitmap;
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
   int mClearMsgTag;
 };

@@ -98,6 +98,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     
+    const IBitmap fileControlBackground = pGraphics->LoadBitmap(FILECONTROLBACKGROUND_FN);
     const IBitmap bgBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
@@ -139,9 +140,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Areas for model and IR
     const float fileWidth = 200.0f;
     const float fileHeight = 30.0f;
-    const float fileYSpace = 8.0f;
     const float irYOffset = 38.0f;
-    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight) + fileYSpace)
+    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight))
                               .GetFromTop(fileHeight)
                               .GetMidHPadded(fileWidth)
                               .GetTranslated(0.0f, -1);
@@ -209,13 +209,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 #endif
     pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
                                                        "nam", loadModelCompletionHandler, style, fileSVG,
-                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG),
+                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG, fileControlBackground),
                              kCtrlTagModelFileBrowser);
+    pGraphics->AttachControl(new ISVGSwitchControl(irArea.GetFromLeft(30).GetTranslated(-40, 0).GetScaledAboutCentre(0.6), { irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
-                                fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
+      new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
+                                style, fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG, fileControlBackground),
       kCtrlTagIRFileBrowser);
-
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);

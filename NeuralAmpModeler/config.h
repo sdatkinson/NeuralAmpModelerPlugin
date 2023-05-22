@@ -80,6 +80,9 @@
 #define KNOBBACKGROUND_FN "KnobBackground.png"
 #define KNOBBACKGROUND2X_FN "KnobBackground@2x.png"
 #define KNOBBACKGROUND3X_FN "KnobBackground@3x.png"
+#define FILECONTROLBACKGROUND_FN "FileControlBackground.png"
+#define FILECONTROLBACKGROUND2X_FN "FileControlBackground@2x.png"
+#define FILECONTROLBACKGROUND3X_FN "FileControlBackground@3x.png"
 
 // Issue 291
 // On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
