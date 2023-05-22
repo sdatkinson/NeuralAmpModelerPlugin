@@ -114,7 +114,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
-    const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
     
@@ -144,24 +143,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
-    const float toggleHeight = 40.0f;
-    // Area for noise gate toggle
-    const float ngAreaHeight = toggleHeight;
-    const IRECT ngToggleArea =
-      noiseGateArea.GetFromBottom(ngAreaHeight).GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
-    // Area for EQ toggle
-    const float eqAreaHeight = toggleHeight;
-    const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
-    const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
-                                 .GetTranslated(-10.f, eqAreaHeight + singleKnobPad - 14.f)
-                                 .GetMidHPadded(eqAreaHalfWidth);
-
-    // Area for output normalization toggle
-    const float outNormAreaHeight = toggleHeight;
-    const float outNormAreaHalfWidth = 0.5f * outputKnobArea.W();
-    const IRECT outNormToggleArea = outputKnobArea.GetFromBottom(outNormAreaHeight)
-                                      .GetTranslated(-10.f, outNormAreaHeight + singleKnobPad - 14.f)
-                                      .GetMidHPadded(outNormAreaHalfWidth);
+    const IRECT ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0);
+    const IRECT eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0);
+    const IRECT outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0);
 
     // Area for IR bypass toggle
     const float irBypassToggleX = 46.f;
@@ -248,23 +232,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                 fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
       kCtrlTagIRFileBrowser);
 
-    // TODO all these magic numbers
-    pGraphics->AttachControl(new NAMSwitchControl(
-      ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(
-      eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
-                                                  style, switchBitmap, switchHandleBitmap),
-                             kCtrlTagOutNorm);
-    // Get those labels on
-    {
-      const float labelNudgeX = 11.f;
-      const float labelNudgeY = 15.f;
-      pGraphics->AttachControl(
-        new ITextControl(eqToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "EQ", style.labelText));
-      pGraphics->AttachControl(new ITextControl(
-        outNormToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "Normalize", style.labelText));
-    }
+    pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
+    pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
+    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
     pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
@@ -360,6 +330,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseEventsWhenDisabled(true);
       pControl->SetMouseOverWhenDisabled(true);
     });
+    
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+
   };
 }
 
