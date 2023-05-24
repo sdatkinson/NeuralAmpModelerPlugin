@@ -1,4 +1,4 @@
-#include <algorithm> // std::clamp
+printf("");#include <algorithm> // std::clamp
 #include <cmath>
 #include <filesystem>
 #include <iostream>
