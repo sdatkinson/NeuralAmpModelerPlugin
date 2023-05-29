@@ -189,7 +189,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       if (fileName.GetLength())
       {
         // Sets mNAMPath and mStagedNAM
-        const std::string msg = this->_GetNAM(fileName);
+        const std::string msg = this->_StageModel(fileName);
         // TODO error messages like the IR loader.
         if (msg.size())
         {
@@ -211,7 +211,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       if (fileName.GetLength())
       {
         this->mIRPath = fileName;
-        const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
+        const dsp::wav::LoadReturnCode retCode = this->_StageIR(fileName);
         if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
         {
           std::stringstream message;
@@ -499,9 +499,9 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   startPos = chunk.GetStr(this->mIRPath, startPos);
   int retcode = UnserializeParams(chunk, startPos);
   if (this->mNAMPath.GetLength())
-    this->_GetNAM(this->mNAMPath);
+    this->_StageModel(this->mNAMPath);
   if (this->mIRPath.GetLength())
-    this->_GetIR(this->mIRPath);
+    this->_StageIR(this->mIRPath);
   return retcode;
 }
 
@@ -618,7 +618,7 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
       this->mOutputArray[c][s] = this->mInputArray[c][s];
 }
 
-std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
+std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
 {
   WDL_String previousNAMPath = this->mNAMPath;
   try
@@ -645,7 +645,7 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
   return "";
 }
 
-dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
+dsp::wav::LoadReturnCode NeuralAmpModeler::_StageIR(const WDL_String& irPath)
 {
   // FIXME it'd be better for the path to be "staged" as well. Just in case the
   // path and the model got caught on opposite sides of the fence...

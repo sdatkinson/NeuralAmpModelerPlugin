@@ -88,10 +88,10 @@ private:
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
-  // Gets a new Neural Amp Model object and stores it to mStagedNAM
-  // Returns an emptry string on success, or an error message on failure.
-  std::string _GetNAM(const WDL_String& dspFile);
-  // Gets the IR and stores to mStagedIR.
+  // Loads a NAM model and stores it to mStagedNAM
+  // Returns an empty string on success, or an error message on failure.
+  std::string _StageModel(const WDL_String& dspFile);
+  // Loads an IR and stores it to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
   dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
