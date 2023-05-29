@@ -51,22 +51,6 @@ const IVStyle style =
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
-, mInputPointers(nullptr)
-, mOutputPointers(nullptr)
-, mNoiseGateTrigger()
-, mModel(nullptr)
-, mIR(nullptr)
-, mStagedModel(nullptr)
-, mStagedIR(nullptr)
-, mShouldRemoveModel(false)
-, mShouldRemoveIR(false)
-, mToneBass()
-, mToneMid()
-, mToneTreble()
-, mNAMPath()
-, mIRPath()
-, mInputSender()
-, mOutputSender()
 {
   activations::Activation::enable_fast_tanh();
   this->GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);

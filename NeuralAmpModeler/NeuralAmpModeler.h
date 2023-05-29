@@ -127,8 +127,8 @@ private:
   // Output from NAM
   std::vector<std::vector<iplug::sample>> mOutputArray;
   // Pointer versions
-  iplug::sample** mInputPointers;
-  iplug::sample** mOutputPointers;
+  iplug::sample** mInputPointers = nullptr;
+  iplug::sample** mOutputPointers = nullptr;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
@@ -141,8 +141,8 @@ private:
   std::unique_ptr<DSP> mStagedModel;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
-  std::atomic<bool> mShouldRemoveModel;
-  std::atomic<bool> mShouldRemoveIR;
+  std::atomic<bool> mShouldRemoveModel = false;
+  std::atomic<bool> mShouldRemoveIR = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
 
