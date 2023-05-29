@@ -97,7 +97,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    
+    auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
+    auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
+    auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
+
     const IBitmap fileControlBackground = pGraphics->LoadBitmap(FILECONTROLBACKGROUND_FN);
     const IBitmap bgBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
@@ -199,6 +202,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->AttachControl(new IVLabelControl(titleArea, "Neural Amp Modeler", titleStyle));
+    pGraphics->AttachControl(new ISVGControl(modelArea.GetFromLeft(30).GetTranslated(-40, 10), modelIconSVG));
 
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
