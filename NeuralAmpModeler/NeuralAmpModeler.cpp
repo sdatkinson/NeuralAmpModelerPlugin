@@ -120,6 +120,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     const IBitmap fileControlBackground = pGraphics->LoadBitmap(FILECONTROLBACKGROUND_FN);
     const IBitmap bgBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
+    const IBitmap linesBitmap = pGraphics->LoadBitmap(LINES_FN);
     const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
     const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
     const IBitmap knobBackground = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
@@ -148,9 +149,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
     const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
-    const IRECT ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0);
-    const IRECT eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0);
-    const IRECT outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0);
+    const IRECT ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const IRECT eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const IRECT outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
 
     // Area for IR bypass toggle
     const float irBypassToggleX = 46.f;
@@ -218,6 +219,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     };
 
     pGraphics->AttachBackground(BACKGROUND_FN);
+    pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
     pGraphics->AttachControl(new IVLabelControl(titleArea, "Neural Amp Modeler", titleStyle));
     pGraphics->AttachControl(new ISVGControl(modelArea.GetFromLeft(30).GetTranslated(-40, 10), modelIconSVG));
 
