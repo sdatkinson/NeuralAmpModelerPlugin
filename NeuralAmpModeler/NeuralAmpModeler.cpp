@@ -162,7 +162,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float fileHeight = 30.0f;
     const float fileYSpace = 8.0f;
     const float irYOffset = 38.0f;
-    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight) + fileYSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetTranslated(0.0f, -1);
+    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight) + fileYSpace)
+                              .GetFromTop(fileHeight)
+                              .GetMidHPadded(fileWidth)
+                              .GetTranslated(0.0f, -1);
     const IRECT irArea = modelArea.GetTranslated(0.0f, irYOffset);
 
     // Areas for meters
@@ -201,7 +204,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         std::cout << "Loaded: " << fileName.Get() << std::endl;
       }
     };
-    
+
     // IR loader button
     auto loadIRCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
       if (fileName.GetLength())
@@ -219,10 +222,14 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       }
     };
 
-    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, "Select model...", "nam", loadModelCompletionHandler, style,
-                                                       fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG), kCtrlTagModelFileBrowser);
-    pGraphics->AttachControl(new NAMFileBrowserControl(irArea, kMsgTagClearIR, "Select IR...", "wav", loadIRCompletionHandler, style,
-                                                       fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG), kCtrlTagIRFileBrowser);
+    pGraphics->AttachControl(
+      new NAMFileBrowserControl(modelArea, kMsgTagClearModel, "Select model...", "nam", loadModelCompletionHandler,
+                                style, fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
+      kCtrlTagModelFileBrowser);
+    pGraphics->AttachControl(
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, "Select IR...", "wav", loadIRCompletionHandler, style, fileSVG,
+                                closeButtonSVG, leftArrowSVG, rightArrowSVG),
+      kCtrlTagIRFileBrowser);
 
     // TODO all these magic numbers
     pGraphics->AttachControl(new NAMSwitchControl(
@@ -247,7 +254,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
     pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NAMKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(
+      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
@@ -494,9 +502,10 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
-  
+
   if (this->mNAMPath.GetLength())
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
+    SendControlMsgFromDelegate(
+      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
   if (this->mIRPath.GetLength())
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, this->mIRPath.GetLength(), this->mIRPath.Get());
   if (this->mNAM != nullptr)
@@ -515,8 +524,7 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle:
-        pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
       default: break;
     }
   }
@@ -526,14 +534,9 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 {
   switch (msgTag)
   {
-    case kMsgTagClearModel:
-      mFlagRemoveNAM = true;
-      return true;
-    case kMsgTagClearIR:
-      mFlagRemoveIR = true;
-      return true;
-    default:
-      return false;
+    case kMsgTagClearModel: mFlagRemoveNAM = true; return true;
+    case kMsgTagClearIR: mFlagRemoveIR = true; return true;
+    default: return false;
   }
 }
 
@@ -617,12 +620,13 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
     auto dspPath = std::filesystem::u8path(modelPath.Get());
     mStagedNAM = get_dsp(dspPath);
     this->mNAMPath = modelPath;
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
+    SendControlMsgFromDelegate(
+      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
   }
   catch (std::exception& e)
   {
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
-    
+
     if (this->mStagedNAM != nullptr)
     {
       this->mStagedNAM = nullptr;

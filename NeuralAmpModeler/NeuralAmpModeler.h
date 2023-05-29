@@ -143,7 +143,7 @@ private:
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mFlagRemoveNAM;
   std::atomic<bool> mFlagRemoveIR;
-  
+
   std::atomic<bool> mNewNAMLoadedInDSP = false;
 
   // Tone stack modules

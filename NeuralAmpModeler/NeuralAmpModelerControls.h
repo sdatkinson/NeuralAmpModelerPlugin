@@ -60,7 +60,11 @@ public:
     float data[2][2];
     RadialPoints(angle, cx + 1, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
     g.PathCircle(data[1][0], data[1][1], 3);
-    g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f, {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f}, {GetColor(mMouseIsOver ? kX3 : kX1), 0.8f}, {COLOR_TRANSPARENT, 1.0f}}), {}, &mBlend);
+    g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f,
+                                              {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f},
+                                               {GetColor(mMouseIsOver ? kX3 : kX1), 0.8f},
+                                               {COLOR_TRANSPARENT, 1.0f}}),
+               {}, &mBlend);
     g.DrawCircle(COLOR_BLACK.WithOpacity(0.5f), data[1][0], data[1][1], 3, &mBlend);
   }
 };
@@ -107,20 +111,20 @@ public:
   : IVButtonControl(bounds, DefaultClickActionFunc, label, style)
   {
   }
-  
+
   void SetLabelAndTooltip(const char* str)
   {
     SetLabelStr(str);
     SetTooltip(str);
   }
-  
+
   void SetLabelAndTooltipEllipsizing(const WDL_String& fileName)
   {
     auto EllipsizeFilePath = [](const char* filePath, size_t prefixLength, size_t suffixLength, size_t maxLength) {
       const std::string ellipses = "...";
-      assert (maxLength <= (prefixLength + suffixLength + ellipses.size()));
-      std::string str {filePath};
-      
+      assert(maxLength <= (prefixLength + suffixLength + ellipses.size()));
+      std::string str{filePath};
+
       if (str.length() <= maxLength)
       {
         return str;
@@ -130,7 +134,7 @@ public:
         return str.substr(0, prefixLength) + ellipses + str.substr(str.length() - suffixLength);
       }
     };
-    
+
     auto ellipsizedFileName = EllipsizeFilePath(fileName.get_filepart(), 22, 22, 45);
     SetLabelStr(ellipsizedFileName.c_str());
     SetTooltip(fileName.get_filepart());
@@ -141,8 +145,8 @@ class NAMFileBrowserControl : public IDirBrowseControlBase
 {
 public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
-                        IFileDialogCompletionHandlerFunc ch, const IVStyle& style,
-                        const ISVG& loadSVG, const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG)
+                        IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
+                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG)
   : IDirBrowseControlBase(bounds, fileExtension, true)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
@@ -156,8 +160,10 @@ public:
     mIgnoreMouse = true;
     mShowFileExtensions = false;
   }
-  
-  void Draw(IGraphics& g) override { /* NO-OP */ }
+
+  void Draw(IGraphics& g) override
+  { /* NO-OP */
+  }
 
   void OnPopupMenuSelection(IPopupMenu* pSelectedMenu, int valIdx) override
   {
@@ -196,20 +202,19 @@ public:
     auto loadFileFunc = [&](IControl* pCaller) {
       WDL_String fileName;
       WDL_String path;
-      pCaller->GetUI()->PromptForFile(fileName, path, EFileAction::Open, mExtension.Get(),
-                                      [&](const WDL_String& fileName, const WDL_String& path) {
-      
-        if (fileName.GetLength())
-        {
-          ClearPathList();
-          AddPath(path.Get(), "");
-          SetupMenu();
-          SetSelectedFile(fileName.Get());
-          LoadFileAtCurrentIndex();
-        }
-      });
+      pCaller->GetUI()->PromptForFile(
+        fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
+          if (fileName.GetLength())
+          {
+            ClearPathList();
+            AddPath(path.Get(), "");
+            SetupMenu();
+            SetSelectedFile(fileName.Get());
+            LoadFileAtCurrentIndex();
+          }
+        });
     };
-    
+
     auto clearFileFunc = [&](IControl* pCaller) {
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
       mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
@@ -235,18 +240,18 @@ public:
     const auto leftButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto rightButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto fileNameButtonBounds = padded;
-    
+
     AddChildControl(new NAMSquareButtonControl(loadFileButtonBounds, DefaultClickActionFunc, mLoadSVG))
-    ->SetAnimationEndActionFunction(loadFileFunc);
+      ->SetAnimationEndActionFunction(loadFileFunc);
     AddChildControl(new NAMSquareButtonControl(leftButtonBounds, DefaultClickActionFunc, mLeftSVG))
-    ->SetAnimationEndActionFunction(prevFileFunc);
+      ->SetAnimationEndActionFunction(prevFileFunc);
     AddChildControl(new NAMSquareButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
-    ->SetAnimationEndActionFunction(nextFileFunc);
+      ->SetAnimationEndActionFunction(nextFileFunc);
     AddChildControl(mFileNameControl = new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle))
-    ->SetAnimationEndActionFunction(chooseFileFunc);
+      ->SetAnimationEndActionFunction(chooseFileFunc);
     AddChildControl(new NAMSquareButtonControl(clearButtonBounds, DefaultClickActionFunc, mClearSVG))
-    ->SetAnimationEndActionFunction(clearFileFunc);
-    
+      ->SetAnimationEndActionFunction(clearFileFunc);
+
     mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
   }
 
@@ -280,16 +285,16 @@ public:
         AddPath(fileName.Get(), "");
         SetupMenu();
 
-        //reset
+        // reset
         fileName.Set(reinterpret_cast<const char*>(pData));
         SetSelectedFile(fileName.Get());
         mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
         break;
       }
-      default:
-        break;
+      default: break;
     }
   }
+
 private:
   WDL_String mDefaultLabelStr;
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
