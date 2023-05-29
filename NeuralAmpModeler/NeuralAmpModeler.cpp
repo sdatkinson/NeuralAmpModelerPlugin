@@ -347,7 +347,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 {
   const size_t numChannelsExternalIn = (size_t)this->NInChansConnected();
   const size_t numChannelsExternalOut = (size_t)this->NOutChansConnected();
-  const size_t numChannelsInternal = this->mNUM_INTERNAL_CHANNELS;
+  const size_t numChannelsInternal = kNumChannelsInternal;
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = this->GetSampleRate();
 
@@ -723,7 +723,6 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
                                      const size_t nChansOut)
 {
   // We'll assume that the main processing is mono for now. We'll handle dual amps later.
-  // See also: this->mNUM_INTERNAL_CHANNELS
   if (nChansOut != 1)
   {
     std::stringstream ss;

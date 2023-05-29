@@ -11,6 +11,9 @@
 #include "ISender.h"
 
 const int kNumPresets = 1;
+// The plugin is mono inside
+constexpr size_t kNumChannelsInternal = 1;
+
 
 enum EParams
 {
@@ -118,9 +121,6 @@ private:
                      const size_t nChansIn, const size_t nChansOut);
 
   // Member data
-
-  // The plugin is mono inside
-  const size_t mNUM_INTERNAL_CHANNELS = 1;
 
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
