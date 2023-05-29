@@ -65,6 +65,10 @@
 #define CLOSE_BUTTON_FN "SkinEHeritage_Close-button.svg"
 #define LEFT_ARROW_FN "SkinEHeritage_ArrowLeft.svg"
 #define RIGHT_ARROW_FN "SkinEHeritage_ArrowRight.svg"
+#define MODEL_ICON_FN "ModelIcon.svg"
+#define IR_ICON_ON_FN "IRIconOn.svg"
+#define IR_ICON_OFF_FN "IRIconOff.svg"
+
 #define EH_SKIN_FN "SkinEHeritage_BG.jpeg"
 #define EH_SKIN2X_FN "SkinEHeritage_BG@2x.jpeg"
 #define KNOB_FN "SkinEHeritage_Knob.png"
