@@ -58,7 +58,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mIR(nullptr)
 , mStagedModel(nullptr)
 , mStagedIR(nullptr)
-, mFlagRemoveNAM(false)
+, mShouldRemoveModel(false)
 , mFlagRemoveIR(false)
 , mToneBass()
 , mToneMid()
@@ -540,7 +540,7 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 {
   switch (msgTag)
   {
-    case kMsgTagClearModel: mFlagRemoveNAM = true; return true;
+    case kMsgTagClearModel: mShouldRemoveModel = true; return true;
     case kMsgTagClearIR: mFlagRemoveIR = true; return true;
     default: return false;
   }
@@ -578,11 +578,11 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     this->mStagedIR = nullptr;
   }
   // Remove marked modules
-  if (this->mFlagRemoveNAM)
+  if (this->mShouldRemoveModel)
   {
     this->mModel = nullptr;
     this->mNAMPath.Set("");
-    this->mFlagRemoveNAM = false;
+    this->mShouldRemoveModel = false;
   }
   if (this->mFlagRemoveIR)
   {
