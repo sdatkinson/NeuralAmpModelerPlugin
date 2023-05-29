@@ -142,7 +142,7 @@ private:
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mShouldRemoveModel;
-  std::atomic<bool> mFlagRemoveIR;
+  std::atomic<bool> mShouldRemoveIR;
 
   std::atomic<bool> mNewNAMLoadedInDSP = false;
 
