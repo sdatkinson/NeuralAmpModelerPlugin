@@ -54,7 +54,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mInputPointers(nullptr)
 , mOutputPointers(nullptr)
 , mNoiseGateTrigger()
-, mNAM(nullptr)
+, mModel(nullptr)
 , mIR(nullptr)
 , mStagedNAM(nullptr)
 , mStagedIR(nullptr)
@@ -395,15 +395,15 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     triggerOutput = this->mNoiseGateTrigger.Process(mInputPointers, numChannelsInternal, numFrames);
   }
 
-  if (mNAM != nullptr)
+  if (mModel != nullptr)
   {
-    mNAM->SetNormalize(this->GetParam(kOutNorm)->Value());
+    mModel->SetNormalize(this->GetParam(kOutNorm)->Value());
     // TODO remove input / output gains from here.
     const double inputGain = 1.0;
     const double outputGain = 1.0;
     const int nChans = (int)numChannelsInternal;
-    mNAM->process(triggerOutput, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mNAMParams);
-    mNAM->finalize_(nFrames);
+    mModel->process(triggerOutput, this->mOutputPointers, nChans, nFrames, inputGain, outputGain, mNAMParams);
+    mModel->finalize_(nFrames);
   }
   else
   {
@@ -477,7 +477,7 @@ void NeuralAmpModeler::OnIdle()
   if (this->mNewNAMLoadedInDSP)
   {
     if (auto* pGraphics = GetUI())
-      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
+      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mModel->HasLoudness());
 
     this->mNewNAMLoadedInDSP = false;
   }
@@ -514,8 +514,8 @@ void NeuralAmpModeler::OnUIOpen()
       kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
   if (this->mIRPath.GetLength())
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, this->mIRPath.GetLength(), this->mIRPath.Get());
-  if (this->mNAM != nullptr)
-    this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
+  if (this->mModel != nullptr)
+    this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mModel->HasLoudness());
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
@@ -568,7 +568,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   if (this->mStagedNAM != nullptr)
   {
     // Move from staged to active DSP
-    this->mNAM = std::move(this->mStagedNAM);
+    this->mModel = std::move(this->mStagedNAM);
     this->mStagedNAM = nullptr;
     this->mNewNAMLoadedInDSP = true;
   }
@@ -580,7 +580,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   // Remove marked modules
   if (this->mFlagRemoveNAM)
   {
-    this->mNAM = nullptr;
+    this->mModel = nullptr;
     this->mNAMPath.Set("");
     this->mFlagRemoveNAM = false;
   }
