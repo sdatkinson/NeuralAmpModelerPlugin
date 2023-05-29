@@ -144,7 +144,7 @@ private:
   std::atomic<bool> mShouldRemoveModel;
   std::atomic<bool> mShouldRemoveIR;
 
-  std::atomic<bool> mNewNAMLoadedInDSP = false;
+  std::atomic<bool> mNewModelLoadedInDSP = false;
 
   // Tone stack modules
   recursive_linear_filter::LowShelf mToneBass;

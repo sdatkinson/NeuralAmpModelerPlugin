@@ -474,12 +474,12 @@ void NeuralAmpModeler::OnIdle()
   this->mInputSender.TransmitData(*this);
   this->mOutputSender.TransmitData(*this);
 
-  if (this->mNewNAMLoadedInDSP)
+  if (this->mNewModelLoadedInDSP)
   {
     if (auto* pGraphics = GetUI())
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mModel->HasLoudness());
 
-    this->mNewNAMLoadedInDSP = false;
+    this->mNewModelLoadedInDSP = false;
   }
 }
 
@@ -570,7 +570,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     // Move from staged to active DSP
     this->mModel = std::move(this->mStagedModel);
     this->mStagedModel = nullptr;
-    this->mNewNAMLoadedInDSP = true;
+    this->mNewModelLoadedInDSP = true;
   }
   if (this->mStagedIR != nullptr)
   {
