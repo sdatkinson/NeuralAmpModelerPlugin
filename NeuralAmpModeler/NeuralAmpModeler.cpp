@@ -56,7 +56,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mNoiseGateTrigger()
 , mModel(nullptr)
 , mIR(nullptr)
-, mStagedNAM(nullptr)
+, mStagedModel(nullptr)
 , mStagedIR(nullptr)
 , mFlagRemoveNAM(false)
 , mFlagRemoveIR(false)
@@ -565,11 +565,11 @@ void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
   // Move things from staged to live
-  if (this->mStagedNAM != nullptr)
+  if (this->mStagedModel != nullptr)
   {
     // Move from staged to active DSP
-    this->mModel = std::move(this->mStagedNAM);
-    this->mStagedNAM = nullptr;
+    this->mModel = std::move(this->mStagedModel);
+    this->mStagedModel = nullptr;
     this->mNewNAMLoadedInDSP = true;
   }
   if (this->mStagedIR != nullptr)
@@ -624,7 +624,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedNAM = get_dsp(dspPath);
+    mStagedModel = get_dsp(dspPath);
     this->mNAMPath = modelPath;
     SendControlMsgFromDelegate(
       kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
@@ -633,9 +633,9 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   {
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
 
-    if (this->mStagedNAM != nullptr)
+    if (this->mStagedModel != nullptr)
     {
-      this->mStagedNAM = nullptr;
+      this->mStagedModel = nullptr;
     }
     this->mNAMPath = previousNAMPath;
     std::cerr << "Failed to read DSP module" << std::endl;

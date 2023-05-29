@@ -138,7 +138,7 @@ private:
   // And the IR
   std::unique_ptr<dsp::ImpulseResponse> mIR;
   // Manages switching what DSP is being used.
-  std::unique_ptr<DSP> mStagedNAM;
+  std::unique_ptr<DSP> mStagedModel;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mFlagRemoveNAM;
