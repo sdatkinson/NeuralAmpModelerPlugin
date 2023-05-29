@@ -87,6 +87,9 @@
 #define FILECONTROLBACKGROUND_FN "FileControlBackground.png"
 #define FILECONTROLBACKGROUND2X_FN "FileControlBackground@2x.png"
 #define FILECONTROLBACKGROUND3X_FN "FileControlBackground@3x.png"
+#define LINES_FN "Lines.png"
+#define LINES2X_FN "Lines@2x.png"
+#define LINES3X_FN "Lines@3x.png"
 
 // Issue 291
 // On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
