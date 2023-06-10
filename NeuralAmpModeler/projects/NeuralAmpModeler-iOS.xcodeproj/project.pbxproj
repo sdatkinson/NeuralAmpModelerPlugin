@@ -246,6 +246,7 @@
 		4F7C4A14255DE11700DF7588 /* Oversampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Oversampler.h; sourceTree = "<group>"; };
 		4F8D7DCB224AE821002A1A2A /* IGraphicsNanoVG_src.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IGraphicsNanoVG_src.m; sourceTree = "<group>"; };
 		4F8D8BD82316701900EFA1FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		4F9979242A066F960066545C /* NeuralAmpModelerControls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModelerControls.h; path = ../NeuralAmpModelerControls.h; sourceTree = "<group>"; };
 		4FA61F7A22E89A2700A92C58 /* NeuralAmpModeler-iOS-AUv3Framework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-iOS-AUv3Framework-Info.plist"; path = "../resources/NeuralAmpModeler-iOS-AUv3Framework-Info.plist"; sourceTree = "<group>"; };
 		4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModelerAU.h; path = ../resources/NeuralAmpModelerAU.h; sourceTree = "<group>"; };
 		4FA758452186222E00F1BCC3 /* IPlugPaths.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPlugPaths.mm; path = ../../iPlug2/IPlug/IPlugPaths.mm; sourceTree = "<group>"; };
@@ -738,6 +739,7 @@
 				4FFF108420A1036200D3092F /* config.h */,
 				4FFF108820A1036200D3092F /* NeuralAmpModeler.h */,
 				4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */,
+				4F9979242A066F960066545C /* NeuralAmpModelerControls.h */,
 				4F8D8BD82316701900EFA1FB /* README.md */,
 				4F8BF48D20A12D2E0081DF0A /* Resources */,
 				4F67D51620A121F60061FB8E /* Other Sources */,

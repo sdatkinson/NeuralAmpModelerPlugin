@@ -286,6 +286,7 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h">
       <Filter>NAM</Filter>
     </ClInclude>
+    <ClInclude Include="..\NeuralAmpModelerControls.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
