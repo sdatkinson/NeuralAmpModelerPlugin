@@ -156,6 +156,7 @@ public:
   , mClearSVG(clearSVG)
   , mLeftSVG(leftSVG)
   , mRightSVG(rightSVG)
+  , mWarnPrivilegesFlag(true)
   {
     mIgnoreMouse = true;
     mShowFileExtensions = false;
@@ -211,7 +212,25 @@ public:
             AddPath(path.Get(), "");
             SetupMenu();
             SetSelectedFile(fileName.Get());
-            LoadFileAtCurrentIndex();
+            // There's a possibility that the user picked a file in a directory where NAM doesn't have permission to
+            // look at the rest of the directory. If that's the case, then we need to fall back to something that at
+            // least gets the model loaded. We'll then alert the (macOS?) user that the arrows won't work and to use
+            // Music/ to store their files.
+            if (!LoadFileAtCurrentIndex()) {
+              LoadFileAt(fileName);
+              if (mWarnPrivilegesFlag) {
+                std::string header = "Warning!";
+                std::string msg = "Model was loaded from a location where NAM isn't able to get information about the "
+                "rest of the directory.  This can be because NAM doesn't have privileges to see the rest of the "
+                "directory. On macOS, use the Music/ folder to store NAM files and impulse reponses.\n\n"
+                "Browsing the directory via arrows & popup menu is disabled for this file.";
+                
+                // TODO reverse these depending on macOS or Windows? Is this right? Might raise an Issue on iPlug2.
+                GetUI()->ShowMessageBox(header.c_str(), msg.c_str(), kMB_OK);
+                // TODO disable the arrows. Fortunately, they happen not to not-work quite gracefully!
+                mWarnPrivilegesFlag = false;
+              }
+            }
           }
         });
     };
@@ -256,17 +275,6 @@ public:
     mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
   }
 
-  void LoadFileAtCurrentIndex()
-  {
-    if (mSelectedIndex > -1 && mSelectedIndex < mItems.GetSize())
-    {
-      WDL_String fileName, path;
-      GetSelectedFile(fileName);
-      mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
-      mCompletionHandlerFunc(fileName, path);
-    }
-  }
-
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
   {
     switch (msgTag)
@@ -297,6 +305,31 @@ public:
   }
 
 private:
+  // Attempt to load the file.
+  // Returns true if success, false if not
+  bool LoadFileAtCurrentIndex()
+  {
+    if (mSelectedIndex > -1 && mSelectedIndex < mItems.GetSize())
+    {
+      WDL_String fileName;
+      GetSelectedFile(fileName);
+      return LoadFileAt(fileName);
+    }
+    else {
+      return false;
+    }
+  }
+  
+  // Attempt to load the file.
+  // Returns true if success, false if not
+  bool LoadFileAt(const WDL_String& fileName)
+  {
+    WDL_String path;  // Not used.
+    mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+    mCompletionHandlerFunc(fileName, path);
+    return true;
+  }
+  
   void GetSelectedFileDirectory(WDL_String& path) {
     GetSelectedFile(path);
     path.remove_filepart();
@@ -309,4 +342,5 @@ private:
   IVStyle mStyle;
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
   int mClearMsgTag;
+  bool mWarnPrivilegesFlag;
 };
