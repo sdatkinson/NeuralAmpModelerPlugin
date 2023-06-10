@@ -202,6 +202,7 @@ public:
     auto loadFileFunc = [&](IControl* pCaller) {
       WDL_String fileName;
       WDL_String path;
+      GetSelectedFileDirectory(path);
       pCaller->GetUI()->PromptForFile(
         fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
           if (fileName.GetLength())
@@ -296,6 +297,12 @@ public:
   }
 
 private:
+  void GetSelectedFileDirectory(WDL_String& path) {
+    GetSelectedFile(path);
+    path.remove_filepart();
+    return;
+  }
+  
   WDL_String mDefaultLabelStr;
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
   NAMFileNameControl* mFileNameControl = nullptr;
