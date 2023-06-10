@@ -95,6 +95,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
   mLayoutFunc = [&](IGraphics* pGraphics) {
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
+    pGraphics->AttachTextEntryControl();
     pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
     pGraphics->EnableTooltips(true);
