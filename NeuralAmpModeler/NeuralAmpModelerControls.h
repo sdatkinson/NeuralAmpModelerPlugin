@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IControls.h"
+#include "dirscan.h"  // WDL_DirScan
 
 using namespace iplug;
 using namespace igraphics;
@@ -296,6 +297,55 @@ public:
       }
       default: break;
     }
+  }
+  
+  // Don't recurse.
+  // TODO Issue & PR iPlug2
+  void ScanDirectory(const char* path, IPopupMenu& menuToAddTo) override
+  {
+    const bool recursive = false;
+    WDL_DirScan d;
+    
+    if (!d.First(path))
+    {
+      do
+      {
+        const char* f = d.GetCurrentFN();
+        if (f && f[0] != '.')
+        {
+          if (d.GetCurrentIsDirectory())
+          {
+            if (recursive) {
+              WDL_String subdir;
+              d.GetCurrentFullFN(&subdir);
+              IPopupMenu* pNewMenu = new IPopupMenu();
+              menuToAddTo.AddItem(d.GetCurrentFN(), pNewMenu, -2);
+              ScanDirectory(subdir.Get(), *pNewMenu);
+            }
+          }
+          else
+          {
+            const char* a = strstr(f, mExtension.Get());
+            if (a && a > f && strlen(a) == strlen(mExtension.Get()))
+            {
+              WDL_String menuEntry {f};
+              
+              if(!mShowFileExtensions)
+                menuEntry.Set(f, (int) (a - f) - 1);
+              
+              IPopupMenu::Item* pItem = new IPopupMenu::Item(menuEntry.Get(), IPopupMenu::Item::kNoFlags, mFiles.GetSize());
+              menuToAddTo.AddItem(pItem, -2 /* sort alphabetically */);
+              WDL_String* pFullPath = new WDL_String("");
+              d.GetCurrentFullFN(pFullPath);
+              mFiles.Add(pFullPath);
+            }
+          }
+        }
+      } while (!d.Next());
+    }
+    
+    if (!mShowEmptySubmenus)
+      menuToAddTo.RemoveEmptySubmenus();
   }
 
 private:
