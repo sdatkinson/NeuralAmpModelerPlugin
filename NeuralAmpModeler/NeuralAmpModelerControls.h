@@ -203,14 +203,14 @@ public:
       WDL_String fileName;
       WDL_String path;
       GetSelectedFileDirectory(path);
-      pCaller->GetUI()->PromptForFile(
-        fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
+      pCaller->GetUI()->PromptForDirectory(
+        path, [&](const WDL_String& fileName, const WDL_String& path) {
+          if (path.GetLength())
           {
             ClearPathList();
             AddPath(path.Get(), "");
             SetupMenu();
-            SetSelectedFile(fileName.Get());
+            SelectFirstFile();
             LoadFileAtCurrentIndex();
           }
         });
@@ -297,6 +297,11 @@ public:
   }
 
 private:
+  void SelectFirstFile()
+  {
+    mSelectedIndex = mFiles.GetSize() ? 0 : -1;
+  }
+  
   void GetSelectedFileDirectory(WDL_String& path) {
     GetSelectedFile(path);
     path.remove_filepart();
