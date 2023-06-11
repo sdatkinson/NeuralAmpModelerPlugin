@@ -272,9 +272,11 @@ public:
     switch (msgTag)
     {
       case kMsgTagLoadFailed:
-        ClearPathList();
-        SetupMenu();
-        mFileNameControl->SetLabelAndTooltip("Load Failed");
+        // Honestly, not sure why I made a big stink of it before. Why not just say it failed and move on? :)
+        {
+          std::string label(std::string("(FAILED) ") + std::string(mFileNameControl->GetLabelStr()));
+          mFileNameControl->SetLabelAndTooltip(label.c_str());
+        }
         break;
       case kMsgTagLoadedModel:
       case kMsgTagLoadedIR:
