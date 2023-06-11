@@ -224,11 +224,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     };
 
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(modelArea, kMsgTagClearModel, "Select model...", "nam", loadModelCompletionHandler,
+      new NAMFileBrowserControl(modelArea, kMsgTagClearModel, "Select model directory...", "nam", loadModelCompletionHandler,
                                 style, fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
       kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, "Select IR...", "wav", loadIRCompletionHandler, style, fileSVG,
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, "Select IR directory...", "wav", loadIRCompletionHandler, style, fileSVG,
                                 closeButtonSVG, leftArrowSVG, rightArrowSVG),
       kCtrlTagIRFileBrowser);
 
