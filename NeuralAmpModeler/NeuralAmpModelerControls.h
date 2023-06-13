@@ -147,7 +147,7 @@ public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
                         IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
                         const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG)
-  : IDirBrowseControlBase(bounds, fileExtension, true)
+  : IDirBrowseControlBase(bounds, fileExtension, false, false)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
   , mCompletionHandlerFunc(ch)
@@ -158,7 +158,6 @@ public:
   , mRightSVG(rightSVG)
   {
     mIgnoreMouse = true;
-    mShowFileExtensions = false;
   }
 
   void Draw(IGraphics& g) override
