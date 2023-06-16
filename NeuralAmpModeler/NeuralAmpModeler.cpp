@@ -497,8 +497,6 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   WDL_String dir;
   startPos = chunk.GetStr(this->mNAMPath, startPos);
   startPos = chunk.GetStr(this->mIRPath, startPos);
-  this->mNAM = nullptr;
-  this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
   if (this->mNAMPath.GetLength())
     this->_GetNAM(this->mNAMPath);
