@@ -223,12 +223,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       }
     };
 
-    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, "Select model directory...", "nam",
-                                                       loadModelCompletionHandler, style, fileSVG, closeButtonSVG,
-                                                       leftArrowSVG, rightArrowSVG),
+#ifdef NAM_PICK_DIRECTORY
+    const std::string defaultNamFileString = "Select model directory...";
+    const std::string defaultIRString = "Select IR directory...";
+#else
+    const std::string defaultNamFileString = "Select model...";
+    const std::string defaultIRString = "Select IR...";
+#endif
+    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
+                                                       "nam", loadModelCompletionHandler, style, fileSVG,
+                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG),
                              kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, "Select IR directory...", "wav", loadIRCompletionHandler, style,
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
                                 fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
       kCtrlTagIRFileBrowser);
 

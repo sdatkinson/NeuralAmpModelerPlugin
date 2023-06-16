@@ -73,3 +73,11 @@
 #define TOGGLEIR2X_FN "SkinEHeritage_IR_Toggle@2x.png"
 #define TOGGLE_HANDLE_FN "SkinEHeritage_ToggleHandle.png"
 #define TOGGLE_HANDLE2X_FN "SkinEHeritage_ToggleHandle@2x.png"
+
+// Issue 291
+// On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
+// user to pick a directory instead of the file in the directory.
+// Everyone else is fine though.
+#if defined(APP_API) && defined(__APPLE__)
+  #define NAM_PICK_DIRECTORY
+#endif
