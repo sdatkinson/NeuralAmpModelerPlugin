@@ -202,6 +202,7 @@ public:
       WDL_String fileName;
       WDL_String path;
       GetSelectedFileDirectory(path);
+#ifdef NAM_PICK_DIRECTORY
       pCaller->GetUI()->PromptForDirectory(path, [&](const WDL_String& fileName, const WDL_String& path) {
         if (path.GetLength())
         {
@@ -212,6 +213,19 @@ public:
           LoadFileAtCurrentIndex();
         }
       });
+#else
+      pCaller->GetUI()->PromptForFile(
+        fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
+          if (fileName.GetLength())
+          {
+            ClearPathList();
+            AddPath(path.Get(), "");
+            SetupMenu();
+            SetSelectedFile(fileName.Get());
+            LoadFileAtCurrentIndex();
+          }
+        });
+#endif
     };
 
     auto clearFileFunc = [&](IControl* pCaller) {
