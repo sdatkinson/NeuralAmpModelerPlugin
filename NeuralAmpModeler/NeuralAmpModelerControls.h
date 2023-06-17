@@ -181,18 +181,24 @@ public:
   void OnAttached() override
   {
     auto prevFileFunc = [&](IControl* pCaller) {
+      const auto nItems = NItems();
+      if (nItems == 0)
+        return;
       mSelectedIndex--;
 
       if (mSelectedIndex < 0)
-        mSelectedIndex = NItems() - 1;
+        mSelectedIndex = nItems - 1;
 
       LoadFileAtCurrentIndex();
     };
 
     auto nextFileFunc = [&](IControl* pCaller) {
+      const auto nItems = NItems();
+      if (nItems == 0)
+        return;
       mSelectedIndex++;
 
-      if (mSelectedIndex >= NItems())
+      if (mSelectedIndex >= nItems)
         mSelectedIndex = 0;
 
       LoadFileAtCurrentIndex();
@@ -270,7 +276,7 @@ public:
 
   void LoadFileAtCurrentIndex()
   {
-    if (mSelectedIndex > -1 && mSelectedIndex < mItems.GetSize())
+    if (mSelectedIndex > -1 && mSelectedIndex < NItems())
     {
       WDL_String fileName, path;
       GetSelectedFile(fileName);
