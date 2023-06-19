@@ -248,6 +248,7 @@ public:
       else
       {
         CheckSelectedItem();
+        mMainMenu.SetChosenItemIdx(mSelectedIndex);
         pCaller->GetUI()->CreatePopupMenu(*this, mMainMenu, pCaller->GetRECT());
       }
     };
