@@ -51,6 +51,8 @@ public:
     mInnerPointerFrac = 0.55;
   }
 
+  void OnRescale() override { mBitmap = GetUI()->GetScaledBitmap(mBitmap); }
+
   void DrawWidget(IGraphics& g) override
   {
     float widgetRadius = GetRadius() * 0.73;
