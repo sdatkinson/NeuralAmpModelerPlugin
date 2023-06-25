@@ -103,7 +103,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachTextEntryControl();
     pGraphics->EnableMouseOver(true);
-    pGraphics->EnableTooltips(true);    
+    pGraphics->EnableTooltips(true);
     
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     pGraphics->LoadFont("Ronduit-Light", RONDUIT_FN);
@@ -130,17 +130,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto titleHeight = 50.0f;
     const auto titleArea = contentArea.GetFromTop(titleHeight);
 
-    // Area for the Noise gate knob
-    const auto allKnobsPad = 20.0f;
-
     // Areas for knobs
+    const auto knobsPad = 20.0f;
     const auto knobsExtraSpaceBelowTitle = 25.0f;
     const auto knobHeight = 120.f;
     const auto singleKnobPad = -2.0f;
     const auto knobsArea = contentArea.GetFromTop(knobHeight)
-                         .GetReducedFromLeft(allKnobsPad)
-                         .GetReducedFromRight(allKnobsPad)
-                         .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
+                          .GetReducedFromLeft(knobsPad)
+                          .GetReducedFromRight(knobsPad)
+                          .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
     const auto inputKnobArea = knobsArea.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
     const auto noiseGateArea = knobsArea.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
     const auto bassKnobArea = knobsArea.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
@@ -159,12 +157,17 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto modelArea = contentArea.GetFromBottom((2.0f * fileHeight))
                               .GetFromTop(fileHeight)
                               .GetMidHPadded(fileWidth)
-                              .GetTranslated(0.0f, -1);
-    const auto irArea = modelArea.GetTranslated(0.0f, irYOffset);
-
+                              .GetVShifted(-1);
+    const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
+    const auto irArea = modelArea.GetVShifted(irYOffset);
+    const auto irSwitchArea = irArea.GetFromLeft(30).GetHShifted(-40).GetScaledAboutCentre(0.6);
+    
     // Areas for meters
     const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
     const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
+    
+    // Misc Areas
+    const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -208,7 +211,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
     pGraphics->AttachControl(new IVLabelControl(titleArea, "Neural Amp Modeler", titleStyle));
-    pGraphics->AttachControl(new ISVGControl(modelArea.GetFromLeft(30).GetTranslated(-40, 10), modelIconSVG));
+    pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
 
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
@@ -221,11 +224,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                        "nam", loadModelCompletionHandler, style, fileSVG,
                                                        crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
-    pGraphics->AttachControl(new ISVGSwitchControl(irArea.GetFromLeft(30).GetTranslated(-40, 0).GetScaledAboutCentre(0.6), { irIconOffSVG, irIconOnSVG}, kIRToggle));
-    pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
-                                style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
-      kCtrlTagIRFileBrowser);
+    pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, { irIconOffSVG, irIconOnSVG}, kIRToggle));
+    pGraphics->AttachControl(new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav",
+                                                       loadIRCompletionHandler, style,
+                                                       fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
+                             kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
@@ -235,18 +238,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackgroundBitmap));
     pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(
-      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackgroundBitmap));
 
     // The meters
     pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
     pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
 
-
-    //     Help/about box
-    pGraphics->AttachControl(new NAMCircleButtonControl(
-      mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
+    // Help/about box
+    pGraphics->AttachControl(new NAMCircleButtonControl(helpButtonArea,
       [pGraphics](IControl* pCaller) {
         pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
       },
