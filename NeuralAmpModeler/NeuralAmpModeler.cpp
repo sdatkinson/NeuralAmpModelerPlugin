@@ -108,65 +108,63 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     pGraphics->LoadFont("Ronduit-Light", RONDUIT_FN);
     
-    auto helpSVG = pGraphics->LoadSVG(HELP_FN);
-    auto fileSVG = pGraphics->LoadSVG(FILE_FN);
-    auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
-    auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
-    auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
-    auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
-    auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
+    const auto helpSVG = pGraphics->LoadSVG(HELP_FN);
+    const auto fileSVG = pGraphics->LoadSVG(FILE_FN);
+    const auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    const auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
+    const auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
+    const auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
+    const auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
+    const auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
 
-    auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
-    auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
-    auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
-    auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
-    auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
-    auto meterBackgroundBitmap = pGraphics->LoadBitmap(METERBACKGROUND_FN);
+    const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
+    const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
+    const auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
+    const auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
+    const auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
+    const auto meterBackgroundBitmap = pGraphics->LoadBitmap(METERBACKGROUND_FN);
 
-    const IRECT b = pGraphics->GetBounds();
-    const IRECT mainArea = b.GetPadded(-20);
-    const auto content = mainArea.GetPadded(-10);
+    const auto b = pGraphics->GetBounds();
+    const auto mainArea = b.GetPadded(-20);
+    const auto contentArea = mainArea.GetPadded(-10);
     const auto titleHeight = 50.0f;
-    const auto titleArea = content.GetFromTop(titleHeight);
+    const auto titleArea = contentArea.GetFromTop(titleHeight);
 
     // Area for the Noise gate knob
-    const float allKnobsHalfPad = 10.0f;
-    const float allKnobsPad = 2.0f * allKnobsHalfPad;
+    const auto allKnobsPad = 20.0f;
 
     // Areas for knobs
-    const float knobsExtraSpaceBelowTitle = 25.0f;
-    const float knobHeight = 120.f;
-    const float singleKnobPad = -2.0f;
-    const auto knobs = content.GetFromTop(knobHeight)
+    const auto knobsExtraSpaceBelowTitle = 25.0f;
+    const auto knobHeight = 120.f;
+    const auto singleKnobPad = -2.0f;
+    const auto knobsArea = contentArea.GetFromTop(knobHeight)
                          .GetReducedFromLeft(allKnobsPad)
                          .GetReducedFromRight(allKnobsPad)
                          .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
-    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT midKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto inputKnobArea = knobsArea.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto noiseGateArea = knobsArea.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto bassKnobArea = knobsArea.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto midKnobArea = knobsArea.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto trebleKnobArea = knobsArea.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto outputKnobArea = knobsArea.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
-    const IRECT ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
-    const IRECT eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
-    const IRECT outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
 
     // Areas for model and IR
-    const float fileWidth = 200.0f;
-    const float fileHeight = 30.0f;
-    const float irYOffset = 38.0f;
-    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight))
+    const auto fileWidth = 200.0f;
+    const auto fileHeight = 30.0f;
+    const auto irYOffset = 38.0f;
+    const auto modelArea = contentArea.GetFromBottom((2.0f * fileHeight))
                               .GetFromTop(fileHeight)
                               .GetMidHPadded(fileWidth)
                               .GetTranslated(0.0f, -1);
-    const IRECT irArea = modelArea.GetTranslated(0.0f, irYOffset);
+    const auto irArea = modelArea.GetTranslated(0.0f, irYOffset);
 
     // Areas for meters
-    const IRECT inputMeterArea = content.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
-    const IRECT outputMeterArea = content.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
-
+    const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
+    const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
