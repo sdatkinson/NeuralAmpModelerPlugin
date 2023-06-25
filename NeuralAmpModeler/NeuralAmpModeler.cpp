@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "Colors.h"
-#include "IControls.h"
 #include "NeuralAmpModelerCore/NAM/activations.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
@@ -71,8 +70,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mToneTreble()
 , mNAMPath()
 , mIRPath()
-, mInputSender()
-, mOutputSender()
+, mInputSender(-90.0, true, 5.0f, 1.0f, 300.0f, 500.0f)
+, mOutputSender(-90.0, true, 5.0f, 1.0f, 300.0f, 500.0f)
 , mHighLightColor(PluginColors::NAM_THEMECOLOR.ToColorCode())
 {
   activations::Activation::enable_fast_tanh();
@@ -123,6 +122,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
     auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
     auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
+    auto meterBackgroundBitmap = pGraphics->LoadBitmap(METERBACKGROUND_FN);
 
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
@@ -164,15 +164,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT irArea = modelArea.GetTranslated(0.0f, irYOffset);
 
     // Areas for meters
-    const float meterHalfHeight = 0.5f * 385.0f;
-    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
-                                   .GetMidHPadded(allKnobsHalfPad)
-                                   .GetMidVPadded(meterHalfHeight)
-                                   .GetTranslated(-allKnobsPad - 18.f, 0.0f);
-    const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
-                                    .GetMidHPadded(allKnobsHalfPad)
-                                    .GetMidVPadded(meterHalfHeight)
-                                    .GetTranslated(allKnobsPad + 18.f, 0.0f);
+    const IRECT inputMeterArea = content.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
+    const IRECT outputMeterArea = content.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
+
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -248,26 +242,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackgroundBitmap));
 
     // The meters
-    const float meterMin = -90.0f;
-    const float meterMax = -0.01f;
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(inputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithDrawFrame(false).WithColor(
-                                    kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.4f)),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagInputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(outputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithDrawFrame(false).WithColor(
-                                    kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.4f)),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagOutputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
+    pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
+    pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
+
 
     //     Help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
