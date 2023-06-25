@@ -111,19 +111,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
-    auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
     auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
     auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
 
-    const IBitmap fileControlBackground = pGraphics->LoadBitmap(FILECONTROLBACKGROUND_FN);
-    const IBitmap bgBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
-    const IBitmap linesBitmap = pGraphics->LoadBitmap(LINES_FN);
-    const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
-    const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
-    const IBitmap knobBackground = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
+    auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
+    auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
+    auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
+    auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
+    auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
+
     const IRECT b = pGraphics->GetBounds();
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
@@ -152,11 +152,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
     const IRECT eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
     const IRECT outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
-
-    // Area for IR bypass toggle
-    const float irBypassToggleX = 46.f;
-    const float irBypassToggleY = 343.f;
-    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitchBitmap);
 
     // Areas for model and IR
     const float fileWidth = 200.0f;
@@ -232,25 +227,25 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 #endif
     pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
                                                        "nam", loadModelCompletionHandler, style, fileSVG,
-                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG, fileControlBackground),
+                                                       crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irArea.GetFromLeft(30).GetTranslated(-40, 0).GetScaledAboutCentre(0.6), { irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
       new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
-                                style, fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG, fileControlBackground),
+                                style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
-    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackground));
-    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackground));
-    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackground), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackground), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackgroundBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackgroundBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(
-      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackground), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackground));
+      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackgroundBitmap));
 
     // The meters
     const float meterMin = -90.0f;
@@ -282,7 +277,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       },
       helpSVG));
 
-    pGraphics->AttachControl(new NAMAboutBoxControl(b, bgBitmap, style), kCtrlTagAboutBox)->Hide(true);
+    pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagAboutBox)->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);

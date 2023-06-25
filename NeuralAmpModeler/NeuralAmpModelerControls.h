@@ -155,7 +155,7 @@ public:
       r = filledArea.GetFromRight(mBitmap.W());
     }
     
-    g.DrawBitmap(mBitmap, r.GetTranslated(1, 1), 0, 0, nullptr);
+    g.DrawBitmap(mBitmap, r, 0, 0, nullptr);
   }
 };
 
