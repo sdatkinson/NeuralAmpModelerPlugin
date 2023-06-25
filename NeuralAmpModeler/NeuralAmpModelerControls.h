@@ -393,6 +393,50 @@ private:
   int mClearMsgTag;
 };
 
+class NAMMeterControl : public IVPeakAvgMeterControl<>, public IBitmapBase
+{
+  static constexpr float KMeterMin = -70.0f;
+  static constexpr float KMeterMax = -0.01f;
+  
+public:
+  NAMMeterControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  : IVPeakAvgMeterControl<>(bounds, "",
+                            style.WithShowValue(false).WithDrawFrame(false).WithWidgetFrac(0.8),
+                            EDirection::Vertical, {}, 0, KMeterMin, KMeterMax, {})
+  , IBitmapBase(bitmap)
+  {
+    SetPeakSize(1.0f);
+  }
+  
+  void OnRescale() override { mBitmap = GetUI()->GetScaledBitmap(mBitmap); }
+  
+  virtual void OnResize() override
+  {
+    SetTargetRECT(MakeRects(mRECT));
+    mWidgetBounds = mWidgetBounds.GetMidHPadded(5).GetVPadded(10);
+    MakeTrackRects(mWidgetBounds);
+    MakeStepRects(mWidgetBounds, mNSteps);
+    SetDirty(false);
+  }
+  
+  void DrawBackground(IGraphics& g, const IRECT& r) override
+  {
+    g.DrawFittedBitmap(mBitmap, r);
+  }
+  
+  void DrawTrackHandle(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
+  {
+    if (r.H() > 2)
+      g.FillRect(GetColor(kX1), r, &mBlend);
+  }
+  
+  void DrawPeak(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
+  {
+    g.DrawGrid(COLOR_BLACK, mTrackBounds.Get()[chIdx], 10, 2);
+    g.FillRect(GetColor(kX3), r, &mBlend);
+  }
+};
+
 class NAMAboutBoxControl : public IContainerBase
 {
 public:

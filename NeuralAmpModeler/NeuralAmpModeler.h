@@ -14,6 +14,14 @@ const int kNumPresets = 1;
 // The plugin is mono inside
 constexpr size_t kNumChannelsInternal = 1;
 
+class NAMSender : public iplug::IPeakAvgSender<>
+{
+public:
+  NAMSender()
+  : iplug::IPeakAvgSender<>(-90.0, true, 5.0f, 1.0f, 300.0f, 500.0f)
+  {
+  }
+};
 
 enum EParams
 {
@@ -157,10 +165,9 @@ private:
   // Path to IR (.wav file)
   WDL_String mIRPath;
   
-  WDL_String mHighLightColor;
+  WDL_String mHighLightColor {PluginColors::NAM_THEMECOLOR.ToColorCode()};
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
-  iplug::IPeakAvgSender<> mInputSender;
-  iplug::IPeakAvgSender<> mOutputSender;
+  NAMSender mInputSender, mOutputSender;
 };
