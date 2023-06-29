@@ -15,118 +15,10 @@ printf("");#include <algorithm> // std::clamp
 // clang-format on
 #include "architecture.hpp"
 
+#include "NeuralAmpModelerControls.h"
+
 using namespace iplug;
 using namespace igraphics;
-
-class IRolloverSVGButtonControl : public ISVGButtonControl
-{
-public:
-  IRolloverSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
-  : ISVGButtonControl(bounds, af, svg, svg)
-  {
-  }
-
-  void Draw(IGraphics& g) override
-  {
-    if (mMouseIsOver)
-      g.FillRect(PluginColors::MOUSEOVER, mRECT);
-
-    ISVGButtonControl::Draw(g);
-  }
-};
-
-class IRolloverCircleSVGButtonControl : public ISVGButtonControl
-{
-public:
-  IRolloverCircleSVGButtonControl(const IRECT& bounds, IActionFunction af, const ISVG& svg)
-  : ISVGButtonControl(bounds, af, svg, svg)
-  {
-  }
-
-  void Draw(IGraphics& g) override
-  {
-    if (mMouseIsOver)
-      g.FillEllipse(PluginColors::MOUSEOVER, mRECT);
-
-    ISVGButtonControl::Draw(g);
-  }
-};
-
-class IVUpdateableLabelControl : public IVLabelControl
-{
-public:
-  IVUpdateableLabelControl(const IRECT& bounds, const char* str, const IVStyle& style)
-  : IVLabelControl(bounds, str, style)
-  {
-  }
-
-  void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) { SetStr(reinterpret_cast<const char*>(pData)); }
-};
-
-class NamKnobControl : public IVKnobControl, public IBitmapBase
-{
-public:
-  NamKnobControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
-  : IVKnobControl(bounds, paramIdx, label, style, true)
-  , IBitmapBase(bitmap)
-  {
-    mInnerPointerFrac = 0.6;
-  }
-
-  void DrawWidget(IGraphics& g) override
-  {
-    float widgetRadius = GetRadius();
-    const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
-    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.5f);
-    const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
-    DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
-    g.DrawBitmap(mBitmap, knobHandleBounds.GetTranslated(4, 3), 0, 0);
-    float data[2][2];
-    RadialPoints(angle, cx + 1, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
-    g.PathCircle(data[1][0], data[1][1], 3);
-    g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f,
-                                              {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f},
-                                               {GetColor(mMouseIsOver ? kX3 : kX1), 0.8f},
-                                               {COLOR_TRANSPARENT, 1.0f}}),
-               {}, &mBlend);
-    g.DrawCircle(COLOR_BLACK.WithOpacity(0.5f), data[1][0], data[1][1], 3, &mBlend);
-  }
-};
-
-class NamSwitchControl : public IVSlideSwitchControl, public IBitmapBase
-{
-public:
-  NamSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
-                   IBitmap handleBitmap)
-  : IVSlideSwitchControl(
-    {bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
-  , IBitmapBase(bitmap)
-  , mHandleBitmap(handleBitmap)
-  {
-  }
-
-  void DrawWidget(IGraphics& g) override
-  {
-    // OL: arg, pixels :-(
-    if (GetValue() > 0.5f)
-      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-    else
-      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-
-    DrawTrack(g, mWidgetBounds);
-    DrawHandle(g, mHandleBounds);
-  }
-
-  void DrawTrack(IGraphics& g, const IRECT& filledArea) override { g.DrawBitmap(mBitmap, mRECT, 0, &mBlend); }
-
-  void DrawHandle(IGraphics& g, const IRECT& filledArea) override
-  {
-    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0), 0, &mBlend);
-  }
-
-private:
-  IBitmap mHandleBitmap;
-};
 
 // Styles
 const IVColorSpec colorSpec{
@@ -168,8 +60,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 , mStagedIR(nullptr)
 , mFlagRemoveNAM(false)
 , mFlagRemoveIR(false)
-, mDefaultNAMString("Select model...")
-, mDefaultIRString("Select IR...")
 , mToneBass()
 , mToneMid()
 , mToneTreble()
@@ -205,8 +95,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
   mLayoutFunc = [&](IGraphics* pGraphics) {
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
+    pGraphics->AttachTextEntryControl();
     pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
+    pGraphics->EnableTooltips(true);
     auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
@@ -221,7 +113,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const IRECT mainArea = b.GetPadded(-20);
     const auto content = mainArea.GetPadded(-10);
     const float titleHeight = 50.0f;
-    const auto titleLabel = content.GetFromTop(titleHeight);
 
     // Area for the Noise gate knob
     const float allKnobsHalfPad = 10.0f;
@@ -246,7 +137,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float toggleHeight = 40.0f;
     // Area for noise gate toggle
     const float ngAreaHeight = toggleHeight;
-    const float ngAreaHalfWidth = 0.5f * noiseGateArea.W();
     const IRECT ngToggleArea =
       noiseGateArea.GetFromBottom(ngAreaHeight).GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
     // Area for EQ toggle
@@ -268,17 +158,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const float irBypassToggleY = 343.f;
     const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitchBitmap);
 
-    // Area for IR bypass toggle
-    const float dimPanelOpacity = 0.75f;
-    const IRECT irBypassDimPanel = IRECT(100.f, 344.f, 500.f, 364.f); // left, top, right, bottom
-
     // Areas for model and IR
     const float fileWidth = 200.0f;
     const float fileHeight = 30.0f;
-    const float fileSpace = 10.0f;
-    const IRECT modelArea =
-      content.GetFromBottom(2.0f * fileHeight + fileSpace).GetFromTop(fileHeight).GetMidHPadded(fileWidth);
-    const IRECT irArea = content.GetFromBottom(fileHeight + 2.f).GetMidHPadded(fileWidth);
+    const float fileYSpace = 8.0f;
+    const float irYOffset = 38.0f;
+    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight) + fileYSpace)
+                              .GetFromTop(fileHeight)
+                              .GetMidHPadded(fileWidth)
+                              .GetTranslated(0.0f, -1);
+    const IRECT irArea = modelArea.GetTranslated(0.0f, irYOffset);
 
     // Areas for meters
     const float meterHalfHeight = 0.5f * 385.0f;
@@ -296,114 +185,66 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->SetBlend(IBlend(EBlend::Default, 1.0));
 
     // Model loader button
-    auto loadNAM = [&, pGraphics](IControl* pCaller) {
-      WDL_String initFileName;
-      WDL_String initPath(this->mNAMPath.Get());
-      initPath.remove_filepart();
-      pGraphics->PromptForFile(
-        initFileName, initPath, EFileAction::Open, "nam", [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            // Sets mNAMPath and mStagedNAM
-            const std::string msg = this->_GetNAM(fileName);
-            // TODO error messages like the IR loader.
-            if (msg.size())
-            {
-              std::stringstream ss;
-              ss << "Failed to load NAM model. Message:\n\n"
-                 << msg << "\n\n"
-                 << "If the model is an old \"directory-style\" model, it "
-                    "can be "
-                    "converted using the utility at "
-                    "https://github.com/sdatkinson/nam-model-utility";
-              pGraphics->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
-            }
-          }
-        });
+    auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
+      if (fileName.GetLength())
+      {
+        // Sets mNAMPath and mStagedNAM
+        const std::string msg = this->_GetNAM(fileName);
+        // TODO error messages like the IR loader.
+        if (msg.size())
+        {
+          std::stringstream ss;
+          ss << "Failed to load NAM model. Message:\n\n"
+             << msg << "\n\n"
+             << "If the model is an old \"directory-style\" model, it "
+                "can be "
+                "converted using the utility at "
+                "https://github.com/sdatkinson/nam-model-utility";
+          GetUI()->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
+        }
+        std::cout << "Loaded: " << fileName.Get() << std::endl;
+      }
     };
-    // IR loader button
-    auto loadIR = [&, pGraphics](IControl* pCaller) {
-      WDL_String initFileName;
-      WDL_String initPath(this->mIRPath.Get());
-      initPath.remove_filepart();
-      pGraphics->PromptForFile(
-        initFileName, initPath, EFileAction::Open, "wav", [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            this->mIRPath = fileName;
-            const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
-            if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
-            {
-              std::stringstream message;
-              message << "Failed to load IR file " << fileName.Get() << ":\n";
-              switch (retCode)
-              {
-                case (dsp::wav::LoadReturnCode::ERROR_OPENING):
-                  message << "Failed to open file (is it being used by another "
-                             "program?)";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_RIFF): message << "File is not a WAV file."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_WAVE): message << "File is not a WAV file."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_MISSING_FMT):
-                  message << "File is missing expected format chunk.";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_INVALID_FILE): message << "WAV file contents are invalid."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_ALAW):
-                  message << "Unsupported file format \"A-law\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_MULAW):
-                  message << "Unsupported file format \"mu-law\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_FORMAT_EXTENSIBLE):
-                  message << "Unsupported file format \"extensible\"";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_NOT_MONO): message << "File is not mono."; break;
-                case (dsp::wav::LoadReturnCode::ERROR_UNSUPPORTED_BITS_PER_SAMPLE):
-                  message << "Unsupported bits per sample";
-                  break;
-                case (dsp::wav::LoadReturnCode::ERROR_OTHER): message << "???"; break;
-                default: message << "???"; break;
-              }
-              pGraphics->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
-            }
-          }
-        });
-    };
-    // Model-clearing function
-    auto ClearNAM = [&, pGraphics](IControl* pCaller) { this->mFlagRemoveNAM = true; };
-    // IR-clearing function
-    auto ClearIR = [&, pGraphics](IControl* pCaller) { this->mFlagRemoveIR = true; };
 
-    // Graphics objects for what NAM is loaded
-    const float iconWidth = fileHeight; // Square icon
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(
-      modelArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadNAM, fileSVG));
+    // IR loader button
+    auto loadIRCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
+      if (fileName.GetLength())
+      {
+        this->mIRPath = fileName;
+        const dsp::wav::LoadReturnCode retCode = this->_GetIR(fileName);
+        if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
+        {
+          std::stringstream message;
+          message << "Failed to load IR file " << fileName.Get() << ":\n";
+          message << dsp::wav::GetMsgForLoadReturnCode(retCode);
+
+          GetUI()->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
+        }
+      }
+    };
+
+#ifdef NAM_PICK_DIRECTORY
+    const std::string defaultNamFileString = "Select model directory...";
+    const std::string defaultIRString = "Select IR directory...";
+#else
+    const std::string defaultNamFileString = "Select model...";
+    const std::string defaultIRString = "Select IR...";
+#endif
+    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
+                                                       "nam", loadModelCompletionHandler, style, fileSVG,
+                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG),
+                             kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(modelArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearNAM, closeButtonSVG));
-    pGraphics->AttachControl(
-      new IVUpdateableLabelControl(
-        modelArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultNAMString.Get(),
-        style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
-      kCtrlTagModelName);
-    // IR
-    pGraphics->AttachControl(new IRolloverSVGButtonControl(
-                               irArea.GetFromLeft(iconWidth).GetPadded(-6.f).GetTranslated(-1.f, 1.f), loadIR, fileSVG),
-                             -1, "IR_CONTROLS");
-    pGraphics->AttachControl(
-      new IRolloverSVGButtonControl(irArea.GetFromRight(iconWidth).GetPadded(-8.f), ClearIR, closeButtonSVG), -1,
-      "IR_CONTROLS");
-    pGraphics->AttachControl(
-      new IVUpdateableLabelControl(
-        irArea.GetReducedFromLeft(iconWidth).GetReducedFromRight(iconWidth), this->mDefaultIRString.Get(),
-        style.WithDrawFrame(false).WithValueText(style.valueText.WithSize(16.f).WithVAlign(EVAlign::Middle))),
-      kCtrlTagIRName, "IR_CONTROLS");
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
+                                fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
+      kCtrlTagIRFileBrowser);
 
     // TODO all these magic numbers
-    pGraphics->AttachControl(new NamSwitchControl(
+    pGraphics->AttachControl(new NAMSwitchControl(
       ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(
+    pGraphics->AttachControl(new NAMSwitchControl(
       eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NamSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
+    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
                                                   style, switchBitmap, switchHandleBitmap),
                              kCtrlTagOutNorm);
     // Get those labels on
@@ -417,13 +258,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     }
 
     // The knobs
-    pGraphics->AttachControl(new NamKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NamKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NamKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(
-      new NamKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NamKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
+      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
 
     // toggle IR on / off
     pGraphics->AttachControl(new IBSwitchControl(irBypassToggleArea, irSwitchBitmap, kIRToggle));
@@ -451,7 +292,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->SetPeakSize(2.0f);
 
     //     Help/about box
-    pGraphics->AttachControl(new IRolloverCircleSVGButtonControl(
+    pGraphics->AttachControl(new NAMCircleButtonControl(
       mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
       [pGraphics](IControl* pCaller) {
         pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
@@ -635,8 +476,8 @@ void NeuralAmpModeler::OnIdle()
 
   if (this->mNewNAMLoadedInDSP)
   {
-    if (GetUI())
-      this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
+    if (auto* pGraphics = GetUI())
+      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
 
     this->mNewNAMLoadedInDSP = false;
   }
@@ -656,8 +497,6 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   WDL_String dir;
   startPos = chunk.GetStr(this->mNAMPath, startPos);
   startPos = chunk.GetStr(this->mIRPath, startPos);
-  this->mNAM = nullptr;
-  this->mIR = nullptr;
   int retcode = UnserializeParams(chunk, startPos);
   if (this->mNAMPath.GetLength())
     this->_GetNAM(this->mNAMPath);
@@ -669,10 +508,12 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
+
   if (this->mNAMPath.GetLength())
-    this->_SetModelMsg(this->mNAMPath);
+    SendControlMsgFromDelegate(
+      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
   if (this->mIRPath.GetLength())
-    this->_SetIRMsg(this->mIRPath);
+    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, this->mIRPath.GetLength(), this->mIRPath.Get());
   if (this->mNAM != nullptr)
     this->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!this->mNAM->HasLoudness());
 }
@@ -689,10 +530,19 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle:
-        pGraphics->ForControlInGroup("IR_CONTROLS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
       default: break;
     }
+  }
+}
+
+bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData)
+{
+  switch (msgTag)
+  {
+    case kMsgTagClearModel: mFlagRemoveNAM = true; return true;
+    case kMsgTagClearIR: mFlagRemoveIR = true; return true;
+    default: return false;
   }
 }
 
@@ -732,14 +582,12 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   {
     this->mNAM = nullptr;
     this->mNAMPath.Set("");
-    this->_UnsetModelMsg();
     this->mFlagRemoveNAM = false;
   }
   if (this->mFlagRemoveIR)
   {
     this->mIR = nullptr;
     this->mIRPath.Set("");
-    this->_UnsetIRMsg();
     this->mFlagRemoveIR = false;
   }
 }
@@ -777,14 +625,14 @@ std::string NeuralAmpModeler::_GetNAM(const WDL_String& modelPath)
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
     mStagedNAM = get_dsp(dspPath);
-    this->_SetModelMsg(modelPath);
     this->mNAMPath = modelPath;
+    SendControlMsgFromDelegate(
+      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, this->mNAMPath.GetLength(), this->mNAMPath.Get());
   }
   catch (std::exception& e)
   {
-    std::stringstream ss;
-    ss << "FAILED to load model";
-    SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
+
     if (this->mStagedNAM != nullptr)
     {
       this->mStagedNAM = nullptr;
@@ -819,8 +667,8 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
 
   if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
   {
-    this->_SetIRMsg(irPath);
     this->mIRPath = irPath;
+    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, this->mIRPath.GetLength(), this->mIRPath.Get());
   }
   else
   {
@@ -829,9 +677,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_GetIR(const WDL_String& irPath)
       this->mStagedIR = nullptr;
     }
     this->mIRPath = previousIRPath;
-    std::stringstream ss;
-    ss << "FAILED to load IR";
-    SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
+    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadFailed);
   }
 
   return wavState;
@@ -936,43 +782,6 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
       // values.
       outputs[cout][s] = gain * inputs[cin][s];
 #endif
-}
-
-void NeuralAmpModeler::_SetModelMsg(const WDL_String& modelPath)
-{
-  auto dspPath = std::filesystem::path(modelPath.Get());
-  std::stringstream ss;
-  //  ss << "Loaded ";
-  if (dspPath.has_filename())
-    ss << dspPath.filename().stem().string(); // /path/to/model.nam -> model
-  else
-    ss << dspPath.parent_path().filename().string(); // /path/to/model.nam -> model
-  SendControlMsgFromDelegate(kCtrlTagModelName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
-}
-
-void NeuralAmpModeler::_SetIRMsg(const WDL_String& irPath)
-{
-  this->mIRPath = irPath; // This might already be done elsewhere...need to dedup.
-  auto dspPath = std::filesystem::path(irPath.Get());
-  std::stringstream ss;
-  //  ss << "Loaded " << dspPath.filename().stem();
-  ss << dspPath.filename().stem().string(); // /path/to/ir.wav -> ir;
-  SendControlMsgFromDelegate(kCtrlTagIRName, 0, int(strlen(ss.str().c_str())), ss.str().c_str());
-}
-
-void NeuralAmpModeler::_UnsetModelMsg()
-{
-  this->_UnsetMsg(kCtrlTagModelName, this->mDefaultNAMString);
-}
-
-void NeuralAmpModeler::_UnsetIRMsg()
-{
-  this->_UnsetMsg(kCtrlTagIRName, this->mDefaultIRString);
-}
-
-void NeuralAmpModeler::_UnsetMsg(const int tag, const WDL_String& msg)
-{
-  SendControlMsgFromDelegate(tag, 0, int(strlen(msg.Get())), msg.Get());
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,

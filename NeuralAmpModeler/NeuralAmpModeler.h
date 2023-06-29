@@ -34,13 +34,25 @@ const int numKnobs = 6;
 
 enum ECtrlTags
 {
-  kCtrlTagModelName = 0,
-  kCtrlTagIRName,
+  kCtrlTagModelFileBrowser = 0,
+  kCtrlTagIRFileBrowser,
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
   kCtrlTagOutNorm,
   kNumCtrlTags
+};
+
+enum EMsgTags
+{
+  // These tags are used from UI -> DSP
+  kMsgTagClearModel = 0,
+  kMsgTagClearIR,
+  // The following tags are from DSP -> UI
+  kMsgTagLoadFailed,
+  kMsgTagLoadedModel,
+  kMsgTagLoadedIR,
+  kNumMsgTags
 };
 
 class NeuralAmpModeler final : public iplug::Plugin
@@ -59,6 +71,7 @@ public:
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
 
   void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
+  bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
 private:
   // Allocates mInputPointers and mOutputPointers
@@ -82,8 +95,7 @@ private:
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
   dsp::wav::LoadReturnCode _GetIR(const WDL_String& irPath);
-  // Update the message about which model is loaded.
-  void _SetModelMsg(const WDL_String& dspPath);
+
   bool _HaveModel() const { return this->mNAM != nullptr; };
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
@@ -98,14 +110,7 @@ private:
   // :param nChansOut: Out to external
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
-  // Update the text in the IR area to say what's loaded.
-  void _SetIRMsg(const WDL_String& irPath);
-  // Disable Normalization toggle when no loudness data in model metadata
-  // Sometimes the UI isn't initialized, so we have to try again later.
-  //
-  void _UnsetModelMsg();
-  void _UnsetIRMsg();
-  void _UnsetMsg(const int tag, const WDL_String& msg);
+
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
@@ -136,10 +141,9 @@ private:
   std::unique_ptr<DSP> mStagedNAM;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
-  bool mFlagRemoveNAM;
-  bool mFlagRemoveIR;
-  const WDL_String mDefaultNAMString;
-  const WDL_String mDefaultIRString;
+  std::atomic<bool> mFlagRemoveNAM;
+  std::atomic<bool> mFlagRemoveIR;
+
   std::atomic<bool> mNewNAMLoadedInDSP = false;
 
   // Tone stack modules

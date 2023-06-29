@@ -319,6 +319,7 @@
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_src.h" />
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
+    <ClInclude Include="..\NeuralAmpModelerControls.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h" />
