@@ -51,7 +51,6 @@ enum EMsgTags
   // These tags are used from UI -> DSP
   kMsgTagClearModel = 0,
   kMsgTagClearIR,
-  kMsgTagHighlightColor,
   // The following tags are from DSP -> UI
   kMsgTagLoadFailed,
   kMsgTagLoadedModel,
@@ -156,8 +155,6 @@ private:
   WDL_String mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
-  
-  WDL_String mHighLightColor;
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 

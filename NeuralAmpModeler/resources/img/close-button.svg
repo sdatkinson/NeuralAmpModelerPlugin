@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="svg2"
+   viewBox="0 0 750.00003 754.197"
+   version="1.1"
+   sodipodi:docname="close-button.svg"
+   width="699.979"
+   height="703.89606"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs24" />
+  <sodipodi:namedview
+     id="namedview22"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="0.97586467"
+     inkscape:cx="194.69913"
+     inkscape:cy="369.92834"
+     inkscape:window-width="3840"
+     inkscape:window-height="2097"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <g
+     id="layer1"
+     transform="translate(1.0553132,-130.49579)">
+    <path
+       id="path2989"
+       d="m 814.29,606.65 a 314.29,314.29 0 1 1 -628.57,0 314.29,314.29 0 1 1 628.57,0 z"
+       stroke="#000000"
+       stroke-width="5"
+       transform="matrix(1.1048,0,0,1.1048,-179.21,-162.53)" />
+    <g
+       id="g3763"
+       transform="matrix(0.91837,0,0,0.91837,47.587,10.944)"
+       stroke="#ffffff"
+       stroke-linecap="round"
+       stroke-width="133.87"
+       fill="none">
+      <path
+         id="path2991"
+         d="M 176.51,362.87 532.64,719" />
+      <path
+         id="path2993"
+         d="M 532.64,362.87 176.51,719" />
+    </g>
+  </g>
+  <metadata
+     id="metadata19">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Close Button</dc:title>
+        <dc:date>2013-09-18T11:23:45</dc:date>
+        <dc:description>A round black close button with a white, thick, X in the center.</dc:description>
+        <dc:source>https://openclipart.org/detail/183568/close-button-by-henrikhoff-183568</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>henrikhoff</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>black</rdf:li>
+            <rdf:li>close button</rdf:li>
+            <rdf:li>cross</rdf:li>
+            <rdf:li>icon</rdf:li>
+            <rdf:li>white</rdf:li>
+            <rdf:li>x</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
