@@ -507,11 +507,11 @@ public:
 
     const IVStyle titleStyle =
     DEFAULT_STYLE
-    .WithValueText(IText(24, COLOR_WHITE, "Ronduit-Light"))
+    .WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
     .WithDrawFrame(false)
     .WithShadowOffset(2.f);
     
-    AddChildControl(new IVLabelControl(IRECT(), "Neural Amp Modeler", titleStyle));
+    AddChildControl(new IVLabelControl(IRECT(), "NEURAL AMP MODELER", titleStyle));
 
     WDL_String verStr, buildInfoStr;
     PLUG()->GetPluginVersionStr(verStr);

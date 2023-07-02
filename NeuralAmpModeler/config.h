@@ -57,7 +57,7 @@
 #define APP_SIGNAL_VECTOR_SIZE 64
 
 #define ROBOTO_FN "Roboto-Regular.ttf"
-#define RONDUIT_FN "RonduitCapitals-Light.ttf"
+#define MICHROMA_FN "Michroma-Regular.ttf"
 
 #define HELP_FN "Help.svg"
 #define FILE_FN "File.svg"

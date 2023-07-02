@@ -50,7 +50,7 @@ const IVStyle style =
 
 const IVStyle titleStyle =
 DEFAULT_STYLE
-.WithValueText(IText(24, COLOR_WHITE, "Ronduit-Light"))
+.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
 .WithDrawFrame(false)
 .WithShadowOffset(2.f);
 
@@ -89,7 +89,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->EnableTooltips(true);
     
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
-    pGraphics->LoadFont("Ronduit-Light", RONDUIT_FN);
+    pGraphics->LoadFont("Michroma-Regular", MICHROMA_FN);
     
     const auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     const auto fileSVG = pGraphics->LoadSVG(FILE_FN);
@@ -193,7 +193,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
-    pGraphics->AttachControl(new IVLabelControl(titleArea, "Neural Amp Modeler", titleStyle));
+    pGraphics->AttachControl(new IVLabelControl(titleArea, "NEURAL AMP MODELER", titleStyle));
     pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
 
 #ifdef NAM_PICK_DIRECTORY
