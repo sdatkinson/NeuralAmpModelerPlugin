@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "Colors.h"
-#include "IControls.h"
 #include "NeuralAmpModelerCore/NAM/activations.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
@@ -49,6 +48,12 @@ const IVStyle style =
           DEFAULT_WIDGET_FRAC,
           DEFAULT_WIDGET_ANGLE};
 
+const IVStyle titleStyle =
+DEFAULT_STYLE
+.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
+.WithDrawFrame(false)
+.WithShadowOffset(2.f);
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
@@ -80,93 +85,72 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   mLayoutFunc = [&](IGraphics* pGraphics) {
     pGraphics->AttachCornerResizer(EUIResizerMode::Scale, false);
     pGraphics->AttachTextEntryControl();
-    pGraphics->AttachPanelBackground(COLOR_BLACK);
     pGraphics->EnableMouseOver(true);
     pGraphics->EnableTooltips(true);
-    auto helpSVG = pGraphics->LoadSVG(HELP_FN);
-    auto fileSVG = pGraphics->LoadSVG(FILE_FN);
-    auto closeButtonSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
-    auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
-    auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
-    const IBitmap irSwitchBitmap = pGraphics->LoadBitmap((TOGGLEIR_FN), 2, true);
-    const IBitmap switchBitmap = pGraphics->LoadBitmap((TOGGLE_FN), true);
-    const IBitmap switchHandleBitmap = pGraphics->LoadBitmap((TOGGLE_HANDLE_FN), true);
-    const IBitmap knobRotateBitmap = pGraphics->LoadBitmap(KNOB_FN);
+    
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
-    const IRECT b = pGraphics->GetBounds();
-    const IRECT mainArea = b.GetPadded(-20);
-    const auto content = mainArea.GetPadded(-10);
-    const float titleHeight = 50.0f;
+    pGraphics->LoadFont("Michroma-Regular", MICHROMA_FN);
+    
+    const auto helpSVG = pGraphics->LoadSVG(HELP_FN);
+    const auto fileSVG = pGraphics->LoadSVG(FILE_FN);
+    const auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
+    const auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
+    const auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
+    const auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
+    const auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
+    const auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
 
-    // Area for the Noise gate knob
-    const float allKnobsHalfPad = 10.0f;
-    const float allKnobsPad = 2.0f * allKnobsHalfPad;
+    const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
+    const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
+    const auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
+    const auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
+    const auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
+    const auto meterBackgroundBitmap = pGraphics->LoadBitmap(METERBACKGROUND_FN);
+
+    const auto b = pGraphics->GetBounds();
+    const auto mainArea = b.GetPadded(-20);
+    const auto contentArea = mainArea.GetPadded(-10);
+    const auto titleHeight = 50.0f;
+    const auto titleArea = contentArea.GetFromTop(titleHeight);
 
     // Areas for knobs
-    const float knobsExtraSpaceBelowTitle = 25.0f;
-    const float knobHalfHeight = 70.0f;
-    const float knobHeight = 2.0f * knobHalfHeight;
-    const float singleKnobPad = 12.0f;
-    const auto knobs = content.GetFromTop(knobHeight)
-                         .GetReducedFromLeft(allKnobsPad)
-                         .GetReducedFromRight(allKnobsPad)
-                         .GetTranslated(0.0f, titleHeight + knobsExtraSpaceBelowTitle);
-    const IRECT inputKnobArea = knobs.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT noiseGateArea = knobs.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT bassKnobArea = knobs.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT middleKnobArea = knobs.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT trebleKnobArea = knobs.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
-    const IRECT outputKnobArea = knobs.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto knobsPad = 20.0f;
+    const auto knobsExtraSpaceBelowTitle = 25.0f;
+    const auto knobHeight = 120.f;
+    const auto singleKnobPad = -2.0f;
+    const auto knobsArea = contentArea.GetFromTop(knobHeight)
+                          .GetReducedFromLeft(knobsPad)
+                          .GetReducedFromRight(knobsPad)
+                          .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
+    const auto inputKnobArea = knobsArea.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto noiseGateArea = knobsArea.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto bassKnobArea = knobsArea.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto midKnobArea = knobsArea.GetGridCell(0, kToneMid, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto trebleKnobArea = knobsArea.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
+    const auto outputKnobArea = knobsArea.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
-    const float toggleHeight = 40.0f;
-    // Area for noise gate toggle
-    const float ngAreaHeight = toggleHeight;
-    const IRECT ngToggleArea =
-      noiseGateArea.GetFromBottom(ngAreaHeight).GetTranslated(-10.f, ngAreaHeight + singleKnobPad - 14.f);
-    // Area for EQ toggle
-    const float eqAreaHeight = toggleHeight;
-    const float eqAreaHalfWidth = 0.5f * middleKnobArea.W();
-    const IRECT eqToggleArea = middleKnobArea.GetFromBottom(eqAreaHeight)
-                                 .GetTranslated(-10.f, eqAreaHeight + singleKnobPad - 14.f)
-                                 .GetMidHPadded(eqAreaHalfWidth);
-
-    // Area for output normalization toggle
-    const float outNormAreaHeight = toggleHeight;
-    const float outNormAreaHalfWidth = 0.5f * outputKnobArea.W();
-    const IRECT outNormToggleArea = outputKnobArea.GetFromBottom(outNormAreaHeight)
-                                      .GetTranslated(-10.f, outNormAreaHeight + singleKnobPad - 14.f)
-                                      .GetMidHPadded(outNormAreaHalfWidth);
-
-    // Area for IR bypass toggle
-    const float irBypassToggleX = 46.f;
-    const float irBypassToggleY = 343.f;
-    const IRECT irBypassToggleArea = IRECT(irBypassToggleX, irBypassToggleY, irSwitchBitmap);
+    const auto ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
 
     // Areas for model and IR
-    const float fileWidth = 200.0f;
-    const float fileHeight = 30.0f;
-    const float fileYSpace = 8.0f;
-    const float irYOffset = 38.0f;
-    const IRECT modelArea = content.GetFromBottom((2.0f * fileHeight) + fileYSpace)
+    const auto fileWidth = 200.0f;
+    const auto fileHeight = 30.0f;
+    const auto irYOffset = 38.0f;
+    const auto modelArea = contentArea.GetFromBottom((2.0f * fileHeight))
                               .GetFromTop(fileHeight)
                               .GetMidHPadded(fileWidth)
-                              .GetTranslated(0.0f, -1);
-    const IRECT irArea = modelArea.GetTranslated(0.0f, irYOffset);
-
+                              .GetVShifted(-1);
+    const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
+    const auto irArea = modelArea.GetVShifted(irYOffset);
+    const auto irSwitchArea = irArea.GetFromLeft(30).GetHShifted(-40).GetScaledAboutCentre(0.6);
+    
     // Areas for meters
-    const float meterHalfHeight = 0.5f * 385.0f;
-    const IRECT inputMeterArea = inputKnobArea.GetFromLeft(allKnobsHalfPad)
-                                   .GetMidHPadded(allKnobsHalfPad)
-                                   .GetMidVPadded(meterHalfHeight)
-                                   .GetTranslated(-allKnobsPad - 18.f, 0.0f);
-    const IRECT outputMeterArea = outputKnobArea.GetFromRight(allKnobsHalfPad)
-                                    .GetMidHPadded(allKnobsHalfPad)
-                                    .GetMidVPadded(meterHalfHeight)
-                                    .GetTranslated(allKnobsPad + 18.f, 0.0f);
-
-    auto themeBG = pGraphics->LoadBitmap(EH_SKIN_FN);
-    pGraphics->AttachControl(new IBitmapControl(pGraphics->GetBounds(), themeBG, kNoParameter))
-      ->SetBlend(IBlend(EBlend::Default, 1.0));
+    const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
+    const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
+    
+    // Misc Areas
+    const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -207,6 +191,11 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       }
     };
 
+    pGraphics->AttachBackground(BACKGROUND_FN);
+    pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
+    pGraphics->AttachControl(new IVLabelControl(titleArea, "NEURAL AMP MODELER", titleStyle));
+    pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
+
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
     const std::string defaultIRString = "Select IR directory...";
@@ -216,125 +205,45 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 #endif
     pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
                                                        "nam", loadModelCompletionHandler, style, fileSVG,
-                                                       closeButtonSVG, leftArrowSVG, rightArrowSVG),
+                                                       crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
-    pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
-                                fileSVG, closeButtonSVG, leftArrowSVG, rightArrowSVG),
-      kCtrlTagIRFileBrowser);
-
-    // TODO all these magic numbers
-    pGraphics->AttachControl(new NAMSwitchControl(
-      ngToggleArea.GetFromTop(60.f).GetPadded(-20.f), kNoiseGateActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(
-      eqToggleArea.GetFromTop(60.f).GetPadded(-20.f), kEQActive, "", style, switchBitmap, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea.GetFromTop(32.f).GetPadded(-20.f), kOutNorm, "",
-                                                  style, switchBitmap, switchHandleBitmap),
-                             kCtrlTagOutNorm);
-    // Get those labels on
-    {
-      const float labelNudgeX = 11.f;
-      const float labelNudgeY = 15.f;
-      pGraphics->AttachControl(
-        new ITextControl(eqToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "EQ", style.labelText));
-      pGraphics->AttachControl(new ITextControl(
-        outNormToggleArea.GetFromTop(70.f).GetTranslated(labelNudgeX, labelNudgeY), "Normalize", style.labelText));
-    }
+    pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, { irIconOffSVG, irIconOnSVG}, kIRToggle));
+    pGraphics->AttachControl(new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav",
+                                                       loadIRCompletionHandler, style,
+                                                       fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
+                             kCtrlTagIRFileBrowser);
+    pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
+    pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
+    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
-    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobRotateBitmap));
-    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(middleKnobArea, kToneMid, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(
-      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobRotateBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobRotateBitmap));
-
-    // toggle IR on / off
-    pGraphics->AttachControl(new IBSwitchControl(irBypassToggleArea, irSwitchBitmap, kIRToggle));
+    pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackgroundBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackgroundBitmap));
+    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackgroundBitmap));
 
     // The meters
-    const float meterMin = -90.0f;
-    const float meterMax = -0.01f;
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(inputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithDrawFrame(false).WithColor(
-                                    kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.4f)),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagInputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
-    pGraphics
-      ->AttachControl(
-        new IVPeakAvgMeterControl(outputMeterArea, "",
-                                  style.WithWidgetFrac(0.5).WithShowValue(false).WithDrawFrame(false).WithColor(
-                                    kFG, PluginColors::NAM_THEMECOLOR.WithOpacity(0.4f)),
-                                  EDirection::Vertical, {}, 0, meterMin, meterMax, {}),
-        kCtrlTagOutputMeter)
-      ->As<IVPeakAvgMeterControl<>>()
-      ->SetPeakSize(2.0f);
+    pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
+    pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
 
-    //     Help/about box
-    pGraphics->AttachControl(new NAMCircleButtonControl(
-      mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20),
+    // Help/about box
+    pGraphics->AttachControl(new NAMCircleButtonControl(helpButtonArea,
       [pGraphics](IControl* pCaller) {
-        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<IAboutBoxControl>()->HideAnimated(false);
+        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
       },
       helpSVG));
 
-    pGraphics
-      ->AttachControl(
-        new IAboutBoxControl(
-          b, COLOR_GRAY,
-          // AttachFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            pParent->AddChildControl(new IPanelControl(
-              IRECT(),
-              IPattern::CreateLinearGradient(
-                r, EDirection::Vertical, {{PluginColors::NAM_THEMEFONTCOLOR, 0.f}, {PluginColors::NAM_0, 1.f}})));
-
-            pParent->AddChildControl(new IVPanelControl(IRECT(), "",
-                                                        style.WithColor(kFR, PluginColors::NAM_1.WithOpacity(0.9f))
-                                                          .WithColor(kFG, PluginColors::NAM_1.WithOpacity(0.9f))));
-
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "Neural Amp Modeler",
-              style.WithDrawFrame(false).WithValueText({30, EAlign::Center, PluginColors::HELP_TEXT})));
-
-            WDL_String versionStr{"Version "};
-            versionStr.Append(PLUG_VERSION_STR);
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), versionStr.Get(),
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IVLabelControl(
-              IRECT(), "By Steven Atkinson",
-              style.WithDrawFrame(false).WithValueText({DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT})));
-            pParent->AddChildControl(new IURLControl(IRECT(), "Train your own model",
-                                                     "https://github.com/sdatkinson/neural-amp-modeler",
-                                                     {DEFAULT_TEXT_SIZE, PluginColors::HELP_TEXT}));
-          },
-          // ResizeFunc
-          [](IContainerBase* pParent, const IRECT& r) {
-            const IRECT mainArea = r.GetPadded(-20);
-            const auto content = mainArea.GetPadded(-10);
-            const auto titleLabel = content.GetFromTop(50);
-            pParent->GetChild(0)->SetTargetAndDrawRECTs(r);
-            pParent->GetChild(1)->SetTargetAndDrawRECTs(mainArea);
-            pParent->GetChild(2)->SetTargetAndDrawRECTs(titleLabel);
-            pParent->GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-            pParent->GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20));
-            pParent->GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40));
-          },
-          // Animation Time
-          0),
-        kCtrlTagAboutBox)
-      ->Hide(true);
+    pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagAboutBox)->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);
       pControl->SetMouseOverWhenDisabled(true);
     });
+    
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+
   };
 }
 
@@ -526,6 +435,29 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
   {
     case kMsgTagClearModel: mShouldRemoveModel = true; return true;
     case kMsgTagClearIR: mShouldRemoveIR = true; return true;
+    case kMsgTagHighlightColor:
+    {
+      mHighLightColor.Set((const char*) pData);
+      
+      if (GetUI())
+      {
+        GetUI()->ForStandardControlsFunc([&](IControl* pControl){
+          
+          if (auto* pVectorBase = pControl->As<IVectorBase>())
+          {
+            IColor color = IColor::FromColorCodeStr(mHighLightColor.Get());
+
+            pVectorBase->SetColor(kX1, color);
+            pVectorBase->SetColor(kPR, color.WithOpacity(0.3f));
+            pVectorBase->SetColor(kFR, color.WithOpacity(0.4f));
+            pVectorBase->SetColor(kX3, color.WithContrast(0.1f));
+          }
+          pControl->GetUI()->SetAllControlsDirty();
+        });
+      }
+      
+      return true;
+    }
     default: return false;
   }
 }

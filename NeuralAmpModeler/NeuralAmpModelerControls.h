@@ -2,6 +2,8 @@
 
 #include "IControls.h"
 
+#define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
+
 using namespace iplug;
 using namespace igraphics;
 
@@ -46,19 +48,21 @@ public:
   : IVKnobControl(bounds, paramIdx, label, style, true)
   , IBitmapBase(bitmap)
   {
-    mInnerPointerFrac = 0.6;
+    mInnerPointerFrac = 0.55;
   }
+
+  void OnRescale() override { mBitmap = GetUI()->GetScaledBitmap(mBitmap); }
 
   void DrawWidget(IGraphics& g) override
   {
-    float widgetRadius = GetRadius();
-    const float cx = mWidgetBounds.MW(), cy = mWidgetBounds.MH();
-    IRECT knobHandleBounds = mWidgetBounds.GetCentredInside((widgetRadius - mTrackToHandleDistance) * 2.5f);
+    float widgetRadius = GetRadius() * 0.73;
+    auto knobRect = mWidgetBounds.GetCentredInside(mWidgetBounds.W(), mWidgetBounds.W());
+    const float cx = knobRect.MW(), cy = knobRect.MH();
     const float angle = mAngle1 + (static_cast<float>(GetValue()) * (mAngle2 - mAngle1));
-    DrawIndicatorTrack(g, angle, cx, cy, widgetRadius);
-    g.DrawBitmap(mBitmap, knobHandleBounds.GetTranslated(4, 3), 0, 0);
+    DrawIndicatorTrack(g, angle, cx+0.5, cy, widgetRadius);
+    g.DrawFittedBitmap(mBitmap, knobRect);
     float data[2][2];
-    RadialPoints(angle, cx + 1, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
+    RadialPoints(angle, cx, cy, mInnerPointerFrac * widgetRadius, mInnerPointerFrac * widgetRadius, 2, data);
     g.PathCircle(data[1][0], data[1][1], 3);
     g.PathFill(IPattern::CreateRadialGradient(data[1][0], data[1][1], 4.0f,
                                               {{GetColor(mMouseIsOver ? kX3 : kX1), 0.f},
@@ -72,36 +76,87 @@ public:
 class NAMSwitchControl : public IVSlideSwitchControl, public IBitmapBase
 {
 public:
-  NAMSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap,
-                   IBitmap handleBitmap)
-  : IVSlideSwitchControl(
-    {bounds.L, bounds.T, bitmap}, paramIdx, label, style.WithRoundness(5.f).WithShowLabel(false).WithShowValue(false))
+  NAMSwitchControl(const IRECT& bounds, int paramIdx, const char* label, const IVStyle& style, IBitmap bitmap)
+  : IVSlideSwitchControl(bounds, paramIdx, label, style
+                         .WithRoundness(0.666f)
+                         .WithShowValue(false)
+                         .WithEmboss(true)
+                         .WithShadowOffset(1.5f)
+                         .WithDrawShadows(false)
+                         .WithColor(kFR, COLOR_BLACK)
+                         .WithFrameThickness(0.5f)
+                         .WithWidgetFrac(0.5f)
+                         .WithLabelOrientation(EOrientation::South))
   , IBitmapBase(bitmap)
-  , mHandleBitmap(handleBitmap)
   {
   }
 
   void DrawWidget(IGraphics& g) override
   {
-    // OL: arg, pixels :-(
-    if (GetValue() > 0.5f)
-      g.FillRoundRect(GetColor(kFG), mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-    else
-      g.FillRoundRect(COLOR_BLACK, mRECT.GetPadded(-2.7f).GetTranslated(0.0, 1.f), 9.f, &mBlend);
-
     DrawTrack(g, mWidgetBounds);
     DrawHandle(g, mHandleBounds);
   }
 
-  void DrawTrack(IGraphics& g, const IRECT& filledArea) override { g.DrawBitmap(mBitmap, mRECT, 0, &mBlend); }
+  void DrawTrack(IGraphics& g, const IRECT& bounds) override
+  {
+    IRECT handleBounds = GetAdjustedHandleBounds(bounds);
+    handleBounds = IRECT(handleBounds.L, handleBounds.T, handleBounds.R, handleBounds.T + mBitmap.H());
+    IRECT centreBounds = handleBounds.GetPadded(-mStyle.shadowOffset);
+    IRECT shadowBounds = handleBounds.GetTranslated(mStyle.shadowOffset, mStyle.shadowOffset);
+//    const float contrast = mDisabled ? -GRAYED_ALPHA : 0.f;
+    float cR = 7.f;
+    const float tlr = cR;
+    const float trr = cR;
+    const float blr = cR;
+    const float brr = cR;
+        
+    // outer shadow
+    if (mStyle.drawShadows)
+      g.FillRoundRect(GetColor(kSH), shadowBounds, tlr, trr, blr, brr, &mBlend);
+
+    // Embossed style unpressed
+    if (mStyle.emboss)
+    {
+      // Positive light
+      g.FillRoundRect(GetColor(kPR), handleBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Negative light
+      g.FillRoundRect(GetColor(kSH), shadowBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Fill in foreground
+      g.FillRoundRect(GetValue() > 0.5 ? GetColor(kX1) : COLOR_BLACK, centreBounds, tlr, trr, blr, brr, &mBlend);
+
+      // Shade when hovered
+      if (mMouseIsOver)
+        g.FillRoundRect(GetColor(kHL), centreBounds, tlr, trr, blr, brr, &mBlend);
+    }
+    else
+    {
+      g.FillRoundRect(GetValue() > 0.5 ? GetColor(kX1) : COLOR_BLACK, handleBounds, tlr, trr, blr, brr/*, &blend*/);
+
+      // Shade when hovered
+      if (mMouseIsOver)
+        g.FillRoundRect(GetColor(kHL), handleBounds, tlr, trr, blr, brr, &mBlend);
+    }
+
+    if (mStyle.drawFrame)
+      g.DrawRoundRect(GetColor(kFR), handleBounds, tlr, trr, blr, brr, &mBlend, mStyle.frameThickness);
+  }
 
   void DrawHandle(IGraphics& g, const IRECT& filledArea) override
   {
-    g.DrawBitmap(mHandleBitmap, filledArea.GetTranslated(2.0, 3.0), 0, &mBlend);
+    IRECT r;
+    if (GetSelectedIdx() == 0)
+    {
+      r = filledArea.GetFromLeft(mBitmap.W());
+    }
+    else
+    {
+      r = filledArea.GetFromRight(mBitmap.W());
+    }
+    
+    g.DrawBitmap(mBitmap, r, 0, 0, nullptr);
   }
-
-private:
-  IBitmap mHandleBitmap;
 };
 
 class NAMFileNameControl : public IVButtonControl
@@ -146,12 +201,13 @@ class NAMFileBrowserControl : public IDirBrowseControlBase
 public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
                         IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
-                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG)
+                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap)
   : IDirBrowseControlBase(bounds, fileExtension, false, false)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
   , mCompletionHandlerFunc(ch)
   , mStyle(style.WithColor(kFG, COLOR_TRANSPARENT).WithDrawFrame(false))
+  , mBitmap(bitmap)
   , mLoadSVG(loadSVG)
   , mClearSVG(clearSVG)
   , mLeftSVG(leftSVG)
@@ -159,9 +215,10 @@ public:
   {
     mIgnoreMouse = true;
   }
-
+  
   void Draw(IGraphics& g) override
-  { /* NO-OP */
+  {
+    g.DrawFittedBitmap(mBitmap, mRECT);
   }
 
   void OnPopupMenuSelection(IPopupMenu* pSelectedMenu, int valIdx) override
@@ -253,7 +310,7 @@ public:
       }
     };
 
-    IRECT padded = mRECT.GetPadded(-5.f);
+    IRECT padded = mRECT.GetPadded(-6.f).GetHPadded(-2.f);
     const auto buttonWidth = padded.H();
     const auto loadFileButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto clearButtonBounds = padded.ReduceFromRight(buttonWidth);
@@ -331,6 +388,178 @@ private:
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
   NAMFileNameControl* mFileNameControl = nullptr;
   IVStyle mStyle;
+  IBitmap mBitmap;
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
   int mClearMsgTag;
 };
+
+class NAMMeterControl : public IVPeakAvgMeterControl<>, public IBitmapBase
+{
+  static constexpr float KMeterMin = -70.0f;
+  static constexpr float KMeterMax = -0.01f;
+  
+public:
+  NAMMeterControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  : IVPeakAvgMeterControl<>(bounds, "",
+                            style.WithShowValue(false).WithDrawFrame(false).WithWidgetFrac(0.8),
+                            EDirection::Vertical, {}, 0, KMeterMin, KMeterMax, {})
+  , IBitmapBase(bitmap)
+  {
+    SetPeakSize(1.0f);
+  }
+  
+  void OnRescale() override { mBitmap = GetUI()->GetScaledBitmap(mBitmap); }
+  
+  virtual void OnResize() override
+  {
+    SetTargetRECT(MakeRects(mRECT));
+    mWidgetBounds = mWidgetBounds.GetMidHPadded(5).GetVPadded(10);
+    MakeTrackRects(mWidgetBounds);
+    MakeStepRects(mWidgetBounds, mNSteps);
+    SetDirty(false);
+  }
+  
+  void DrawBackground(IGraphics& g, const IRECT& r) override
+  {
+    g.DrawFittedBitmap(mBitmap, r);
+  }
+  
+  void DrawTrackHandle(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
+  {
+    if (r.H() > 2)
+      g.FillRect(GetColor(kX1), r, &mBlend);
+  }
+  
+  void DrawPeak(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
+  {
+    g.DrawGrid(COLOR_BLACK, mTrackBounds.Get()[chIdx], 10, 2);
+    g.FillRect(GetColor(kX3), r, &mBlend);
+  }
+};
+
+class NAMAboutBoxControl : public IContainerBase
+{
+public:
+  NAMAboutBoxControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  : IContainerBase(bounds)
+  , mAnimationTime(0)
+  , mBitmap(bitmap)
+  , mStyle(style)
+  {
+    mIgnoreMouse = false;
+  }
+  
+  bool OnKeyDown(float x, float y, const IKeyPress& key) override
+  {
+    if (key.VK == kVK_ESCAPE)
+    {
+      HideAnimated(true);
+      return true;
+    }
+    
+    return false;
+  }
+  
+  void OnMouseDown(float x, float y, const IMouseMod& mod) override
+  {
+    HideAnimated(true);
+  }
+  
+  void HideAnimated(bool hide)
+  {
+    mWillHide = hide;
+
+    if (hide == false)
+    {
+      mHide = false;
+    }
+    else // hide subcontrols immediately
+    {
+      ForAllChildrenFunc([hide](int childIdx, IControl* pChild) {
+        pChild->Hide(hide);
+      });
+    }
+
+    SetAnimation([&](IControl* pCaller) {
+      auto progress = static_cast<float>(pCaller->GetAnimationProgress());
+
+      if (mWillHide)
+        SetBlend(IBlend(EBlend::Default, 1.0f-progress));
+      else
+        SetBlend(IBlend(EBlend::Default, progress));
+
+      if (progress > 1.0f)
+      {
+        pCaller->OnEndAnimation();
+        IContainerBase::Hide(mWillHide);
+        GetUI()->SetAllControlsDirty();
+        return;
+      }
+
+    }, mAnimationTime);
+
+    SetDirty(true);
+  }
+
+  void OnAttached() override
+  {
+    AddChildControl(new IBitmapControl(IRECT(), mBitmap))->SetIgnoreMouse(true);
+
+    const IVStyle titleStyle =
+    DEFAULT_STYLE
+    .WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
+    .WithDrawFrame(false)
+    .WithShadowOffset(2.f);
+    
+    AddChildControl(new IVLabelControl(IRECT(), "NEURAL AMP MODELER", titleStyle));
+
+    WDL_String verStr, buildInfoStr;
+    PLUG()->GetPluginVersionStr(verStr);
+    
+    buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
+    
+    const auto text = IText(DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT);
+    const auto style = mStyle.WithDrawFrame(false).WithValueText(text);
+  
+
+    AddChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style));
+    AddChildControl(new IVLabelControl(IRECT(), buildInfoStr.Get(), style));
+    AddChildControl(new IURLControl(IRECT(), "Plug-in development: Steve Atkinson, Oli Larkin, ... ", "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", text, COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+    AddChildControl(new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com", text, COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+
+//    AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
+//
+//      WDL_String colorCodeStr;
+//      color.ToColorCodeStr(colorCodeStr, false);
+//      this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(), colorCodeStr.Get());
+//
+//    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
+
+    OnResize();
+  }
+  
+  void OnResize() override
+  {
+    if (NChildren())
+    {
+      const IRECT mainArea = mRECT.GetPadded(-20);
+      const auto content = mainArea.GetPadded(-10);
+      const auto titleLabel = content.GetFromTop(50);
+      GetChild(0)->SetTargetAndDrawRECTs(mRECT);
+      GetChild(1)->SetTargetAndDrawRECTs(titleLabel);
+      GetChild(2)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
+      GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
+      GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
+      GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
+//      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
+    }
+  }
+
+  
+private:
+  IBitmap mBitmap;
+  IVStyle mStyle;
+  int mAnimationTime = 200;
+  bool mWillHide = false;
+};
+
