@@ -150,7 +150,7 @@ END
 BEGIN
     "#include ""..\\config.h""\r\n"
     "ROBOTO_FN TTF ROBOTO_FN\r\n"
-    "RONDUIT_FN TTF RONDUIT_FN\r\n"
+    "MICHROMA_FN TTF MICHROMA_FN\r\n"
     "FILE_FN SVG FILE_FN\r\n"
     "HELP_FN SVG HELP_FN\r\n"
     "CLOSE_BUTTON_FN SVG CLOSE_BUTTON_FN\r\n"
