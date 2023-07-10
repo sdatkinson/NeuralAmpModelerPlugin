@@ -3,13 +3,23 @@
 
 #define PLUG_NAME "NeuralAmpModeler"
 #define PLUG_MFR "Steven Atkinson"
-#define PLUG_VERSION_HEX 0x00000704
-#define PLUG_VERSION_STR "0.7.4.1"
+
+#define PLUG_VERSION_MAJOR 0
+#define PLUG_VERSION_MINOR 7
+#define PLUG_VERSION_BUILD 4
+#define PLUG_VERSION_REVISION 1
+
+#define STR_HELPER(x) #x
+#define MKSTR(x) STR_HELPER(x)
+#define PLUG_VERSION_HEX ((PLUG_VERSION_MAJOR) <<16 | (PLUG_VERSION_MINOR<<8) || PLUG_VERSION_BUILD)
+#define PLUG_VERSION_STR MKSTR(PLUG_VERSION_MAJOR) "." MKSTR(PLUG_VERSION_MINOR) "." MKSTR(PLUG_VERSION_BUILD) "." MKSTR(PLUG_VERSION_REVISION)
+#define PLUG_VERSION_RC  PLUG_VERSION_MAJOR,PLUG_VERSION_MINOR,PLUG_VERSION_BUILD, PLUG_VERSION_REVISION
+
 #define PLUG_UNIQUE_ID '1YEo'
 #define PLUG_MFR_ID 'SDAa'
 #define PLUG_URL_STR "https://github.com/sdatkinson/NeuralAmpModelerPlugin"
 #define PLUG_EMAIL_STR "spam@me.com"
-#define PLUG_COPYRIGHT_STR "Copyright 2022 Steven Atkinson"
+#define PLUG_COPYRIGHT_STR "Copyright 2023 " PLUG_MFR
 #define PLUG_CLASS_NAME NeuralAmpModeler
 #define BUNDLE_NAME "NeuralAmpModeler"
 #define BUNDLE_MFR "StevenAtkinson"

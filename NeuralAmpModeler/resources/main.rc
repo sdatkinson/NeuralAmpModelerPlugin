@@ -214,8 +214,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,1,0
- PRODUCTVERSION 0,0,1,0
+ FILEVERSION PLUG_VERSION_RC
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -236,7 +235,7 @@ BEGIN
             VALUE "InternalName", PLUG_NAME
             VALUE "ProductName", PLUG_NAME
             VALUE "CompanyName", PLUG_MFR 
-            VALUE "LegalCopyright",  "Copyright 2023 " PLUG_MFR
+            VALUE "LegalCopyright", PLUG_COPYRIGHT_STR
             VALUE "LegalTrademarks", "VST and ASIO are trademarks of Steinberg Media Technologies GmbH, Audio Unit is a trademark of Apple, Inc."
         END
     END
