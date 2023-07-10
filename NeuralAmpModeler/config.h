@@ -1,7 +1,10 @@
+#ifndef  CONFIG_H
+# define CONFIG_H
+
 #define PLUG_NAME "NeuralAmpModeler"
 #define PLUG_MFR "Steven Atkinson"
 #define PLUG_VERSION_HEX 0x00000704
-#define PLUG_VERSION_STR "0.7.4"
+#define PLUG_VERSION_STR "0.7.4.1"
 #define PLUG_UNIQUE_ID '1YEo'
 #define PLUG_MFR_ID 'SDAa'
 #define PLUG_URL_STR "https://github.com/sdatkinson/NeuralAmpModelerPlugin"
@@ -94,4 +97,6 @@
 // Everyone else is fine though.
 #if defined(APP_API) && defined(__APPLE__)
   #define NAM_PICK_DIRECTORY
+#endif
+
 #endif

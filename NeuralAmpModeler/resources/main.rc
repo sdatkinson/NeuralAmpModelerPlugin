@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "../config.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -229,14 +230,14 @@ BEGIN
     BEGIN
         BLOCK "040004e4"
         BEGIN
-            VALUE "FileVersion", "0.0.1"
-            VALUE "ProductVersion", "0.0.1"
-            VALUE "FileDescription", "NeuralAmpModeler"
-            VALUE "InternalName", "NeuralAmpModeler"
-            VALUE "ProductName", "NeuralAmpModeler"
-            VALUE "CompanyName", "StevenAtkinson"
-            VALUE "LegalCopyright", "Copyright 2020 Acme Inc"
-            VALUE "LegalTrademarks", "VST is a trademark of Steinberg Media Technologies GmbH, Audio Unit is a trademark of Apple, Inc."
+            VALUE "FileVersion", PLUG_VERSION_STR
+            VALUE "ProductVersion", PLUG_VERSION_STR
+            VALUE "FileDescription", PLUG_NAME
+            VALUE "InternalName", PLUG_NAME
+            VALUE "ProductName", PLUG_NAME
+            VALUE "CompanyName", PLUG_MFR 
+            VALUE "LegalCopyright",  "Copyright 2023 " PLUG_MFR
+            VALUE "LegalTrademarks", "VST and ASIO are trademarks of Steinberg Media Technologies GmbH, Audio Unit is a trademark of Apple, Inc."
         END
     END
     BLOCK "VarFileInfo"
