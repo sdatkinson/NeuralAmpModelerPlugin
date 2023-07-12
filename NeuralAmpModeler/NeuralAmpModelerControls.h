@@ -430,6 +430,29 @@ public:
   }
 };
 
+const IText _WARNING_TEXT(DEFAULT_TEXT_SIZE + 3.f, COLOR_RED, "Roboto-Regular", EAlign::Near);
+
+class NAMSampleRateWarningControl : public ITextControl
+{
+public:
+  NAMSampleRateWarningControl(const IRECT& bounds)
+  : ITextControl(bounds, "WARNING: Run NAM at sample rate 48kHz!", _WARNING_TEXT)
+  {
+  }
+  void SetDisabled(bool disable) override
+  {
+    {
+      mBlend.mWeight = (disable ? mDisabledBlend : mEnabledBlend);
+      mDisabled = disable;
+      SetDirty(false);
+    }
+  }
+
+protected:
+  float mDisabledBlend = 0.0f; // when this is disabled, it's completely gone.
+  float mEnabledBlend = 1.0f; // Like normal
+};
+
 class NAMAboutBoxControl : public IContainerBase
 {
 public:

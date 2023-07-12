@@ -148,6 +148,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Misc Areas
     const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+    const auto sampleRateWarningArea = inputMeterArea.GetFromBottom(16.f).GetTranslated(12.f, 16.f).GetFromLeft(300.f);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -223,6 +224,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // The meters
     pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
     pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
+
+    // A warning when NAM isn't being run in the right sample rate:
+    pGraphics->AttachControl(new NAMSampleRateWarningControl(sampleRateWarningArea), kCtrlTagSampleRateWarning);
 
     // Help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
@@ -355,6 +359,7 @@ void NeuralAmpModeler::OnReset()
   const auto sampleRate = GetSampleRate();
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
+  mCheckSampleRateWarning = true;
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -368,6 +373,10 @@ void NeuralAmpModeler::OnIdle()
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
 
     mNewModelLoadedInDSP = false;
+  }
+  if (mCheckSampleRateWarning)
+  {
+    _CheckSampleRateWarning();
   }
 }
 
@@ -403,6 +412,7 @@ void NeuralAmpModeler::OnUIOpen()
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+  mCheckSampleRateWarning = true;
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
@@ -480,6 +490,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = std::move(mStagedModel);
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
+    mCheckSampleRateWarning = true;
   }
   if (mStagedIR != nullptr)
   {
@@ -492,12 +503,29 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
+    mCheckSampleRateWarning = true;
   }
   if (mShouldRemoveIR)
   {
     mIR = nullptr;
     mIRPath.Set("");
     mShouldRemoveIR = false;
+  }
+}
+
+void NeuralAmpModeler::_CheckSampleRateWarning()
+{
+  if (auto* pGraphics = GetUI())
+  {
+    bool showWarning = false;
+    if (_HaveModel())
+    {
+      const auto pluginSampleRate = GetSampleRate();
+      const double namSampleRate = 48000.0; // TODO from model
+      showWarning = pluginSampleRate != namSampleRate;
+    }
+    pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->SetDisabled(!showWarning);
+    mCheckSampleRateWarning = false;
   }
 }
 
