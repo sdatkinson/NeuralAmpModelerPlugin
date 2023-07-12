@@ -502,6 +502,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
+    mCheckSampleRateWarning = true;
   }
   if (mShouldRemoveIR)
   {
@@ -515,9 +516,14 @@ void NeuralAmpModeler::_CheckSampleRateWarning()
 {
   if (auto* pGraphics = GetUI())
   {
-    const auto pluginSampleRate = GetSampleRate();
-    const double namSampleRate = 48000.0; // TODO from model
-    pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->SetDisabled(pluginSampleRate == namSampleRate);
+    bool showWarning = false;
+    if (_HaveModel())
+    {
+      const auto pluginSampleRate = GetSampleRate();
+      const double namSampleRate = 48000.0; // TODO from model
+      showWarning = pluginSampleRate != namSampleRate;
+    }
+    pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->SetDisabled(!showWarning);
     mCheckSampleRateWarning = false;
   }
 }
