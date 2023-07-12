@@ -412,6 +412,7 @@ void NeuralAmpModeler::OnUIOpen()
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+  mCheckSampleRateWarning = true;
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
