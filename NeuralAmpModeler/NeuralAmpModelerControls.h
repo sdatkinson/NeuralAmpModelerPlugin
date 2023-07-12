@@ -436,7 +436,7 @@ class NAMSampleRateWarningControl : public ITextControl
 {
 public:
   NAMSampleRateWarningControl(const IRECT& bounds)
-  : ITextControl(bounds, "WARNING: Run NAM at 48kHz!", _WARNING_TEXT)
+  : ITextControl(bounds, "WARNING: Run NAM at sample rate 48kHz!", _WARNING_TEXT)
   {
   }
 };

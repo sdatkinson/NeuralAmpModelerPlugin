@@ -148,7 +148,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Misc Areas
     const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
-    const auto sampleRateWarningArea = inputMeterArea.GetFromBottom(16.f).GetTranslated(12.f, 16.f).GetFromLeft(200.f);
+    const auto sampleRateWarningArea = inputMeterArea.GetFromBottom(16.f).GetTranslated(12.f, 16.f).GetFromLeft(300.f);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
