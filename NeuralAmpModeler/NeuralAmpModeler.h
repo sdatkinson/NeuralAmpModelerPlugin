@@ -164,8 +164,8 @@ private:
   WDL_String mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
-  
-  WDL_String mHighLightColor {PluginColors::NAM_THEMECOLOR.ToColorCode()};
+
+  WDL_String mHighLightColor{PluginColors::NAM_THEMECOLOR.ToColorCode()};
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 

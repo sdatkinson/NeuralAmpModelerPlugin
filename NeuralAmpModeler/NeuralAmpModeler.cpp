@@ -49,10 +49,7 @@ const IVStyle style =
           DEFAULT_WIDGET_ANGLE};
 
 const IVStyle titleStyle =
-DEFAULT_STYLE
-.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
-.WithDrawFrame(false)
-.WithShadowOffset(2.f);
+  DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -87,10 +84,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachTextEntryControl();
     pGraphics->EnableMouseOver(true);
     pGraphics->EnableTooltips(true);
-    
+
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     pGraphics->LoadFont("Michroma-Regular", MICHROMA_FN);
-    
+
     const auto helpSVG = pGraphics->LoadSVG(HELP_FN);
     const auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     const auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
@@ -119,9 +116,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto knobHeight = 120.f;
     const auto singleKnobPad = -2.0f;
     const auto knobsArea = contentArea.GetFromTop(knobHeight)
-                          .GetReducedFromLeft(knobsPad)
-                          .GetReducedFromRight(knobsPad)
-                          .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
+                             .GetReducedFromLeft(knobsPad)
+                             .GetReducedFromRight(knobsPad)
+                             .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
     const auto inputKnobArea = knobsArea.GetGridCell(0, kInputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
     const auto noiseGateArea = knobsArea.GetGridCell(0, kNoiseGateThreshold, 1, numKnobs).GetPadded(-singleKnobPad);
     const auto bassKnobArea = knobsArea.GetGridCell(0, kToneBass, 1, numKnobs).GetPadded(-singleKnobPad);
@@ -129,26 +126,26 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto trebleKnobArea = knobsArea.GetGridCell(0, kToneTreble, 1, numKnobs).GetPadded(-singleKnobPad);
     const auto outputKnobArea = knobsArea.GetGridCell(0, kOutputLevel, 1, numKnobs).GetPadded(-singleKnobPad);
 
-    const auto ngToggleArea = noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto ngToggleArea =
+      noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
     const auto eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
-    const auto outNormToggleArea = outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+    const auto outNormToggleArea =
+      outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
 
     // Areas for model and IR
     const auto fileWidth = 200.0f;
     const auto fileHeight = 30.0f;
     const auto irYOffset = 38.0f;
-    const auto modelArea = contentArea.GetFromBottom((2.0f * fileHeight))
-                              .GetFromTop(fileHeight)
-                              .GetMidHPadded(fileWidth)
-                              .GetVShifted(-1);
+    const auto modelArea =
+      contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
     const auto irArea = modelArea.GetVShifted(irYOffset);
     const auto irSwitchArea = irArea.GetFromLeft(30).GetHShifted(-40).GetScaledAboutCentre(0.6);
-    
+
     // Areas for meters
     const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
     const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
-    
+
     // Misc Areas
     const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
 
@@ -162,12 +159,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         if (msg.size())
         {
           std::stringstream ss;
-          ss << "Failed to load NAM model. Message:\n\n"
-             << msg << "\n\n"
-             << "If the model is an old \"directory-style\" model, it "
-                "can be "
-                "converted using the utility at "
-                "https://github.com/sdatkinson/nam-model-utility";
+          ss << "Failed to load NAM model. Message:\n\n" << msg;
           GetUI()->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
         }
         std::cout << "Loaded: " << fileName.Get() << std::endl;
@@ -204,24 +196,28 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const std::string defaultIRString = "Select IR...";
 #endif
     pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
-                                                       "nam", loadModelCompletionHandler, style, fileSVG,
-                                                       crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
+                                                       "nam", loadModelCompletionHandler, style, fileSVG, crossSVG,
+                                                       leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
-    pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, { irIconOffSVG, irIconOnSVG}, kIRToggle));
-    pGraphics->AttachControl(new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav",
-                                                       loadIRCompletionHandler, style,
-                                                       fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
-                             kCtrlTagIRFileBrowser);
+    pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
+    pGraphics->AttachControl(
+      new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
+                                style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
+      kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
+    pGraphics->AttachControl(
+      new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
 
     // The knobs
     pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackgroundBitmap));
     pGraphics->AttachControl(new NAMKnobControl(noiseGateArea, kNoiseGateThreshold, "", style, knobBackgroundBitmap));
-    pGraphics->AttachControl(new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
-    pGraphics->AttachControl(new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(
+      new NAMKnobControl(bassKnobArea, kToneBass, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(
+      new NAMKnobControl(midKnobArea, kToneMid, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
+    pGraphics->AttachControl(
+      new NAMKnobControl(trebleKnobArea, kToneTreble, "", style, knobBackgroundBitmap), -1, "EQ_KNOBS");
     pGraphics->AttachControl(new NAMKnobControl(outputKnobArea, kOutputLevel, "", style, knobBackgroundBitmap));
 
     // The meters
@@ -229,7 +225,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
 
     // Help/about box
-    pGraphics->AttachControl(new NAMCircleButtonControl(helpButtonArea,
+    pGraphics->AttachControl(new NAMCircleButtonControl(
+      helpButtonArea,
       [pGraphics](IControl* pCaller) {
         pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
       },
@@ -241,9 +238,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseEventsWhenDisabled(true);
       pControl->SetMouseOverWhenDisabled(true);
     });
-    
-    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
 
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -303,9 +299,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     _FallbackDSP(triggerOutput, mOutputPointers, numChannelsInternal, numFrames);
   }
   // Apply the noise gate
-  sample** gateGainOutput = noiseGateActive
-                              ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames)
-                              : mOutputPointers;
+  sample** gateGainOutput =
+    noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
 
   sample** toneStackOutPointers = gateGainOutput;
   if (toneStackActive)
@@ -403,8 +398,7 @@ void NeuralAmpModeler::OnUIOpen()
   Plugin::OnUIOpen();
 
   if (mNAMPath.GetLength())
-    SendControlMsgFromDelegate(
-      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   if (mIRPath.GetLength())
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
   if (mModel != nullptr)
@@ -437,12 +431,11 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
     case kMsgTagClearIR: mShouldRemoveIR = true; return true;
     case kMsgTagHighlightColor:
     {
-      mHighLightColor.Set((const char*) pData);
-      
+      mHighLightColor.Set((const char*)pData);
+
       if (GetUI())
       {
-        GetUI()->ForStandardControlsFunc([&](IControl* pControl){
-          
+        GetUI()->ForStandardControlsFunc([&](IControl* pControl) {
           if (auto* pVectorBase = pControl->As<IVectorBase>())
           {
             IColor color = IColor::FromColorCodeStr(mHighLightColor.Get());
@@ -455,7 +448,7 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
           pControl->GetUI()->SetAllControlsDirty();
         });
       }
-      
+
       return true;
     }
     default: return false;
@@ -542,8 +535,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     auto dspPath = std::filesystem::u8path(modelPath.Get());
     mStagedModel = get_dsp(dspPath);
     mNAMPath = modelPath;
-    SendControlMsgFromDelegate(
-      kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
   catch (std::exception& e)
   {
