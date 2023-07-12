@@ -160,12 +160,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         if (msg.size())
         {
           std::stringstream ss;
-          ss << "Failed to load NAM model. Message:\n\n"
-             << msg << "\n\n"
-             << "If the model is an old \"directory-style\" model, it "
-                "can be "
-                "converted using the utility at "
-                "https://github.com/sdatkinson/nam-model-utility";
+          ss << "Failed to load NAM model. Message:\n\n" << msg;
           GetUI()->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
         }
         std::cout << "Loaded: " << fileName.Get() << std::endl;
