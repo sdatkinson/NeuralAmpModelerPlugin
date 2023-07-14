@@ -202,7 +202,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                              kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
                                 style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
