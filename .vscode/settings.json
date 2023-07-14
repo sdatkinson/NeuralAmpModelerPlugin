@@ -4,5 +4,6 @@
     "grunt.autoDetect": "off",
     "jake.autoDetect": "off",
     "gulp.autoDetect": "off",
-    "npm.autoDetect": "off"
+    "npm.autoDetect": "on",
+    "cmake.sourceDirectory": "C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/NeuralAmpModeler/NeuralAmpModelerCore"
 }

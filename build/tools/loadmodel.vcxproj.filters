@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\tools\loadmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\activations.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\convnet.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\dsp.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\get_dsp.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\lstm.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\util.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\NAM\wavenet.cpp">
+      <Filter>NAM</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\tools\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="NAM">
+      <UniqueIdentifier>{1EFCA65D-21E6-35AC-B57B-E25FBD5C9C38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{FC37E6E8-DA1B-3B09-8E9D-E9FC1FDE3770}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -10,5 +10,28 @@
 		"files.associations": {
 			"vector": "cpp"
 		},
+		"files.autoSave": "afterDelay",
+		"gnuGlobal.autoUpdate": "Enabled",
+		"git.autoRepositoryDetection": "subFolders",
+	},
+	"extensions": {
+		"recommendations": [
+			"morganlane.dotnet-build-test-all",
+			"github.vscode-github-actions",
+			"rubymaniac.vscode-direnv",
+			"jvalecillos.gpg"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"command": "npm start",
+				"name": "Run npm start",
+				"request": "launch",
+				"type": "node-terminal"
+			}
+
+		]
 	}
 }

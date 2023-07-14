@@ -1,0 +1,5 @@
+C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/build/tools/CMakeFiles/tools.dir
+C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/build/tools/CMakeFiles/benchmodel.dir
+C:/Users/mplay/OneDrive/Документы/NeuralAmpModelerPlugin/build/tools/CMakeFiles/loadmodel.dir

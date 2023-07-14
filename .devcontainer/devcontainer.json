@@ -4,10 +4,11 @@
         "dockerfile": "Dockerfile"
     },
     "extensions": [
-        "ms-vscode.cpptools",
-        "cschlosser.doxdocgen",
-        "hellbent.vscode-faust"
-    ],
+		"ms-vscode.cpptools",
+		"cschlosser.doxdocgen",
+		"hellbent.vscode-faust",
+		"MorganLane.dotnet-build-test-all"
+	],
     "postCreateCommand": "./setup_container.sh",
     "portsAttributes": {
 		"8001": {

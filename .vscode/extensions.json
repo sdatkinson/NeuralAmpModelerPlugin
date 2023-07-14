@@ -1,6 +1,10 @@
 {
     "recommendations": [
         "ms-vscode-remote.remote-containers",
-        "mikestead.dotenv"
+        "mikestead.dotenv",
+        "morganlane.dotnet-build-test-all",
+        "github.vscode-github-actions",
+        "rubymaniac.vscode-direnv",
+        "jvalecillos.gpg"
     ]
 }

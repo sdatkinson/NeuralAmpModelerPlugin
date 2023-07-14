@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\build\CMakeFiles\e8d3b9140501337c7a55551ad8f34b66\tools.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\NeuralAmpModeler\NeuralAmpModelerCore\tools\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\mplay\OneDrive\Документы\NeuralAmpModelerPlugin\build\tools\CMakeFiles\tools" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{57E2DC1F-3FAF-3ED4-BA9F-13FEB85CB355}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
