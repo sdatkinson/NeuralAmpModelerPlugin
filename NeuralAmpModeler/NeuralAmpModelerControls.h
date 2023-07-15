@@ -1,7 +1,7 @@
 #pragma once
 
-#include <sstream>
-#include <string>
+#include <cmath> // std::round
+#include <sstream> // std::stringstream
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
