@@ -21,3 +21,4 @@ This is a cleaned up version of [the original iPlug2-based NAM plugin](https://g
 (Thanks [Oli](https://github.com/olilarkin) for your generous suggestions!)
 
 \*could also support VST2, AAX, CLAP, Linux, iOS soon.
+# cactus-NeuralAmpModelerPlugin
