@@ -517,14 +517,18 @@ void NeuralAmpModeler::_CheckSampleRateWarning()
 {
   if (auto* pGraphics = GetUI())
   {
+    auto* control = pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->As<NAMSampleRateWarningControl>();
     bool showWarning = false;
     if (_HaveModel())
     {
       const auto pluginSampleRate = GetSampleRate();
-      const double namSampleRate = 48000.0; // TODO from model
+      const auto namSampleRateFromModel = mModel->GetExpectedSampleRate();
+      // Any model with "-1" is probably 48k
+      const auto namSampleRate = namSampleRateFromModel == -1.0 ? 48000.0 : namSampleRateFromModel;
+      control->SetSampleRate(namSampleRate);
       showWarning = pluginSampleRate != namSampleRate;
     }
-    pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->SetDisabled(!showWarning);
+    control->SetDisabled(!showWarning);
     mCheckSampleRateWarning = false;
   }
 }
