@@ -438,6 +438,8 @@ public:
   NAMSampleRateWarningControl(const IRECT& bounds)
   : ITextControl(bounds, "WARNING: Run NAM at sample rate 48kHz!", _WARNING_TEXT)
   {
+    // Default to disabled so that we don't get a flash every time we open the UI.
+    SetDisabled(true);
   }
   void SetDisabled(bool disable) override
   {
