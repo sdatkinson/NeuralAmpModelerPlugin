@@ -433,7 +433,7 @@ public:
       SetDirty(false);
     }
   }
-  // Adjust what's displayed according to the provided smalpe rate.
+  // Adjust what's displayed according to the provided sample rate.
   // Assumes that the given value is valid.
   void SetSampleRate(const double sampleRate)
   {
