@@ -13,8 +13,7 @@
 #include "NeuralAmpModelerFileManager.h"
 
 const int kNumPresets = 1;
-// The plugin is mono inside
-constexpr size_t kNumChannelsInternal = 1;
+
 
 class NAMSender : public iplug::IPeakAvgSender<>
 {
@@ -89,8 +88,6 @@ public:
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
 private:
-  // Allocates mInputPointers and mOutputPointers
-  void _AllocateIOPointers(const size_t nChans);
   // Moves DSP modules from staging area to the main area.
   // Also deletes DSP modules that are flagged for removal.
   // Exists so that we don't try to use a DSP module that's only
@@ -100,14 +97,7 @@ private:
   // Check whether the sample rate is correct for the NAM model.
   // Adjust the warning control accordingly.
   void _CheckSampleRateWarning();
-  void _DeallocateIOPointers();
-  // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
-  void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
-  // Sizes based on mInputArray
-  size_t _GetBufferNumChannels() const;
-  size_t _GetBufferNumFrames() const;
-  // Apply the normalization for the model output (if possible)
-  void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
+
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
@@ -117,37 +107,8 @@ private:
   dsp::wav::LoadReturnCode _StageIR(const WDL_String& irPath);
 
   bool _HaveModel() const { return this->mModel != nullptr; };
-  // Prepare the input & output buffers
-  void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
-  // Manage pointers
-  void _PrepareIOPointers(const size_t nChans);
-  // Copy the input buffer to the object, applying input level.
-  // :param nChansIn: In from external
-  // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
-  // Copy the output to the output buffer, applying output level.
-  // :param nChansIn: In from internal
-  // :param nChansOut: Out to external
-  void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
-                      const size_t nChansOut);
-  // Checks the loaded model and IR against the current sample rate and resamples them if needed
-  void _ResampleModelAndIR();
-
-  // Update level meters
-  // Called within ProcessBlock().
-  // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
-  void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
-                     const size_t nChansIn, const size_t nChansOut);
 
   // Member data
-
-  // Input arrays to NAM
-  std::vector<std::vector<iplug::sample>> mInputArray;
-  // Output from NAM
-  std::vector<std::vector<iplug::sample>> mOutputArray;
-  // Pointer versions
-  iplug::sample** mInputPointers = nullptr;
-  iplug::sample** mOutputPointers = nullptr;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
@@ -182,8 +143,6 @@ private:
   WDL_String mIRPath;
 
   WDL_String mHighLightColor{PluginColors::NAM_THEMECOLOR.ToColorCode()};
-
-  std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   NAMSender mInputSender, mOutputSender;
   FileManager mModelFileManager {"nam"}, mIRFileManager {"wav"};
