@@ -202,8 +202,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                              kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearModel, defaultIRString.c_str(), "wav", loadIRCompletionHandler,
-                                style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
+                                fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
@@ -517,14 +517,18 @@ void NeuralAmpModeler::_CheckSampleRateWarning()
 {
   if (auto* pGraphics = GetUI())
   {
+    auto* control = pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->As<NAMSampleRateWarningControl>();
     bool showWarning = false;
     if (_HaveModel())
     {
       const auto pluginSampleRate = GetSampleRate();
-      const double namSampleRate = 48000.0; // TODO from model
+      const auto namSampleRateFromModel = mModel->GetExpectedSampleRate();
+      // Any model with "-1" is probably 48k
+      const auto namSampleRate = namSampleRateFromModel == -1.0 ? 48000.0 : namSampleRateFromModel;
+      control->SetSampleRate(namSampleRate);
       showWarning = pluginSampleRate != namSampleRate;
     }
-    pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->SetDisabled(!showWarning);
+    control->SetDisabled(!showWarning);
     mCheckSampleRateWarning = false;
   }
 }

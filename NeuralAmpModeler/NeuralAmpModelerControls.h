@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath> // std::round
+#include <sstream> // std::stringstream
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
@@ -436,8 +438,11 @@ class NAMSampleRateWarningControl : public ITextControl
 {
 public:
   NAMSampleRateWarningControl(const IRECT& bounds)
-  : ITextControl(bounds, "WARNING: Run NAM at sample rate 48kHz!", _WARNING_TEXT)
+  : ITextControl(bounds, "", _WARNING_TEXT)
   {
+    // Default to disabled so that we don't get a flash every time we open the UI.
+    SetDisabled(true);
+    SetSampleRate(48000.0);
   }
   void SetDisabled(bool disable) override
   {
@@ -446,6 +451,14 @@ public:
       mDisabled = disable;
       SetDirty(false);
     }
+  }
+  // Adjust what's displayed according to the provided smalpe rate.
+  // Assumes that the given value is valid.
+  void SetSampleRate(const double sampleRate)
+  {
+    std::stringstream ss;
+    ss << "WARNING: NAM model expects sample rate " << static_cast<long>(std::round(sampleRate));
+    SetStr(ss.str().c_str());
   }
 
 protected:
