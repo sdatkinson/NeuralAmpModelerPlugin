@@ -343,12 +343,23 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   if (mIR != nullptr && GetParam(kIRToggle)->Value())
     irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
 
+  // And the HPF for DC offset (Issue 271)
+  const double highPassCutoffFreq = 5.0;
+  // const double lowPassCutoffFreq = 20000.0;
+  const recursive_linear_filter::HighPassParams highPassParams(sampleRate, highPassCutoffFreq);
+  // const recursive_linear_filter::LowPassParams lowPassParams(sampleRate, lowPassCutoffFreq);
+  mHighPass.SetParams(highPassParams);
+  // mLowPass.SetParams(lowPassParams);
+  sample** hpfPointers = mHighPass.Process(irPointers, numChannelsInternal, numFrames);
+  // sample** lpfPointers = mLowPass.Process(hpfPointers, numChannelsInternal, numFrames);
+
   // restore previous floating point state
   std::feupdateenv(&fe_state);
 
   // Let's get outta here
   // This is where we exit mono for whatever the output requires.
-  _ProcessOutput(irPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+  _ProcessOutput(hpfPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+  // _ProcessOutput(lpfPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
   // * Output of input leveling (inputs -> mInputPointers),
   // * Output of output leveling (mOutputPointers -> outputs)
   _UpdateMeters(mInputPointers, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
