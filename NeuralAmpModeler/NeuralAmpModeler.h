@@ -126,6 +126,8 @@ private:
   // :param nChansOut: Out to external
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
+  // Checks the loaded model and IR against the current sample rate and resamples them if needed
+  void _ResampleModelAndIR();
 
   // Update level meters
   // Called within ProcessBlock().
