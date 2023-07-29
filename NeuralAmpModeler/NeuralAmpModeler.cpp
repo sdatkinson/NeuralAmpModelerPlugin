@@ -371,6 +371,8 @@ void NeuralAmpModeler::OnReset()
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
+  // If there is a model or IR loaded, they need to be checked for resampling.
+  _ResampleModelAndIR();
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -494,20 +496,6 @@ void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
 
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
-  // Move things from staged to live
-  if (mStagedModel != nullptr)
-  {
-    // Move from staged to active DSP
-    mModel = std::move(mStagedModel);
-    mStagedModel = nullptr;
-    mNewModelLoadedInDSP = true;
-    mCheckSampleRateWarning = true;
-  }
-  if (mStagedIR != nullptr)
-  {
-    mIR = std::move(mStagedIR);
-    mStagedIR = nullptr;
-  }
   // Remove marked modules
   if (mShouldRemoveModel)
   {
@@ -521,6 +509,20 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mIR = nullptr;
     mIRPath.Set("");
     mShouldRemoveIR = false;
+  }
+  // Move things from staged to live
+  if (mStagedModel != nullptr)
+  {
+    // Move from staged to active DSP
+    mModel = std::move(mStagedModel);
+    mStagedModel = nullptr;
+    mNewModelLoadedInDSP = true;
+    mCheckSampleRateWarning = true;
+  }
+  if (mStagedIR != nullptr)
+  {
+    mIR = std::move(mStagedIR);
+    mStagedIR = nullptr;
   }
 }
 
@@ -568,6 +570,29 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
   for (auto c = 0; c < numChannels; c++)
     for (auto s = 0; s < numFrames; s++)
       mOutputArray[c][s] = mInputArray[c][s];
+}
+
+void NeuralAmpModeler::_ResampleModelAndIR()
+{
+  const auto sampleRate = GetSampleRate();
+  // Model
+  // TODO
+  
+  // IR
+  if (mStagedIR != nullptr) {
+    const double irSampleRate = mStagedIR->GetSampleRate();
+    if (irSampleRate != sampleRate) {
+      const auto irData = mStagedIR->GetData();
+      mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
+    }
+  }
+  else if (mIR != nullptr) {
+    const double irSampleRate = mIR->GetSampleRate();
+    if (irSampleRate != sampleRate) {
+      const auto irData = mIR->GetData();
+      mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
+    }
+  }
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
