@@ -166,6 +166,10 @@ private:
   recursive_linear_filter::Peaking mToneMid;
   recursive_linear_filter::HighShelf mToneTreble;
 
+  // Post-IR filters
+  recursive_linear_filter::HighPass mHighPass;
+  //  recursive_linear_filter::LowPass mLowPass;
+
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
   // Path to IR (.wav file)
