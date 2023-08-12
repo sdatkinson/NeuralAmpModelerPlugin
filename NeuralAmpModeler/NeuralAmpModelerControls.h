@@ -356,15 +356,14 @@ public:
       case kMsgTagLoadedModel:
       case kMsgTagLoadedIR:
       {
-        WDL_String fileName;
+        WDL_String fileName, directory;
         fileName.Set(reinterpret_cast<const char*>(pData));
-        ClearPathList();
-        fileName.remove_filepart(true);
-        AddPath(fileName.Get(), "");
-        SetupMenu();
+        directory.Set(reinterpret_cast<const char*>(pData));
+        directory.remove_filepart(true);
 
-        // reset
-        fileName.Set(reinterpret_cast<const char*>(pData));
+        ClearPathList();
+        AddPath(directory.Get(), "");
+        SetupMenu();
         SetSelectedFile(fileName.Get());
         mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
         break;
