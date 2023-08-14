@@ -19,6 +19,8 @@
 using namespace iplug;
 using namespace igraphics;
 
+const double kDCBlockerFrequency = 5.0;
+
 // Styles
 const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
@@ -84,6 +86,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachTextEntryControl();
     pGraphics->EnableMouseOver(true);
     pGraphics->EnableTooltips(true);
+    pGraphics->EnableMultiTouch(true);
 
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     pGraphics->LoadFont("Michroma-Regular", MICHROMA_FN);
@@ -344,7 +347,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
 
   // And the HPF for DC offset (Issue 271)
-  const double highPassCutoffFreq = 5.0;
+  const double highPassCutoffFreq = kDCBlockerFrequency;
   // const double lowPassCutoffFreq = 20000.0;
   const recursive_linear_filter::HighPassParams highPassParams(sampleRate, highPassCutoffFreq);
   // const recursive_linear_filter::LowPassParams lowPassParams(sampleRate, lowPassCutoffFreq);
@@ -368,6 +371,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 void NeuralAmpModeler::OnReset()
 {
   const auto sampleRate = GetSampleRate();
+  // Tail is because the HPF DC blocker has a decay.
+  // 10 cycles should be enough to pass the VST3 tests checking tail behavior.
+  // I'm ignoring the model & IR, but it's not the end of the world.
+  const int tailCycles = 10;
+  SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
@@ -420,9 +428,21 @@ void NeuralAmpModeler::OnUIOpen()
   Plugin::OnUIOpen();
 
   if (mNAMPath.GetLength())
+  {
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    // If it's not loaded yet, then mark as failed.
+    // If it's yet to be loaded, then the completion handler will set us straight once it runs.
+    if (mModel == nullptr && mStagedModel == nullptr)
+      SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
+  }
+
   if (mIRPath.GetLength())
+  {
     SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
+    if (mIR == nullptr && mStagedIR == nullptr)
+      SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadFailed);
+  }
+
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
   mCheckSampleRateWarning = true;
@@ -577,18 +597,22 @@ void NeuralAmpModeler::_ResampleModelAndIR()
   const auto sampleRate = GetSampleRate();
   // Model
   // TODO
-  
+
   // IR
-  if (mStagedIR != nullptr) {
+  if (mStagedIR != nullptr)
+  {
     const double irSampleRate = mStagedIR->GetSampleRate();
-    if (irSampleRate != sampleRate) {
+    if (irSampleRate != sampleRate)
+    {
       const auto irData = mStagedIR->GetData();
       mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
     }
   }
-  else if (mIR != nullptr) {
+  else if (mIR != nullptr)
+  {
     const double irSampleRate = mIR->GetSampleRate();
-    if (irSampleRate != sampleRate) {
+    if (irSampleRate != sampleRate)
+    {
       const auto irData = mIR->GetData();
       mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
     }
@@ -605,7 +629,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     mNAMPath = modelPath;
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
-  catch (std::exception& e)
+  catch (std::runtime_error& e)
   {
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
 
@@ -634,7 +658,7 @@ dsp::wav::LoadReturnCode NeuralAmpModeler::_StageIR(const WDL_String& irPath)
     mStagedIR = std::make_unique<dsp::ImpulseResponse>(irPathU8.string().c_str(), sampleRate);
     wavState = mStagedIR->GetWavState();
   }
-  catch (std::exception& e)
+  catch (std::runtime_error& e)
   {
     wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
     std::cerr << "Caught unhandled exception while attempting to load IR:" << std::endl;
