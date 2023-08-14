@@ -19,6 +19,8 @@
 using namespace iplug;
 using namespace igraphics;
 
+const double kDCBlockerFrequency = 5.0;
+
 // Styles
 const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
@@ -345,7 +347,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
 
   // And the HPF for DC offset (Issue 271)
-  const double highPassCutoffFreq = 5.0;
+  const double highPassCutoffFreq = kDCBlockerFrequency;
   // const double lowPassCutoffFreq = 20000.0;
   const recursive_linear_filter::HighPassParams highPassParams(sampleRate, highPassCutoffFreq);
   // const recursive_linear_filter::LowPassParams lowPassParams(sampleRate, lowPassCutoffFreq);
@@ -369,6 +371,11 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 void NeuralAmpModeler::OnReset()
 {
   const auto sampleRate = GetSampleRate();
+  // Tail is because the HPF DC blocker has a decay.
+  // 10 cycles should be enough to pass the VST3 tests checking tail behavior.
+  // I'm ignoring the model & IR, but it's not the end of the world.
+  const int tailCycles = 10;
+  SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
