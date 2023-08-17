@@ -68,20 +68,20 @@ bool NeuralAmpModelerPreset::Serialize(const NeuralAmpModelerPreset& preset, con
   // Create a json instance from the preset object
   try
   {
-    auto path = std::filesystem::u8path(presetPath.Get());
+    auto presetFilePath = std::filesystem::u8path(presetPath.Get());
     // force extension of presetPath to be ".nps"
-    if (path.extension() != ".nps") path.replace_extension(".nps");
-    auto pathDirectory = path.parent_path();
+    if (presetFilePath.extension() != ".nps") presetFilePath.replace_extension(".nps");
+    const auto presetDirectoryPath = presetFilePath.parent_path();
 
     // First, try to make the path relative to the preset file
-    auto optimizedPathtoAMP = std::filesystem::relative( preset.AmpPath(), path.parent_path());
-    auto optimizedPathtoIR = std::filesystem::relative( preset.IrPath(), path.parent_path());
+    auto optimizedPathtoAMP = std::filesystem::relative( preset.AmpPath(), presetDirectoryPath);
+    auto optimizedPathtoIR = std::filesystem::relative( preset.IrPath(), presetDirectoryPath);
 
     // if the path can't be made relative, then it's not in the same directory as the preset file, so use absolute path
     if (optimizedPathtoAMP.empty()) optimizedPathtoAMP = std::filesystem::absolute( preset.AmpPath());
     if (optimizedPathtoIR.empty()) optimizedPathtoIR = std::filesystem::absolute( preset.IrPath());
 
-    std::ofstream o(path);
+    std::ofstream o(presetFilePath);
 
     nlohmann::json j;
     // Write all the attributes of the preset object to the json instance
