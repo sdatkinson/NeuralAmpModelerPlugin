@@ -170,6 +170,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         std::cout << "Loaded: " << fileName.Get() << std::endl;
       }
     };
+    mModelFileManager.SetCompletionHandler(loadModelCompletionHandler);
 
     // IR loader button
     auto loadIRCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -187,6 +188,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         }
       }
     };
+    mIRFileManager.SetCompletionHandler(loadIRCompletionHandler);
 
     pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
@@ -200,13 +202,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const std::string defaultNamFileString = "Select model...";
     const std::string defaultIRString = "Select IR...";
 #endif
-    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(),
-                                                       "nam", loadModelCompletionHandler, style, fileSVG, crossSVG,
+    pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, mModelFileManager, kMsgTagClearModel, defaultNamFileString.c_str(), style, fileSVG, crossSVG,
                                                        leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
+      new NAMFileBrowserControl(irArea, mIRFileManager, kMsgTagClearIR, defaultIRString.c_str(), style,
                                 fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, " ", style, switchHandleBitmap));
@@ -248,6 +249,37 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     });
 
     pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    
+    pGraphics->SetKeyHandlerFunc([&, pGraphics](const IKeyPress& key, bool isUp){
+      if (!isUp)
+      {
+        if (key.VK == kVK_LEFT)
+        {
+          mModelFileManager.PreviousFile();
+          pGraphics->GetControlWithTag(kCtrlTagModelFileBrowser)->As<NAMFileBrowserControl>()->PreviousFile();
+          return true;
+        }
+        else if (key.VK == kVK_RIGHT)
+        {
+          mModelFileManager.NextFile();
+          pGraphics->GetControlWithTag(kCtrlTagModelFileBrowser)->As<NAMFileBrowserControl>()->NextFile();
+          return true;
+        }
+        if (key.VK == kVK_UP)
+        {
+          mIRFileManager.PreviousFile();
+          pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->As<NAMFileBrowserControl>()->PreviousFile();
+          return true;
+        }
+        else if (key.VK == kVK_DOWN)
+        {
+          mIRFileManager.NextFile();
+          pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->As<NAMFileBrowserControl>()->NextFile();
+          return true;
+        }
+      }
+      return false;
+    });
   };
 }
 

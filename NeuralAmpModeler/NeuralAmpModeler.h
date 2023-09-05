@@ -11,6 +11,8 @@
 #include "ISender.h"
 #include "RealtimeResampler.h"
 
+#include "NeuralAmpModelerFileManager.h"
+
 const int kNumPresets = 1;
 // The plugin is mono inside
 constexpr size_t kNumChannelsInternal = 1;
@@ -316,4 +318,5 @@ private:
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   NAMSender mInputSender, mOutputSender;
+  FileManager mModelFileManager {"nam"}, mIRFileManager {"wav"};
 };

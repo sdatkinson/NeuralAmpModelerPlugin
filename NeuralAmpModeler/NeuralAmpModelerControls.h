@@ -3,6 +3,7 @@
 #include <cmath> // std::round
 #include <sstream> // std::stringstream
 #include "IControls.h"
+#include "NeuralAmpModelerFileManager.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
 
@@ -198,16 +199,15 @@ public:
   }
 };
 
-class NAMFileBrowserControl : public IDirBrowseControlBase
+class NAMFileBrowserControl : public IContainerBase
 {
 public:
-  NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
-                        IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
+  NAMFileBrowserControl(const IRECT& bounds, FileManager& fm, int clearMsgTag, const char* labelStr, const IVStyle& style, const ISVG& loadSVG,
                         const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap)
-  : IDirBrowseControlBase(bounds, fileExtension, false, false)
+  : IContainerBase(bounds)
+  , mFileManager(fm)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
-  , mCompletionHandlerFunc(ch)
   , mStyle(style.WithColor(kFG, COLOR_TRANSPARENT).WithDrawFrame(false))
   , mBitmap(bitmap)
   , mLoadSVG(loadSVG)
@@ -228,8 +228,8 @@ public:
 
       if (pItem)
       {
-        mSelectedItemIndex = mItems.Find(pItem);
-        LoadFileAtCurrentIndex();
+        mFileManager.SelectFileWithItem(pItem);
+        mFileManager.LoadFileAtCurrentIndex();
       }
     }
   }
@@ -237,56 +237,28 @@ public:
   void OnAttached() override
   {
     auto prevFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex--;
-
-      if (mSelectedItemIndex < 0)
-        mSelectedItemIndex = nItems - 1;
-
-      LoadFileAtCurrentIndex();
+      mFileManager.NextFile();
     };
 
     auto nextFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex++;
-
-      if (mSelectedItemIndex >= nItems)
-        mSelectedItemIndex = 0;
-
-      LoadFileAtCurrentIndex();
+      mFileManager.PreviousFile();
     };
 
     auto loadFileFunc = [&](IControl* pCaller) {
       WDL_String fileName;
       WDL_String path;
-      GetSelectedFileDirectory(path);
+
+      mFileManager.GetSelectedFile(path);
+      path.remove_filepart();
+      
+      auto callbackFunc = [&](const WDL_String& fileName, const WDL_String& path) {
+        mFileManager.OnPicked(fileName, path, true);
+      };
+      
 #ifdef NAM_PICK_DIRECTORY
-      pCaller->GetUI()->PromptForDirectory(path, [&](const WDL_String& fileName, const WDL_String& path) {
-        if (path.GetLength())
-        {
-          ClearPathList();
-          AddPath(path.Get(), "");
-          SetupMenu();
-          SelectFirstFile();
-          LoadFileAtCurrentIndex();
-        }
-      });
+      pCaller->GetUI()->PromptForDirectory(path, callbackFunc);
 #else
-      pCaller->GetUI()->PromptForFile(
-        fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            ClearPathList();
-            AddPath(path.Get(), "");
-            SetupMenu();
-            SetSelectedFile(fileName.Get());
-            LoadFileAtCurrentIndex();
-          }
-        });
+      pCaller->GetUI()->PromptForFile(fileName, path, EFileAction::Open, mFileManager.GetExtension(), callbackFunc);
 #endif
     };
 
@@ -303,13 +275,8 @@ public:
       }
       else
       {
-        CheckSelectedItem();
-        
-        if (!mMainMenu.HasSubMenus())
-        {
-          mMainMenu.SetChosenItemIdx(mSelectedItemIndex);
-        }
-        pCaller->GetUI()->CreatePopupMenu(*this, mMainMenu, pCaller->GetRECT());
+        mFileManager.CheckSelectedItem();
+        pCaller->GetUI()->CreatePopupMenu(*this, mFileManager.GetMenu(), pCaller->GetRECT());
       }
     };
 
@@ -323,9 +290,9 @@ public:
 
     AddChildControl(new NAMSquareButtonControl(loadFileButtonBounds, DefaultClickActionFunc, mLoadSVG))
       ->SetAnimationEndActionFunction(loadFileFunc);
-    AddChildControl(new NAMSquareButtonControl(leftButtonBounds, DefaultClickActionFunc, mLeftSVG))
+    AddChildControl(mLeftArrowControl = new NAMSquareButtonControl(leftButtonBounds, DefaultClickActionFunc, mLeftSVG))
       ->SetAnimationEndActionFunction(prevFileFunc);
-    AddChildControl(new NAMSquareButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
+    AddChildControl(mRightArrowControl = new NAMSquareButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
       ->SetAnimationEndActionFunction(nextFileFunc);
     AddChildControl(mFileNameControl = new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle))
       ->SetAnimationEndActionFunction(chooseFileFunc);
@@ -333,17 +300,6 @@ public:
       ->SetAnimationEndActionFunction(clearFileFunc);
 
     mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-  }
-
-  void LoadFileAtCurrentIndex()
-  {
-    if (mSelectedItemIndex > -1 && mSelectedItemIndex < NItems())
-    {
-      WDL_String fileName, path;
-      GetSelectedFile(fileName);
-      mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
-      mCompletionHandlerFunc(fileName, path);
-    }
   }
 
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
@@ -360,35 +316,61 @@ public:
       case kMsgTagLoadedModel:
       case kMsgTagLoadedIR:
       {
-        WDL_String fileName, directory;
+        WDL_String fileName, path;
         fileName.Set(reinterpret_cast<const char*>(pData));
-        directory.Set(reinterpret_cast<const char*>(pData));
-        directory.remove_filepart(true);
+        path.Set(reinterpret_cast<const char*>(pData));
+        path.remove_filepart(true);
 
-        ClearPathList();
-        AddPath(directory.Get(), "");
-        SetupMenu();
-        SetSelectedFile(fileName.Get());
+        mFileManager.OnPicked(fileName, path, false);
         mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
         break;
       }
       default: break;
     }
   }
-
-private:
-  void SelectFirstFile() { mSelectedItemIndex = mFiles.GetSize() ? 0 : -1; }
-
-  void GetSelectedFileDirectory(WDL_String& path)
+  
+  void PreviousFile()
   {
-    GetSelectedFile(path);
-    path.remove_filepart();
-    return;
+    mLeftArrowControl->SetAnimation(
+        [&](IControl* pCaller) {
+          auto progress = pCaller->GetAnimationProgress();
+
+          pCaller->SetValue(1.0);
+          
+          if (progress > 1.0)
+          {
+            pCaller->SetValue(0.0);
+            return;
+          }
+        },
+        200);
   }
 
+  void NextFile()
+  {
+    mRightArrowControl->SetAnimation(
+        [&](IControl* pCaller) {
+          auto progress = pCaller->GetAnimationProgress();
+
+          pCaller->SetValue(1.0);
+
+          if (progress > 1.0)
+          {
+            pCaller->SetValue(0.0);
+            return;
+          }
+        },
+        200);
+  }
+
+private:
+  FileManager& mFileManager;
   WDL_String mDefaultLabelStr;
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
   NAMFileNameControl* mFileNameControl = nullptr;
+  NAMSquareButtonControl* mLeftArrowControl = nullptr;
+  NAMSquareButtonControl* mRightArrowControl = nullptr;
+
   IVStyle mStyle;
   IBitmap mBitmap;
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
