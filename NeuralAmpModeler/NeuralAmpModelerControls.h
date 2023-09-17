@@ -22,7 +22,8 @@ public:
     if (mMouseIsOver)
       g.FillRoundRect(PluginColors::MOUSEOVER, mRECT, 2.f);
 
-    ISVGButtonControl::Draw(g);
+    auto color = mMouseIsOver ? COLOR_WHITE : COLOR_WHITE.WithContrast(-0.5);
+    g.DrawSVG(mOffSVG, mRECT, &mBlend, &color, &color);
   }
 };
 
