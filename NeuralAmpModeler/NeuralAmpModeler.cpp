@@ -194,13 +194,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVLabelControl(titleArea, "NEURAL AMP MODELER", titleStyle));
     pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
 
-#ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
     const std::string defaultIRString = "Select IR directory...";
-#else
-    const std::string defaultNamFileString = "Select model...";
-    const std::string defaultIRString = "Select IR...";
-#endif
     pGraphics->AttachControl(new NAMFileBrowserControl(modelArea, mModelFileManager, kMsgTagClearModel, defaultNamFileString.c_str(), style, fileSVG, crossSVG,
                                                        leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
