@@ -255,11 +255,7 @@ public:
         mFileManager.OnPicked(fileName, path, true);
       };
       
-#ifdef NAM_PICK_DIRECTORY
       pCaller->GetUI()->PromptForDirectory(path, callbackFunc);
-#else
-      pCaller->GetUI()->PromptForFile(fileName, path, EFileAction::Open, mFileManager.GetExtension(), callbackFunc);
-#endif
     };
 
     auto clearFileFunc = [&](IControl* pCaller) {
