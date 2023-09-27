@@ -10,3 +10,6 @@
 [submodule "AudioDSPTools"]
 	path = NeuralAmpModeler/AudioDSPTools
 	url = https://github.com/sdatkinson/AudioDSPTools.git
+[submodule "simde"]
+	path = simde
+	url = git@github.com:simd-everywhere/simde.git
