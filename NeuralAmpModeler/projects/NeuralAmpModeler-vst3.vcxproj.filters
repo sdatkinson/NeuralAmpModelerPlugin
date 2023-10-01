@@ -134,21 +134,6 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp">
       <Filter>IGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AudioDSPTools\dsp\dsp.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\AudioDSPTools\dsp\ImpulseResponse.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\AudioDSPTools\dsp\NoiseGate.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp">
-      <Filter>dsp</Filter>
-    </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\convnet.cpp">
       <Filter>NAM</Filter>
     </ClCompile>
@@ -169,6 +154,21 @@
     </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\activations.cpp">
       <Filter>NAM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioDSPTools\dsp\dsp.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioDSPTools\dsp\ImpulseResponse.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioDSPTools\dsp\NoiseGate.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp">
+      <Filter>dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioDSPTools\dsp\wav.cpp">
+      <Filter>dsp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -394,24 +394,6 @@
       <Filter>IGraphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Colors.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\dsp.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ImpulseResponse.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AudioDSPTools\dsp\NoiseGate.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AudioDSPTools\dsp\Resample.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AudioDSPTools\dsp\wav.h">
-      <Filter>dsp</Filter>
-    </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\activations.h">
       <Filter>NAM</Filter>
     </ClInclude>
@@ -434,6 +416,27 @@
       <Filter>NAM</Filter>
     </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerControls.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\dsp.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ImpulseResponse.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\NoiseGate.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\RecursiveLinearFilter.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\Resample.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\version.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\wav.h">
+      <Filter>dsp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -493,11 +496,11 @@
     <Filter Include="IPlug\VST3\VST3_SDK\plugininterfaces\base">
       <UniqueIdentifier>{5f06b03e-5093-46c0-9513-efb4e494c857}</UniqueIdentifier>
     </Filter>
-    <Filter Include="dsp">
-      <UniqueIdentifier>{982fc658-4802-43b8-95dd-f18fb814e389}</UniqueIdentifier>
-    </Filter>
     <Filter Include="NAM">
       <UniqueIdentifier>{3d65ee8b-86ee-4713-a5ec-d73919c6419c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp">
+      <UniqueIdentifier>{ed745419-3921-4abe-8286-170fa316a5ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
