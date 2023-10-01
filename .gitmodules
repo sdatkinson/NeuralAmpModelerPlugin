@@ -8,5 +8,5 @@
 	path = NeuralAmpModeler/NeuralAmpModelerCore
 	url = https://github.com/sdatkinson/NeuralAmpModelerCore.git
 [submodule "AudioDSPTools"]
-	path = AudioDSPTools
+	path = NeuralAmpModeler/AudioDSPTools
 	url = https://github.com/sdatkinson/AudioDSPTools.git
