@@ -630,7 +630,7 @@
 				4FBDC93D29FFF143004FF203 /* wav.cpp */,
 			);
 			name = dsp;
-			path = ../NeuralAmpModelerCore/dsp;
+			path = ../AudioDSPTools/dsp;
 			sourceTree = "<group>";
 		};
 		4FBDC93E29FFF143004FF203 /* NAM */ = {

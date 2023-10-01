@@ -1250,7 +1250,7 @@
 				4F2FB13C2A0047420027AB66 /* wav.h */,
 			);
 			name = dsp;
-			path = ../NeuralAmpModelerCore/dsp;
+			path = ../AudioDSPTools/dsp;
 			sourceTree = "<group>";
 		};
 		4F2FB1452A0047420027AB66 /* NAM */ = {
