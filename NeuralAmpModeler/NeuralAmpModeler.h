@@ -1,11 +1,11 @@
 #pragma once
 
 #include "NeuralAmpModelerCore/NAM/dsp.h"
-#include "ImpulseResponse.h"
-#include "NoiseGate.h"
-#include "RecursiveLinearFilter.h"
-#include "dsp.h"
-#include "wav.h"
+#include "AudioDSPTools/dsp/ImpulseResponse.h"
+#include "AudioDSPTools/dsp/NoiseGate.h"
+#include "AudioDSPTools/dsp/RecursiveLinearFilter.h"
+#include "AudioDSPTools/dsp/dsp.h"
+#include "AudioDSPTools/dsp/wav.h"
 
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
