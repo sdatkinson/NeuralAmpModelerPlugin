@@ -77,19 +77,19 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.cpp">
       <Filter>IGraphics\Drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\dsp.cpp">
+    <ClCompile Include="..\..\AudioDSPTools\dsp\dsp.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.cpp">
+    <ClCompile Include="..\..\AudioDSPTools\dsp\ImpulseResponse.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\NoiseGate.cpp">
+    <ClCompile Include="..\..\AudioDSPTools\dsp\NoiseGate.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.cpp">
+    <ClCompile Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
-    <ClCompile Include="..\NeuralAmpModelerCore\dsp\wav.cpp">
+    <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\convnet.cpp">
@@ -295,22 +295,22 @@
       <Filter>IGraphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Colors.h" />
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\dsp.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\dsp.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\ImpulseResponse.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\ImpulseResponse.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\NoiseGate.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\NoiseGate.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\RecursiveLinearFilter.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\Resample.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\Resample.h">
       <Filter>dsp</Filter>
     </ClInclude>
-    <ClInclude Include="..\NeuralAmpModelerCore\dsp\wav.h">
+    <ClInclude Include="..\..\AudioDSPTools\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\activations.h">
