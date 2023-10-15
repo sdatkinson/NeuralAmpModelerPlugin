@@ -1,5 +1,5 @@
 #include <algorithm> // std::clamp
-#include <cmath>  // pow
+#include <cmath> // pow
 #include <filesystem>
 #include <iostream>
 #include <utility>
@@ -293,12 +293,13 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 
   if (mModel != nullptr)
   {
-    // TODO multi-channel processing; Issue 
+    // TODO multi-channel processing; Issue
     // <ake sure it's multi-threaded or else this won't perform well!
     mModel->process(triggerOutput[0], mOutputPointers[0], nFrames);
     mModel->finalize_(nFrames);
     // Normalize loudness
-    if (GetParam(kOutNorm)->Value()) {
+    if (GetParam(kOutNorm)->Value())
+    {
       _NormalizeModelOutput(mOutputPointers, numChannelsInternal, numFrames);
     }
   }
@@ -604,7 +605,8 @@ void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_
   const double gain = pow(10.0, (targetLoudness - loudness) / 20.0);
   for (size_t c = 0; c < numChannels; c++)
   {
-      for (size_t f = 0; f < numFrames; f++) {
+    for (size_t f = 0; f < numFrames; f++)
+    {
       buffer[c][f] *= gain;
     }
   }
