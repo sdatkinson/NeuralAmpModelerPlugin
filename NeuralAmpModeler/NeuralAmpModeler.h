@@ -104,6 +104,8 @@ private:
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
+  // Apply the normalization for the model output (if possible)
+  void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
