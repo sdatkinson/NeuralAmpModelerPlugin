@@ -1,5 +1,5 @@
 #include <algorithm> // std::clamp
-#include <cmath>
+#include <cmath>  // pow
 #include <filesystem>
 #include <iostream>
 #include <utility>
@@ -143,7 +143,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
     const auto irArea = modelArea.GetVShifted(irYOffset);
-    const auto irSwitchArea = irArea.GetFromLeft(30).GetHShifted(-40).GetScaledAboutCentre(0.6);
+    const auto irSwitchArea = irArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
 
     // Areas for meters
     const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
@@ -293,13 +293,14 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 
   if (mModel != nullptr)
   {
-    mModel->SetNormalize(GetParam(kOutNorm)->Value());
-    // TODO remove input / output gains from here.
-    const double inputGain = 1.0;
-    const double outputGain = 1.0;
-    const int nChans = (int)numChannelsInternal;
-    mModel->process(triggerOutput, mOutputPointers, nChans, nFrames, inputGain, outputGain, mNAMParams);
+    // TODO multi-channel processing; Issue 
+    // <ake sure it's multi-threaded or else this won't perform well!
+    mModel->process(triggerOutput[0], mOutputPointers[0], nFrames);
     mModel->finalize_(nFrames);
+    // Normalize loudness
+    if (GetParam(kOutNorm)->Value()) {
+      _NormalizeModelOutput(mOutputPointers, numChannelsInternal, numFrames);
+    }
   }
   else
   {
@@ -590,6 +591,23 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
   for (auto c = 0; c < numChannels; c++)
     for (auto s = 0; s < numFrames; s++)
       mOutputArray[c][s] = mInputArray[c][s];
+}
+
+void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames)
+{
+  if (!mModel)
+    return;
+  if (!mModel->HasLoudness())
+    return;
+  const double loudness = mModel->GetLoudness();
+  const double targetLoudness = -18.0;
+  const double gain = pow(10.0, (targetLoudness - loudness) / 20.0);
+  for (size_t c = 0; c < numChannels; c++)
+  {
+      for (size_t f = 0; f < numFrames; f++) {
+      buffer[c][f] *= gain;
+    }
+  }
 }
 
 void NeuralAmpModeler::_ResampleModelAndIR()
