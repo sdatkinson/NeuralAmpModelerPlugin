@@ -413,7 +413,7 @@ public:
   }
 };
 
-const IText _WARNING_TEXT(DEFAULT_TEXT_SIZE + 3.f, COLOR_RED, "Roboto-Regular", EAlign::Near);
+const IText _WARNING_TEXT(DEFAULT_TEXT_SIZE, COLOR_RED, "Roboto-Regular", EAlign::Near);
 
 class NAMSampleRateWarningControl : public ITextControl
 {
@@ -438,7 +438,7 @@ public:
   void SetSampleRate(const double sampleRate)
   {
     std::stringstream ss;
-    ss << "WARNING: NAM model expects sample rate " << static_cast<long>(std::round(sampleRate));
+    ss << "!Resampling to: " << static_cast<long>(std::round(sampleRate));
     SetStr(ss.str().c_str());
   }
 

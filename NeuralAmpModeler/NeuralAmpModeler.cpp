@@ -355,6 +355,7 @@ void NeuralAmpModeler::OnReset()
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
+  mNonIntegerSRC.Reset(sampleRate);
   
   // Setup noise gate
   const auto time = 0.01;

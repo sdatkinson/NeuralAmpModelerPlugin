@@ -11,6 +11,7 @@
 #include "ISender.h"
 
 #include "NeuralAmpModelerFileManager.h"
+#include "NonIntegerResampler.h"
 
 const int kNumPresets = 1;
 
@@ -146,4 +147,5 @@ private:
 
   NAMSender mInputSender, mOutputSender;
   FileManager mModelFileManager {"nam"}, mIRFileManager {"wav"};
+  iplug::NonIntegerResampler<iplug::sample, 1> mNonIntegerSRC {48000.0f, iplug::ESRCMode::kLancsoz};
 };
