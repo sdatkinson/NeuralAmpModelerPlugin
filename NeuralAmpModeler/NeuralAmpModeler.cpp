@@ -320,21 +320,30 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
       mModel->process(newInputs[0], newOutputs[0], newNFrames);
       mModel->finalize_(newNFrames);
     });
+    
+    auto outputGain = GetParam(kOutputLevel)->DBToAmp();
+
+    // Apply loudness normalization and output level gain
+    if (mModel->HasLoudness())
+    {
+      const auto loudness = mModel->GetLoudness();
+      const auto targetLoudness = -18.0;
+      const auto loudnessGain = pow(10.0, (targetLoudness - loudness) / 20.0);
+      outputGain *= loudnessGain;
+    }
+
+    for (auto s=0; s<nFrames; s++)
+    {
+      outputs[0][s] = outputs[0][s] * outputGain;
+      outputs[1][s] = outputs[0][s];
+    }
   }
-  else
+  else // no model, pass through
   {
     for (auto s=0; s<nFrames; s++)
     {
       outputs[0][s] = inputs[0][s];
     }
-  }
-
-  const auto outputGain = GetParam(kOutputLevel)->DBToAmp();
-  
-  for (auto s=0; s<nFrames; s++)
-  {
-    outputs[0][s] = outputs[0][s] * outputGain;
-    outputs[1][s] = outputs[0][s];
   }
   
   mInputSender.ProcessBlock(inputs, nFrames, kCtrlTagInputMeter, 1);
