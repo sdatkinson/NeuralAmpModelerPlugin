@@ -83,13 +83,31 @@ public:
 
   void prewarm() override { mEncapsulated->prewarm(); };
 
-  void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames)
+  void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override
   {
     
-    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate())
+      if (GetExpectedSampleRate() == GetEncapsulatedSampleRate()) {
       mEncapsulated->process(input, output, num_frames);
+      lastNumEncapsulatedFramesProcessed = num_frames;
+    }
     else
+    {
       ProcessWithResampling(input, output, num_frames);
+    }
+    lastNumExternalFramesProcessed = num_frames;
+  };
+
+  void finalize_(const int num_frames)
+  {
+    if (num_frames != lastNumExternalFramesProcessed)
+      throw std::runtime_error(
+        "finalize_() called on ResamplingNAM with a different number of frames from what was just processed. Something "
+        "is probably going wrong.");
+    mEncapsulated->finalize_(lastNumEncapsulatedFramesProcessed);
+
+    // Invalidate state
+    lastNumEncapsulatedFramesProcessed = -1;
+    lastNumExternalFramesProcessed = -1;
   };
 
   void SetExpectedSampleRate(const double sampleRate) { mExpectedSampleRate = sampleRate; };
@@ -98,11 +116,16 @@ public:
 private:
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
+  // Kepp track of how many frames were processed so that we can be sure that finalize_() is consistent.
+  // This is kind of hacky, but I'm not sure I want to rethink the core right now.
+  int lastNumExternalFramesProcessed = -1;
+  int lastNumEncapsulatedFramesProcessed = -1;
 
   void ProcessWithResampling(NAM_SAMPLE* input, NAM_SAMPLE* output, const int numFrames)
   {
     // TODO the actual algo
     mEncapsulated->process(input, output, numFrames);
+    lastNumEncapsulatedFramesProcessed = numFrames;
   };
   
   // Some models are from when we didn't have sample rate in the model.
