@@ -81,12 +81,16 @@ public:
     // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to go.
   };
 
+  ~ResamplingNAM() = default;
+
   void prewarm() override { mEncapsulated->prewarm(); };
 
   void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override
   {
-    
-      if (GetExpectedSampleRate() == GetEncapsulatedSampleRate()) {
+    if (num_frames > mMaxExternalBlockSize)
+        // We can afford to be careful
+      throw std::runtime_error("More frames were provided than the max expected!");
+    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate()) {
       mEncapsulated->process(input, output, num_frames);
       lastNumEncapsulatedFramesProcessed = num_frames;
     }
@@ -110,22 +114,36 @@ public:
     lastNumExternalFramesProcessed = -1;
   };
 
-  void SetExpectedSampleRate(const double sampleRate) { mExpectedSampleRate = sampleRate; };
+  void Reset(const double sampleRate, const int maxBlockSize) {
+      mExpectedSampleRate = sampleRate;
+      mMaxExternalBlockSize = maxBlockSize;
+    ResizeEncapsulatedBuffers();
+  };
 
 
 private:
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
+
+  // Audio block arrays for the encapsulated model to process.
+  // Mapping into and out of these is accomplished by the "actual" resampling algorithm
+  int mMaxExternalBlockSize = 0;
+  std::vector<NAM_SAMPLE> mInput;
+  std::vector<NAM_SAMPLE> mOutput;
   // Kepp track of how many frames were processed so that we can be sure that finalize_() is consistent.
   // This is kind of hacky, but I'm not sure I want to rethink the core right now.
   int lastNumExternalFramesProcessed = -1;
   int lastNumEncapsulatedFramesProcessed = -1;
 
+  // The more complicated method where resampling actually happens.
+  // It's good to have this separate from the main routine because if resampling isn't necessary then we can trim
+  // off some ops associated with work with the encapsulated buffers and such.
   void ProcessWithResampling(NAM_SAMPLE* input, NAM_SAMPLE* output, const int numFrames)
   {
-    // TODO the actual algo
-    mEncapsulated->process(input, output, numFrames);
-    lastNumEncapsulatedFramesProcessed = numFrames;
+    const int numEncapsulatedFrames = ResampleInput(input, numFrames);
+    mEncapsulated->process(mInput.data(), mOutput.data(), numEncapsulatedFrames);
+    ResampleOutput(output, numFrames);  // TODO what about encapsulated frames and making sure it all matches up?
+    lastNumEncapsulatedFramesProcessed = numEncapsulatedFrames;
   };
   
   // Some models are from when we didn't have sample rate in the model.
@@ -135,6 +153,33 @@ private:
     const double encapsulatedSampleRate =
       reportedEncapsulatedSampleRate <= 0.0 ? 48000.0 : reportedEncapsulatedSampleRate;
     return encapsulatedSampleRate;
+  };
+
+  void ResizeEncapsulatedBuffers(){
+    const auto externalSampleRate = GetExpectedSampleRate();
+    const auto encapsulatedSampleRate = GetEncapsulatedSampleRate();
+    // FIXMEs:
+    // * Integer rounding
+    // * Receptive field of the interpolator
+    const int maxEncapsulatedBlockSize = mMaxExternalBlockSize;  // FIXME
+      //(int)(encapsulatedSampleRate * (double)mMaxExternalBlockSize / externalSampleRate);
+    mInput.resize(maxEncapsulatedBlockSize);
+    mOutput.resize(maxEncapsulatedBlockSize);
+  };
+
+  int ResampleInput(NAM_SAMPLE* input, const int numFrames){
+    // TODO
+    int numEncapsulatedFrames = numFrames;
+    for (int i = 0; i < numEncapsulatedFrames; i++)
+      mInput[i] = input[i];
+    return numEncapsulatedFrames;
+  };
+
+  void ResampleOutput(NAM_SAMPLE* output, const int numFrames)
+  {
+    // TODO
+    for (int i = 0; i < numFrames; i++)
+      output[i] = mOutput[i];
   };
 };
 
@@ -198,8 +243,8 @@ private:
   // :param nChansOut: Out to external
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
-  // Checks the loaded model and IR against the current sample rate and resamples them if needed
-  void _ResampleModelAndIR();
+  // Resetting for models and IRs, called by OnReset
+  void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
   // Update level meters
   // Called within ProcessBlock().

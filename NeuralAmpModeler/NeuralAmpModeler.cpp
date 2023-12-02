@@ -384,7 +384,7 @@ void NeuralAmpModeler::OnReset()
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
-  _ResampleModelAndIR();
+  _ResetModelAndIR(sampleRate, GetBlockSize());
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -614,15 +614,14 @@ void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_
   }
 }
 
-void NeuralAmpModeler::_ResampleModelAndIR()
+void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
-  const auto sampleRate = GetSampleRate();
   // Model
   if (mStagedModel != nullptr) {
-    mStagedModel->SetExpectedSampleRate(sampleRate);
+    mStagedModel->Reset(sampleRate, maxBlockSize);
   }
   else if (mModel != nullptr) {
-    mModel->SetExpectedSampleRate(sampleRate);
+    mModel->Reset(sampleRate, maxBlockSize);
   }
 
   // IR
@@ -652,7 +651,9 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedModel = std::make_unique<ResamplingNAM>(nam::get_dsp(dspPath), GetSampleRate());
+    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(nam::get_dsp(dspPath), GetSampleRate());
+    temp->Reset(GetSampleRate(), GetBlockSize());
+    mStagedModel = std::move(temp);
     mNAMPath = modelPath;
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
