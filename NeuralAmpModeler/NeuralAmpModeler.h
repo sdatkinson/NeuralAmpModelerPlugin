@@ -68,6 +68,53 @@ enum EMsgTags
   kNumMsgTags
 };
 
+class ResamplingNAM : public nam::DSP
+{
+public:
+  // Resampling wrapper around the NAM models
+  ResamplingNAM(std::unique_ptr<nam::DSP> encapsulated, const double expected_sample_rate)
+  : nam::DSP(expected_sample_rate)
+  , mEncapsulated(std::move(encapsulated))
+  {
+    if (mEncapsulated->HasLoudness())
+      SetLoudness(mEncapsulated->GetLoudness());
+    // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to go.
+  };
+
+  void prewarm() override { mEncapsulated->prewarm(); };
+
+  void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames)
+  {
+    
+    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate())
+      mEncapsulated->process(input, output, num_frames);
+    else
+      ProcessWithResampling(input, output, num_frames);
+  };
+
+  void SetExpectedSampleRate(const double sampleRate) { mExpectedSampleRate = sampleRate; };
+
+
+private:
+  // The encapsulated NAM
+  std::unique_ptr<nam::DSP> mEncapsulated;
+
+  void ProcessWithResampling(NAM_SAMPLE* input, NAM_SAMPLE* output, const int numFrames)
+  {
+    // TODO the actual algo
+    mEncapsulated->process(input, output, numFrames);
+  };
+  
+  // Some models are from when we didn't have sample rate in the model.
+  // For those, this wraps with the assumption that they're 48k models, which is probably true.
+  double GetEncapsulatedSampleRate() const {
+    const double reportedEncapsulatedSampleRate = mEncapsulated->GetExpectedSampleRate();
+    const double encapsulatedSampleRate =
+      reportedEncapsulatedSampleRate <= 0.0 ? 48000.0 : reportedEncapsulatedSampleRate;
+    return encapsulatedSampleRate;
+  };
+};
+
 class NeuralAmpModeler final : public iplug::Plugin
 {
 public:
@@ -151,11 +198,11 @@ private:
   dsp::noise_gate::Trigger mNoiseGateTrigger;
   dsp::noise_gate::Gain mNoiseGateGain;
   // The model actually being used:
-  std::unique_ptr<nam::DSP> mModel;
+  std::unique_ptr<ResamplingNAM> mModel;
   // And the IR
   std::unique_ptr<dsp::ImpulseResponse> mIR;
   // Manages switching what DSP is being used.
-  std::unique_ptr<nam::DSP> mStagedModel;
+  std::unique_ptr<ResamplingNAM> mStagedModel;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mShouldRemoveModel = false;

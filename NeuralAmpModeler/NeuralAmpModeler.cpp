@@ -53,6 +53,8 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
@@ -616,7 +618,12 @@ void NeuralAmpModeler::_ResampleModelAndIR()
 {
   const auto sampleRate = GetSampleRate();
   // Model
-  // TODO
+  if (mStagedModel != nullptr) {
+    mStagedModel->SetExpectedSampleRate(sampleRate);
+  }
+  else if (mModel != nullptr) {
+    mModel->SetExpectedSampleRate(sampleRate);
+  }
 
   // IR
   if (mStagedIR != nullptr)
@@ -645,7 +652,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedModel = nam::get_dsp(dspPath);
+    mStagedModel = std::make_unique<ResamplingNAM>(nam::get_dsp(dspPath), GetSampleRate());
     mNAMPath = modelPath;
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
