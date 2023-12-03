@@ -636,20 +636,20 @@
 		4FBDC93E29FFF143004FF203 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
-				4FBDC93F29FFF143004FF203 /* util.cpp */,
-				4FBDC94029FFF143004FF203 /* version.h */,
-				4FBDC94129FFF143004FF203 /* dsp.cpp */,
-				4FBDC94229FFF143004FF203 /* convnet.h */,
-				4FBDC94329FFF143004FF203 /* lstm.h */,
-				4FBDC94429FFF143004FF203 /* convnet.cpp */,
-				4FBDC94529FFF143004FF203 /* wavenet.h */,
-				4FBDC94629FFF143004FF203 /* lstm.cpp */,
-				4FBDC94729FFF143004FF203 /* util.h */,
-				4FBDC94829FFF143004FF203 /* dsp.h */,
-				4FBDC94929FFF143004FF203 /* activations.h */,
 				4FBDC94A29FFF143004FF203 /* activations.cpp */,
-				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94929FFF143004FF203 /* activations.h */,
+				4FBDC94429FFF143004FF203 /* convnet.cpp */,
+				4FBDC94229FFF143004FF203 /* convnet.h */,
+				4FBDC94129FFF143004FF203 /* dsp.cpp */,
+				4FBDC94829FFF143004FF203 /* dsp.h */,
 				4FBDC94C29FFF143004FF203 /* get_dsp.cpp */,
+				4FBDC94629FFF143004FF203 /* lstm.cpp */,
+				4FBDC94329FFF143004FF203 /* lstm.h */,
+				4FBDC93F29FFF143004FF203 /* util.cpp */,
+				4FBDC94729FFF143004FF203 /* util.h */,
+				4FBDC94029FFF143004FF203 /* version.h */,
+				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94529FFF143004FF203 /* wavenet.h */,
 			);
 			name = NAM;
 			path = ../NeuralAmpModelerCore/NAM;
