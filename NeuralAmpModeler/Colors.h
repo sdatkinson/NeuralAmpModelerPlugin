@@ -77,6 +77,8 @@ const iplug::igraphics::IColor NAM_THEMEFONTCOLOR(255, 242, 242, 242); // Dark W
 // const iplug::igraphics::IColor MOUSEOVER = NAM_3.WithOpacity(0.3);
 const iplug::igraphics::IColor MOUSEOVER = NAM_THEMEFONTCOLOR.WithOpacity(0.1);
 const iplug::igraphics::IColor HELP_TEXT = iplug::igraphics::COLOR_WHITE;
+const iplug::igraphics::IColor HELP_TEXT_MO = iplug::igraphics::COLOR_WHITE.WithOpacity(0.9);
+const iplug::igraphics::IColor HELP_TEXT_CLICKED = iplug::igraphics::COLOR_WHITE.WithOpacity(0.8);
 
 }; // namespace PluginColors
 

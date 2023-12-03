@@ -633,7 +633,7 @@
 				4FBDC93D29FFF143004FF203 /* wav.cpp */,
 			);
 			name = dsp;
-			path = ../NeuralAmpModelerCore/dsp;
+			path = ../AudioDSPTools/dsp;
 			sourceTree = "<group>";
 		};
 		4FBDC93E29FFF143004FF203 /* NAM */ = {
@@ -648,8 +648,6 @@
 				4FBDC94C29FFF143004FF203 /* get_dsp.cpp */,
 				4FBDC94629FFF143004FF203 /* lstm.cpp */,
 				4FBDC94329FFF143004FF203 /* lstm.h */,
-				AA8CA7752A452EF500F5BEF0 /* resample.cpp */,
-				AA8CA7762A452EF500F5BEF0 /* resample.h */,
 				4FBDC93F29FFF143004FF203 /* util.cpp */,
 				4FBDC94729FFF143004FF203 /* util.h */,
 				4FBDC94029FFF143004FF203 /* version.h */,
@@ -1179,7 +1177,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = "NeuralAmpModeler-iOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1232,7 +1230,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = "NeuralAmpModeler-iOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
