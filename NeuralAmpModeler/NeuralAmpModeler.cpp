@@ -652,7 +652,8 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(nam::get_dsp(dspPath), GetSampleRate());
+    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
+    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
     temp->Reset(GetSampleRate(), GetBlockSize());
     mStagedModel = std::move(temp);
     mNAMPath = modelPath;
