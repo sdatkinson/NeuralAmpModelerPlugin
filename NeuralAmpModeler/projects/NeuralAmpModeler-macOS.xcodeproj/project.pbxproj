@@ -442,18 +442,6 @@
 		4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F81588E205D50EB00393585 /* vstnoteexpressiontypes.cpp */; };
 		AA355E2D295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		AA355E2E295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
-		AA8CA7692A452EE100F5BEF0 /* resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AA8CA7672A452EE100F5BEF0 /* resample.h */; };
-		AA8CA76A2A452EE100F5BEF0 /* resample.h in Headers */ = {isa = PBXBuildFile; fileRef = AA8CA7672A452EE100F5BEF0 /* resample.h */; };
-		AA8CA76B2A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA76C2A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA76D2A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA76E2A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA76F2A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA7702A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA7712A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA7722A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA7732A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
-		AA8CA7742A452EE100F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7682A452EE100F5BEF0 /* resample.cpp */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -1014,8 +1002,6 @@
 		4FFF72B8214BB71400839091 /* main.rc */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.rc; path = ../resources/main.rc; sourceTree = "<group>"; };
 		52FBBED30D0CF143001C8B8A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		AA355E2C295B688F0061AA3D /* Colors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Colors.h; path = ../Colors.h; sourceTree = "<group>"; };
-		AA8CA7672A452EE100F5BEF0 /* resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resample.h; sourceTree = "<group>"; };
-		AA8CA7682A452EE100F5BEF0 /* resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resample.cpp; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1279,8 +1265,6 @@
 				4F2FB1532A0047420027AB66 /* get_dsp.cpp */,
 				4F2FB14D2A0047420027AB66 /* lstm.cpp */,
 				4F2FB14A2A0047420027AB66 /* lstm.h */,
-				AA8CA7682A452EE100F5BEF0 /* resample.cpp */,
-				AA8CA7672A452EE100F5BEF0 /* resample.h */,
 				4F2FB1462A0047420027AB66 /* util.cpp */,
 				4F2FB14E2A0047420027AB66 /* util.h */,
 				4F2FB1472A0047420027AB66 /* version.h */,
@@ -1970,7 +1954,6 @@
 				4F2FB17D2A0047430027AB66 /* dsp.h in Headers */,
 				4F2FB1A52A0047430027AB66 /* wavenet.h in Headers */,
 				4F78BE1222E73DD900AD537E /* NeuralAmpModelerAU.h in Headers */,
-				AA8CA76A2A452EE100F5BEF0 /* resample.h in Headers */,
 				4F2FB1542A0047420027AB66 /* Resample.h in Headers */,
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
 				4F2FB1902A0047430027AB66 /* version.h in Headers */,
@@ -2005,7 +1988,6 @@
 				4F6FD2B022675B6300FC59E6 /* IGraphicsCoreText.h in Headers */,
 				4F03A5D220A4621100EBDFFB /* IGraphicsPopupMenu.h in Headers */,
 				4FC3EFFE2086CE5700BD11FA /* processdata.h in Headers */,
-				AA8CA7692A452EE100F5BEF0 /* resample.h in Headers */,
 				4FC3F0002086CE5700BD11FA /* stringconvert.h in Headers */,
 				4F8C10E720BA2796006320CD /* IGraphicsEditorDelegate.h in Headers */,
 				4FC3EFFA2086CE5700BD11FA /* parameterchanges.h in Headers */,
@@ -2582,7 +2564,6 @@
 				4F2FB17F2A0047430027AB66 /* wav.cpp in Sources */,
 				4F78D9BB13B63BA50032E0F3 /* IPlugAPIBase.cpp in Sources */,
 				4FB1F59020E4B010004157C8 /* IGraphicsMac_view.mm in Sources */,
-				AA8CA76C2A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F993F7223055C96000313AF /* IPlugProcessor.cpp in Sources */,
 				4F35DEAE207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
 				4F6FD2B222675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
@@ -2599,7 +2580,6 @@
 			files = (
 				4F2FB1A22A0047430027AB66 /* convnet.cpp in Sources */,
 				4F2FB1842A0047430027AB66 /* wav.cpp in Sources */,
-				AA8CA7712A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F2FB1C12A0047430027AB66 /* wavenet.cpp in Sources */,
 				4F2FB1662A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1AC2A0047430027AB66 /* lstm.cpp in Sources */,
@@ -2646,7 +2626,6 @@
 				4F2FB1752A0047430027AB66 /* ImpulseResponse.cpp in Sources */,
 				4F7C495E255DDFC500DF7588 /* IControls.cpp in Sources */,
 				4F35DEB0207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
-				AA8CA76E2A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F78D95C13B63BA50032E0F3 /* IPlugParameter.cpp in Sources */,
 				4F2FB1B52A0047430027AB66 /* activations.cpp in Sources */,
 				4FB1F58C20E4B006004157C8 /* IGraphicsMac.mm in Sources */,
@@ -2688,7 +2667,6 @@
 				4F2FB18F2A0047430027AB66 /* util.cpp in Sources */,
 				4F3EE1D7231438D000004786 /* IGraphics.cpp in Sources */,
 				4F3EE1D8231438D000004786 /* IPlugAPP_dialog.cpp in Sources */,
-				AA8CA7742A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F3EE1D9231438D000004786 /* RtAudio.cpp in Sources */,
 				4F3EE1DA231438D000004786 /* IGraphicsCoreText.mm in Sources */,
 				4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */,
@@ -2744,7 +2722,6 @@
 				4F78BE2A22E7406D00AD537E /* IPlugPaths.mm in Sources */,
 				4F2FB1702A0047430027AB66 /* NoiseGate.cpp in Sources */,
 				4F7C496B255DDFCB00DF7588 /* IPopupMenuControl.cpp in Sources */,
-				AA8CA7732A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F2FB15C2A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2807,7 +2784,6 @@
 				4F815996205D51F000393585 /* vstrepresentation.cpp in Sources */,
 				4F2FB1932A0047430027AB66 /* dsp.cpp in Sources */,
 				4F815985205D50EB00393585 /* fcondition.cpp in Sources */,
-				AA8CA76D2A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F2FB1892A0047430027AB66 /* util.cpp in Sources */,
 				4F8C10E220BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
 				4F81597D205D50EB00393585 /* fbuffer.cpp in Sources */,
@@ -2854,7 +2830,6 @@
 				4FB1F58D20E4B007004157C8 /* IGraphicsMac.mm in Sources */,
 				4F2FB16D2A0047430027AB66 /* NoiseGate.cpp in Sources */,
 				4F7C4962255DDFC600DF7588 /* IPopupMenuControl.cpp in Sources */,
-				AA8CA76F2A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F2FB1592A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2869,7 +2844,6 @@
 				4FB1F58F20E4B009004157C8 /* IGraphicsMac.mm in Sources */,
 				4F6369F120A466470022C370 /* IControl.cpp in Sources */,
 				4F6FD2B722675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
-				AA8CA7722A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4F8C10E620BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
 				4FC3EFF92086CE5700BD11FA /* parameterchanges.cpp in Sources */,
 				4FC3EFCE2086C35D00BD11FA /* IPlugPluginBase.cpp in Sources */,
@@ -2916,7 +2890,6 @@
 				4F2FB1872A0047430027AB66 /* util.cpp in Sources */,
 				4F03A5AC20A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F2EA978203A50EA008E4850 /* IPlugAPP_dialog.cpp in Sources */,
-				AA8CA76B2A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4FAFFE5821495A4800A6E72D /* RtAudio.cpp in Sources */,
 				4F6FD2B122675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
 				4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */,
@@ -2989,7 +2962,6 @@
 				4FFBB93020863B0E00DDD0E7 /* fbuffer.cpp in Sources */,
 				4FFBB93420863B0E00DDD0E7 /* coreiids.cpp in Sources */,
 				4F5F344720C0226200487201 /* IPlugPaths.mm in Sources */,
-				AA8CA7702A452EE100F5BEF0 /* resample.cpp in Sources */,
 				4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
