@@ -491,6 +491,8 @@
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX_Parameters.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX_TaperDelegate.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugAPIBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugConstants.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugDelegate_select.h" />

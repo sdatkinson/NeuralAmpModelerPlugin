@@ -338,6 +338,12 @@
     <ClInclude Include="..\AudioDSPTools\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h">
+      <Filter>IPlug\Extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h">
+      <Filter>IPlug\Extras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -375,6 +381,9 @@
     </Filter>
     <Filter Include="NAM">
       <UniqueIdentifier>{3adb1e7a-68f8-4b41-8563-9bcf2bb0c8da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IPlug\Extras">
+      <UniqueIdentifier>{91ab74a9-d5f2-42db-9c8f-3bef7ee22bd3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

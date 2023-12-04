@@ -84,6 +84,7 @@
 		4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
 		4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7752A452EF500F5BEF0 /* resample.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -335,6 +336,8 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA8CA7752A452EF500F5BEF0 /* resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resample.cpp; sourceTree = "<group>"; };
+		AA8CA7762A452EF500F5BEF0 /* resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resample.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -636,20 +639,20 @@
 		4FBDC93E29FFF143004FF203 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
-				4FBDC93F29FFF143004FF203 /* util.cpp */,
-				4FBDC94029FFF143004FF203 /* version.h */,
-				4FBDC94129FFF143004FF203 /* dsp.cpp */,
-				4FBDC94229FFF143004FF203 /* convnet.h */,
-				4FBDC94329FFF143004FF203 /* lstm.h */,
-				4FBDC94429FFF143004FF203 /* convnet.cpp */,
-				4FBDC94529FFF143004FF203 /* wavenet.h */,
-				4FBDC94629FFF143004FF203 /* lstm.cpp */,
-				4FBDC94729FFF143004FF203 /* util.h */,
-				4FBDC94829FFF143004FF203 /* dsp.h */,
-				4FBDC94929FFF143004FF203 /* activations.h */,
 				4FBDC94A29FFF143004FF203 /* activations.cpp */,
-				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94929FFF143004FF203 /* activations.h */,
+				4FBDC94429FFF143004FF203 /* convnet.cpp */,
+				4FBDC94229FFF143004FF203 /* convnet.h */,
+				4FBDC94129FFF143004FF203 /* dsp.cpp */,
+				4FBDC94829FFF143004FF203 /* dsp.h */,
 				4FBDC94C29FFF143004FF203 /* get_dsp.cpp */,
+				4FBDC94629FFF143004FF203 /* lstm.cpp */,
+				4FBDC94329FFF143004FF203 /* lstm.h */,
+				4FBDC93F29FFF143004FF203 /* util.cpp */,
+				4FBDC94729FFF143004FF203 /* util.h */,
+				4FBDC94029FFF143004FF203 /* version.h */,
+				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94529FFF143004FF203 /* wavenet.h */,
 			);
 			name = NAM;
 			path = ../NeuralAmpModelerCore/NAM;
@@ -1003,6 +1006,7 @@
 				4FBDC95329FFF143004FF203 /* ImpulseResponse.cpp in Sources */,
 				4FC69843293BA5C50076EC33 /* IPlugParameter.cpp in Sources */,
 				4FC69844293BA5C50076EC33 /* IPlugTimer.cpp in Sources */,
+				AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */,
 				4FC69845293BA5C50076EC33 /* IPlugPaths.mm in Sources */,
 				4FBDC96329FFF143004FF203 /* activations.cpp in Sources */,
 				4FC69847293BA5F90076EC33 /* IPopupMenuControl.cpp in Sources */,

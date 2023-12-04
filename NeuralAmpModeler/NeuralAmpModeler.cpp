@@ -53,6 +53,7 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
@@ -382,7 +383,7 @@ void NeuralAmpModeler::OnReset()
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
-  _ResampleModelAndIR();
+  _ResetModelAndIR(sampleRate, GetBlockSize());
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -612,11 +613,17 @@ void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_
   }
 }
 
-void NeuralAmpModeler::_ResampleModelAndIR()
+void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
-  const auto sampleRate = GetSampleRate();
   // Model
-  // TODO
+  if (mStagedModel != nullptr)
+  {
+    mStagedModel->Reset(sampleRate, maxBlockSize);
+  }
+  else if (mModel != nullptr)
+  {
+    mModel->Reset(sampleRate, maxBlockSize);
+  }
 
   // IR
   if (mStagedIR != nullptr)
@@ -645,7 +652,10 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedModel = nam::get_dsp(dspPath);
+    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
+    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
+    temp->Reset(GetSampleRate(), GetBlockSize());
+    mStagedModel = std::move(temp);
     mNAMPath = modelPath;
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
