@@ -9,7 +9,7 @@
 
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
-#define M_PI 3.141592653589793238462643383279  // Needed by NonIntegerResampler.h
+#define M_PI 3.141592653589793238462643383279 // Needed by NonIntegerResampler.h
 #include "NonIntegerResampler.h"
 
 const int kNumPresets = 1;
@@ -73,7 +73,7 @@ enum EMsgTags
 // Get the sample rate of a NAM model.
 // Sometimes, the model doesn't know its own sample rate; this wrapper guesses 48k based on the way that most
 // people have used NAM in the past.
-double GetNAMSampleRate(const std::unique_ptr<nam::DSP> &model)
+double GetNAMSampleRate(const std::unique_ptr<nam::DSP>& model)
 {
   // Some models are from when we didn't have sample rate in the model.
   // For those, this wraps with the assumption that they're 48k models, which is probably true.
@@ -94,7 +94,7 @@ public:
   , mResampler(GetNAMSampleRate(mEncapsulated), iplug::ESRCMode::kLancsoz)
   {
     // Assign the encapsulated object's processing function  to this object's member so that the resampler can use it:
-    auto ProcessBlockFunc = [&](NAM_SAMPLE * *input, NAM_SAMPLE * *output, int numFrames) {
+    auto ProcessBlockFunc = [&](NAM_SAMPLE** input, NAM_SAMPLE** output, int numFrames) {
       mEncapsulated->process(input[0], output[0], numFrames);
       mEncapsulated->finalize_(numFrames);
     };
@@ -104,13 +104,13 @@ public:
     // holding.
     if (mEncapsulated->HasLoudness())
       SetLoudness(mEncapsulated->GetLoudness());
-    
+
     // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to
     // go.
     // _prewarm_samples = 0;
-    
+
     // And be ready
-    int maxBlockSize = 2048;  // Conservative
+    int maxBlockSize = 2048; // Conservative
     Reset(expected_sample_rate, maxBlockSize);
   };
 
@@ -149,9 +149,9 @@ public:
       throw std::runtime_error(
         "finalize_() called on ResamplingNAM with a different number of frames from what was just processed. Something "
         "is probably going wrong.");
-    
+
     // We don't actually do anything--it was taken care of during BlockProcessFunc()!
-    
+
     // prepare for next call to `.process()`
     mFinalized = true;
   };
@@ -161,26 +161,24 @@ public:
     mExpectedSampleRate = sampleRate;
     mMaxExternalBlockSize = maxBlockSize;
     mResampler.Reset(sampleRate, maxBlockSize);
-    
+
     // Allocations in the encapsulated model (HACK)
     // Stolen some code from the resampler; it'd be nice to have these exposed as methods? :)
     const double mUpRatio = sampleRate / GetEncapsulatedSampleRate();
     const auto maxEncapsulatedBlockSize = static_cast<int>(std::ceil(static_cast<double>(maxBlockSize) / mUpRatio));
     std::vector<NAM_SAMPLE> input, output;
     for (int i = 0; i < maxEncapsulatedBlockSize; i++)
-      input.push_back((NAM_SAMPLE) 0.0);
-    output.resize(maxEncapsulatedBlockSize);  // Doesn't matter what's in here
+      input.push_back((NAM_SAMPLE)0.0);
+    output.resize(maxEncapsulatedBlockSize); // Doesn't matter what's in here
     mEncapsulated->process(input.data(), output.data(), maxEncapsulatedBlockSize);
     mEncapsulated->finalize_(maxEncapsulatedBlockSize);
 
-    mFinalized = true;  // prepare for `.process()`
+    mFinalized = true; // prepare for `.process()`
   };
 
   // So that we can let the world know if we're resampling (useful for debugging)
-  double GetEncapsulatedSampleRate() const
-  {
-    return GetNAMSampleRate(mEncapsulated);
-  };
+  double GetEncapsulatedSampleRate() const { return GetNAMSampleRate(mEncapsulated); };
+
 private:
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
