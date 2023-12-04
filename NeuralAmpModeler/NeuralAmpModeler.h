@@ -88,9 +88,10 @@ public:
   void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override
   {
     if (num_frames > mMaxExternalBlockSize)
-        // We can afford to be careful
+      // We can afford to be careful
       throw std::runtime_error("More frames were provided than the max expected!");
-    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate()) {
+    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate())
+    {
       mEncapsulated->process(input, output, num_frames);
       lastNumEncapsulatedFramesProcessed = num_frames;
     }
@@ -114,9 +115,10 @@ public:
     lastNumExternalFramesProcessed = -1;
   };
 
-  void Reset(const double sampleRate, const int maxBlockSize) {
-      mExpectedSampleRate = sampleRate;
-      mMaxExternalBlockSize = maxBlockSize;
+  void Reset(const double sampleRate, const int maxBlockSize)
+  {
+    mExpectedSampleRate = sampleRate;
+    mMaxExternalBlockSize = maxBlockSize;
     ResizeEncapsulatedBuffers();
   };
 
@@ -142,32 +144,36 @@ private:
   {
     const int numEncapsulatedFrames = ResampleInput(input, numFrames);
     mEncapsulated->process(mInput.data(), mOutput.data(), numEncapsulatedFrames);
-    ResampleOutput(output, numFrames);  // TODO what about encapsulated frames and making sure it all matches up?
+    ResampleOutput(output, numFrames); // TODO what about encapsulated frames and making sure it all matches up?
     lastNumEncapsulatedFramesProcessed = numEncapsulatedFrames;
   };
-  
+
   // Some models are from when we didn't have sample rate in the model.
   // For those, this wraps with the assumption that they're 48k models, which is probably true.
-  double GetEncapsulatedSampleRate() const {
+  double GetEncapsulatedSampleRate() const
+  {
     const double reportedEncapsulatedSampleRate = mEncapsulated->GetExpectedSampleRate();
     const double encapsulatedSampleRate =
       reportedEncapsulatedSampleRate <= 0.0 ? 48000.0 : reportedEncapsulatedSampleRate;
     return encapsulatedSampleRate;
   };
 
-  void ResizeEncapsulatedBuffers(){
+  void ResizeEncapsulatedBuffers()
+  {
     const auto externalSampleRate = GetExpectedSampleRate();
     const auto encapsulatedSampleRate = GetEncapsulatedSampleRate();
     // FIXMEs:
     // * Integer rounding
     // * Receptive field of the interpolator
-    const int maxEncapsulatedBlockSize = mMaxExternalBlockSize;  // FIXME
-      //(int)(encapsulatedSampleRate * (double)mMaxExternalBlockSize / externalSampleRate);
+    const int maxEncapsulatedBlockSize =
+      mMaxExternalBlockSize; // FIXME
+                             //(int)(encapsulatedSampleRate * (double)mMaxExternalBlockSize / externalSampleRate);
     mInput.resize(maxEncapsulatedBlockSize);
     mOutput.resize(maxEncapsulatedBlockSize);
   };
 
-  int ResampleInput(NAM_SAMPLE* input, const int numFrames){
+  int ResampleInput(NAM_SAMPLE* input, const int numFrames)
+  {
     // TODO
     int numEncapsulatedFrames = numFrames;
     for (int i = 0; i < numEncapsulatedFrames; i++)

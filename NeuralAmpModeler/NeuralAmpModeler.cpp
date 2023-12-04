@@ -54,7 +54,6 @@ const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
 
-
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
@@ -617,10 +616,12 @@ void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_
 void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
   // Model
-  if (mStagedModel != nullptr) {
+  if (mStagedModel != nullptr)
+  {
     mStagedModel->Reset(sampleRate, maxBlockSize);
   }
-  else if (mModel != nullptr) {
+  else if (mModel != nullptr)
+  {
     mModel->Reset(sampleRate, maxBlockSize);
   }
 
