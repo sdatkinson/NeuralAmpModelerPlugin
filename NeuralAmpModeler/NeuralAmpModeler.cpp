@@ -558,9 +558,7 @@ void NeuralAmpModeler::_CheckSampleRateWarning()
     if (_HaveModel())
     {
       const auto pluginSampleRate = GetSampleRate();
-      const auto namSampleRateFromModel = mModel->GetExpectedSampleRate();
-      // Any model with "-1" is probably 48k
-      const auto namSampleRate = namSampleRateFromModel == -1.0 ? 48000.0 : namSampleRateFromModel;
+      const auto namSampleRate = mModel->GetEncapsulatedSampleRate();
       control->SetSampleRate(namSampleRate);
       showWarning = pluginSampleRate != namSampleRate;
     }
