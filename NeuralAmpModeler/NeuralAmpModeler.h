@@ -9,8 +9,7 @@
 
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
-#define M_PI 3.141592653589793238462643383279 // Needed by NonIntegerResampler.h
-#include "NonIntegerResampler.h"
+#include "RealtimeResampler.h"
 
 const int kNumPresets = 1;
 // The plugin is mono inside
@@ -189,7 +188,7 @@ private:
   bool mFinalized = true;
 
   // The resampling wrapper
-  iplug::NonIntegerResampler<NAM_SAMPLE, 1> mResampler;
+  iplug::RealtimeResampler<NAM_SAMPLE, 1, 12> mResampler;
 
   // Used to check that we don't get too large a block to process.
   int mMaxExternalBlockSize = 0;
