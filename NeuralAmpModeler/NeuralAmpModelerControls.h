@@ -304,7 +304,11 @@ public:
       else
       {
         CheckSelectedItem();
-        mMainMenu.SetChosenItemIdx(mSelectedItemIndex);
+        
+        if (!mMainMenu.HasSubMenus())
+        {
+          mMainMenu.SetChosenItemIdx(mSelectedItemIndex);
+        }
         pCaller->GetUI()->CreatePopupMenu(*this, mMainMenu, pCaller->GetRECT());
       }
     };
