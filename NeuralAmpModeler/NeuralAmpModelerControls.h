@@ -228,7 +228,7 @@ public:
 
       if (pItem)
       {
-        mSelectedIndex = mItems.Find(pItem);
+        mSelectedItemIndex = mItems.Find(pItem);
         LoadFileAtCurrentIndex();
       }
     }
@@ -240,10 +240,10 @@ public:
       const auto nItems = NItems();
       if (nItems == 0)
         return;
-      mSelectedIndex--;
+      mSelectedItemIndex--;
 
-      if (mSelectedIndex < 0)
-        mSelectedIndex = nItems - 1;
+      if (mSelectedItemIndex < 0)
+        mSelectedItemIndex = nItems - 1;
 
       LoadFileAtCurrentIndex();
     };
@@ -252,10 +252,10 @@ public:
       const auto nItems = NItems();
       if (nItems == 0)
         return;
-      mSelectedIndex++;
+      mSelectedItemIndex++;
 
-      if (mSelectedIndex >= nItems)
-        mSelectedIndex = 0;
+      if (mSelectedItemIndex >= nItems)
+        mSelectedItemIndex = 0;
 
       LoadFileAtCurrentIndex();
     };
@@ -304,7 +304,7 @@ public:
       else
       {
         CheckSelectedItem();
-        mMainMenu.SetChosenItemIdx(mSelectedIndex);
+        mMainMenu.SetChosenItemIdx(mSelectedItemIndex);
         pCaller->GetUI()->CreatePopupMenu(*this, mMainMenu, pCaller->GetRECT());
       }
     };
@@ -333,7 +333,7 @@ public:
 
   void LoadFileAtCurrentIndex()
   {
-    if (mSelectedIndex > -1 && mSelectedIndex < NItems())
+    if (mSelectedItemIndex > -1 && mSelectedItemIndex < NItems())
     {
       WDL_String fileName, path;
       GetSelectedFile(fileName);
@@ -373,7 +373,7 @@ public:
   }
 
 private:
-  void SelectFirstFile() { mSelectedIndex = mFiles.GetSize() ? 0 : -1; }
+  void SelectFirstFile() { mSelectedItemIndex = mFiles.GetSize() ? 0 : -1; }
 
   void GetSelectedFileDirectory(WDL_String& path)
   {
