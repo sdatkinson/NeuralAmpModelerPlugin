@@ -53,10 +53,11 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
-  activations::Activation::enable_fast_tanh();
+  nam::activations::Activation::enable_fast_tanh();
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
   GetParam(kToneMid)->InitDouble("Middle", 5.0, 0.0, 10.0, 0.1);
@@ -294,7 +295,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   if (mModel != nullptr)
   {
     // TODO multi-channel processing; Issue
-    // <ake sure it's multi-threaded or else this won't perform well!
+    // Make sure it's multi-threaded or else this won't perform well!
     mModel->process(triggerOutput[0], mOutputPointers[0], nFrames);
     mModel->finalize_(nFrames);
     // Normalize loudness
@@ -382,7 +383,7 @@ void NeuralAmpModeler::OnReset()
   mOutputSender.Reset(sampleRate);
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
-  _ResampleModelAndIR();
+  _ResetModelAndIR(sampleRate, GetBlockSize());
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -557,9 +558,7 @@ void NeuralAmpModeler::_CheckSampleRateWarning()
     if (_HaveModel())
     {
       const auto pluginSampleRate = GetSampleRate();
-      const auto namSampleRateFromModel = mModel->GetExpectedSampleRate();
-      // Any model with "-1" is probably 48k
-      const auto namSampleRate = namSampleRateFromModel == -1.0 ? 48000.0 : namSampleRateFromModel;
+      const auto namSampleRate = mModel->GetEncapsulatedSampleRate();
       control->SetSampleRate(namSampleRate);
       showWarning = pluginSampleRate != namSampleRate;
     }
@@ -612,11 +611,17 @@ void NeuralAmpModeler::_NormalizeModelOutput(iplug::sample** buffer, const size_
   }
 }
 
-void NeuralAmpModeler::_ResampleModelAndIR()
+void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
-  const auto sampleRate = GetSampleRate();
   // Model
-  // TODO
+  if (mStagedModel != nullptr)
+  {
+    mStagedModel->Reset(sampleRate, maxBlockSize);
+  }
+  else if (mModel != nullptr)
+  {
+    mModel->Reset(sampleRate, maxBlockSize);
+  }
 
   // IR
   if (mStagedIR != nullptr)
@@ -645,7 +650,10 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    mStagedModel = get_dsp(dspPath);
+    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
+    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
+    temp->Reset(GetSampleRate(), GetBlockSize());
+    mStagedModel = std::move(temp);
     mNAMPath = modelPath;
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
