@@ -304,7 +304,7 @@ public:
       else
       {
         CheckSelectedItem();
-        
+
         if (!mMainMenu.HasSubMenus())
         {
           mMainMenu.SetChosenItemIdx(mSelectedItemIndex);
