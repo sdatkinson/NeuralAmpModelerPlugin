@@ -140,7 +140,7 @@ public:
     mFinalized = false;
   };
 
-  void finalize_(const int num_frames)
+  void finalize_(const int num_frames) override
   {
     if (mFinalized)
       throw std::runtime_error("Call to ResamplingNAM.finalize_() when the object is already in a finalized state!");
