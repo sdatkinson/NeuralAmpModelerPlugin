@@ -13,8 +13,6 @@
 
 
 const int kNumPresets = 1;
-// The plugin is mono inside
-constexpr size_t kNumChannelsInternal = 1;
 
 class NAMSender : public iplug::IPeakAvgSender<>
 {
@@ -57,6 +55,7 @@ enum ECtrlTags
   kCtrlTagAboutBox,
   kCtrlTagOutNorm,
   kCtrlTagSampleRateWarning,
+  kCtrlTagStereo,
   kNumCtrlTags
 };
 
@@ -262,6 +261,10 @@ private:
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
 
+  // Process the IR
+  // Assumes mono IR, applied to each channel separately for the moment.
+  // In the future, a stereo IR should split and apply channel-wise.
+  iplug::sample** _ProcessIR(iplug::sample** toneStackOutPointers, const int numChannelsInternal, const int nFrames);
   // Process the NAM model on channel `i`
   void _ProcessModel(iplug::sample** inputs, iplug::sample** outputs, const int channel, const int numFrames);
 
@@ -281,6 +284,9 @@ private:
                      const size_t nChansIn, const size_t nChansOut);
 
   // Member data
+
+  // Flag to check the disable status of the stereo switch
+  bool mFlagCheckStereoDisable = true;
 
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;

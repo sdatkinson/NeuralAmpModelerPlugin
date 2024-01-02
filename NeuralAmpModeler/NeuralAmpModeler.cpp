@@ -1,4 +1,4 @@
-#include <algorithm> // std::clamp
+#include <algorithm> // std::clamp, std::min
 #include <cmath> // pow
 #include <filesystem>
 #include <iostream>
@@ -68,7 +68,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
-  GetParam(kDualDSPActive)->InitBool("Stereo", false);
+  GetParam(kDualDSPActive)->InitBool("Dual NAMs", false);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -205,6 +205,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new IVLabelControl(titleArea, "NEURAL AMP MODELER", titleStyle));
     pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
 
+    // Controls for models and IRs
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
     const std::string defaultIRString = "Select IR directory...";
@@ -217,7 +218,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                        leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
      pGraphics->AttachControl(
-      new NAMSwitchControl(modelStereoToggleArea, kDualDSPActive, "Stereo", style, switchHandleBitmap));
+      new NAMSwitchControl(modelStereoToggleArea, kDualDSPActive, "Stereo", style, switchHandleBitmap), kCtrlTagStereo);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
       new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
@@ -262,6 +263,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     });
 
     pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithTag(kCtrlTagStereo)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -274,7 +276,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 {
   const size_t numChannelsExternalIn = (size_t)NInChansConnected();
   const size_t numChannelsExternalOut = (size_t)NOutChansConnected();
-  const size_t numChannelsInternal = kNumChannelsInternal;
+  const size_t numChannelsInternal = std::min(std::min(numChannelsExternalIn, numChannelsExternalOut), (size_t) (GetParam(kDualDSPActive)->Bool() ? 2 : 1));
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = GetSampleRate();
 
@@ -347,9 +349,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   }
 
   // FIXME IR processing is tricky...
-  sample** irPointers = toneStackOutPointers;
-  if (mIRs[0] != nullptr && GetParam(kIRToggle)->Value())
-    irPointers = mIRs[0]->Process(toneStackOutPointers, numChannelsInternal, numFrames);
+  sample** irPointers = _ProcessIR(toneStackOutPointers, numChannelsInternal, nFrames);
 
   // And the HPF for DC offset (Issue 271)
   const double highPassCutoffFreq = kDCBlockerFrequency;
@@ -386,6 +386,7 @@ void NeuralAmpModeler::OnReset()
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
+  mFlagCheckStereoDisable = true;
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -403,6 +404,12 @@ void NeuralAmpModeler::OnIdle()
   if (mCheckSampleRateWarning)
   {
     _CheckSampleRateWarning();
+  }
+  if (mFlagCheckStereoDisable) {
+    if (auto* pGraphics = GetUI()) {
+      pGraphics->GetControlWithTag(kCtrlTagStereo)->SetDisabled(NInChansConnected() < 2);
+      mFlagCheckStereoDisable = false;
+    }
   }
 }
 
@@ -800,33 +807,75 @@ void NeuralAmpModeler::_PrepareIOPointers(const size_t numChannels)
   _AllocateIOPointers(numChannels);
 }
 
+iplug::sample** NeuralAmpModeler::_ProcessIR(iplug::sample** inputs, const int numChannels, const int nFrames)
+{
+  iplug::sample** outputs = inputs;
+  if (numChannels == 0)
+    return outputs;
+  // Check the last one since it loads last.
+  if (mIRs[MAX_NUM_INTERNAL_CHANNELS-1] != nullptr && GetParam(kIRToggle)->Value())
+  {
+    outputs = mIRs[0]->Process(inputs, 1, nFrames);
+    // If a second channel is being processed, do that now.
+    if (numChannels == 2)
+    {
+      iplug::sample** tempInputs = &(inputs[1]);
+      iplug::sample** tempOutputs = mIRs[1]->Process(tempInputs, 1, nFrames);
+      outputs[1] = tempOutputs[0];
+    }
+  }
+}
+
 void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn,
                                      const size_t nChansOut)
 {
-  // We'll assume that the main processing is mono for now. We'll handle dual amps later.
-  if (nChansOut != 1)
+  if (nChansIn > 2) {
+    std::stringstream ss;
+    ss << "Plugin supports at most 2 input channels; got " << nChansIn;
+    throw std::runtime_error(ss.str());
+  }
+  if (nChansOut > 2)
   {
     std::stringstream ss;
-    ss << "Expected mono output, but " << nChansOut << " output channels are requested!";
+    ss << "Plugin supports at most 2 internal channels; got " << nChansOut;
+    throw std::runtime_error(ss.str());
+  }
+  if (nChansOut > nChansIn) {
+    std::stringstream ss;
+    ss << "More internal channels (" << nChansOut << ") than input channels (" << nChansIn << ") not supported!";
     throw std::runtime_error(ss.str());
   }
 
-  // On the standalone, we can probably assume that the user has plugged into only one input and they expect it to be
-  // carried straight through. Don't apply any division over nCahnsIn because we're just "catching anything out there."
-  // However, in a DAW, it's probably something providing stereo, and we want to take the average in order to avoid
-  // doubling the loudness.
+  // On the standalone, we can probably assume that either...
+  // 1. The user is playing mono and has plugged into only one input. They expect it to be carried straight through.
+  //    Don't apply any division over nChansIn because we're just "catching anything out there."
+  // 2. Two inputs are being used and it's stereo mode--still, pass each through as-is.
+  // 
+  // However, in a DAW:
+  // 1. Mono input, mono DSP: unity gain
+  // 2. Stereo input, mono DSP: take their average (scale each by 1/2)
+  // 3. Stereo input, stereo DSP: unity
+  // So you can get the right factor in these cases by doing out/in.
 #ifdef APP_API
   const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
 #else
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0) / (float)nChansIn;
+  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0) * (float) nChansOut / (float)nChansIn;
 #endif
   // Assume _PrepareBuffers() was already called
-  for (size_t c = 0; c < nChansIn; c++)
-    for (size_t s = 0; s < nFrames; s++)
-      if (c == 0)
-        mInputArray[0][s] = gain * inputs[c][s];
-      else
-        mInputArray[0][s] += gain * inputs[c][s];
+  if (nChansOut == 1) {
+    for (size_t c = 0; c < nChansIn; c++)
+      for (size_t s = 0; s < nFrames; s++)
+        if (c == 0)
+          mInputArray[0][s] = gain * inputs[c][s];
+        else
+          mInputArray[0][s] += gain * inputs[c][s];
+  }
+  else if (nChansOut == 2) {
+    for (size_t c = 0; c < nChansIn; c++)
+      for (size_t s = 0; s < nFrames; s++)
+          mInputArray[c][s] = gain * inputs[c][s];
+  }
+  
 }
 
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
@@ -834,18 +883,31 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 {
   const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
   // Assume _PrepareBuffers() was already called
-  if (nChansIn != 1)
-    throw std::runtime_error("Plugin is supposed to process in mono.");
-  // Broadcast the internal mono stream to all output channels.
-  const size_t cin = 0;
-  for (auto cout = 0; cout < nChansOut; cout++)
-    for (auto s = 0; s < nFrames; s++)
+  if (nChansIn == 1)
+  {
+    // Broadcast the internal mono stream to all output channels.
+    const size_t cin = 0;
+    for (auto cout = 0; cout < nChansOut; cout++)
+      for (auto s = 0; s < nFrames; s++)
 #ifdef APP_API // Ensure valid output to interface
-      outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
+          outputs[cout][s] = std::clamp(gain * inputs[cin][s], -1.0, 1.0);
 #else // In a DAW, other things may come next and should be able to handle large
       // values.
-      outputs[cout][s] = gain * inputs[cin][s];
+          outputs[cout][s] = gain * inputs[cin][s];
 #endif
+  }
+  else if (nChansIn == 2) {
+    for (auto c = 0; c < nChansOut; c++)
+      for (auto s = 0; s < nFrames; s++)
+#ifdef APP_API // Ensure valid output to interface
+          outputs[c][s] = std::clamp(gain * inputs[c][s], -1.0, 1.0);
+#else // In a DAW, other things may come next and should be able to handle large
+      // values.
+          outputs[c][s] = gain * inputs[c][s];
+#endif
+  }
+  else 
+      throw std::runtime_error("Non-mono or stereo internals?");
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,
