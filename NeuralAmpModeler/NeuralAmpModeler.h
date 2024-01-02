@@ -45,6 +45,8 @@ enum EParams
 };
 
 const int numKnobs = 6;
+// "Stereo" plugin
+const size_t MAX_NUM_INTERNAL_CHANNELS = 2;
 
 enum ECtrlTags
 {
@@ -239,7 +241,7 @@ private:
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   // Apply the normalization for the model output (if possible)
-  void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
+  void _NormalizeModelOutput(iplug::sample** buffer, const int channel, const size_t numFrames);
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
@@ -248,7 +250,10 @@ private:
   // it wasn't successful.
   dsp::wav::LoadReturnCode _StageIR(const WDL_String& irPath);
 
-  bool _HaveModel() const { return this->mModel != nullptr; };
+  bool _HaveModel() const {
+      //HACK use model 0
+      return this->mModels[0] != nullptr; 
+  };
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
@@ -256,6 +261,10 @@ private:
   // Copy the input buffer to the object, applying input level.
   // :param nChansIn: In from external
   // :param nChansOut: Out to the internal of the DSP routine
+
+  // Process the NAM model on channel `i`
+  void _ProcessModel(iplug::sample** inputs, iplug::sample** outputs, const int channel, const int numFrames);
+
   void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
@@ -285,12 +294,12 @@ private:
   dsp::noise_gate::Trigger mNoiseGateTrigger;
   dsp::noise_gate::Gain mNoiseGateGain;
   // The model actually being used:
-  std::unique_ptr<ResamplingNAM> mModel;
+  std::vector<std::unique_ptr<ResamplingNAM>> mModels;
   // And the IR
-  std::unique_ptr<dsp::ImpulseResponse> mIR;
+  std::vector<std::unique_ptr<dsp::ImpulseResponse>> mIRs;
   // Manages switching what DSP is being used.
-  std::unique_ptr<ResamplingNAM> mStagedModel;
-  std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
+  std::vector<std::unique_ptr<ResamplingNAM>> mStagedModels;
+  std::vector<std::unique_ptr<dsp::ImpulseResponse>> mStagedIRs;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mShouldRemoveModel = false;
   std::atomic<bool> mShouldRemoveIR = false;
