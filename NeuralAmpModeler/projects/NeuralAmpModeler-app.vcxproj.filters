@@ -344,6 +344,21 @@
     <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h">
       <Filter>IPlug\Extras</Filter>
     </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\ResamplingContainer.h">
+      <Filter>dsp\ResamplingContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\LanczosResampler.h">
+      <Filter>dsp\ResamplingContainer\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\heapbuf.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\ptrlist.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -384,6 +399,15 @@
     </Filter>
     <Filter Include="IPlug\Extras">
       <UniqueIdentifier>{91ab74a9-d5f2-42db-9c8f-3bef7ee22bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer">
+      <UniqueIdentifier>{f6876073-a059-4852-bb59-10721432789b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer\Dependencies">
+      <UniqueIdentifier>{f6334b2f-876a-49d4-bf81-92346df50ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer\Dependencies\WDL">
+      <UniqueIdentifier>{f22f96a8-fd44-4509-987d-7683e32f3592}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
