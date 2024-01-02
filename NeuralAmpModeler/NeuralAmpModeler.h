@@ -6,10 +6,11 @@
 #include "AudioDSPTools/dsp/RecursiveLinearFilter.h"
 #include "AudioDSPTools/dsp/dsp.h"
 #include "AudioDSPTools/dsp/wav.h"
+#include "AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
 
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
-#include "RealtimeResampler.h"
+
 
 const int kNumPresets = 1;
 // The plugin is mono inside
@@ -90,7 +91,7 @@ public:
   ResamplingNAM(std::unique_ptr<nam::DSP> encapsulated, const double expected_sample_rate)
   : nam::DSP(expected_sample_rate)
   , mEncapsulated(std::move(encapsulated))
-  , mResampler(GetNAMSampleRate(mEncapsulated), iplug::ESRCMode::kLancsoz)
+  , mResampler(GetNAMSampleRate(mEncapsulated))
   {
     // Assign the encapsulated object's processing function  to this object's member so that the resampler can use it:
     auto ProcessBlockFunc = [&](NAM_SAMPLE** input, NAM_SAMPLE** output, int numFrames) {
@@ -188,7 +189,7 @@ private:
   bool mFinalized = true;
 
   // The resampling wrapper
-  iplug::RealtimeResampler<NAM_SAMPLE, 1, 12> mResampler;
+  dsp::ResamplingContainer<NAM_SAMPLE, 1, 12> mResampler;
 
   // Used to check that we don't get too large a block to process.
   int mMaxExternalBlockSize = 0;
