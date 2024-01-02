@@ -40,6 +40,7 @@ enum EParams
   kEQActive,
   kOutNorm,
   kIRToggle,
+  kDualDSPActive,
   kNumParams
 };
 

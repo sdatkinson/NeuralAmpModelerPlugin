@@ -68,6 +68,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kDualDSPActive)->InitBool("Stereo", false);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -143,6 +144,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto modelArea =
       contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
+    const float stereoAreaWidth = inputKnobArea.W();
+    const auto modelStereoToggleArea = modelArea.GetFromRight(stereoAreaWidth).GetHShifted(stereoAreaWidth).GetFromTop(ngToggleArea.H());
+    //.GetFromTop(2 * fileHeight);
     const auto irArea = modelArea.GetVShifted(irYOffset);
     const auto irSwitchArea = irArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
 
@@ -204,6 +208,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
                                                        "nam", loadModelCompletionHandler, style, fileSVG, crossSVG,
                                                        leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
                              kCtrlTagModelFileBrowser);
+     pGraphics->AttachControl(
+      new NAMSwitchControl(modelStereoToggleArea, kDualDSPActive, "Stereo", style, switchHandleBitmap));
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
       new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
