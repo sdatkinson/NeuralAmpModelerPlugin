@@ -4,6 +4,8 @@
 #include <iostream>
 #include <utility>
 
+#include "json.hpp"
+
 #include "Colors.h"
 #include "NeuralAmpModelerCore/NAM/activations.h"
 // clang-format off
@@ -831,14 +833,20 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 
 void NeuralAmpModeler::_ShowInBeta()
 {
-  auto GetNeverShowAgain = [&]() {
-    // Find out if the ini says to already never show this message again.
-    
+  const char* appname = "warnings";
+  const char* keyname = "betaversion";
+  std::stringstream ss;
+  ss << getenv("HOME") << "/Library/Application Support/" << BUNDLE_NAME << "settings.json";
+  const std::string filename = ss.str();
+  
+  auto GetNeverShowAgain = [appname, keyname, filename]() {
+    if (!std::filesystem::exists(filename)) {
+      return false;
+    }
     // TODO
     return false;
   };
-  auto SetNeverShowAgain = [&]() {
-    //
+  auto SetNeverShowAgain = [appname, keyname, filename]() {
     // TODO
   };
   
