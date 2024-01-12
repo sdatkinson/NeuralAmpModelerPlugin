@@ -53,6 +53,19 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char* str, const char* caption,
+                              EMsgBoxType type)
+{
+#ifdef OS_MAC
+  // Apple is backwards?
+  return pGraphics->ShowMessageBox(caption, str, type);
+#elif defined OS_WIN
+  return pGraphics->ShowMessageBox(str, caption, type);
+#else
+  #error NOT IMPLEMENTED
+#endif
+}
+
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -165,7 +178,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         {
           std::stringstream ss;
           ss << "Failed to load NAM model. Message:\n\n" << msg;
-          GetUI()->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
+          _ShowMessageBox(GetUI(), ss.str().c_str(), "Failed to load model!", kMB_OK);
         }
         std::cout << "Loaded: " << fileName.Get() << std::endl;
       }
@@ -183,7 +196,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
           message << "Failed to load IR file " << fileName.Get() << ":\n";
           message << dsp::wav::GetMsgForLoadReturnCode(retCode);
 
-          GetUI()->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
+          _ShowMessageBox(GetUI(), message.str().c_str(), "Failed to load IR!", kMB_OK);
         }
       }
     };
