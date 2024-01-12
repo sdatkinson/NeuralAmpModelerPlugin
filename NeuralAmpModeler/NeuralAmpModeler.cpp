@@ -57,12 +57,10 @@ EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char
                               EMsgBoxType type)
 {
 #ifdef OS_MAC
-  // Apple is backwards?
+  // macOS is backwards?
   return pGraphics->ShowMessageBox(caption, str, type);
-#elif defined OS_WIN
-  return pGraphics->ShowMessageBox(str, caption, type);
 #else
-  #error NOT IMPLEMENTED
+  return pGraphics->ShowMessageBox(str, caption, type);
 #endif
 }
 
