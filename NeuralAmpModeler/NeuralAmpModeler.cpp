@@ -53,6 +53,21 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char* str, const char* caption, EMsgBoxType type) {
+#ifdef OS_MAC
+  // Apple is backwards?
+  return pGraphics->ShowMessageBox(caption, str, type);
+#elif defined OS_WIN
+  return pGraphics->ShowMessageBox(str, caption, type);
+#else
+#error NOT IMPLEMENTED
+#endif
+}
+
+EMsgBoxResult _ShowDontShowAgain(iplug::igraphics::IGraphicsMac* pGraphics, const char* str, const char* caption) {
+  
+}
+
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -165,7 +180,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         {
           std::stringstream ss;
           ss << "Failed to load NAM model. Message:\n\n" << msg;
-          GetUI()->ShowMessageBox(ss.str().c_str(), "Failed to load model!", kMB_OK);
+          _ShowMessageBox(GetUI(), ss.str().c_str(), "Failed to load model!", kMB_OK);
         }
         std::cout << "Loaded: " << fileName.Get() << std::endl;
       }
@@ -183,7 +198,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
           message << "Failed to load IR file " << fileName.Get() << ":\n";
           message << dsp::wav::GetMsgForLoadReturnCode(retCode);
 
-          GetUI()->ShowMessageBox(message.str().c_str(), "Failed to load IR!", kMB_OK);
+          _ShowMessageBox(GetUI(), message.str().c_str(), "Failed to load IR!", kMB_OK);
         }
       }
     };
@@ -388,6 +403,9 @@ void NeuralAmpModeler::OnReset()
 
 void NeuralAmpModeler::OnIdle()
 {
+#ifdef APP_API
+  _ShowInBeta();
+#endif
   mInputSender.TransmitData(*this);
   mOutputSender.TransmitData(*this);
 
@@ -809,6 +827,33 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
       // values.
       outputs[cout][s] = gain * inputs[cin][s];
 #endif
+}
+
+void NeuralAmpModeler::_ShowInBeta()
+{
+  auto GetNeverShowAgain = [&]() {
+    // Find out if the ini says to already never show this message again.
+    
+    // TODO
+    return false;
+  };
+  auto SetNeverShowAgain = [&]() {
+    //
+    // TODO
+  };
+  
+  if (mFlagWarnStandalone) {
+    mFlagWarnStandalone = !GetNeverShowAgain();
+    if (mFlagWarnStandalone) {
+      if (auto* pGraphics = GetUI()) {
+        _ShowMessageBox(pGraphics, "There are known issues with the standalone application. To report a bug, visit https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues.\n\nIn the meantime, consider using the VST3 or AU plugin instead for a more stable experience.", "NAM is in beta", kMB_OK);
+        mFlagWarnStandalone = false;
+        
+        // Never show this again:
+        SetNeverShowAgain();
+      } // GUI
+    }  // Flag
+  }// Flag
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,

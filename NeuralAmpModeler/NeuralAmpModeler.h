@@ -263,6 +263,9 @@ private:
                       const size_t nChansOut);
   // Resetting for models and IRs, called by OnReset
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
+  // Show a dialog telling users that NAM is in beta.
+  // TODO only show it once.
+  void _ShowInBeta();
 
   // Update level meters
   // Called within ProcessBlock().
@@ -317,4 +320,7 @@ private:
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   NAMSender mInputSender, mOutputSender;
+  
+  // Warn folks using the standalone that it's buggy.
+  bool mFlagWarnStandalone = true;
 };

@@ -92,6 +92,6 @@
 // On the macOS standalone, we might not have permissions to traverse the file directory, so we have the app ask the
 // user to pick a directory instead of the file in the directory.
 // Everyone else is fine though.
-#if defined(APP_API) && defined(__APPLE__)
+#if defined(APP_API) && defined(OS_MAC)
   #define NAM_PICK_DIRECTORY
 #endif
