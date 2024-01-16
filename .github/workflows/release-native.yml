@@ -68,7 +68,7 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
         ARCHIVE_NAME=`python3 iPlug2/Scripts/get_archive_name.py ${{env.PROJECT_NAME}} mac full`
-        echo "::set-output name=archive_name::$ARCHIVE_NAME"
+        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Build macOS
@@ -116,7 +116,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         ARCHIVE_NAME=`python.exe iPlug2/Scripts/get_archive_name.py ${{env.PROJECT_NAME}} win full`
-        echo "::set-output name=archive_name::$ARCHIVE_NAME"
+        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Build Windows
