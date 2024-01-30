@@ -178,6 +178,8 @@ XMLEND
 # build installation bundle
 # --resources .
 
+TEMP_RESOURCES=$(mktemp -d)
+cp ./installer/license.rtf ${TEMP_RESOURCES}
 productbuild --distribution ${TARGET_DIR}/distribution.xml --package-path ${PKG_DIR} "${TARGET_DIR}/$OUTPUT_BASE_FILENAME"
 
 rm ${TARGET_DIR}/distribution.xml
