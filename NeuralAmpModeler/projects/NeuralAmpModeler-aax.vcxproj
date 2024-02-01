@@ -491,6 +491,8 @@
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX_Parameters.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX_TaperDelegate.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\AAX\IPlugAAX.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugAPIBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugConstants.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugDelegate_select.h" />
@@ -513,6 +515,11 @@
     <ClInclude Include="..\AudioDSPTools\dsp\NoiseGate.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\RecursiveLinearFilter.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\Resample.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\LanczosResampler.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\heapbuf.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\ptrlist.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h" />
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\ResamplingContainer.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\version.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\wav.h" />
     <ClInclude Include="..\Colors.h" />

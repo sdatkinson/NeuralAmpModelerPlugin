@@ -84,6 +84,12 @@
 		4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
 		4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA7C860B2B43A42F00B5FB3A /* ResamplingContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86042B43A42E00B5FB3A /* ResamplingContainer.h */; };
+		AA7C860C2B43A42F00B5FB3A /* LanczosResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86062B43A42E00B5FB3A /* LanczosResampler.h */; };
+		AA7C860D2B43A42F00B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86082B43A42E00B5FB3A /* wdltypes.h */; };
+		AA7C860E2B43A42F00B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86092B43A42E00B5FB3A /* ptrlist.h */; };
+		AA7C860F2B43A42F00B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C860A2B43A42E00B5FB3A /* heapbuf.h */; };
+		AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7752A452EF500F5BEF0 /* resample.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -335,6 +341,12 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA7C86042B43A42E00B5FB3A /* ResamplingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResamplingContainer.h; sourceTree = "<group>"; };
+		AA7C86062B43A42E00B5FB3A /* LanczosResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LanczosResampler.h; sourceTree = "<group>"; };
+		AA7C86082B43A42E00B5FB3A /* wdltypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wdltypes.h; sourceTree = "<group>"; };
+		AA7C86092B43A42E00B5FB3A /* ptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrlist.h; sourceTree = "<group>"; };
+		AA7C860A2B43A42E00B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
+		AA8CA7752A452EF500F5BEF0 /* resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resample.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -617,17 +629,18 @@
 		4FBDC93229FFF143004FF203 /* dsp */ = {
 			isa = PBXGroup;
 			children = (
-				4FBDC93329FFF143004FF203 /* Resample.h */,
-				4FBDC93429FFF143004FF203 /* RecursiveLinearFilter.cpp */,
-				4FBDC93529FFF143004FF203 /* wav.h */,
-				4FBDC93629FFF143004FF203 /* NoiseGate.h */,
+				AA7C86032B43A42E00B5FB3A /* ResamplingContainer */,
 				4FBDC93729FFF143004FF203 /* dsp.cpp */,
-				4FBDC93829FFF143004FF203 /* NoiseGate.cpp */,
-				4FBDC93929FFF143004FF203 /* ImpulseResponse.cpp */,
-				4FBDC93A29FFF143004FF203 /* RecursiveLinearFilter.h */,
-				4FBDC93B29FFF143004FF203 /* ImpulseResponse.h */,
 				4FBDC93C29FFF143004FF203 /* dsp.h */,
+				4FBDC93929FFF143004FF203 /* ImpulseResponse.cpp */,
+				4FBDC93B29FFF143004FF203 /* ImpulseResponse.h */,
+				4FBDC93829FFF143004FF203 /* NoiseGate.cpp */,
+				4FBDC93629FFF143004FF203 /* NoiseGate.h */,
+				4FBDC93429FFF143004FF203 /* RecursiveLinearFilter.cpp */,
+				4FBDC93A29FFF143004FF203 /* RecursiveLinearFilter.h */,
+				4FBDC93329FFF143004FF203 /* Resample.h */,
 				4FBDC93D29FFF143004FF203 /* wav.cpp */,
+				4FBDC93529FFF143004FF203 /* wav.h */,
 			);
 			name = dsp;
 			path = ../AudioDSPTools/dsp;
@@ -636,20 +649,20 @@
 		4FBDC93E29FFF143004FF203 /* NAM */ = {
 			isa = PBXGroup;
 			children = (
-				4FBDC93F29FFF143004FF203 /* util.cpp */,
-				4FBDC94029FFF143004FF203 /* version.h */,
-				4FBDC94129FFF143004FF203 /* dsp.cpp */,
-				4FBDC94229FFF143004FF203 /* convnet.h */,
-				4FBDC94329FFF143004FF203 /* lstm.h */,
-				4FBDC94429FFF143004FF203 /* convnet.cpp */,
-				4FBDC94529FFF143004FF203 /* wavenet.h */,
-				4FBDC94629FFF143004FF203 /* lstm.cpp */,
-				4FBDC94729FFF143004FF203 /* util.h */,
-				4FBDC94829FFF143004FF203 /* dsp.h */,
-				4FBDC94929FFF143004FF203 /* activations.h */,
 				4FBDC94A29FFF143004FF203 /* activations.cpp */,
-				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94929FFF143004FF203 /* activations.h */,
+				4FBDC94429FFF143004FF203 /* convnet.cpp */,
+				4FBDC94229FFF143004FF203 /* convnet.h */,
+				4FBDC94129FFF143004FF203 /* dsp.cpp */,
+				4FBDC94829FFF143004FF203 /* dsp.h */,
 				4FBDC94C29FFF143004FF203 /* get_dsp.cpp */,
+				4FBDC94629FFF143004FF203 /* lstm.cpp */,
+				4FBDC94329FFF143004FF203 /* lstm.h */,
+				4FBDC93F29FFF143004FF203 /* util.cpp */,
+				4FBDC94729FFF143004FF203 /* util.h */,
+				4FBDC94029FFF143004FF203 /* version.h */,
+				4FBDC94B29FFF143004FF203 /* wavenet.cpp */,
+				4FBDC94529FFF143004FF203 /* wavenet.h */,
 			);
 			name = NAM;
 			path = ../NeuralAmpModelerCore/NAM;
@@ -745,6 +758,7 @@
 				4F67D51620A121F60061FB8E /* Other Sources */,
 				4F3E0F9B20A0C64100A9C2BE /* Frameworks */,
 				91D3DA171B023C1E008FFFBB /* Products */,
+				AA7C85EC2B43941500B5FB3A /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -758,6 +772,42 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AA7C85EC2B43941500B5FB3A /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				AA8CA7752A452EF500F5BEF0 /* resample.cpp */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		AA7C86032B43A42E00B5FB3A /* ResamplingContainer */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C86042B43A42E00B5FB3A /* ResamplingContainer.h */,
+				AA7C86052B43A42E00B5FB3A /* Dependencies */,
+			);
+			path = ResamplingContainer;
+			sourceTree = "<group>";
+		};
+		AA7C86052B43A42E00B5FB3A /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C86062B43A42E00B5FB3A /* LanczosResampler.h */,
+				AA7C86072B43A42E00B5FB3A /* WDL */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		AA7C86072B43A42E00B5FB3A /* WDL */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C86082B43A42E00B5FB3A /* wdltypes.h */,
+				AA7C86092B43A42E00B5FB3A /* ptrlist.h */,
+				AA7C860A2B43A42E00B5FB3A /* heapbuf.h */,
+			);
+			path = WDL;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -766,13 +816,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				4FC6983C293BA5090076EC33 /* IPlugAUViewController.h in Headers */,
+				AA7C860F2B43A42F00B5FB3A /* heapbuf.h in Headers */,
+				AA7C860E2B43A42F00B5FB3A /* ptrlist.h in Headers */,
 				4FBDC94D29FFF143004FF203 /* Resample.h in Headers */,
 				4FC6983A293BA4F10076EC33 /* NeuralAmpModelerAU.h in Headers */,
 				4FBDC95629FFF143004FF203 /* dsp.h in Headers */,
 				4FBDC95E29FFF143004FF203 /* wavenet.h in Headers */,
 				4FC6983B293BA5020076EC33 /* IPlugAUAudioUnit.h in Headers */,
+				AA7C860B2B43A42F00B5FB3A /* ResamplingContainer.h in Headers */,
 				4FBDC95B29FFF143004FF203 /* convnet.h in Headers */,
 				4FBDC95929FFF143004FF203 /* version.h in Headers */,
+				AA7C860C2B43A42F00B5FB3A /* LanczosResampler.h in Headers */,
+				AA7C860D2B43A42F00B5FB3A /* wdltypes.h in Headers */,
 				4FBDC96229FFF143004FF203 /* activations.h in Headers */,
 				4FBDC95429FFF143004FF203 /* RecursiveLinearFilter.h in Headers */,
 				4FBDC95C29FFF143004FF203 /* lstm.h in Headers */,
@@ -1003,6 +1058,7 @@
 				4FBDC95329FFF143004FF203 /* ImpulseResponse.cpp in Sources */,
 				4FC69843293BA5C50076EC33 /* IPlugParameter.cpp in Sources */,
 				4FC69844293BA5C50076EC33 /* IPlugTimer.cpp in Sources */,
+				AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */,
 				4FC69845293BA5C50076EC33 /* IPlugPaths.mm in Sources */,
 				4FBDC96329FFF143004FF203 /* activations.cpp in Sources */,
 				4FC69847293BA5F90076EC33 /* IPopupMenuControl.cpp in Sources */,

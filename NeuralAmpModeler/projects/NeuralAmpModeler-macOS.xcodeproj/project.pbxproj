@@ -442,6 +442,16 @@
 		4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F81588E205D50EB00393585 /* vstnoteexpressiontypes.cpp */; };
 		AA355E2D295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		AA355E2E295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
+		AA7C85F92B439AC000B5FB3A /* ResamplingContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */; };
+		AA7C85FA2B439AC000B5FB3A /* ResamplingContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */; };
+		AA7C85FB2B439AC000B5FB3A /* _LanczosResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */; };
+		AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */; };
+		AA7C85FD2B439AC000B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F62B439AC000B5FB3A /* wdltypes.h */; };
+		AA7C85FE2B439AC000B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F62B439AC000B5FB3A /* wdltypes.h */; };
+		AA7C85FF2B439AC000B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F72B439AC000B5FB3A /* ptrlist.h */; };
+		AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F72B439AC000B5FB3A /* ptrlist.h */; };
+		AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
+		AA7C86022B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -1002,6 +1012,11 @@
 		4FFF72B8214BB71400839091 /* main.rc */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.rc; path = ../resources/main.rc; sourceTree = "<group>"; };
 		52FBBED30D0CF143001C8B8A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		AA355E2C295B688F0061AA3D /* Colors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Colors.h; path = ../Colors.h; sourceTree = "<group>"; };
+		AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResamplingContainer.h; sourceTree = "<group>"; };
+		AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _LanczosResampler.h; sourceTree = "<group>"; };
+		AA7C85F62B439AC000B5FB3A /* wdltypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wdltypes.h; sourceTree = "<group>"; };
+		AA7C85F72B439AC000B5FB3A /* ptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrlist.h; sourceTree = "<group>"; };
+		AA7C85F82B439AC000B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1237,6 +1252,7 @@
 		4F2FB1392A0047420027AB66 /* dsp */ = {
 			isa = PBXGroup;
 			children = (
+				AA7C85F12B439AC000B5FB3A /* ResamplingContainer */,
 				4F2FB13E2A0047420027AB66 /* dsp.cpp */,
 				4F2FB1432A0047420027AB66 /* dsp.h */,
 				4F2FB1402A0047420027AB66 /* ImpulseResponse.cpp */,
@@ -1938,6 +1954,34 @@
 			name = WDL;
 			sourceTree = "<group>";
 		};
+		AA7C85F12B439AC000B5FB3A /* ResamplingContainer */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */,
+				AA7C85F32B439AC000B5FB3A /* Dependencies */,
+			);
+			path = ResamplingContainer;
+			sourceTree = "<group>";
+		};
+		AA7C85F32B439AC000B5FB3A /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */,
+				AA7C85F52B439AC000B5FB3A /* WDL */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		AA7C85F52B439AC000B5FB3A /* WDL */ = {
+			isa = PBXGroup;
+			children = (
+				AA7C85F62B439AC000B5FB3A /* wdltypes.h */,
+				AA7C85F72B439AC000B5FB3A /* ptrlist.h */,
+				AA7C85F82B439AC000B5FB3A /* heapbuf.h */,
+			);
+			path = WDL;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1949,6 +1993,8 @@
 				4F2FB19B2A0047430027AB66 /* lstm.h in Headers */,
 				4F2FB1B02A0047430027AB66 /* dsp.h in Headers */,
 				4F2FB19A2A0047430027AB66 /* convnet.h in Headers */,
+				AA7C86022B439AC000B5FB3A /* heapbuf.h in Headers */,
+				AA7C85FE2B439AC000B5FB3A /* wdltypes.h in Headers */,
 				4F4856862773C3B5005BCF8E /* IPlugAUAudioUnit.h in Headers */,
 				4F2FB15F2A0047420027AB66 /* NoiseGate.h in Headers */,
 				4F2FB17D2A0047430027AB66 /* dsp.h in Headers */,
@@ -1957,10 +2003,13 @@
 				4F2FB1542A0047420027AB66 /* Resample.h in Headers */,
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
 				4F2FB1902A0047430027AB66 /* version.h in Headers */,
+				AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F4856852773C3B5005BCF8E /* IPlugAUViewController.h in Headers */,
+				AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4F2FB17C2A0047430027AB66 /* ImpulseResponse.h in Headers */,
 				4F2FB17B2A0047430027AB66 /* RecursiveLinearFilter.h in Headers */,
 				4F2FB1B12A0047430027AB66 /* activations.h in Headers */,
+				AA7C85FA2B439AC000B5FB3A /* ResamplingContainer.h in Headers */,
 				AA355E2E295B688F0061AA3D /* Colors.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1974,12 +2023,15 @@
 				4FC3EFF42086CE5700BD11FA /* module.h in Headers */,
 				4F03A58C20A4621100EBDFFB /* IGraphicsNanoVG.h in Headers */,
 				4F03A5D320A4621100EBDFFB /* IGraphicsStructs.h in Headers */,
+				AA7C85FD2B439AC000B5FB3A /* wdltypes.h in Headers */,
 				4FC3EFF82086CE5700BD11FA /* optional.h in Headers */,
 				4FC3F0012086CE5700BD11FA /* uid.h in Headers */,
 				4F03A5B620A4621100EBDFFB /* IGraphics_select.h in Headers */,
 				4F03A5AB20A4621100EBDFFB /* IGraphics_include_in_plug_hdr.h in Headers */,
+				AA7C85FB2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4FC3EFF22086CE5700BD11FA /* hostclasses.h in Headers */,
 				4F03A5D420A4621100EBDFFB /* IGraphicsUtilities.h in Headers */,
+				AA7C85FF2B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F03A5AA20A4621100EBDFFB /* IGraphicsLiveEdit.h in Headers */,
 				4F6369EA20A466470022C370 /* IControl.h in Headers */,
 				4F03A5D520A4621100EBDFFB /* IGraphicsConstants.h in Headers */,
@@ -1990,6 +2042,8 @@
 				4FC3EFFE2086CE5700BD11FA /* processdata.h in Headers */,
 				4FC3F0002086CE5700BD11FA /* stringconvert.h in Headers */,
 				4F8C10E720BA2796006320CD /* IGraphicsEditorDelegate.h in Headers */,
+				AA7C85F92B439AC000B5FB3A /* ResamplingContainer.h in Headers */,
+				AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */,
 				4FC3EFFA2086CE5700BD11FA /* parameterchanges.h in Headers */,
 				4F03A5B320A4621100EBDFFB /* IGraphics_include_in_plug_src.h in Headers */,
 				4FC3EFFC2086CE5700BD11FA /* plugprovider.h in Headers */,

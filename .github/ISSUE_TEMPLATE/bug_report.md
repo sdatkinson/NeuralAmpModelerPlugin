@@ -30,6 +30,9 @@ If applicable, add screenshots to help explain your problem.
  - Plugin version [e.g. 0.6.1]
  - Standalone, VST3, or AU
  - DAW (if applicable)
+ - Audio interface [e.g. Focusrite Scarlett Solo 3rd Gen]
+ - Sample rate [e.g. 44.1 kHz]
+ - Buffer size [e.g. 256 samples]
 
 **Additional context**
 Add any other context about the problem here.

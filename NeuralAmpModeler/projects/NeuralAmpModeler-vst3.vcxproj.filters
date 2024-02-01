@@ -437,6 +437,27 @@
     <ClInclude Include="..\AudioDSPTools\dsp\wav.h">
       <Filter>dsp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h">
+      <Filter>IPlug\Extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h">
+      <Filter>IPlug\Extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\ResamplingContainer.h">
+      <Filter>dsp\ResamplingContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\LanczosResampler.h">
+      <Filter>dsp\ResamplingContainer\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\heapbuf.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\ptrlist.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h">
+      <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -501,6 +522,18 @@
     </Filter>
     <Filter Include="dsp">
       <UniqueIdentifier>{ed745419-3921-4abe-8286-170fa316a5ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IPlug\Extras">
+      <UniqueIdentifier>{4b6a01ff-796f-4098-a581-3b22035cc8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer">
+      <UniqueIdentifier>{e899ee48-2aa4-4daa-8147-60bc5a3e395e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer\Dependencies">
+      <UniqueIdentifier>{5dd75b0e-6ab4-45ff-b6f6-f93972c1f58a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsp\ResamplingContainer\Dependencies\WDL">
+      <UniqueIdentifier>{a467e512-e643-4711-ad15-f0cf98f8eef2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
