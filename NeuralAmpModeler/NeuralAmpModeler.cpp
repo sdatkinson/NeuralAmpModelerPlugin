@@ -26,7 +26,7 @@ const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
   PluginColors::NAM_THEMECOLOR, // Foreground
   PluginColors::NAM_THEMECOLOR.WithOpacity(0.3f), // Pressed
-  PluginColors::NAM_THEMECOLOR.WithOpacity(0.4f), // Frame
+  PluginColors::NAM_THEMECOLOR.WithOpacity(0.1f), // Frame
   PluginColors::MOUSEOVER, // Highlight
   DEFAULT_SHCOLOR, // Shadow
   PluginColors::NAM_THEMECOLOR, // Extra 1
@@ -79,6 +79,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kBassFrequency)->InitDouble("BassFrequency", 150.0, 20.0, 300.0, 0.5);
+  GetParam(kMidFrequency)->InitDouble("MiddleFrequency", 425.0, 200.0, 1000.0, 0.5);
+  GetParam(kTrebleFrequency)->InitDouble("TrebleFrequency", 1800.0, 800.0, 6200.0, 0.5);
+  GetParam(kShowFrequencySliders)->InitBool("showFrquencySliders", false);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -111,6 +115,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
     const auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
     const auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
+    const auto frequencySlidersIconOnSVG = pGraphics->LoadSVG(FREQUENCYSLIDERS_ICON_ON_FN);
+    const auto frequencySlidersIconOffSVG = pGraphics->LoadSVG(FREQUENCYSLIDERS_ICON_OFF_FN);
 
     const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
@@ -146,6 +152,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
     const auto outNormToggleArea =
       outputKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
+
+    // Area for frequency sliders
+    const auto bassSliderArea =
+      bassKnobArea.SubRectVertical(2, 0).GetReducedFromBottom(2.0f).GetHPadded(-16.f).GetVShifted(-35.f);
+    const auto midSliderArea =
+      midKnobArea.SubRectVertical(2, 0).GetReducedFromBottom(2.0f).GetHPadded(-16.f).GetVShifted(-35.f);
+    const auto trebleSliderArea =
+      trebleKnobArea.SubRectVertical(2, 0).GetReducedFromBottom(2.0f).GetHPadded(-16.f).GetVShifted(-35.f);
+    const auto frequencySliderToggleArea =
+      eqToggleArea.SubRectVertical(2, 0).GetPadded(-7.f).GetVShifted(31.f).GetHShifted(49.f);
 
     // Areas for model and IR
     const auto fileWidth = 200.0f;
@@ -243,6 +259,28 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // A warning when NAM isn't being run in the right sample rate:
     pGraphics->AttachControl(new NAMSampleRateWarningControl(sampleRateWarningArea), kCtrlTagSampleRateWarning);
 
+    // Frequency Sliders
+    pGraphics->AttachControl(new IVSliderControl(bassSliderArea, kBassFrequency, " ",
+                                                 style.WithColor(kFG, PluginColors::OFF_WHITE)
+                                                   .WithValueText(IText(DEFAULT_TEXT_SIZE - 3.f, EVAlign::Bottom,
+                                                                        PluginColors::NAM_THEMEFONTCOLOR)),
+                                                 true, EDirection::Horizontal, DEFAULT_GEARING, 4.f),
+                             -1, "NAM_Controls_FS");
+    pGraphics->AttachControl(new IVSliderControl(midSliderArea, kMidFrequency, " ",
+                                                 style.WithColor(kFG, PluginColors::OFF_WHITE)
+                                                   .WithValueText(IText(DEFAULT_TEXT_SIZE - 3.f, EVAlign::Bottom,
+                                                                        PluginColors::NAM_THEMEFONTCOLOR)),
+                                                 true, EDirection::Horizontal, DEFAULT_GEARING, 4.f),
+                             -1, "NAM_Controls_FS");
+    pGraphics->AttachControl(new IVSliderControl(trebleSliderArea, kTrebleFrequency, " ",
+                                                 style.WithColor(kFG, PluginColors::OFF_WHITE)
+                                                   .WithValueText(IText(DEFAULT_TEXT_SIZE - 3.f, EVAlign::Bottom,
+                                                                        PluginColors::NAM_THEMEFONTCOLOR)),
+                                                 true, EDirection::Horizontal, DEFAULT_GEARING, 4.f),
+                             -1, "NAM_Controls_FS");
+    pGraphics->AttachControl(new ISVGSwitchControl(
+      frequencySliderToggleArea, {frequencySlidersIconOffSVG, frequencySlidersIconOnSVG}, kShowFrequencySliders));
+    
     // Help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
       helpButtonArea,
@@ -333,9 +371,9 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     const double midGainDB = 3.0 * (GetParam(kToneMid)->Value() - 5.0); // +/- 15
     const double trebleGainDB = 2.0 * (GetParam(kToneTreble)->Value() - 5.0); // +/- 10
 
-    const double bassFrequency = 150.0;
-    const double midFrequency = 425.0;
-    const double trebleFrequency = 1800.0;
+    const double bassFrequency = GetParam(kBassFrequency)->Value();
+    const double midFrequency = GetParam(kMidFrequency)->Value();
+    const double trebleFrequency = GetParam(kTrebleFrequency)->Value();
     const double bassQuality = 0.707;
     // Wider EQ on mid bump up to sound less honky.
     const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
@@ -473,8 +511,12 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kNoiseGateActive: pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active); break;
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
+        pGraphics->ForControlInGroup("NAM_Controls_FS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
+      case kShowFrequencySliders:
+        pGraphics->ForControlInGroup("NAM_Controls_FS", [active](IControl* pControl) { pControl->Hide(!active); });
+        break;
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
       default: break;
     }
   }
@@ -498,8 +540,8 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
             IColor color = IColor::FromColorCodeStr(mHighLightColor.Get());
 
             pVectorBase->SetColor(kX1, color);
-            pVectorBase->SetColor(kPR, color.WithOpacity(0.3f));
-            pVectorBase->SetColor(kFR, color.WithOpacity(0.4f));
+            pVectorBase->SetColor(kPR, color.WithOpacity(0.6f));
+            pVectorBase->SetColor(kFR, color.WithOpacity(0.1f));
             pVectorBase->SetColor(kX3, color.WithContrast(0.1f));
           }
           pControl->GetUI()->SetAllControlsDirty();
