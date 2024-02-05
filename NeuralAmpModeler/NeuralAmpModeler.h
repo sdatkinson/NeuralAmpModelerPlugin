@@ -40,6 +40,10 @@ enum EParams
   kEQActive,
   kOutNorm,
   kIRToggle,
+  kBassFrequency,
+  kMidFrequency,
+  kTrebleFrequency,
+  kShowFrequencySliders,
   kNumParams
 };
 
