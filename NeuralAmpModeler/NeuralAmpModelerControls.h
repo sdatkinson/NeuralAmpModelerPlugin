@@ -428,11 +428,11 @@ public:
       g.FillRect(GetColor(kX1), r, &mBlend);
   }
 
-  void DrawPeak(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
-  {
-    g.DrawGrid(COLOR_BLACK, mTrackBounds.Get()[chIdx], 10, 2);
-    g.FillRect(GetColor(kX3), r, &mBlend);
-  }
+//  void DrawPeak(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
+//  {
+//    g.DrawGrid(COLOR_BLACK, mTrackBounds.Get()[chIdx], 10, 2);
+//    g.FillRect(GetColor(kX3), r, &mBlend);
+//  }
 };
 
 const IText _WARNING_TEXT(DEFAULT_TEXT_SIZE + 3.f, PluginColors::NAM_THEMECOLOR, "Roboto-Regular", EAlign::Near);
