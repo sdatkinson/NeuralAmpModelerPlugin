@@ -562,8 +562,12 @@ public:
           color.ToColorCodeStr(colorCodeStr, false);
           this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(),
           colorCodeStr.Get());
+          GetChild(7)->SetValueToDefault(kFollowTrackColor); // better set value to false ??
     
         }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kX1}, {""}));
+
+    AddChildControl(new IVToggleControl(
+          IRECT(), kFollowTrackColor, "follow Track color", style.WithColor(kFG, PluginColors::NAM_0)));
 
     OnResize();
   }
@@ -582,6 +586,7 @@ public:
       GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
       GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
       GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
+      GetChild(7)->SetTargetAndDrawRECTs(content.GetFromBLHC(100, 50));
     }
   }
 

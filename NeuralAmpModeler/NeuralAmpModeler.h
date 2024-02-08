@@ -44,6 +44,7 @@ enum EParams
   kMidFrequency,
   kTrebleFrequency,
   kShowFrequencySliders,
+  kFollowTrackColor,
   kNumParams
 };
 

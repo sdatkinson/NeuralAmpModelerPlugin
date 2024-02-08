@@ -85,6 +85,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kMidFrequency)->InitDouble("MiddleFrequency", 425.0, 200.0, 1000.0, 0.5);
   GetParam(kTrebleFrequency)->InitDouble("TrebleFrequency", 1800.0, 800.0, 6200.0, 0.5);
   GetParam(kShowFrequencySliders)->InitBool("showFrquencySliders", false);
+  GetParam(kFollowTrackColor)->InitBool("followTrackColor", false);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -506,9 +507,18 @@ void NeuralAmpModeler::OnUIOpen()
   GetUI()->ForStandardControlsFunc([&](IControl* pControl) {
     if (auto* pVectorBase = pControl->As<IVectorBase>())
     {
-      if (mHighLightColor.GetLength())
-        NAM_CUSTOMTHEMECOLOR = IColor::FromColorCodeStr(mHighLightColor.Get());
-
+      if (GetParam(kFollowTrackColor)->Value())
+      {
+        int r, g, b;
+        GetTrackColor(r, g, b);
+        if (r + g + b > 0) // is default color set in DAW ?
+            NAM_CUSTOMTHEMECOLOR = IColor(255, r, g, b);
+      }
+      else
+      {
+        if (mHighLightColor.GetLength())
+          NAM_CUSTOMTHEMECOLOR = IColor::FromColorCodeStr(mHighLightColor.Get());
+      }
       pVectorBase->SetColor(kX1, NAM_CUSTOMTHEMECOLOR);
       pVectorBase->SetColor(kPR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.6f));
       pVectorBase->SetColor(kFR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.1f));
@@ -533,6 +543,33 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
         break;
       case kShowFrequencySliders:
         pGraphics->ForControlInGroup("NAM_Controls_FS", [active](IControl* pControl) { pControl->Hide(!active); });
+        break;
+      case kFollowTrackColor:
+        GetUI()->ForStandardControlsFunc([&](IControl* pControl) {
+          if (auto* pVectorBase = pControl->As<IVectorBase>())
+          {
+            if (GetParam(kFollowTrackColor)->Value())
+            {
+              int r, g, b;
+              GetTrackColor(r, g, b);
+              if (r + g + b > 0) // is default color set in DAW ?
+                NAM_CUSTOMTHEMECOLOR = IColor(255, r, g, b);
+            }
+            else
+            {
+              if (mHighLightColor.GetLength())
+                NAM_CUSTOMTHEMECOLOR = IColor::FromColorCodeStr(mHighLightColor.Get());
+              else 
+                NAM_CUSTOMTHEMECOLOR = PluginColors::NAM_THEMECOLOR;
+            }
+
+            pVectorBase->SetColor(kX1, NAM_CUSTOMTHEMECOLOR);
+            pVectorBase->SetColor(kPR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.6f));
+            pVectorBase->SetColor(kFR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.1f));
+            pVectorBase->SetColor(kX3, NAM_CUSTOMTHEMECOLOR.WithContrast(0.1f));
+          }
+          pControl->GetUI()->SetAllControlsDirty();
+        });
         break;
       case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
       default: break;
