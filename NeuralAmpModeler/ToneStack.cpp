@@ -1,6 +1,7 @@
 #include "ToneStack.h"
 
-DSP_SAMPLE** dsp::tone_stack::BasicNamToneStack::Process(DSP_SAMPLE** inputs, const int numChannels, const int numFrames)
+DSP_SAMPLE** dsp::tone_stack::BasicNamToneStack::Process(DSP_SAMPLE** inputs, const int numChannels,
+                                                         const int numFrames)
 {
   DSP_SAMPLE** bassPointers = mToneBass.Process(inputs, numChannels, numFrames);
   DSP_SAMPLE** midPointers = mToneMid.Process(bassPointers, numChannels, numFrames);
@@ -11,7 +12,7 @@ DSP_SAMPLE** dsp::tone_stack::BasicNamToneStack::Process(DSP_SAMPLE** inputs, co
 void dsp::tone_stack::BasicNamToneStack::Reset(const double sampleRate, const int maxBlockSize)
 {
   dsp::tone_stack::AbstractToneStack::Reset(sampleRate, maxBlockSize);
-  
+
   // Refresh the params!
   SetParam("bass", mBassVal);
   SetParam("middle", mMiddleVal);
