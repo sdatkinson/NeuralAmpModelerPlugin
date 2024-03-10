@@ -84,6 +84,10 @@
 		4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
 		4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA341E2B2B9E5A650069C260 /* ToneStack.h in Headers */ = {isa = PBXBuildFile; fileRef = AA341E292B9E5A650069C260 /* ToneStack.h */; };
+		AA341E2C2B9E5A650069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E2A2B9E5A650069C260 /* ToneStack.cpp */; };
+		AA341E2D2B9E5A650069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E2A2B9E5A650069C260 /* ToneStack.cpp */; };
+		AA341E2E2B9E5A650069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E2A2B9E5A650069C260 /* ToneStack.cpp */; };
 		AA7C860B2B43A42F00B5FB3A /* ResamplingContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86042B43A42E00B5FB3A /* ResamplingContainer.h */; };
 		AA7C860C2B43A42F00B5FB3A /* LanczosResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86062B43A42E00B5FB3A /* LanczosResampler.h */; };
 		AA7C860D2B43A42F00B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86082B43A42E00B5FB3A /* wdltypes.h */; };
@@ -341,6 +345,8 @@
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA341E292B9E5A650069C260 /* ToneStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneStack.h; path = ../ToneStack.h; sourceTree = "<group>"; };
+		AA341E2A2B9E5A650069C260 /* ToneStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneStack.cpp; path = ../ToneStack.cpp; sourceTree = "<group>"; };
 		AA7C86042B43A42E00B5FB3A /* ResamplingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResamplingContainer.h; sourceTree = "<group>"; };
 		AA7C86062B43A42E00B5FB3A /* LanczosResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LanczosResampler.h; sourceTree = "<group>"; };
 		AA7C86082B43A42E00B5FB3A /* wdltypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wdltypes.h; sourceTree = "<group>"; };
@@ -753,6 +759,8 @@
 				4FFF108820A1036200D3092F /* NeuralAmpModeler.h */,
 				4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */,
 				4F9979242A066F960066545C /* NeuralAmpModelerControls.h */,
+				AA341E2A2B9E5A650069C260 /* ToneStack.cpp */,
+				AA341E292B9E5A650069C260 /* ToneStack.h */,
 				4F8D8BD82316701900EFA1FB /* README.md */,
 				4F8BF48D20A12D2E0081DF0A /* Resources */,
 				4F67D51620A121F60061FB8E /* Other Sources */,
@@ -824,6 +832,7 @@
 				4FBDC95E29FFF143004FF203 /* wavenet.h in Headers */,
 				4FC6983B293BA5020076EC33 /* IPlugAUAudioUnit.h in Headers */,
 				AA7C860B2B43A42F00B5FB3A /* ResamplingContainer.h in Headers */,
+				AA341E2B2B9E5A650069C260 /* ToneStack.h in Headers */,
 				4FBDC95B29FFF143004FF203 /* convnet.h in Headers */,
 				4FBDC95929FFF143004FF203 /* version.h in Headers */,
 				AA7C860C2B43A42F00B5FB3A /* LanczosResampler.h in Headers */,
@@ -1052,6 +1061,7 @@
 				4FC69840293BA5C40076EC33 /* IPlugPluginBase.cpp in Sources */,
 				4FC6984A293BA5F90076EC33 /* IGraphics.cpp in Sources */,
 				4FBDC95229FFF143004FF203 /* NoiseGate.cpp in Sources */,
+				AA341E2E2B9E5A650069C260 /* ToneStack.cpp in Sources */,
 				4FC69841293BA5C40076EC33 /* IPlugAPIBase.cpp in Sources */,
 				4FC69842293BA5C50076EC33 /* IPlugProcessor.cpp in Sources */,
 				4FC69846293BA5F90076EC33 /* IGraphicsEditorDelegate.cpp in Sources */,
@@ -1071,6 +1081,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */,
+				AA341E2C2B9E5A650069C260 /* ToneStack.cpp in Sources */,
 				4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */,
 				4FDF6D772267CE540007B686 /* AppViewController.mm in Sources */,
 				4FDF6D792267CE540007B686 /* main.m in Sources */,
@@ -1082,6 +1093,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4FCBE769293CDFB7005D913D /* IPlugAUViewController.mm in Sources */,
+				AA341E2D2B9E5A650069C260 /* ToneStack.cpp in Sources */,
 				4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

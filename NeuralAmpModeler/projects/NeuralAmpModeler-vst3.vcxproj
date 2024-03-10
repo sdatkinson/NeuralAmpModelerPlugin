@@ -351,6 +351,7 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\version.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\wavenet.h" />
     <ClInclude Include="..\resources\resource.h" />
+    <ClInclude Include="..\ToneStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\VST3_SDK\base\source\baseiids.cpp" />
@@ -431,6 +432,7 @@
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\lstm.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\util.cpp" />
     <ClCompile Include="..\NeuralAmpModelerCore\NAM\wavenet.cpp" />
+    <ClCompile Include="..\ToneStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resources\main.rc" />

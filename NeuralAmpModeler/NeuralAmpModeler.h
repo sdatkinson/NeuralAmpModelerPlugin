@@ -3,10 +3,11 @@
 #include "NeuralAmpModelerCore/NAM/dsp.h"
 #include "AudioDSPTools/dsp/ImpulseResponse.h"
 #include "AudioDSPTools/dsp/NoiseGate.h"
-#include "AudioDSPTools/dsp/RecursiveLinearFilter.h"
 #include "AudioDSPTools/dsp/dsp.h"
 #include "AudioDSPTools/dsp/wav.h"
 #include "AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
+
+#include "ToneStack.h"
 
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
@@ -238,6 +239,7 @@ private:
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
+  void _InitToneStack();
   // Apply the normalization for the model output (if possible)
   void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
   // Loads a NAM model and stores it to mStagedNAM
@@ -300,9 +302,7 @@ private:
   std::atomic<bool> mCheckSampleRateWarning = true;
 
   // Tone stack modules
-  recursive_linear_filter::LowShelf mToneBass;
-  recursive_linear_filter::Peaking mToneMid;
-  recursive_linear_filter::HighShelf mToneTreble;
+  std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
 
   // Post-IR filters
   recursive_linear_filter::HighPass mHighPass;
