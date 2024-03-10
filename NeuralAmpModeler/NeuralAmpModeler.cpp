@@ -68,6 +68,7 @@ EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
+  _InitToneStack();
   nam::activations::Activation::enable_fast_tanh();
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -323,14 +324,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   sample** gateGainOutput =
     noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
 
-  sample** toneStackOutPointers = gateGainOutput;
-  if (toneStackActive)
-  {
-    sample** bassPointers = mToneBass.Process(gateGainOutput, numChannelsInternal, numFrames);
-    sample** midPointers = mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
-    sample** treblePointers = mToneTreble.Process(midPointers, numChannelsInternal, numFrames);
-    toneStackOutPointers = treblePointers;
-  }
+  sample** toneStackOutPointers = (toneStackActive && mToneStack != nullptr) ? mToneStack->Process(gateGainOutput, numChannelsInternal, numFrames)
+   : gateGainOutput;
 
   sample** irPointers = toneStackOutPointers;
   if (mIR != nullptr && GetParam(kIRToggle)->Value())
@@ -361,6 +356,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 void NeuralAmpModeler::OnReset()
 {
   const auto sampleRate = GetSampleRate();
+  const int maxBlockSize = GetBlockSize();
+
   // Tail is because the HPF DC blocker has a decay.
   // 10 cycles should be enough to pass the VST3 tests checking tail behavior.
   // I'm ignoring the model & IR, but it's not the end of the world.
@@ -371,6 +368,7 @@ void NeuralAmpModeler::OnReset()
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
+  mToneStack->Reset(sampleRate, maxBlockSize);
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -443,36 +441,13 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     switch (paramIdx)
     {
     case kToneBass:
-    {
-      const double sampleRate = GetSampleRate();
-      const double bassGainDB = 4.0 * (GetParam(kToneBass)->Value() - 5.0); // +/- 20
-      const double bassFrequency = 150.0;
-      const double bassQuality = 0.707;
-      recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-      mToneBass.SetParams(bassParams);
-    }
-      
+      mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); 
       break;
     case kToneMid:
-      {
-      const double sampleRate = GetSampleRate();
-      const double midGainDB = 3.0 * (GetParam(kToneMid)->Value() - 5.0); // +/- 15
-      const double midFrequency = 425.0;
-      // Wider EQ on mid bump up to sound less honky.
-      const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
-      recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-      mToneMid.SetParams(midParams);
-      }
+      mToneStack->SetParam("middle", GetParam(paramIdx)->Value());
       break;
     case kToneTreble:
-      {
-      const double sampleRate = GetSampleRate();
-      const double trebleGainDB = 2.0 * (GetParam(kToneTreble)->Value() - 5.0); // +/- 10
-      const double trebleFrequency = 1800.0;
-      const double trebleQuality = 0.707;
-      recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
-      mToneTreble.SetParams(trebleParams);
-      }
+      mToneStack->SetParam("treble", GetParam(paramIdx)->Value());
       break;
     default: break;
     }
@@ -751,6 +726,11 @@ size_t NeuralAmpModeler::_GetBufferNumFrames() const
   return mInputArray[0].size();
 }
 
+void NeuralAmpModeler::_InitToneStack()
+{
+  // If you want to customize the tone stack, then put it here!
+  mToneStack = std::make_unique<dsp::tone_stack::BasicNamToneStack>();
+}
 void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
 {
   const bool updateChannels = numChannels != _GetBufferNumChannels();
