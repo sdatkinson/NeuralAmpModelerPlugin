@@ -326,6 +326,30 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   sample** toneStackOutPointers = gateGainOutput;
   if (toneStackActive)
   {
+    // Translate params from knob 0-10 to dB.
+    // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
+    // much swing as bass can use.
+    const double bassGainDB = 4.0 * (GetParam(kToneBass)->Value() - 5.0); // +/- 20
+    const double midGainDB = 3.0 * (GetParam(kToneMid)->Value() - 5.0); // +/- 15
+    const double trebleGainDB = 2.0 * (GetParam(kToneTreble)->Value() - 5.0); // +/- 10
+
+    const double bassFrequency = 150.0;
+    const double midFrequency = 425.0;
+    const double trebleFrequency = 1800.0;
+    const double bassQuality = 0.707;
+    // Wider EQ on mid bump up to sound less honky.
+    const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
+    const double trebleQuality = 0.707;
+
+    // Define filter parameters
+    recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
+    recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
+    recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
+    // Apply tone stack
+    // Set parameters
+    mToneBass.SetParams(bassParams);
+    mToneMid.SetParams(midParams);
+    mToneTreble.SetParams(trebleParams);
     sample** bassPointers = mToneBass.Process(gateGainOutput, numChannelsInternal, numFrames);
     sample** midPointers = mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
     sample** treblePointers = mToneTreble.Process(midPointers, numChannelsInternal, numFrames);
@@ -436,46 +460,6 @@ void NeuralAmpModeler::OnUIOpen()
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
   mCheckSampleRateWarning = true;
-}
-
-void NeuralAmpModeler::OnParamChange(int paramIdx)
-{
-    switch (paramIdx)
-    {
-    case kToneBass:
-    {
-      const double sampleRate = GetSampleRate();
-      const double bassGainDB = 4.0 * (GetParam(kToneBass)->Value() - 5.0); // +/- 20
-      const double bassFrequency = 150.0;
-      const double bassQuality = 0.707;
-      recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-      mToneBass.SetParams(bassParams);
-    }
-      
-      break;
-    case kToneMid:
-      {
-      const double sampleRate = GetSampleRate();
-      const double midGainDB = 3.0 * (GetParam(kToneMid)->Value() - 5.0); // +/- 15
-      const double midFrequency = 425.0;
-      // Wider EQ on mid bump up to sound less honky.
-      const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
-      recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-      mToneMid.SetParams(midParams);
-      }
-      break;
-    case kToneTreble:
-      {
-      const double sampleRate = GetSampleRate();
-      const double trebleGainDB = 2.0 * (GetParam(kToneTreble)->Value() - 5.0); // +/- 10
-      const double trebleFrequency = 1800.0;
-      const double trebleQuality = 0.707;
-      recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
-      mToneTreble.SetParams(trebleParams);
-      }
-      break;
-    default: break;
-    }
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)

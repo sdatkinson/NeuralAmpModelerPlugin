@@ -216,7 +216,6 @@ public:
   void OnUIOpen() override;
   bool OnHostRequestingSupportedViewConfiguration(int width, int height) override { return true; }
 
-  void OnParamChange(int paramIdx) override;
   void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
