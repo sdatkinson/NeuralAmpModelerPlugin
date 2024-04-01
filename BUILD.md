@@ -1,7 +1,7 @@
 
 # Neural Amp Modeler Plug-in
 
-## Installation 
+## Building
 
 Commands are for bash/zsh and apply to Windows (Git Bash) or macOS (Terminal) builds.
 
