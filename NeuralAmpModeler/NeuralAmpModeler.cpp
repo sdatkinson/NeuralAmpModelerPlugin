@@ -546,6 +546,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mNAMPath.Set("");
     mShouldRemoveModel = false;
     mCheckSampleRateWarning = true;
+    SetLatency(0);
   }
   if (mShouldRemoveIR)
   {
@@ -561,6 +562,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
     mCheckSampleRateWarning = true;
+    SetLatency(mModel->GetLatency());
   }
   if (mStagedIR != nullptr)
   {
