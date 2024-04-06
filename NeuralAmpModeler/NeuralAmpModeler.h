@@ -157,6 +157,8 @@ public:
     mFinalized = true;
   };
 
+  int GetLatency() const { return mResampler.GetLatency(); };
+
   void Reset(const double sampleRate, const int maxBlockSize)
   {
     mExpectedSampleRate = sampleRate;
@@ -220,6 +222,8 @@ public:
   void OnParamChange(int paramIdx) override;
   void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
+
+  int GetLatency() const { return _HaveModel() ? mModel->GetLatency() : 0; }
 
 private:
   // Allocates mInputPointers and mOutputPointers
