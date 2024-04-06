@@ -391,6 +391,9 @@ void NeuralAmpModeler::OnIdle()
 
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
+  // Plugin version, so we can load legacy serialized states in the future!
+  WDL_String version(PLUG_VERSION_STR);
+  chunk.PutStr(version.Get());
   // Model directory (don't serialize the model itself; we'll just load it again
   // when we unserialize)
   chunk.PutStr(mNAMPath.Get());
@@ -400,7 +403,12 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
-  WDL_String dir;
+  WDL_String version;
+  startPos = chunk.GetStr(version, startPos);
+  // Version-specific loading here if needed.
+  // ...
+
+  // Current version loading:
   startPos = chunk.GetStr(mNAMPath, startPos);
   startPos = chunk.GetStr(mIRPath, startPos);
   int retcode = UnserializeParams(chunk, startPos);
