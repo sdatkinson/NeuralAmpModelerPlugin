@@ -223,8 +223,6 @@ public:
   void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
-  int GetLatency() const { return _HaveModel() ? mModel->GetLatency() : 0; }
-
 private:
   // Allocates mInputPointers and mOutputPointers
   void _AllocateIOPointers(const size_t nChans);
