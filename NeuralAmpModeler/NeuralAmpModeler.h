@@ -157,6 +157,8 @@ public:
     mFinalized = true;
   };
 
+  int GetLatency() const { return mResampler.GetLatency(); };
+
   void Reset(const double sampleRate, const int maxBlockSize)
   {
     mExpectedSampleRate = sampleRate;
