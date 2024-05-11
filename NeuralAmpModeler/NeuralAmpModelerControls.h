@@ -556,14 +556,14 @@ public:
     AddChildControl(new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com", text,
                                     COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
 
-    //    AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
-    //
-    //      WDL_String colorCodeStr;
-    //      color.ToColorCodeStr(colorCodeStr, false);
-    //      this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(),
-    //      colorCodeStr.Get());
-    //
-    //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
+       AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
+    
+         WDL_String colorCodeStr;
+         color.ToColorCodeStr(colorCodeStr, false);
+         this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(),
+         colorCodeStr.Get());
+    
+       }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kX1}, {""}));
 
     OnResize();
   }
@@ -581,7 +581,7 @@ public:
       GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
       GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
       GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
-      //      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
+      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
     }
   }
 

@@ -21,6 +21,8 @@ using namespace igraphics;
 
 const double kDCBlockerFrequency = 5.0;
 
+iplug::igraphics::IColor NAM_CUSTOMTHEMECOLOR = PluginColors::NAM_THEMECOLOR;
+
 // Styles
 const IVColorSpec colorSpec{
   DEFAULT_BGCOLOR, // Background
@@ -401,6 +403,7 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
   // when we unserialize)
   chunk.PutStr(mNAMPath.Get());
   chunk.PutStr(mIRPath.Get());
+  chunk.PutStr(mHighLightColor.Get());
   return SerializeParams(chunk);
 }
 
@@ -421,6 +424,7 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   // Current version loading:
   startPos = chunk.GetStr(mNAMPath, startPos);
   startPos = chunk.GetStr(mIRPath, startPos);
+  startPos = chunk.GetStr(mHighLightColor, startPos);
   int retcode = UnserializeParams(chunk, startPos);
   if (mNAMPath.GetLength())
     _StageModel(mNAMPath);
@@ -452,6 +456,20 @@ void NeuralAmpModeler::OnUIOpen()
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
   mCheckSampleRateWarning = true;
+
+  GetUI()->ForStandardControlsFunc([&](IControl* pControl) {
+    if (auto* pVectorBase = pControl->As<IVectorBase>())
+    {
+      if (mHighLightColor.GetLength())
+        NAM_CUSTOMTHEMECOLOR = IColor::FromColorCodeStr(mHighLightColor.Get());
+
+      pVectorBase->SetColor(kX1, NAM_CUSTOMTHEMECOLOR);
+      pVectorBase->SetColor(kPR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.6f));
+      pVectorBase->SetColor(kFR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.1f));
+      pVectorBase->SetColor(kX3, NAM_CUSTOMTHEMECOLOR.WithContrast(0.1f));
+    }
+    pControl->GetUI()->SetAllControlsDirty();
+  });
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
@@ -504,12 +522,12 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
         GetUI()->ForStandardControlsFunc([&](IControl* pControl) {
           if (auto* pVectorBase = pControl->As<IVectorBase>())
           {
-            IColor color = IColor::FromColorCodeStr(mHighLightColor.Get());
+            NAM_CUSTOMTHEMECOLOR = IColor::FromColorCodeStr(mHighLightColor.Get());
 
-            pVectorBase->SetColor(kX1, color);
-            pVectorBase->SetColor(kPR, color.WithOpacity(0.3f));
-            pVectorBase->SetColor(kFR, color.WithOpacity(0.4f));
-            pVectorBase->SetColor(kX3, color.WithContrast(0.1f));
+            pVectorBase->SetColor(kX1, NAM_CUSTOMTHEMECOLOR);
+            pVectorBase->SetColor(kPR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.6f));
+            pVectorBase->SetColor(kFR, NAM_CUSTOMTHEMECOLOR.WithOpacity(0.1f));
+            pVectorBase->SetColor(kX3, NAM_CUSTOMTHEMECOLOR.WithContrast(0.1f));
           }
           pControl->GetUI()->SetAllControlsDirty();
         });
