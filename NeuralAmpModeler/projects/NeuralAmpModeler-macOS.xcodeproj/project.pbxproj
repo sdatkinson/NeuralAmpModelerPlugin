@@ -440,6 +440,18 @@
 		4FFBB93020863B0E00DDD0E7 /* fbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8158C1205D50EB00393585 /* fbuffer.cpp */; };
 		4FFBB93420863B0E00DDD0E7 /* coreiids.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8158E0205D50EB00393585 /* coreiids.cpp */; };
 		4FFBB93520863B0E00DDD0E7 /* vstnoteexpressiontypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F81588E205D50EB00393585 /* vstnoteexpressiontypes.cpp */; };
+		AA341E1D2B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E1E2B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E1F2B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E202B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E212B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E222B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E232B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E242B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E252B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E262B9E5A530069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E1B2B9E5A530069C260 /* ToneStack.cpp */; };
+		AA341E272B9E5A530069C260 /* ToneStack.h in Headers */ = {isa = PBXBuildFile; fileRef = AA341E1C2B9E5A530069C260 /* ToneStack.h */; };
+		AA341E282B9E5A530069C260 /* ToneStack.h in Headers */ = {isa = PBXBuildFile; fileRef = AA341E1C2B9E5A530069C260 /* ToneStack.h */; };
 		AA355E2D295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		AA355E2E295B688F0061AA3D /* Colors.h in Headers */ = {isa = PBXBuildFile; fileRef = AA355E2C295B688F0061AA3D /* Colors.h */; };
 		AA7C85F92B439AC000B5FB3A /* ResamplingContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */; };
@@ -1011,6 +1023,8 @@
 		4FFBB94120863E9300DDD0E7 /* IPlugVST3_Parameter.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Parameter.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Parameter.h; sourceTree = "<group>"; tabWidth = 2; };
 		4FFF72B8214BB71400839091 /* main.rc */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.rc; path = ../resources/main.rc; sourceTree = "<group>"; };
 		52FBBED30D0CF143001C8B8A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		AA341E1B2B9E5A530069C260 /* ToneStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneStack.cpp; path = ../ToneStack.cpp; sourceTree = "<group>"; };
+		AA341E1C2B9E5A530069C260 /* ToneStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneStack.h; path = ../ToneStack.h; sourceTree = "<group>"; };
 		AA355E2C295B688F0061AA3D /* Colors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Colors.h; path = ../Colors.h; sourceTree = "<group>"; };
 		AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResamplingContainer.h; sourceTree = "<group>"; };
 		AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _LanczosResampler.h; sourceTree = "<group>"; };
@@ -1102,6 +1116,8 @@
 				4F3862EE2014BBEC0009F402 /* NeuralAmpModeler.h */,
 				4F3862ED2014BBEC0009F402 /* NeuralAmpModeler.cpp */,
 				4F9979232A066F8B0066545C /* NeuralAmpModelerControls.h */,
+				AA341E1B2B9E5A530069C260 /* ToneStack.cpp */,
+				AA341E1C2B9E5A530069C260 /* ToneStack.h */,
 				4F9313232315CA1100DB2383 /* README.md */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				32C88E010371C26100C91783 /* Other Sources */,
@@ -2008,6 +2024,7 @@
 				AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4F2FB17C2A0047430027AB66 /* ImpulseResponse.h in Headers */,
 				4F2FB17B2A0047430027AB66 /* RecursiveLinearFilter.h in Headers */,
+				AA341E282B9E5A530069C260 /* ToneStack.h in Headers */,
 				4F2FB1B12A0047430027AB66 /* activations.h in Headers */,
 				AA7C85FA2B439AC000B5FB3A /* ResamplingContainer.h in Headers */,
 				AA355E2E295B688F0061AA3D /* Colors.h in Headers */,
@@ -2043,6 +2060,7 @@
 				4FC3F0002086CE5700BD11FA /* stringconvert.h in Headers */,
 				4F8C10E720BA2796006320CD /* IGraphicsEditorDelegate.h in Headers */,
 				AA7C85F92B439AC000B5FB3A /* ResamplingContainer.h in Headers */,
+				AA341E272B9E5A530069C260 /* ToneStack.h in Headers */,
 				AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */,
 				4FC3EFFA2086CE5700BD11FA /* parameterchanges.h in Headers */,
 				4F03A5B320A4621100EBDFFB /* IGraphics_include_in_plug_src.h in Headers */,
@@ -2600,6 +2618,7 @@
 				4F2FB1A72A0047430027AB66 /* lstm.cpp in Sources */,
 				4F03A5AD20A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F5F344220C0226200487201 /* IPlugPaths.mm in Sources */,
+				AA341E1E2B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F2FB1B32A0047430027AB66 /* activations.cpp in Sources */,
 				4F2FB1612A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB19D2A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2638,6 +2657,7 @@
 				4F2FB1662A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1AC2A0047430027AB66 /* lstm.cpp in Sources */,
 				4F2FB1B82A0047430027AB66 /* activations.cpp in Sources */,
+				AA341E232B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F2FB18D2A0047430027AB66 /* util.cpp in Sources */,
 				4F2FB16F2A0047430027AB66 /* NoiseGate.cpp in Sources */,
 				4F4856892773CA76005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
@@ -2659,6 +2679,7 @@
 				4F03A5AF20A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F6369E020A464BB0022C370 /* IGraphicsNanoVG_src.m in Sources */,
 				4F6369EE20A466470022C370 /* IControl.cpp in Sources */,
+				AA341E202B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F2FB19F2A0047430027AB66 /* convnet.cpp in Sources */,
 				4F1A528C205D916F00CF2908 /* IPlugAU.cpp in Sources */,
 				4F2FB1632A0047430027AB66 /* dsp.cpp in Sources */,
@@ -2733,6 +2754,7 @@
 				4F2FB1BA2A0047430027AB66 /* activations.cpp in Sources */,
 				4F2FB1712A0047430027AB66 /* NoiseGate.cpp in Sources */,
 				4F3EE1E2231438D000004786 /* IGraphicsEditorDelegate.cpp in Sources */,
+				AA341E262B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F3EE1E3231438D000004786 /* swell-gdi.mm in Sources */,
 				4F2FB1862A0047430027AB66 /* wav.cpp in Sources */,
 				4F3EE1E4231438D000004786 /* IPlugParameter.cpp in Sources */,
@@ -2766,6 +2788,7 @@
 				4F78BE2322E7406D00AD537E /* IPlugAUv3.mm in Sources */,
 				4F78BE2422E7406D00AD537E /* IPlugAUViewController.mm in Sources */,
 				4F2FB1982A0047430027AB66 /* dsp.cpp in Sources */,
+				AA341E252B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F78BE2522E7406D00AD537E /* IPlugPluginBase.cpp in Sources */,
 				4F2FB1C22A0047430027AB66 /* wavenet.cpp in Sources */,
 				4F2FB1A32A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2820,6 +2843,7 @@
 				4F81598A205D50EB00393585 /* ustring.cpp in Sources */,
 				4F2FB1A82A0047430027AB66 /* lstm.cpp in Sources */,
 				4F7C495C255DDFC400DF7588 /* IPopupMenuControl.cpp in Sources */,
+				AA341E1F2B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F815980205D50EB00393585 /* fobject.cpp in Sources */,
 				4F815994205D51F000393585 /* vstparameters.cpp in Sources */,
 				4F2FB16B2A0047430027AB66 /* NoiseGate.cpp in Sources */,
@@ -2874,6 +2898,7 @@
 				4F7C4963255DDFC600DF7588 /* ITextEntryControl.cpp in Sources */,
 				4F3862F32014BBEC0009F402 /* NeuralAmpModeler.cpp in Sources */,
 				4F2FB1952A0047430027AB66 /* dsp.cpp in Sources */,
+				AA341E212B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4FB600231567CB0A0020189A /* IPlugParameter.cpp in Sources */,
 				4F2FB1BF2A0047430027AB66 /* wavenet.cpp in Sources */,
 				4F2FB1A02A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2902,6 +2927,7 @@
 				4FC3EFF92086CE5700BD11FA /* parameterchanges.cpp in Sources */,
 				4FC3EFCE2086C35D00BD11FA /* IPlugPluginBase.cpp in Sources */,
 				4F7C4965255DDFC800DF7588 /* IPopupMenuControl.cpp in Sources */,
+				AA341E242B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F722021225C1EB100FF0E7C /* commoniids.cpp in Sources */,
 				4FB1F59620E4B017004157C8 /* IGraphicsMac_view.mm in Sources */,
 				4F472103209B294400A0A0A8 /* IPlugVST3_Controller.cpp in Sources */,
@@ -2956,6 +2982,7 @@
 				4F2FB1B22A0047430027AB66 /* activations.cpp in Sources */,
 				4F2FB1692A0047430027AB66 /* NoiseGate.cpp in Sources */,
 				4F8C10E020BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
+				AA341E1D2B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4FF0A83221BE708700B2C9D1 /* swell-gdi.mm in Sources */,
 				4F2FB17E2A0047430027AB66 /* wav.cpp in Sources */,
 				4F78D91813B63BA50032E0F3 /* IPlugParameter.cpp in Sources */,
@@ -2989,6 +3016,7 @@
 				4F2FB1962A0047430027AB66 /* dsp.cpp in Sources */,
 				4FFBB91520863B0E00DDD0E7 /* timer.cpp in Sources */,
 				4F2FB1B72A0047430027AB66 /* activations.cpp in Sources */,
+				AA341E222B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4FFBB91720863B0E00DDD0E7 /* funknown.cpp in Sources */,
 				4FFBB91820863B0E00DDD0E7 /* vstbus.cpp in Sources */,
 				4FFBB91920863B0E00DDD0E7 /* IPlugPluginBase.cpp in Sources */,

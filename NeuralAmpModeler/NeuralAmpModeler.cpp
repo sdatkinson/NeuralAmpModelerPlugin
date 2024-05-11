@@ -70,6 +70,7 @@ EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
 {
+  _InitToneStack();
   nam::activations::Activation::enable_fast_tanh();
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -325,38 +326,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   sample** gateGainOutput =
     noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
 
-  sample** toneStackOutPointers = gateGainOutput;
-  if (toneStackActive)
-  {
-    // Translate params from knob 0-10 to dB.
-    // Tuned ranges based on my ear. E.g. seems treble doesn't need nearly as
-    // much swing as bass can use.
-    const double bassGainDB = 4.0 * (GetParam(kToneBass)->Value() - 5.0); // +/- 20
-    const double midGainDB = 3.0 * (GetParam(kToneMid)->Value() - 5.0); // +/- 15
-    const double trebleGainDB = 2.0 * (GetParam(kToneTreble)->Value() - 5.0); // +/- 10
-
-    const double bassFrequency = 150.0;
-    const double midFrequency = 425.0;
-    const double trebleFrequency = 1800.0;
-    const double bassQuality = 0.707;
-    // Wider EQ on mid bump up to sound less honky.
-    const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
-    const double trebleQuality = 0.707;
-
-    // Define filter parameters
-    recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
-    recursive_linear_filter::BiquadParams midParams(sampleRate, midFrequency, midQuality, midGainDB);
-    recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
-    // Apply tone stack
-    // Set parameters
-    mToneBass.SetParams(bassParams);
-    mToneMid.SetParams(midParams);
-    mToneTreble.SetParams(trebleParams);
-    sample** bassPointers = mToneBass.Process(gateGainOutput, numChannelsInternal, numFrames);
-    sample** midPointers = mToneMid.Process(bassPointers, numChannelsInternal, numFrames);
-    sample** treblePointers = mToneTreble.Process(midPointers, numChannelsInternal, numFrames);
-    toneStackOutPointers = treblePointers;
-  }
+  sample** toneStackOutPointers = (toneStackActive && mToneStack != nullptr) ? mToneStack->Process(gateGainOutput, numChannelsInternal, numFrames)
+   : gateGainOutput;
 
   sample** irPointers = toneStackOutPointers;
   if (mIR != nullptr && GetParam(kIRToggle)->Value())
@@ -387,6 +358,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 void NeuralAmpModeler::OnReset()
 {
   const auto sampleRate = GetSampleRate();
+  const int maxBlockSize = GetBlockSize();
+
   // Tail is because the HPF DC blocker has a decay.
   // 10 cycles should be enough to pass the VST3 tests checking tail behavior.
   // I'm ignoring the model & IR, but it's not the end of the world.
@@ -397,6 +370,7 @@ void NeuralAmpModeler::OnReset()
   mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
+  mToneStack->Reset(sampleRate, maxBlockSize);
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -419,6 +393,12 @@ void NeuralAmpModeler::OnIdle()
 
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
+  // If this isn't here when unserializing, then we know we're dealing with something before v0.8.0.
+  WDL_String header("###NeuralAmpModeler###");  // Don't change this!
+  chunk.PutStr(header.Get());
+  // Plugin version, so we can load legacy serialized states in the future!
+  WDL_String version(PLUG_VERSION_STR);
+  chunk.PutStr(version.Get());
   // Model directory (don't serialize the model itself; we'll just load it again
   // when we unserialize)
   chunk.PutStr(mNAMPath.Get());
@@ -429,7 +409,19 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
-  WDL_String dir;
+  WDL_String header;
+  startPos = chunk.GetStr(header, startPos);
+  // TODO: Handle legacy plugin serialized states.
+  //if strncmp (header.Get(), "###NeuralAmpModeler###")
+  //{
+  //  return UnserializeStateLegacy(header, startPos);  // (We'll assume 0.7.9).
+  //}
+  WDL_String version;
+  startPos = chunk.GetStr(version, startPos);
+  // Version-specific loading here if needed.
+  // ...
+
+  // Current version loading:
   startPos = chunk.GetStr(mNAMPath, startPos);
   startPos = chunk.GetStr(mIRPath, startPos);
   startPos = chunk.GetStr(mHighLightColor, startPos);
@@ -478,6 +470,23 @@ void NeuralAmpModeler::OnUIOpen()
     }
     pControl->GetUI()->SetAllControlsDirty();
   });
+}
+
+void NeuralAmpModeler::OnParamChange(int paramIdx)
+{
+    switch (paramIdx)
+    {
+    case kToneBass:
+      mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); 
+      break;
+    case kToneMid:
+      mToneStack->SetParam("middle", GetParam(paramIdx)->Value());
+      break;
+    case kToneTreble:
+      mToneStack->SetParam("treble", GetParam(paramIdx)->Value());
+      break;
+    default: break;
+    }
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
@@ -555,6 +564,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mNAMPath.Set("");
     mShouldRemoveModel = false;
     mCheckSampleRateWarning = true;
+    SetLatency(0);
   }
   if (mShouldRemoveIR)
   {
@@ -570,6 +580,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
     mCheckSampleRateWarning = true;
+    SetLatency(mModel->GetLatency());
   }
   if (mStagedIR != nullptr)
   {
@@ -753,6 +764,11 @@ size_t NeuralAmpModeler::_GetBufferNumFrames() const
   return mInputArray[0].size();
 }
 
+void NeuralAmpModeler::_InitToneStack()
+{
+  // If you want to customize the tone stack, then put it here!
+  mToneStack = std::make_unique<dsp::tone_stack::BasicNamToneStack>();
+}
 void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t numFrames)
 {
   const bool updateChannels = numChannels != _GetBufferNumChannels();

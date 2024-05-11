@@ -170,6 +170,7 @@
     <ClCompile Include="..\AudioDSPTools\dsp\wav.cpp">
       <Filter>dsp</Filter>
     </ClCompile>
+    <ClCompile Include="..\ToneStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
@@ -458,6 +459,7 @@
     <ClInclude Include="..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h">
       <Filter>dsp\ResamplingContainer\Dependencies\WDL</Filter>
     </ClInclude>
+    <ClInclude Include="..\ToneStack.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
