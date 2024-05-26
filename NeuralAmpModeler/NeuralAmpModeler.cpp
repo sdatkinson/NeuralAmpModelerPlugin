@@ -324,8 +324,9 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   sample** gateGainOutput =
     noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
 
-  sample** toneStackOutPointers = (toneStackActive && mToneStack != nullptr) ? mToneStack->Process(gateGainOutput, numChannelsInternal, numFrames)
-   : gateGainOutput;
+  sample** toneStackOutPointers = (toneStackActive && mToneStack != nullptr)
+                                    ? mToneStack->Process(gateGainOutput, numChannelsInternal, numFrames)
+                                    : gateGainOutput;
 
   sample** irPointers = toneStackOutPointers;
   if (mIR != nullptr && GetParam(kIRToggle)->Value())
@@ -392,7 +393,7 @@ void NeuralAmpModeler::OnIdle()
 bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 {
   // If this isn't here when unserializing, then we know we're dealing with something before v0.8.0.
-  WDL_String header("###NeuralAmpModeler###");  // Don't change this!
+  WDL_String header("###NeuralAmpModeler###"); // Don't change this!
   chunk.PutStr(header.Get());
   // Plugin version, so we can load legacy serialized states in the future!
   WDL_String version(PLUG_VERSION_STR);
@@ -409,7 +410,7 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
   WDL_String header;
   startPos = chunk.GetStr(header, startPos);
   // TODO: Handle legacy plugin serialized states.
-  //if strncmp (header.Get(), "###NeuralAmpModeler###")
+  // if strncmp (header.Get(), "###NeuralAmpModeler###")
   //{
   //  return UnserializeStateLegacy(header, startPos);  // (We'll assume 0.7.9).
   //}
@@ -456,19 +457,13 @@ void NeuralAmpModeler::OnUIOpen()
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
 {
-    switch (paramIdx)
-    {
-    case kToneBass:
-      mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); 
-      break;
-    case kToneMid:
-      mToneStack->SetParam("middle", GetParam(paramIdx)->Value());
-      break;
-    case kToneTreble:
-      mToneStack->SetParam("treble", GetParam(paramIdx)->Value());
-      break;
+  switch (paramIdx)
+  {
+    case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
+    case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
+    case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
     default: break;
-    }
+  }
 }
 
 void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
