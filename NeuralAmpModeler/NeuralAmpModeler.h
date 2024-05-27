@@ -54,7 +54,6 @@ enum ECtrlTags
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
   kCtrlTagOutNorm,
-  kCtrlTagSampleRateWarning,
   kNumCtrlTags
 };
 
@@ -232,9 +231,6 @@ private:
   // partially-instantiated.
   void _ApplyDSPStaging();
   // Deallocates mInputPointers and mOutputPointers
-  // Check whether the sample rate is correct for the NAM model.
-  // Adjust the warning control accordingly.
-  void _CheckSampleRateWarning();
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
@@ -300,8 +296,6 @@ private:
   std::atomic<bool> mShouldRemoveIR = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
-  // Flag to check whether the playback sample rate is correct for the model being used.
-  std::atomic<bool> mCheckSampleRateWarning = true;
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
