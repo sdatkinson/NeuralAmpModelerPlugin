@@ -164,9 +164,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Misc Areas
     const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
-    // Making it centered under the big title
-    const auto sampleRateWarningArea = titleArea.GetFromBottom(16.f).GetTranslated(117.f, 6.f).GetFromLeft(300.f);
-    //modelArea.GetFromBottom(16.f).GetTranslated(12.f, 16.f).GetFromLeft(300.f);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -223,7 +220,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
                                 fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap),
       kCtrlTagIRFileBrowser);
-    pGraphics->AttachControl(new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
+    pGraphics->AttachControl(
+      new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
     pGraphics->AttachControl(
       new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutNorm);
@@ -242,9 +240,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // The meters
     pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
     pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
-
-    // A warning when NAM isn't being run in the right sample rate:
-    pGraphics->AttachControl(new NAMSampleRateWarningControl(sampleRateWarningArea), kCtrlTagSampleRateWarning);
 
     // Help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
@@ -368,7 +363,6 @@ void NeuralAmpModeler::OnReset()
   SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
-  mCheckSampleRateWarning = true;
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
   mToneStack->Reset(sampleRate, maxBlockSize);
@@ -385,10 +379,6 @@ void NeuralAmpModeler::OnIdle()
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
 
     mNewModelLoadedInDSP = false;
-  }
-  if (mCheckSampleRateWarning)
-  {
-    _CheckSampleRateWarning();
   }
 }
 
@@ -454,7 +444,6 @@ void NeuralAmpModeler::OnUIOpen()
 
   if (mModel != nullptr)
     GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
-  mCheckSampleRateWarning = true;
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
@@ -542,7 +531,6 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
-    mCheckSampleRateWarning = true;
     SetLatency(0);
   }
   if (mShouldRemoveIR)
@@ -558,31 +546,12 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = std::move(mStagedModel);
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
-    mCheckSampleRateWarning = true;
     SetLatency(mModel->GetLatency());
   }
   if (mStagedIR != nullptr)
   {
     mIR = std::move(mStagedIR);
     mStagedIR = nullptr;
-  }
-}
-
-void NeuralAmpModeler::_CheckSampleRateWarning()
-{
-  if (auto* pGraphics = GetUI())
-  {
-    auto* control = pGraphics->GetControlWithTag(kCtrlTagSampleRateWarning)->As<NAMSampleRateWarningControl>();
-    bool showWarning = false;
-    if (_HaveModel())
-    {
-      const auto pluginSampleRate = GetSampleRate();
-      const auto namSampleRate = mModel->GetEncapsulatedSampleRate();
-      control->SetSampleRate(namSampleRate);
-      showWarning = pluginSampleRate != namSampleRate;
-    }
-    control->SetDisabled(!showWarning);
-    mCheckSampleRateWarning = false;
   }
 }
 
