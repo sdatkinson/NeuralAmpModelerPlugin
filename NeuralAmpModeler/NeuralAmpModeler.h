@@ -265,6 +265,12 @@ private:
   // Resetting for models and IRs, called by OnReset
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
+  // Unserialize current-version plug-in data:
+  int _UnserializeStateCurrent(const iplug::IByteChunk& chunk, int startPos);
+  // Unserialize v0.7.9 legacy data:
+  int _UnserializeStateLegacy_0_7_9(const iplug::IByteChunk& chunk, int startPos);
+  // And other legacy unsrializations if/as needed...
+
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
