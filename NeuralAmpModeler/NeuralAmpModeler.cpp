@@ -1,4 +1,4 @@
-#include <algorithm> // std::clamp
+#include <algorithm> // std::clamp, std::min
 #include <cmath> // pow
 #include <filesystem>
 #include <iostream>
@@ -400,26 +400,28 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
 int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
 {
   WDL_String header;
-  startPos = chunk.GetStr(header, startPos);
-  // TODO: Handle legacy plugin serialized states.
-  // if strncmp (header.Get(), "###NeuralAmpModeler###")
-  //{
-  //  return UnserializeStateLegacy(header, startPos);  // (We'll assume 0.7.9).
-  //}
-  WDL_String version;
-  startPos = chunk.GetStr(version, startPos);
-  // Version-specific loading here if needed.
-  // ...
-
-  // Current version loading:
-  startPos = chunk.GetStr(mNAMPath, startPos);
-  startPos = chunk.GetStr(mIRPath, startPos);
-  int retcode = UnserializeParams(chunk, startPos);
+  int pos = startPos;
+  pos = chunk.GetStr(header, pos);
+  // Unseralization:
+  {
+    // Handle legacy plugin serialized states:
+    // In v0.7.9, this was the NAM filepath. So, if we dont' get the expected header, then we can attempt to unserialize
+    // as v0.7.9:
+    const char* kExpectedHeader = "###NeuralAmpModeler###";
+    if (strcmp(header.Get(), kExpectedHeader) == 0)
+    {
+      pos = _UnserializeStateCurrent(chunk, pos);
+    }
+    else
+    {
+      pos = _UnserializeStateLegacy_0_7_9(chunk, startPos);
+    }
+  }
   if (mNAMPath.GetLength())
     _StageModel(mNAMPath);
   if (mIRPath.GetLength())
     _StageIR(mIRPath);
-  return retcode;
+  return pos;
 }
 
 void NeuralAmpModeler::OnUIOpen()
@@ -802,6 +804,81 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
       // values.
       outputs[cout][s] = gain * inputs[cin][s];
 #endif
+}
+
+int NeuralAmpModeler::_UnserializeStateCurrent(const IByteChunk& chunk, int pos)
+{
+  WDL_String version;
+  pos = chunk.GetStr(version, pos);
+  // Post-v0.7.9 legacy loading here once needed:
+  // ...
+
+  // Current version loading:
+  pos = chunk.GetStr(mNAMPath, pos);
+  pos = chunk.GetStr(mIRPath, pos);
+  pos = UnserializeParams(chunk, pos);
+  return pos;
+}
+
+int NeuralAmpModeler::_UnserializeStateLegacy_0_7_9(const IByteChunk& chunk, int startPos)
+{
+  WDL_String dir;
+  int pos = startPos;
+  pos = chunk.GetStr(mNAMPath, pos);
+  pos = chunk.GetStr(mIRPath, pos);
+  auto unserialize = [&](const IByteChunk& chunk, int startPos) {
+    // cf IPluginBase::UnserializeParams(const IByteChunk& chunk, int startPos)
+
+    // These are the parameter names, in the order that they were serialized in v0.7.9.
+    std::vector<std::string> oldParamNames{
+      "Input", "Gate", "Bass", "Middle", "Treble", "Output", "NoiseGateActive", "ToneStack", "OutNorm", "IRToggle"};
+    // These are their current names.
+    // IF YOU CHANGE THE NAMES OF THE PARAMETERS, THEN YOU NEED TO UPDATE THIS!
+    std::unordered_map<std::string, std::string> newNames{{"Gate", "Threshold"}};
+    auto getParamByOldName = [&, newNames](std::string& oldName) {
+      std::string name = newNames.find(oldName) != newNames.end() ? newNames.at(oldName) : oldName;
+      // Could use a map but eh
+      for (int i = 0; i < kNumParams; i++)
+      {
+        IParam* param = GetParam(i);
+        if (strcmp(param->GetName(), name.c_str()) == 0)
+        {
+          return param;
+        }
+      }
+      return (IParam*)nullptr;
+    };
+    TRACE
+    int pos = startPos;
+    ENTER_PARAMS_MUTEX
+    int i = 0;
+    for (auto it = oldParamNames.begin(); it != oldParamNames.end(); ++it, i++)
+    {
+      // Here's the change: instead of assuming that we can iterate through the parameters, we look for the one that now
+      // holds this info.
+      // IParam* pParam = mParams.Get(i);
+      IParam* pParam = getParamByOldName(*it);
+
+      double v = 0.0;
+      pos = chunk.Get(&v, pos);
+      // It's possible that future versions will not have all of the params of previous versions. If that's the case,
+      // then this is a null ptr and we skip it.
+      if (pParam)
+      {
+        pParam->Set(v);
+        Trace(TRACELOC, "%d %s %f", i, pParam->GetName(), pParam->Value());
+      }
+      else
+      {
+        Trace(TRACELOC, "%d NOT-FOUND", i);
+      }
+    }
+    OnParamReset(kPresetRecall);
+    LEAVE_PARAMS_MUTEX
+    return pos;
+  };
+  pos = unserialize(chunk, pos);
+  return pos;
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,
