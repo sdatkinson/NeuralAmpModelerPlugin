@@ -366,6 +366,7 @@ void NeuralAmpModeler::OnReset()
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
   mToneStack->Reset(sampleRate, maxBlockSize);
+  _UpdateLatency();
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -533,7 +534,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
-    SetLatency(0);
+    _UpdateLatency();
   }
   if (mShouldRemoveIR)
   {
@@ -548,7 +549,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = std::move(mStagedModel);
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
-    SetLatency(mModel->GetLatency());
+    _UpdateLatency();
   }
   if (mStagedIR != nullptr)
   {
@@ -879,6 +880,17 @@ int NeuralAmpModeler::_UnserializeStateLegacy_0_7_9(const IByteChunk& chunk, int
   };
   pos = unserialize(chunk, pos);
   return pos;
+}
+
+void NeuralAmpModeler::_UpdateLatency()
+{
+  int latency = 0;
+  if (mModel)
+  {
+    latency += mModel->GetLatency();
+  }
+  // Other things that add latency here...
+  SetLatency(latency);
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,
