@@ -250,6 +250,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       helpSVG));
 
     pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagAboutBox)->Hide(true);
+   
+    // Implements drag and drop capabilities for plugin
+    pGraphics->AttachControl(new NAMDragDropControl(mainArea, loadModelCompletionHandler)); 
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);

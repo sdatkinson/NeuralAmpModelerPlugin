@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath> // std::round
+#include <functional> // std::function
 #include <sstream> // std::stringstream
 #include "IControls.h"
 
@@ -557,4 +558,37 @@ private:
   IVStyle mStyle;
   int mAnimationTime = 200;
   bool mWillHide = false;
+};
+
+class NAMDragDropControl : public IControl
+{
+public:
+    NAMDragDropControl(const IRECT& bounds, 
+                       std::function<void(const WDL_String&, const WDL_String&)> loadModelCompletionHandler)
+        : IControl(bounds), loadModel(loadModelCompletionHandler)
+    {
+      mIgnoreMouse = true;
+    }
+
+    void Draw(IGraphics& g) override
+    {}
+
+    void OnDrop(const char* str) override
+    {
+        // Handle the dropped data
+        if (str)
+        {
+          std::cout << "Dropped data: " << str << std::endl;
+          
+          WDL_String fileName, directory;
+          fileName.Set(str);
+          directory.Set(str);
+          directory.remove_filepart(true);
+
+          loadModel(fileName, directory);
+        }
+    }
+
+private:
+  std::function<void(const WDL_String&, const WDL_String&)> loadModel;
 };
