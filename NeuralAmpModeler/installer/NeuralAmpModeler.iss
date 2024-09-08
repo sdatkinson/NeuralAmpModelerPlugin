@@ -1,10 +1,10 @@
 [Setup]
 AppName=NeuralAmpModeler
-AppContact=spam@spam.com
-AppCopyright=Copyright (C) 2020 MANUFACTURER
-AppPublisher=MANUFACTURER
-AppPublisherURL=http://www.spam.com
-AppSupportURL=http://www.spam.com
+AppContact=neuralampmodeler@gmail.com
+AppCopyright=Copyright (C) 2024 Steven Atkinson
+AppPublisher=Steven Atkinson
+AppPublisherURL=https://www.neuralampmodeler.com/
+AppSupportURL=https://www.neuralampmodeler.com/
 AppVersion=0.7.9
 VersionInfoVersion=1.0.0
 DefaultDirName={pf}\NeuralAmpModeler

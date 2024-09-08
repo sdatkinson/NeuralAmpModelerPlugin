@@ -54,7 +54,6 @@ enum ECtrlTags
   kCtrlTagOutputMeter,
   kCtrlTagAboutBox,
   kCtrlTagOutNorm,
-  kCtrlTagSampleRateWarning,
   kNumCtrlTags
 };
 
@@ -124,7 +123,7 @@ public:
       // We can afford to be careful
       throw std::runtime_error("More frames were provided than the max expected!");
 
-    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate())
+    if (!NeedToResample())
     {
       mEncapsulated->process(input, output, num_frames);
     }
@@ -134,7 +133,7 @@ public:
     }
   };
 
-  int GetLatency() const { return mResampler.GetLatency(); };
+  int GetLatency() const { return NeedToResample() ? mResampler.GetLatency() : 0; };
 
   void Reset(const double sampleRate, const int maxBlockSize)
   {
@@ -158,6 +157,7 @@ public:
   double GetEncapsulatedSampleRate() const { return GetNAMSampleRate(mEncapsulated); };
 
 private:
+  bool NeedToResample() const { return GetExpectedSampleRate() != GetEncapsulatedSampleRate(); };
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
 
@@ -199,9 +199,6 @@ private:
   // partially-instantiated.
   void _ApplyDSPStaging();
   // Deallocates mInputPointers and mOutputPointers
-  // Check whether the sample rate is correct for the NAM model.
-  // Adjust the warning control accordingly.
-  void _CheckSampleRateWarning();
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
@@ -236,6 +233,15 @@ private:
   // Resetting for models and IRs, called by OnReset
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
+  // Unserialize current-version plug-in data:
+  int _UnserializeStateCurrent(const iplug::IByteChunk& chunk, int startPos);
+  // Unserialize v0.7.9 legacy data:
+  int _UnserializeStateLegacy_0_7_9(const iplug::IByteChunk& chunk, int startPos);
+  // And other legacy unsrializations if/as needed...
+
+  // Make sure that the latency is reported correctly.
+  void _UpdateLatency();
+
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
@@ -267,8 +273,6 @@ private:
   std::atomic<bool> mShouldRemoveIR = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
-  // Flag to check whether the playback sample rate is correct for the model being used.
-  std::atomic<bool> mCheckSampleRateWarning = true;
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;

@@ -48,6 +48,9 @@ copy /b *.cpp+,,
 echo ------------------------------------------------------------------
 echo Building ...
 
+REM Remove previous build logs
+if exist "build-win.log" (del build-win.log)
+
 if exist "%ProgramFiles(x86)%" (goto 64-Bit) else (goto 32-Bit)
 
 if not defined DevEnvDir (
