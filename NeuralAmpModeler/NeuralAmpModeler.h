@@ -132,7 +132,6 @@ public:
     {
       mResampler.ProcessBlock(&input, &output, num_frames, mBlockProcessFunc);
     }
-
   };
 
   int GetLatency() const { return mResampler.GetLatency(); };
