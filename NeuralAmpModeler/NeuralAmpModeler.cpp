@@ -306,7 +306,6 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     // TODO multi-channel processing; Issue
     // Make sure it's multi-threaded or else this won't perform well!
     mModel->process(triggerOutput[0], mOutputPointers[0], nFrames);
-    mModel->finalize_(nFrames);
     // Normalize loudness
     if (GetParam(kOutNorm)->Value())
     {
