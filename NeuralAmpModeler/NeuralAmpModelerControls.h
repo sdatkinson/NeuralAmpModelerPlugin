@@ -435,40 +435,6 @@ public:
   }
 };
 
-const IText _WARNING_TEXT(DEFAULT_TEXT_SIZE + 3.f, PluginColors::NAM_THEMECOLOR, "Roboto-Regular", EAlign::Near);
-
-class NAMSampleRateWarningControl : public ITextControl
-{
-public:
-  NAMSampleRateWarningControl(const IRECT& bounds)
-  : ITextControl(bounds, "", _WARNING_TEXT)
-  {
-    // Default to disabled so that we don't get a flash every time we open the UI.
-    SetDisabled(true);
-    SetSampleRate(48000.0);
-  }
-  void SetDisabled(bool disable) override
-  {
-    {
-      mBlend.mWeight = (disable ? mDisabledBlend : mEnabledBlend);
-      mDisabled = disable;
-      SetDirty(false);
-    }
-  }
-  // Adjust what's displayed according to the provided smalpe rate.
-  // Assumes that the given value is valid.
-  void SetSampleRate(const double sampleRate)
-  {
-    std::stringstream ss;
-    ss << "[INFO] Resampling to " << static_cast<long>(std::round(sampleRate)) << " Hz";
-    SetStr(ss.str().c_str());
-  }
-
-protected:
-  float mDisabledBlend = 0.0f; // when this is disabled, it's completely gone.
-  float mEnabledBlend = 1.0f; // Like normal
-};
-
 class NAMAboutBoxControl : public IContainerBase
 {
 public:

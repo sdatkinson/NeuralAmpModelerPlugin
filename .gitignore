@@ -10,3 +10,6 @@ build-*
 */.vs
 *.pem
 mkcert*
+
+NeuralAmpModeler/*.wav
+NeuralAmpModeler/peaks/
