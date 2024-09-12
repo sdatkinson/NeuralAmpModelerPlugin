@@ -293,7 +293,9 @@ public:
     auto clearFileFunc = [&](IControl* pCaller) {
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
       mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(false);
+
+      const bool namActive = pCaller->GetUI()->GetControlWithParamIdx(kNamToggle)->GetValue();
+      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!namActive);
     };
 
     auto chooseFileFunc = [&, loadFileFunc](IControl* pCaller) {
@@ -557,4 +559,27 @@ private:
   IVStyle mStyle;
   int mAnimationTime = 200;
   bool mWillHide = false;
+};
+
+class NAMTitleToggleControl : public ITextToggleControl
+{
+public:
+  NAMTitleToggleControl(const IRECT& bounds, int paramIdx, const IText& text)
+  : ITextToggleControl(bounds, paramIdx, "NEURAL AMP MODELER", "NEURAL AMP MODELER", text)
+  {
+  }
+
+  void Draw(IGraphics& g) override
+  {
+    if (GetValue())
+    {
+      SetText(mText.WithFGColor(COLOR_WHITE));
+    }
+    else
+    {
+      SetText(mText.WithFGColor(COLOR_BLACK));
+    }
+
+    ITextToggleControl::Draw(g);
+  }
 };

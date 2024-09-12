@@ -37,6 +37,7 @@ enum EParams
   kToneTreble,
   kOutputLevel,
   // The rest is fine though.
+  kNamToggle,
   kNoiseGateActive,
   kEQActive,
   kOutNorm,
@@ -242,6 +243,9 @@ private:
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
                      const size_t nChansIn, const size_t nChansOut);
+
+  // Toggles Disabled flag for all controls
+  void _SetDisabledForAllControl(const bool disabled);
 
   // Member data
 
