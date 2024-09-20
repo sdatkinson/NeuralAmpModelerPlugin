@@ -1,5 +1,5 @@
 <svg width="500" height="500" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="250" cy="250" r="70" fill="none" stroke="white" stroke-width="30"/>
+  <circle cx="250" cy="250" r="70" fill="none" stroke="white" stroke-width="40"/>
   <path d="M 250,446
            L 211,446
            Q 200,337 100,382
@@ -14,5 +14,5 @@
            L 400,382
            Q 300,337 289,446
            L 250,446" 
-        fill="none" stroke="white" stroke-width="30" />
+        fill="none" stroke="white" stroke-width="40" />
 </svg>
