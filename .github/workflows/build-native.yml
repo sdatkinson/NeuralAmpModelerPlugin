@@ -64,7 +64,7 @@ jobs:
       shell: pwsh
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: ${{env.PROJECT_NAME}}-${{matrix.artifact_ext}}
         path: ${{env.PROJECT_NAME}}/${{matrix.build_dir}}/out
