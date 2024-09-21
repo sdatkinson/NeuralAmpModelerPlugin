@@ -52,7 +52,7 @@ enum ECtrlTags
   kCtrlTagIRFileBrowser,
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
-  kCtrlTagAboutBox,
+  kCtrlTagSettingsBox,
   kCtrlTagOutNorm,
   kNumCtrlTags
 };

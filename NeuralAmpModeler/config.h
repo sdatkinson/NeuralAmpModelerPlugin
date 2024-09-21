@@ -59,7 +59,7 @@
 #define ROBOTO_FN "Roboto-Regular.ttf"
 #define MICHROMA_FN "Michroma-Regular.ttf"
 
-#define HELP_FN "Help.svg"
+#define GEAR_FN "Gear.svg"
 #define FILE_FN "File.svg"
 #define CLOSE_BUTTON_FN "Cross.svg"
 #define LEFT_ARROW_FN "ArrowLeft.svg"
