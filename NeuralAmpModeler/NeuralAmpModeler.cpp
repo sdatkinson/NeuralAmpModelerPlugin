@@ -105,7 +105,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->LoadFont("Roboto-Regular", ROBOTO_FN);
     pGraphics->LoadFont("Michroma-Regular", MICHROMA_FN);
 
-    const auto helpSVG = pGraphics->LoadSVG(HELP_FN);
+    const auto gearSVG = pGraphics->LoadSVG(GEAR_FN);
     const auto fileSVG = pGraphics->LoadSVG(FILE_FN);
     const auto crossSVG = pGraphics->LoadSVG(CLOSE_BUTTON_FN);
     const auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
@@ -164,7 +164,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
 
     // Misc Areas
-    const auto helpButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+    const auto settingsButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -242,15 +242,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMMeterControl(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
     pGraphics->AttachControl(new NAMMeterControl(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
 
-    // Help/about box
+    // Settings/help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
-      helpButtonArea,
+      settingsButtonArea,
       [pGraphics](IControl* pCaller) {
-        pGraphics->GetControlWithTag(kCtrlTagAboutBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
+        pGraphics->GetControlWithTag(kCtrlTagSettingsBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
       },
-      helpSVG));
+      gearSVG));
 
-    pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagAboutBox)->Hide(true);
+    pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagSettingsBox)->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);

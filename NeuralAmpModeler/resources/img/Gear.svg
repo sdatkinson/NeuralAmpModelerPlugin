@@ -1,0 +1,18 @@
+<svg width="500" height="500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="250" cy="250" r="70" fill="none" stroke="white" stroke-width="40"/>
+  <path d="M 250,446
+           L 211,446
+           Q 200,337 100,382
+           L 61,314
+           Q 150,250 61,186
+           L 100,118
+           Q 200,163 211,54
+           L 289,54
+           Q 300,163 400,118
+           L 439,186
+           Q 350,250 439,314
+           L 400,382
+           Q 300,337 289,446
+           L 250,446" 
+        fill="none" stroke="white" stroke-width="40" />
+</svg>
