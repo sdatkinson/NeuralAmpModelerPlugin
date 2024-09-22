@@ -80,6 +80,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kNamToggle)->InitBool("NAMToggle", namActive);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -260,8 +261,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->GetControlWithParamIdx(kNoiseGateActive)->SetMouseEventsWhenDisabled(false);
     pGraphics->GetControlWithParamIdx(kEQActive)->SetMouseEventsWhenDisabled(false);
     pGraphics->GetControlWithParamIdx(kIRToggle)->SetMouseEventsWhenDisabled(false);
-
-    pGraphics->GetControlWithParamIdx(kNamToggle)->SetValueFromUserInput(1); // enabled by default
   };
 }
 
@@ -278,7 +277,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = GetSampleRate();
 
-  if (const bool namActive = GetParam(kNamToggle)->Value(); !namActive)
+  if (!namActive)
   {
     _ProcessOutput(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
     _UpdateMeters(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
@@ -425,7 +424,17 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
     const char* kExpectedHeader = "###NeuralAmpModeler###";
     if (strcmp(header.Get(), kExpectedHeader) == 0)
     {
-      pos = _UnserializeStateCurrent(chunk, pos);
+      WDL_String version;
+      pos = chunk.GetStr(version, pos);
+
+      if (strcmp(version.Get(), "0.7.10") == 0)
+      {
+        pos = _UnserializeStateLegacy_0_7_9(chunk, pos);
+      }
+      else
+      {
+        pos = _UnserializeStateCurrent(chunk, pos);
+      }
     }
     else
     {
@@ -470,6 +479,7 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
+    case kNamToggle: namActive = GetParam(paramIdx)->Value(); break;
     default: break;
   }
 }
@@ -806,7 +816,6 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
                                       const size_t nChansIn, const size_t nChansOut)
 {
-  const bool namActive = GetParam(kNamToggle)->Value();
   const double gain = namActive ? pow(10.0, GetParam(kOutputLevel)->Value() / 20.0) : 1;
   // Assume _PrepareBuffers() was already called
   if (nChansIn != 1)
@@ -825,8 +834,6 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 
 int NeuralAmpModeler::_UnserializeStateCurrent(const IByteChunk& chunk, int pos)
 {
-  WDL_String version;
-  pos = chunk.GetStr(version, pos);
   // Post-v0.7.9 legacy loading here once needed:
   // ...
 
@@ -929,11 +936,12 @@ void NeuralAmpModeler::_SetDisabledForAllControl(const bool disabled)
     ui->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(disabled);
 
     ui->GetControlWithParamIdx(kNoiseGateActive)->SetDisabled(disabled);
-    ui->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(disabled);
+    ui->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(disabled || !GetParam(kNoiseGateActive)->Value());
     ui->GetControlWithParamIdx(kInputLevel)->SetDisabled(disabled);
     ui->GetControlWithParamIdx(kOutputLevel)->SetDisabled(disabled);
     ui->GetControlWithParamIdx(kIRToggle)->SetDisabled(disabled);
 
-    ui->ForControlInGroup("EQ_KNOBS", [disabled](auto* ctrl) { ctrl->SetDisabled(disabled); });
+    ui->ForControlInGroup(
+      "EQ_KNOBS", [disabled, this](auto* ctrl) { ctrl->SetDisabled(disabled || !GetParam(kEQActive)->Value()); });
   }
 }

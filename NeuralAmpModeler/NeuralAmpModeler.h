@@ -37,11 +37,11 @@ enum EParams
   kToneTreble,
   kOutputLevel,
   // The rest is fine though.
-  kNamToggle,
   kNoiseGateActive,
   kEQActive,
   kOutNorm,
   kIRToggle,
+  kNamToggle,
   kNumParams
 };
 
@@ -290,4 +290,6 @@ private:
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   NAMSender mInputSender, mOutputSender;
+
+  bool namActive{true};
 };
