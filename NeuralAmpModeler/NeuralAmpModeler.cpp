@@ -80,6 +80,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kNamToggle)->InitBool("NAMToggle", mNamActive);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -201,7 +202,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     pGraphics->AttachBackground(BACKGROUND_FN);
     pGraphics->AttachControl(new IBitmapControl(b, linesBitmap));
-    pGraphics->AttachControl(new IVLabelControl(titleArea, "NEURAL AMP MODELER", titleStyle));
+    pGraphics->AttachControl(new NAMTitleToggleControl(titleArea, kNamToggle, titleStyle.valueText));
     pGraphics->AttachControl(new ISVGControl(modelIconArea, modelIconSVG));
 
 #ifdef NAM_PICK_DIRECTORY
@@ -256,7 +257,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseOverWhenDisabled(true);
     });
 
-    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithParamIdx(kOutNorm)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithParamIdx(kNoiseGateActive)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithParamIdx(kEQActive)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithParamIdx(kIRToggle)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -272,6 +276,13 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const size_t numChannelsInternal = kNumChannelsInternal;
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = GetSampleRate();
+
+  if (!mNamActive)
+  {
+    _ProcessOutput(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+    _UpdateMeters(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
+    return;
+  }
 
   // Disable floating point denormals
   std::fenv_t fe_state;
@@ -376,7 +387,10 @@ void NeuralAmpModeler::OnIdle()
   if (mNewModelLoadedInDSP)
   {
     if (auto* pGraphics = GetUI())
-      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+    {
+      pGraphics->GetControlWithTag(kCtrlTagOutNorm)
+        ->SetDisabled(!mModel->HasLoudness() || !GetParam(kNamToggle)->Value());
+    }
 
     mNewModelLoadedInDSP = false;
   }
@@ -410,7 +424,17 @@ int NeuralAmpModeler::UnserializeState(const IByteChunk& chunk, int startPos)
     const char* kExpectedHeader = "###NeuralAmpModeler###";
     if (strcmp(header.Get(), kExpectedHeader) == 0)
     {
-      pos = _UnserializeStateCurrent(chunk, pos);
+      WDL_String version;
+      pos = chunk.GetStr(version, pos);
+
+      if (strcmp(version.Get(), "0.7.10") == 0)
+      {
+        pos = _UnserializeStateLegacy_0_7_9(chunk, pos);
+      }
+      else
+      {
+        pos = _UnserializeStateCurrent(chunk, pos);
+      }
     }
     else
     {
@@ -455,6 +479,7 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
+    case kNamToggle: mNamActive = GetParam(paramIdx)->Value(); break;
     default: break;
   }
 }
@@ -471,7 +496,8 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
+      case kNamToggle: _SetDisabledForAllControl(!active); break;
       default: break;
     }
   }
@@ -790,7 +816,7 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
                                       const size_t nChansIn, const size_t nChansOut)
 {
-  const double gain = pow(10.0, GetParam(kOutputLevel)->Value() / 20.0);
+  const double gain = mNamActive ? pow(10.0, GetParam(kOutputLevel)->Value() / 20.0) : 1;
   // Assume _PrepareBuffers() was already called
   if (nChansIn != 1)
     throw std::runtime_error("Plugin is supposed to process in mono.");
@@ -808,8 +834,6 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 
 int NeuralAmpModeler::_UnserializeStateCurrent(const IByteChunk& chunk, int pos)
 {
-  WDL_String version;
-  pos = chunk.GetStr(version, pos);
   // Post-v0.7.9 legacy loading here once needed:
   // ...
 
@@ -899,4 +923,25 @@ void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPoint
   const int nChansHack = 1;
   mInputSender.ProcessBlock(inputPointer, (int)nFrames, kCtrlTagInputMeter, nChansHack);
   mOutputSender.ProcessBlock(outputPointer, (int)nFrames, kCtrlTagOutputMeter, nChansHack);
+}
+
+void NeuralAmpModeler::_SetDisabledForAllControl(const bool disabled)
+{
+  if (const auto ui = GetUI(); ui != nullptr)
+  {
+    ui->GetControlWithParamIdx(kEQActive)->SetDisabled(disabled);
+    ui->GetControlWithParamIdx(kOutNorm)->SetDisabled(disabled);
+
+    ui->GetControlWithTag(kCtrlTagModelFileBrowser)->SetDisabled(disabled);
+    ui->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(disabled);
+
+    ui->GetControlWithParamIdx(kNoiseGateActive)->SetDisabled(disabled);
+    ui->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(disabled || !GetParam(kNoiseGateActive)->Value());
+    ui->GetControlWithParamIdx(kInputLevel)->SetDisabled(disabled);
+    ui->GetControlWithParamIdx(kOutputLevel)->SetDisabled(disabled);
+    ui->GetControlWithParamIdx(kIRToggle)->SetDisabled(disabled);
+
+    ui->ForControlInGroup(
+      "EQ_KNOBS", [disabled, this](auto* ctrl) { ctrl->SetDisabled(disabled || !GetParam(kEQActive)->Value()); });
+  }
 }
