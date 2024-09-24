@@ -291,5 +291,5 @@ private:
 
   NAMSender mInputSender, mOutputSender;
 
-  bool namActive{true};
+  bool mNamActive{true};
 };

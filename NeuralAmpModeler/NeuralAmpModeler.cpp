@@ -80,7 +80,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
-  GetParam(kNamToggle)->InitBool("NAMToggle", namActive);
+  GetParam(kNamToggle)->InitBool("NAMToggle", mNamActive);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -277,7 +277,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   const size_t numFrames = (size_t)nFrames;
   const double sampleRate = GetSampleRate();
 
-  if (!namActive)
+  if (!mNamActive)
   {
     _ProcessOutput(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
     _UpdateMeters(inputs, outputs, numFrames, numChannelsInternal, numChannelsExternalOut);
@@ -479,7 +479,7 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
-    case kNamToggle: namActive = GetParam(paramIdx)->Value(); break;
+    case kNamToggle: mNamActive = GetParam(paramIdx)->Value(); break;
     default: break;
   }
 }
@@ -816,7 +816,7 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
 void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames,
                                       const size_t nChansIn, const size_t nChansOut)
 {
-  const double gain = namActive ? pow(10.0, GetParam(kOutputLevel)->Value() / 20.0) : 1;
+  const double gain = mNamActive ? pow(10.0, GetParam(kOutputLevel)->Value() / 20.0) : 1;
   // Assume _PrepareBuffers() was already called
   if (nChansIn != 1)
     throw std::runtime_error("Plugin is supposed to process in mono.");
