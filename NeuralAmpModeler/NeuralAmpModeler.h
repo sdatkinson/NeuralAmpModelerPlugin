@@ -41,6 +41,7 @@ enum EParams
   kEQActive,
   kOutNorm,
   kIRToggle,
+  kNamToggle,
   kNumParams
 };
 
@@ -243,6 +244,9 @@ private:
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
                      const size_t nChansIn, const size_t nChansOut);
 
+  // Toggles Disabled flag for all controls
+  void _SetDisabledForAllControl(const bool disabled);
+
   // Member data
 
   // Input arrays to NAM
@@ -286,4 +290,6 @@ private:
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
   NAMSender mInputSender, mOutputSender;
+
+  bool mNamActive{true};
 };
