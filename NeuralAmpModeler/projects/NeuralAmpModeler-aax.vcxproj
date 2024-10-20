@@ -530,6 +530,7 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\activations.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\convnet.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\dsp.h" />
+    <ClInclude Include="..\NeuralAmpModelerCore\NAM\get_dsp.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\lstm.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\util.h" />
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\version.h" />
