@@ -464,6 +464,7 @@
 		AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F72B439AC000B5FB3A /* ptrlist.h */; };
 		AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
 		AA7C86022B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
+		AAB7BBB72CC4B8C6000B8B6E /* get_dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */; };
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
@@ -1031,6 +1032,7 @@
 		AA7C85F62B439AC000B5FB3A /* wdltypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wdltypes.h; sourceTree = "<group>"; };
 		AA7C85F72B439AC000B5FB3A /* ptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrlist.h; sourceTree = "<group>"; };
 		AA7C85F82B439AC000B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
+		AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_dsp.h; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1295,6 +1297,7 @@
 				4F2FB1482A0047420027AB66 /* dsp.cpp */,
 				4F2FB14F2A0047420027AB66 /* dsp.h */,
 				4F2FB1532A0047420027AB66 /* get_dsp.cpp */,
+				AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */,
 				4F2FB14D2A0047420027AB66 /* lstm.cpp */,
 				4F2FB14A2A0047420027AB66 /* lstm.h */,
 				4F2FB1462A0047420027AB66 /* util.cpp */,
@@ -2018,6 +2021,7 @@
 				4F78BE1222E73DD900AD537E /* NeuralAmpModelerAU.h in Headers */,
 				4F2FB1542A0047420027AB66 /* Resample.h in Headers */,
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
+				AAB7BBB72CC4B8C6000B8B6E /* get_dsp.h in Headers */,
 				4F2FB1902A0047430027AB66 /* version.h in Headers */,
 				AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F4856852773C3B5005BCF8E /* IPlugAUViewController.h in Headers */,

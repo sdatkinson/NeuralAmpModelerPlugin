@@ -94,6 +94,7 @@
 		AA7C860E2B43A42F00B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C86092B43A42E00B5FB3A /* ptrlist.h */; };
 		AA7C860F2B43A42F00B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C860A2B43A42E00B5FB3A /* heapbuf.h */; };
 		AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7752A452EF500F5BEF0 /* resample.cpp */; };
+		AAB7BBB92CC4B8D6000B8B6E /* get_dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB7BBB82CC4B8D6000B8B6E /* get_dsp.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -353,6 +354,7 @@
 		AA7C86092B43A42E00B5FB3A /* ptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrlist.h; sourceTree = "<group>"; };
 		AA7C860A2B43A42E00B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
 		AA8CA7752A452EF500F5BEF0 /* resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resample.cpp; sourceTree = "<group>"; };
+		AAB7BBB82CC4B8D6000B8B6E /* get_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_dsp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -661,6 +663,7 @@
 				4FBDC94229FFF143004FF203 /* convnet.h */,
 				4FBDC94129FFF143004FF203 /* dsp.cpp */,
 				4FBDC94829FFF143004FF203 /* dsp.h */,
+				AAB7BBB82CC4B8D6000B8B6E /* get_dsp.h */,
 				4FBDC94C29FFF143004FF203 /* get_dsp.cpp */,
 				4FBDC94629FFF143004FF203 /* lstm.cpp */,
 				4FBDC94329FFF143004FF203 /* lstm.h */,
@@ -843,6 +846,7 @@
 				4FBDC95529FFF143004FF203 /* ImpulseResponse.h in Headers */,
 				4FBDC95029FFF143004FF203 /* NoiseGate.h in Headers */,
 				4FBDC96129FFF143004FF203 /* dsp.h in Headers */,
+				AAB7BBB92CC4B8D6000B8B6E /* get_dsp.h in Headers */,
 				4FBDC96029FFF143004FF203 /* util.h in Headers */,
 				4FBDC94F29FFF143004FF203 /* wav.h in Headers */,
 			);
