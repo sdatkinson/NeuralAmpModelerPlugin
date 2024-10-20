@@ -6,6 +6,7 @@
 
 #include "Colors.h"
 #include "NeuralAmpModelerCore/NAM/activations.h"
+#include "NeuralAmpModelerCore/NAM/get_dsp.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
 // a bunch of stuff.
