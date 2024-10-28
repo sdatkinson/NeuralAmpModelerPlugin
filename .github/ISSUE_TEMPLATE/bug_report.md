@@ -25,7 +25,7 @@ A clear and concise description of what you expected to happen.
 ## Screenshots
 If applicable, add screenshots to help explain your problem.
 
-## Computer info
+## Computer & other info
 **(please provide the following information):**
  - OS [e.g. Windows 10, macOS 10.15]
  - Onboard graphics & version
@@ -35,6 +35,8 @@ If applicable, add screenshots to help explain your problem.
  - Audio interface [e.g. Focusrite Scarlett Solo 3rd Gen]
  - Sample rate [e.g. 44.1 kHz]
  - Buffer size [e.g. 256 samples]
+ - Provide a model that the bug happens with (_except_ if the bug happens _without_ a model loaded)
+ - Provide an IR that the bug happens with (_except_ if the bug happens _without_ an IR loaded)
  - **Does the bug _not_ happen under some other conditions?** If you can find what _one_ thing makes the difference between the bug appearing and not, this _drastically_ improves the chances I can fix it.
 
 ## Additional context
