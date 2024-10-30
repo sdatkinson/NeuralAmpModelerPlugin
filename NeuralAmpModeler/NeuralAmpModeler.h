@@ -245,9 +245,6 @@ private:
 
   // Member data
 
-  // Updated every time we OnReset()
-  double mLastSampleRate = -1.0;
-
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
   // Output from NAM
