@@ -366,7 +366,11 @@ void NeuralAmpModeler::OnReset()
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
   mToneStack->Reset(sampleRate, maxBlockSize);
-  _UpdateLatency();
+  if (sampleRate != mLastSampleRate)
+  {
+    _UpdateLatency();
+  }
+  mLastSampleRate = sampleRate;
 }
 
 void NeuralAmpModeler::OnIdle()
