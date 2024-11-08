@@ -10,6 +10,14 @@
 using namespace iplug;
 using namespace igraphics;
 
+// Where the corner button on the plugin (settings, close settings) goes
+// :param rect: Rect for the whole plugin's UI
+IRECT CornerButtonArea(const IRECT& rect)
+{
+  const auto mainArea = rect.GetPadded(-20);
+  return mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+};
+
 class NAMSquareButtonControl : public ISVGButtonControl
 {
 public:
@@ -449,7 +457,7 @@ protected:
   {
     // Make sure we haven't already used this name
     assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
-    mChildNameIndexMap[name] = (int)mChildNameIndexMap.size();
+    mChildNameIndexMap[name] = NChildren();
     return AddChildControl(control);
   };
 
@@ -464,16 +472,84 @@ private:
   std::unordered_map<std::string, int> mChildNameIndexMap;
 }; // class IContainerBaseWithNamedChildren
 
+struct ModelInfo
+{
+  bool knownSampleRate = false;
+  double sampleRate = 0.0;
+};
+
+class ModelInfoControl : public IContainerBaseWithNamedChildren
+{
+public:
+  ModelInfoControl(const IRECT& bounds, const IVStyle& style)
+  : IContainerBaseWithNamedChildren(bounds)
+  , mStyle(style) {};
+
+  void ClearModelInfo()
+  {
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr("");
+    mHasInfo = false;
+  };
+
+  void Hide(bool hide) override
+  {
+    // Don't show me unless I have info to show!
+    IContainerBase::Hide(hide || (!mHasInfo));
+  };
+
+  void OnAttached() override
+  {
+    AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 2, 1), "Model information:", mStyle));
+    AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
+  };
+
+  // Click through me
+  void OnMouseDown(float x, float y, const IMouseMod& mod) override { GetParent()->OnMouseDown(x, y, mod); }
+
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    std::stringstream ss;
+    ss << "Sample rate: ";
+    if (modelInfo.knownSampleRate)
+    {
+      ss << (int)modelInfo.sampleRate;
+    }
+    else
+    {
+      ss << "(Unknown)";
+    }
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr(ss.str().c_str());
+    mHasInfo = true;
+  };
+
+private:
+  const IVStyle mStyle;
+  struct
+  {
+    const std::string sampleRate = "sampleRate";
+  } mControlNames;
+  // Do I have info?
+  bool mHasInfo = false;
+};
+
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
-  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, ISVG closeSVG, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mStyle(style)
+  , mCloseSVG(closeSVG)
   {
     mIgnoreMouse = false;
+  }
+
+  void ClearModelInfo()
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->ClearModelInfo();
   }
 
   bool OnKeyDown(float x, float y, const IKeyPress& key) override
@@ -486,8 +562,6 @@ public:
 
     return false;
   }
-
-  void OnMouseDown(float x, float y, const IMouseMod& mod) override { HideAnimated(true); }
 
   void HideAnimated(bool hide)
   {
@@ -564,6 +638,16 @@ public:
     //
     //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
 
+    AddNamedChildControl(new ModelInfoControl(GetRECT().GetPadded(-20.0f).GetFromBottom(75.0f).GetFromTop(30.0f),
+                                              style.WithValueText(style.valueText.WithAlign(EAlign::Near))),
+                         mControlNames.modelInfo);
+
+    auto closeAction = [&](IControl* pCaller) {
+      static_cast<NAMSettingsPageControl*>(pCaller->GetParent())->HideAnimated(true);
+    };
+    AddNamedChildControl(
+      new NAMSquareButtonControl(CornerButtonArea(GetRECT()), closeAction, mCloseSVG), mControlNames.close);
+
     OnResize();
   }
 
@@ -587,10 +671,17 @@ public:
     }
   }
 
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->SetModelInfo(modelInfo);
+  };
 
 private:
   IBitmap mBitmap;
   IVStyle mStyle;
+  ISVG mCloseSVG;
   int mAnimationTime = 200;
   bool mWillHide = false;
 
@@ -601,7 +692,9 @@ private:
     const std::string bitmap = "bitmap";
     const std::string byAuthor = "by author";
     const std::string buildInfo = "build info";
+    const std::string close = "close";
     const std::string development = "development";
+    const std::string modelInfo = "model info";
     const std::string title = "title";
     const std::string website = "website";
   } mControlNames;
