@@ -2,6 +2,7 @@
 
 #include <cmath> // std::round
 #include <sstream> // std::stringstream
+#include <unordered_map> // std::unordered_map
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
@@ -435,11 +436,39 @@ public:
   }
 };
 
-class NAMAboutBoxControl : public IContainerBase
+// Container where we can refer to children by names instead of indices
+class IContainerBaseWithNamedChildren : public IContainerBase
 {
 public:
-  NAMAboutBoxControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
-  : IContainerBase(bounds)
+  IContainerBaseWithNamedChildren(const IRECT& bounds)
+  : IContainerBase(bounds) {};
+  ~IContainerBaseWithNamedChildren() = default;
+
+protected:
+  IControl* AddNamedChildControl(IControl* control, std::string name)
+  {
+    // Make sure we haven't already used this name
+    assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
+    mChildNameIndexMap[name] = (int)mChildNameIndexMap.size();
+    return AddChildControl(control);
+  };
+
+  IControl* GetNamedChild(std::string name)
+  {
+    const int index = mChildNameIndexMap[name];
+    return GetChild(index);
+  };
+
+
+private:
+  std::unordered_map<std::string, int> mChildNameIndexMap;
+}; // class IContainerBaseWithNamedChildren
+
+class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
+{
+public:
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mStyle(style)
@@ -497,13 +526,13 @@ public:
 
   void OnAttached() override
   {
-    AddChildControl(new IBitmapControl(IRECT(), mBitmap))->SetIgnoreMouse(true);
+    AddNamedChildControl(new IBitmapControl(IRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
 
     const IVStyle titleStyle = DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
                                  .WithDrawFrame(false)
                                  .WithShadowOffset(2.f);
 
-    AddChildControl(new IVLabelControl(IRECT(), "NEURAL AMP MODELER", titleStyle));
+    AddNamedChildControl(new IVLabelControl(IRECT(), "NEURAL AMP MODELER", titleStyle), mControlNames.title);
 
     WDL_String verStr, buildInfoStr;
     PLUG()->GetPluginVersionStr(verStr);
@@ -514,13 +543,17 @@ public:
     const auto style = mStyle.WithDrawFrame(false).WithValueText(text);
 
 
-    AddChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style));
-    AddChildControl(new IVLabelControl(IRECT(), buildInfoStr.Get(), style));
-    AddChildControl(new IURLControl(IRECT(), "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
-                                    "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", text,
-                                    COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
-    AddChildControl(new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com", text,
-                                    COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+    AddNamedChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style), mControlNames.byAuthor);
+    AddNamedChildControl(new IVLabelControl(IRECT(), buildInfoStr.Get(), style), mControlNames.buildInfo);
+    AddNamedChildControl(
+      new IURLControl(IRECT(), "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
+                      "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", text,
+                      COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED),
+      mControlNames.development);
+    AddNamedChildControl(
+      new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com", text, COLOR_TRANSPARENT,
+                      PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED),
+      mControlNames.website);
 
     //    AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
     //
@@ -541,12 +574,15 @@ public:
       const IRECT mainArea = mRECT.GetPadded(-20);
       const auto content = mainArea.GetPadded(-10);
       const auto titleLabel = content.GetFromTop(50);
-      GetChild(0)->SetTargetAndDrawRECTs(mRECT);
-      GetChild(1)->SetTargetAndDrawRECTs(titleLabel);
-      GetChild(2)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-      GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
-      GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
-      GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
+      GetNamedChild(mControlNames.bitmap)->SetTargetAndDrawRECTs(mRECT);
+      GetNamedChild(mControlNames.title)->SetTargetAndDrawRECTs(titleLabel);
+      GetNamedChild(mControlNames.byAuthor)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
+      GetNamedChild(mControlNames.buildInfo)
+        ->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
+      GetNamedChild(mControlNames.development)
+        ->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
+      GetNamedChild(mControlNames.website)
+        ->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
       //      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
     }
   }
@@ -557,4 +593,16 @@ private:
   IVStyle mStyle;
   int mAnimationTime = 200;
   bool mWillHide = false;
+
+  // Names for controls
+  // Make sure that these are all unique and that you use them with AddNamedChildControl
+  struct ControlNames
+  {
+    const std::string bitmap = "bitmap";
+    const std::string byAuthor = "by author";
+    const std::string buildInfo = "build info";
+    const std::string development = "development";
+    const std::string title = "title";
+    const std::string website = "website";
+  } mControlNames;
 };
