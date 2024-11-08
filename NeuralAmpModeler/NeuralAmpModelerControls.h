@@ -10,6 +10,14 @@
 using namespace iplug;
 using namespace igraphics;
 
+// Where the corner button on the plugin (settings, close settings) goes
+// :param rect: Rect for the whole plugin's UI
+IRECT CornerButtonArea(const IRECT& rect)
+{
+  const auto mainArea = rect.GetPadded(-20);
+  return mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+};
+
 class NAMSquareButtonControl : public ISVGButtonControl
 {
 public:
@@ -527,11 +535,12 @@ private:
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
-  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, ISVG closeSVG, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mStyle(style)
+  , mCloseSVG(closeSVG)
   {
     mIgnoreMouse = false;
   }
@@ -553,8 +562,6 @@ public:
 
     return false;
   }
-
-  void OnMouseDown(float x, float y, const IMouseMod& mod) override { HideAnimated(true); }
 
   void HideAnimated(bool hide)
   {
@@ -631,8 +638,13 @@ public:
     //
     //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
 
-
     AddNamedChildControl(new ModelInfoControl(GetRECT().GetFromBottom(100.0f), style), mControlNames.modelInfo);
+
+    auto closeAction = [&](IControl* pCaller) {
+      static_cast<NAMSettingsPageControl*>(pCaller->GetParent())->HideAnimated(true);
+    };
+    AddNamedChildControl(
+      new NAMSquareButtonControl(CornerButtonArea(GetRECT()), closeAction, mCloseSVG), mControlNames.close);
 
     OnResize();
   }
@@ -667,6 +679,7 @@ public:
 private:
   IBitmap mBitmap;
   IVStyle mStyle;
+  ISVG mCloseSVG;
   int mAnimationTime = 200;
   bool mWillHide = false;
 
@@ -677,6 +690,7 @@ private:
     const std::string bitmap = "bitmap";
     const std::string byAuthor = "by author";
     const std::string buildInfo = "build info";
+    const std::string close = "close";
     const std::string development = "development";
     const std::string title = "title";
     const std::string website = "website";

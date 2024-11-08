@@ -164,7 +164,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
 
     // Misc Areas
-    const auto settingsButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+    const auto settingsButtonArea = CornerButtonArea(b);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -250,7 +250,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       },
       gearSVG));
 
-    pGraphics->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, style), kCtrlTagSettingsBox)->Hide(true);
+    pGraphics->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, crossSVG, style), kCtrlTagSettingsBox)
+      ->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);
