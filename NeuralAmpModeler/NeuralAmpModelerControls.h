@@ -449,7 +449,7 @@ protected:
   {
     // Make sure we haven't already used this name
     assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
-    mChildNameIndexMap[name] = (int)mChildNameIndexMap.size();
+    mChildNameIndexMap[name] = NChildren();
     return AddChildControl(control);
   };
 
@@ -464,6 +464,63 @@ private:
   std::unordered_map<std::string, int> mChildNameIndexMap;
 }; // class IContainerBaseWithNamedChildren
 
+struct ModelInfo
+{
+  bool knownSampleRate = false;
+  double sampleRate = 0.0;
+};
+
+class ModelInfoControl : public IContainerBaseWithNamedChildren
+{
+public:
+  ModelInfoControl(const IRECT& bounds, const IVStyle& style)
+  : IContainerBaseWithNamedChildren(bounds)
+  , mStyle(style) {};
+
+  void ClearModelInfo()
+  {
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr("");
+    mHasInfo = false;
+  };
+
+  void Hide(bool hide) override
+  {
+    // Don't show me unless I have info to show!
+    IContainerBase::Hide(hide || (!mHasInfo));
+  };
+
+  void OnAttached() override
+  {
+    AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 2, 1), "Model information:", mStyle));
+    AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
+  };
+
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    std::stringstream ss;
+    ss << "Sample rate: ";
+    if (modelInfo.knownSampleRate)
+    {
+      ss << (int)modelInfo.sampleRate;
+    }
+    else
+    {
+      ss << "(Unknown)";
+    }
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr(ss.str().c_str());
+    mHasInfo = true;
+  };
+
+private:
+  const IVStyle mStyle;
+  struct
+  {
+    const std::string sampleRate = "sampleRate";
+  } mControlNames;
+  // Do I have info?
+  bool mHasInfo = true;
+};
+
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
@@ -474,6 +531,13 @@ public:
   , mStyle(style)
   {
     mIgnoreMouse = false;
+  }
+
+  void ClearModelInfo()
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->ClearModelInfo();
   }
 
   bool OnKeyDown(float x, float y, const IKeyPress& key) override
@@ -564,6 +628,9 @@ public:
     //
     //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
 
+
+    AddNamedChildControl(new ModelInfoControl(GetRECT().GetFromBottom(100.0f), style), mControlNames.modelInfo);
+
     OnResize();
   }
 
@@ -587,6 +654,12 @@ public:
     }
   }
 
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->SetModelInfo(modelInfo);
+  };
 
 private:
   IBitmap mBitmap;
@@ -604,5 +677,6 @@ private:
     const std::string development = "development";
     const std::string title = "title";
     const std::string website = "website";
+    const std::string modelInfo = "modelInfo";
   } mControlNames;
 };

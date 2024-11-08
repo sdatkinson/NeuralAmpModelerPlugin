@@ -377,9 +377,23 @@ void NeuralAmpModeler::OnIdle()
   if (mNewModelLoadedInDSP)
   {
     if (auto* pGraphics = GetUI())
+    {
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
-
-    mNewModelLoadedInDSP = false;
+      ModelInfo modelInfo;
+      modelInfo.sampleRate = mModel->GetEncapsulatedSampleRate();
+      modelInfo.knownSampleRate = true;
+      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
+      mNewModelLoadedInDSP = false;
+    }
+  }
+  if (mModelCleared)
+  {
+    if (auto* pGraphics = GetUI())
+    {
+      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(false);
+      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->ClearModelInfo();
+      mModelCleared = false;
+    }
   }
 }
 
@@ -534,6 +548,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
+    mModelCleared = true;
     _UpdateLatency();
   }
   if (mShouldRemoveIR)
