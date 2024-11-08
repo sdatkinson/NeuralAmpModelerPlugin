@@ -694,8 +694,8 @@ private:
     const std::string buildInfo = "build info";
     const std::string close = "close";
     const std::string development = "development";
+    const std::string modelInfo = "model info";
     const std::string title = "title";
     const std::string website = "website";
-    const std::string modelInfo = "modelInfo";
   } mControlNames;
 };
