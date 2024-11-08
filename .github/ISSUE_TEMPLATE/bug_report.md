@@ -9,8 +9,12 @@ assignees: ''
 
 **Thanks for taking the time to write a bug report!** Use the following prompts to help you describe what's going on.  The more info you provide, the easier it'll be to understand how to fix it for you without having to come back and ask you questions.
 
+## Before you make a new bug report:
+- [ ] Have you searched the Issues to see if your problem has already been reported? If it has, please follow that Issue instead of opening a duplicate!
+- [ ] Have you checked the [Rough edges](https://github.com/sdatkinson/NeuralAmpModelerPlugin/tree/main?tab=readme-ov-file#rough-edges) for help?
+
 ## Description
-A clear and concise description of what the bug is.
+Provide a clear and concise description of what the bug is.
 
 ## To reproduce
 Steps to reproduce the behavior:
@@ -20,7 +24,7 @@ Steps to reproduce the behavior:
 4. See error
 
 ## Expected behavior
-A clear and concise description of what you expected to happen.
+Provide a clear and concise description of what you expected to happen.
 
 ## Screenshots
 If applicable, add screenshots to help explain your problem.
