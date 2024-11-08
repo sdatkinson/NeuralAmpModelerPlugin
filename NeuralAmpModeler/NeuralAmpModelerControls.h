@@ -529,7 +529,7 @@ private:
     const std::string sampleRate = "sampleRate";
   } mControlNames;
   // Do I have info?
-  bool mHasInfo = true;
+  bool mHasInfo = false;
 };
 
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
@@ -638,7 +638,9 @@ public:
     //
     //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
 
-    AddNamedChildControl(new ModelInfoControl(GetRECT().GetFromBottom(100.0f), style), mControlNames.modelInfo);
+    AddNamedChildControl(new ModelInfoControl(GetRECT().GetPadded(-20.0f).GetFromBottom(75.0f).GetFromTop(30.0f),
+                                              style.WithValueText(style.valueText.WithAlign(EAlign::Near))),
+                         mControlNames.modelInfo);
 
     auto closeAction = [&](IControl* pCaller) {
       static_cast<NAMSettingsPageControl*>(pCaller->GetParent())->HideAnimated(true);
