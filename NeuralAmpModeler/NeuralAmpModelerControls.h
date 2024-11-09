@@ -607,7 +607,7 @@ public:
     const IVStyle leftStyle = style.WithValueText(leftText);
 
     // This'll get fixed on OnResize; FIXME
-    AddNamedChildControl(new IBitmapControl(IRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
+    AddNamedChildControl(new IBitmapControl(GetRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
     AddNamedChildControl(
       new IVLabelControl(GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f), "SETTINGS", titleStyle),
       mControlNames.title);
@@ -626,15 +626,6 @@ public:
       new NAMSquareButtonControl(CornerButtonArea(GetRECT()), closeAction, mCloseSVG), mControlNames.close);
 
     OnResize();
-  }
-
-  void OnResize() override
-  {
-    if (NChildren())
-    {
-      GetNamedChild(mControlNames.bitmap)->SetTargetAndDrawRECTs(mRECT);
-      // Rework this later, but resizing on the main page needs to happen too.
-    }
   }
 
   void SetModelInfo(const ModelInfo& modelInfo)
