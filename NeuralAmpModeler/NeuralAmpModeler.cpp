@@ -132,9 +132,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Areas for knobs
     const auto knobsPad = 20.0f;
     const auto knobsExtraSpaceBelowTitle = 25.0f;
-    const auto knobHeight = 120.f;
     const auto singleKnobPad = -2.0f;
-    const auto knobsArea = contentArea.GetFromTop(knobHeight)
+    const auto knobsArea = contentArea.GetFromTop(NAM_KNOB_HEIGHT)
                              .GetReducedFromLeft(knobsPad)
                              .GetReducedFromRight(knobsPad)
                              .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
@@ -252,7 +251,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       },
       gearSVG));
 
-    pGraphics->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, crossSVG, style), kCtrlTagSettingsBox)
+    pGraphics
+      ->AttachControl(
+        new NAMSettingsPageControl(b, backgroundBitmap, knobBackgroundBitmap, switchHandleBitmap, crossSVG, style),
+        kCtrlTagSettingsBox)
       ->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {

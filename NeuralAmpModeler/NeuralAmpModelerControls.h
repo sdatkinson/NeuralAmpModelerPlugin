@@ -6,6 +6,8 @@
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
+#define NAM_KNOB_HEIGHT 120.0f
+#define NAM_SWTICH_HEIGHT 50.0f
 
 using namespace iplug;
 using namespace igraphics;
@@ -532,10 +534,13 @@ private:
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
-  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, ISVG closeSVG, const IVStyle& style)
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& knobBitmap,
+                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
+  , mKnobBitmap(knobBitmap)
+  , mSwitchBitmap(switchBitmap)
   , mStyle(style)
   , mCloseSVG(closeSVG)
   {
@@ -606,11 +611,31 @@ public:
     const auto style = mStyle.WithDrawFrame(false).WithValueText(text);
     const IVStyle leftStyle = style.WithValueText(leftText);
 
-    // This'll get fixed on OnResize; FIXME
     AddNamedChildControl(new IBitmapControl(GetRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
-    AddNamedChildControl(
-      new IVLabelControl(GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f), "SETTINGS", titleStyle),
-      mControlNames.title);
+    const auto titleArea = GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f);
+    AddNamedChildControl(new IVLabelControl(titleArea, "SETTINGS", titleStyle), mControlNames.title);
+
+    // Attach input/output calibration controls
+    {
+      const float height = NAM_KNOB_HEIGHT + NAM_SWTICH_HEIGHT + 10.0f;
+      const float width = titleArea.W();
+      const auto inputOutputArea = titleArea.GetFromBottom(height).GetTranslated(0.0f, height);
+      const auto inputArea = inputOutputArea.GetFromLeft(0.5f * width);
+      const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
+
+      const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
+      const auto inputKnobArea = inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetMidHPadded(0.5f * knobWidth);
+      const auto inputSwitchArea = inputArea.GetFromBottom(NAM_SWTICH_HEIGHT).GetMidHPadded(0.5f * knobWidth);
+      ;
+      AddNamedChildControl(new NAMKnobControl(inputKnobArea, kInputCalibrationLevel, "Level", mStyle, mKnobBitmap),
+                           mControlNames.inputCalibrationLevel);
+      AddNamedChildControl(
+        new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
+        mControlNames.calibrateInput);
+      // TODO Disable knob if calibration is false
+
+      // TODO output--raw, normalized, calibrated
+    }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
     const auto bottomArea = GetRECT().GetPadded(-pad).GetFromBottom(78.0f);
@@ -637,6 +662,8 @@ public:
 
 private:
   IBitmap mBitmap;
+  IBitmap mKnobBitmap;
+  IBitmap mSwitchBitmap;
   IVStyle mStyle;
   ISVG mCloseSVG;
   int mAnimationTime = 200;
@@ -670,14 +697,14 @@ private:
 
       buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
 
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 5, 1), "NEURAL AMP MODELER", mStyle));
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 5, 1), "By Steven Atkinson", mStyle));
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(2, 0, 5, 1), buildInfoStr.Get(), mStyle));
-      AddChildControl(new IURLControl(GetRECT().GetGridCell(3, 0, 5, 1),
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 0), "NEURAL AMP MODELER", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 1), "By Steven Atkinson", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 2), buildInfoStr.Get(), mStyle));
+      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 3),
                                       "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
                                       "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", mText,
                                       COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
-      AddChildControl(new IURLControl(GetRECT().GetGridCell(4, 0, 5, 1), "www.neuralampmodeler.com",
+      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 4), "www.neuralampmodeler.com",
                                       "https://www.neuralampmodeler.com", mText, COLOR_TRANSPARENT,
                                       PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
     };
