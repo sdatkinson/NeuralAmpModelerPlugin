@@ -503,9 +503,6 @@ public:
     AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
   };
 
-  // Click through me
-  void OnMouseDown(float x, float y, const IMouseMod& mod) override { GetParent()->OnMouseDown(x, y, mod); }
-
   void SetModelInfo(const ModelInfo& modelInfo)
   {
     std::stringstream ss;
