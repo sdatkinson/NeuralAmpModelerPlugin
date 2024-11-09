@@ -41,6 +41,9 @@ enum EParams
   kEQActive,
   kOutNorm,
   kIRToggle,
+  // Input calibration
+  kCalibrateInput,
+  kInputCalibrationLevel,
   kNumParams
 };
 

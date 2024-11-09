@@ -81,6 +81,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kCalibrateInput)->InitBool("CalibrateInput", false);
+  GetParam(kInputCalibrationLevel)->InitGain("InputCalibrationLevel", 12.0, -30.0, 30.0, 0.1);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
