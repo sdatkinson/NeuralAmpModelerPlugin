@@ -82,7 +82,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
   GetParam(kCalibrateInput)->InitBool("CalibrateInput", false);
-  GetParam(kInputCalibrationLevel)->InitGain("InputCalibrationLevel", 12.0, -30.0, 30.0, 0.1);
+  // TODO Double, label "dBu"
+  GetParam(kInputCalibrationLevel)->InitGain("InputCalibrationLevel", 12.5, -30.0, 30.0, 0.1);
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -263,6 +264,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     });
 
     pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -388,6 +390,7 @@ void NeuralAmpModeler::OnIdle()
       modelInfo.sampleRate = mModel->GetEncapsulatedSampleRate();
       modelInfo.knownSampleRate = true;
       static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
+      pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(!mModel->HasInputLevel());
       mNewModelLoadedInDSP = false;
     }
   }
@@ -472,6 +475,11 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
 {
   switch (paramIdx)
   {
+    // Changes to the input gain
+    case kCalibrateInput:
+    case kInputCalibrationLevel:
+    case kInputLevel: _SetInputGain(); break;
+    // Tone stack:
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
@@ -555,6 +563,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mShouldRemoveModel = false;
     mModelCleared = true;
     _UpdateLatency();
+    _SetInputGain();
   }
   if (mShouldRemoveIR)
   {
@@ -570,6 +579,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
     _UpdateLatency();
+    _SetInputGain();
   }
   if (mStagedIR != nullptr)
   {
@@ -653,6 +663,18 @@ void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBl
       mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
     }
   }
+}
+
+void NeuralAmpModeler::_SetInputGain()
+{
+  iplug::sample inputGainDB = GetParam(kInputLevel)->Value();
+  // Input calibration
+  // TODO: Need to access the encapsulted model in the ResamplingNAM!
+  if ((mModel != nullptr) && (mModel->HasInputLevel()) && GetParam(kCalibrateInput)->Value())
+  {
+    inputGainDB += GetParam(kInputCalibrationLevel)->Value() - mModel->GetInputLevel();
+  }
+  mInputGain = DBToAmp(inputGainDB);
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
@@ -791,13 +813,12 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
   }
 
   // On the standalone, we can probably assume that the user has plugged into only one input and they expect it to be
-  // carried straight through. Don't apply any division over nCahnsIn because we're just "catching anything out there."
+  // carried straight through. Don't apply any division over nChansIn because we're just "catching anything out there."
   // However, in a DAW, it's probably something providing stereo, and we want to take the average in order to avoid
-  // doubling the loudness.
-#ifdef APP_API
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
-#else
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0) / (float)nChansIn;
+  // doubling the loudness. (This would change w/ double mono processing)
+  double gain = mInputGain;
+#ifndef APP_API
+  gain /= (float)nChansIn;
 #endif
   // Assume _PrepareBuffers() was already called
   for (size_t c = 0; c < nChansIn; c++)

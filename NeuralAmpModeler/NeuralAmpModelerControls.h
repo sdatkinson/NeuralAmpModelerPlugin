@@ -455,12 +455,12 @@ public:
   ~IContainerBaseWithNamedChildren() = default;
 
 protected:
-  IControl* AddNamedChildControl(IControl* control, std::string name)
+  IControl* AddNamedChildControl(IControl* control, std::string name, int ctrlTag = kNoTag, const char* group = "")
   {
     // Make sure we haven't already used this name
     assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
     mChildNameIndexMap[name] = NChildren();
-    return AddChildControl(control);
+    return AddChildControl(control, ctrlTag, group);
   };
 
   IControl* GetNamedChild(std::string name)
@@ -631,7 +631,7 @@ public:
                            mControlNames.inputCalibrationLevel);
       AddNamedChildControl(
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
-        mControlNames.calibrateInput);
+        mControlNames.calibrateInput, kCtrlTagCalibrateInput);
       // TODO Disable knob if calibration is false
 
       // TODO output--raw, normalized, calibrated
