@@ -477,7 +477,14 @@ void NeuralAmpModeler::OnUIOpen()
   }
 
   if (mModel != nullptr)
-    GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+  {
+    auto* pGraphics = GetUI();
+    assert(pGraphics != nullptr);
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
+    pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+  }
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
