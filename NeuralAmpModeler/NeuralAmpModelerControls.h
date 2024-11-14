@@ -474,10 +474,18 @@ private:
   std::unordered_map<std::string, int> mChildNameIndexMap;
 }; // class IContainerBaseWithNamedChildren
 
+
+struct PossiblyKnownParameter
+{
+  bool known = false;
+  double value = 0.0;
+};
+
 struct ModelInfo
 {
-  bool knownSampleRate = false;
-  double sampleRate = 0.0;
+  PossiblyKnownParameter sampleRate;
+  PossiblyKnownParameter inputCalibrationLevel;
+  PossiblyKnownParameter outputCalibrationLevel;
 };
 
 class ModelInfoControl : public IContainerBaseWithNamedChildren
@@ -501,23 +509,37 @@ public:
 
   void OnAttached() override
   {
-    AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 2, 1), "Model information:", mStyle));
-    AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
+    AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(4, 0), "Model information:", mStyle));
+    AddNamedChildControl(new IVLabelControl(GetRECT().SubRectVertical(4, 1), "", mStyle), mControlNames.sampleRate);
+    AddNamedChildControl(
+      new IVLabelControl(GetRECT().SubRectVertical(4, 2), "", mStyle), mControlNames.inputCalibrationLevel);
+    AddNamedChildControl(
+      new IVLabelControl(GetRECT().SubRectVertical(4, 3), "", mStyle), mControlNames.outputCalibrationLevel);
   };
 
   void SetModelInfo(const ModelInfo& modelInfo)
   {
-    std::stringstream ss;
-    ss << "Sample rate: ";
-    if (modelInfo.knownSampleRate)
-    {
-      ss << (int)modelInfo.sampleRate;
-    }
-    else
-    {
-      ss << "(Unknown)";
-    }
-    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr(ss.str().c_str());
+    auto SetControlStr = [&](const std::string& name, const PossiblyKnownParameter& p, const std::string& units,
+                             const std::string& childName) {
+      std::stringstream ss;
+      ss << name << ": ";
+      if (p.known)
+      {
+        ss << p.value << " " << units;
+      }
+      else
+      {
+        ss << "(Unknown)";
+      }
+      static_cast<IVLabelControl*>(GetNamedChild(childName))->SetStr(ss.str().c_str());
+    };
+
+    SetControlStr("Sample rate", modelInfo.sampleRate, "Hz", mControlNames.sampleRate);
+    SetControlStr(
+      "Input calibration level", modelInfo.inputCalibrationLevel, "dBu", mControlNames.inputCalibrationLevel);
+    SetControlStr(
+      "Output calibration level", modelInfo.outputCalibrationLevel, "dBu", mControlNames.outputCalibrationLevel);
+
     mHasInfo = true;
   };
 
@@ -526,6 +548,8 @@ private:
   struct
   {
     const std::string sampleRate = "sampleRate";
+    const std::string inputCalibrationLevel = "inputCalibrationLevel";
+    const std::string outputCalibrationLevel = "outputCalibrationLevel";
   } mControlNames;
   // Do I have info?
   bool mHasInfo = false;
@@ -621,14 +645,18 @@ public:
       const float width = titleArea.W();
       const auto inputOutputArea = titleArea.GetFromBottom(height).GetTranslated(0.0f, height);
       const auto inputArea = inputOutputArea.GetFromLeft(0.5f * width);
-      const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
+      // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
 
       const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
       const auto inputKnobArea = inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetMidHPadded(0.5f * knobWidth);
       const auto inputSwitchArea = inputArea.GetFromBottom(NAM_SWTICH_HEIGHT).GetMidHPadded(0.5f * knobWidth);
       ;
-      AddNamedChildControl(new NAMKnobControl(inputKnobArea, kInputCalibrationLevel, "Level", mStyle, mKnobBitmap),
-                           mControlNames.inputCalibrationLevel);
+      auto* inputLevelControl =
+        AddNamedChildControl(new NAMKnobControl(inputKnobArea, kInputCalibrationLevel, "Level", mStyle, mKnobBitmap),
+                             mControlNames.inputCalibrationLevel, kCtrlTagInputCalibrationLevel);
+      inputLevelControl->SetTooltip(
+        "The analog level, in dBu RMS, that corresponds to digital level of 0 dBFS peak in the host as its signal "
+        "enters this plugin.");
       AddNamedChildControl(
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
@@ -639,8 +667,9 @@ public:
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
     const auto bottomArea = GetRECT().GetPadded(-pad).GetFromBottom(78.0f);
-    const auto modelInfoArea = bottomArea.GetFromLeft(halfWidth).GetFromTop(30.0f);
-    const auto aboutArea = bottomArea.GetFromRight(halfWidth);
+    const float lineHeight = 15.0f;
+    const auto modelInfoArea = bottomArea.GetFromLeft(halfWidth).GetFromTop(4 * lineHeight);
+    const auto aboutArea = bottomArea.GetFromRight(halfWidth).GetFromTop(5 * lineHeight);
     AddNamedChildControl(new ModelInfoControl(modelInfoArea, leftStyle), mControlNames.modelInfo);
     AddNamedChildControl(new AboutControl(aboutArea, leftStyle, leftText), mControlNames.about);
 

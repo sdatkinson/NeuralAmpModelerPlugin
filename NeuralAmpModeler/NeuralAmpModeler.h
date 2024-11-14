@@ -58,6 +58,7 @@ enum ECtrlTags
   kCtrlTagSettingsBox,
   kCtrlTagOutNorm,
   kCtrlTagCalibrateInput,
+  kCtrlTagInputCalibrationLevel,
   kNumCtrlTags
 };
 

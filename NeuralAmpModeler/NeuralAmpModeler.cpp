@@ -83,7 +83,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kIRToggle)->InitBool("IRToggle", true);
   GetParam(kCalibrateInput)->InitBool("CalibrateInput", false);
   // TODO Double, label "dBu"
-  GetParam(kInputCalibrationLevel)->InitGain("InputCalibrationLevel", 12.5, -30.0, 30.0, 0.1);
+  GetParam(kInputCalibrationLevel)->InitDouble("InputCalibrationLevel", 12.5, -30.0, 30.0, 0.1, "dBu");
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -263,8 +263,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseOverWhenDisabled(true);
     });
 
-    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
-    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetMouseEventsWhenDisabled(false);
+    // pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    // pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -387,10 +387,19 @@ void NeuralAmpModeler::OnIdle()
     {
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
       ModelInfo modelInfo;
-      modelInfo.sampleRate = mModel->GetEncapsulatedSampleRate();
-      modelInfo.knownSampleRate = true;
+      modelInfo.sampleRate.known = true;
+      modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
+      modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
+      modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
+      modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
+      modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+
       static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
-      pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(!mModel->HasInputLevel());
+
+      const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+      pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
+      pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+
       mNewModelLoadedInDSP = false;
     }
   }
@@ -499,7 +508,7 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
       default: break;
     }
   }
@@ -669,8 +678,7 @@ void NeuralAmpModeler::_SetInputGain()
 {
   iplug::sample inputGainDB = GetParam(kInputLevel)->Value();
   // Input calibration
-  // TODO: Need to access the encapsulted model in the ResamplingNAM!
-  if ((mModel != nullptr) && (mModel->HasInputLevel()) && GetParam(kCalibrateInput)->Value())
+  if ((mModel != nullptr) && (mModel->HasInputLevel()) && GetParam(kCalibrateInput)->Bool())
   {
     inputGainDB += GetParam(kInputCalibrationLevel)->Value() - mModel->GetInputLevel();
   }
