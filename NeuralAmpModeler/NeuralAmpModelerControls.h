@@ -648,11 +648,11 @@ public:
       // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
 
       const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
-      const auto inputKnobArea = inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetMidHPadded(0.5f * knobWidth);
+      const auto inputLevelArea = inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetMidHPadded(0.5f * knobWidth);
       const auto inputSwitchArea = inputArea.GetFromBottom(NAM_SWTICH_HEIGHT).GetMidHPadded(0.5f * knobWidth);
       ;
       auto* inputLevelControl =
-        AddNamedChildControl(new NAMKnobControl(inputKnobArea, kInputCalibrationLevel, "Level", mStyle, mKnobBitmap),
+        AddNamedChildControl(new InputLevelControl(inputLevelArea, kInputCalibrationLevel, "Set level", text),
                              mControlNames.inputCalibrationLevel, kCtrlTagInputCalibrationLevel);
       inputLevelControl->SetTooltip(
         "The analog level, in dBu RMS, that corresponds to digital level of 0 dBFS peak in the host as its signal "
@@ -710,6 +710,42 @@ private:
     const std::string modelInfo = "ModelInfo";
     const std::string title = "Title";
   } mControlNames;
+
+  class InputLevelControl : public IEditableTextControl
+  {
+  public:
+    InputLevelControl(const IRECT& bounds, int paramIdx, const char* str, const IText& text = DEFAULT_TEXT,
+                      const IColor& BGColor = DEFAULT_BGCOLOR)
+    : IEditableTextControl(bounds, str, text, BGColor)
+    {
+      SetParamIdx(paramIdx);
+    };
+
+    void SetValueFromUserInput(double normalizedValue, int valIdx) override
+    {
+      IControl::SetValueFromUserInput(normalizedValue, valIdx);
+      const std::string s = ConvertToString(normalizedValue);
+      OnTextEntryCompletion(s.c_str(), valIdx);
+    };
+
+    void SetValueFromDelegate(double normalizedValue, int valIdx) override
+    {
+      IControl::SetValueFromDelegate(normalizedValue, valIdx);
+      const std::string s = ConvertToString(normalizedValue);
+      OnTextEntryCompletion(s.c_str(), valIdx);
+    };
+
+  private:
+    std::string ConvertToString(const double normalizedValue)
+    {
+      const double naturalValue = GetParam()->FromNormalized(normalizedValue);
+      // And make the value to display
+      std::stringstream ss;
+      ss << naturalValue << " dBu";
+      std::string s = ss.str();
+      return s;
+    };
+  };
 
   class AboutControl : public IContainerBase
   {
