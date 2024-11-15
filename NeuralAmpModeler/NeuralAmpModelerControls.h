@@ -558,12 +558,12 @@ private:
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
-  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& knobBitmap,
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& inputLevelBackgroundBitmap,
                          const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
-  , mKnobBitmap(knobBitmap)
+  , mInputLevelBackgroundBitmap(inputLevelBackgroundBitmap)
   , mSwitchBitmap(switchBitmap)
   , mStyle(style)
   , mCloseSVG(closeSVG)
@@ -648,19 +648,19 @@ public:
       // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
 
       const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
-      const auto inputLevelArea = inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetMidHPadded(0.5f * knobWidth);
+      const auto inputLevelArea =
+        inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetFromBottom(25.0f).GetMidHPadded(0.5f * knobWidth);
       const auto inputSwitchArea = inputArea.GetFromBottom(NAM_SWTICH_HEIGHT).GetMidHPadded(0.5f * knobWidth);
-      ;
-      auto* inputLevelControl =
-        AddNamedChildControl(new InputLevelControl(inputLevelArea, kInputCalibrationLevel, "Set level", text),
-                             mControlNames.inputCalibrationLevel, kCtrlTagInputCalibrationLevel);
+
+      auto* inputLevelControl = AddNamedChildControl(
+        new InputLevelControl(inputLevelArea, kInputCalibrationLevel, mInputLevelBackgroundBitmap, text),
+        mControlNames.inputCalibrationLevel, kCtrlTagInputCalibrationLevel);
       inputLevelControl->SetTooltip(
         "The analog level, in dBu RMS, that corresponds to digital level of 0 dBFS peak in the host as its signal "
         "enters this plugin.");
       AddNamedChildControl(
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
-      // TODO Disable knob if calibration is false
 
       // TODO output--raw, normalized, calibrated
     }
@@ -691,7 +691,7 @@ public:
 
 private:
   IBitmap mBitmap;
-  IBitmap mKnobBitmap;
+  IBitmap mInputLevelBackgroundBitmap;
   IBitmap mSwitchBitmap;
   IVStyle mStyle;
   ISVG mCloseSVG;
@@ -714,11 +714,18 @@ private:
   class InputLevelControl : public IEditableTextControl
   {
   public:
-    InputLevelControl(const IRECT& bounds, int paramIdx, const char* str, const IText& text = DEFAULT_TEXT,
+    InputLevelControl(const IRECT& bounds, int paramIdx, const IBitmap& bitmap, const IText& text = DEFAULT_TEXT,
                       const IColor& BGColor = DEFAULT_BGCOLOR)
-    : IEditableTextControl(bounds, str, text, BGColor)
+    : IEditableTextControl(bounds, "", text, BGColor)
+    , mBitmap(bitmap)
     {
       SetParamIdx(paramIdx);
+    };
+
+    void Draw(IGraphics& g) override
+    {
+      g.DrawFittedBitmap(mBitmap, mRECT);
+      ITextControl::Draw(g);
     };
 
     void SetValueFromUserInput(double normalizedValue, int valIdx) override
@@ -745,6 +752,8 @@ private:
       std::string s = ss.str();
       return s;
     };
+
+    IBitmap mBitmap;
   };
 
   class AboutControl : public IContainerBase

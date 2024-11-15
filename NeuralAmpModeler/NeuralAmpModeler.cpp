@@ -119,6 +119,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
+    const auto inputLevelBackgroundBitmap = pGraphics->LoadBitmap(INPUTLEVELBACKGROUND_FN);
     const auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
     const auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
     const auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
@@ -253,9 +254,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       gearSVG));
 
     pGraphics
-      ->AttachControl(
-        new NAMSettingsPageControl(b, backgroundBitmap, knobBackgroundBitmap, switchHandleBitmap, crossSVG, style),
-        kCtrlTagSettingsBox)
+      ->AttachControl(new NAMSettingsPageControl(
+                        b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap, crossSVG, style),
+                      kCtrlTagSettingsBox)
       ->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
