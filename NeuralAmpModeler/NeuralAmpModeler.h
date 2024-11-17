@@ -251,6 +251,9 @@ private:
   int _UnserializeStateLegacy_0_7_9(const iplug::IByteChunk& chunk, int startPos);
   // And other legacy unsrializations if/as needed...
 
+  // Update all controls that depend on a model
+  void _UpdateControlsFromModel();
+
   // Make sure that the latency is reported correctly.
   void _UpdateLatency();
 

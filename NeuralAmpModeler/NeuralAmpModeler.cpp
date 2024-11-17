@@ -387,20 +387,7 @@ void NeuralAmpModeler::OnIdle()
     if (auto* pGraphics = GetUI())
     {
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
-      ModelInfo modelInfo;
-      modelInfo.sampleRate.known = true;
-      modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
-      modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
-      modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
-      modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
-      modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
-
-      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
-
-      const bool disableInputCalibrationControls = !mModel->HasInputLevel();
-      pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
-      pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
-
+      _UpdateControlsFromModel();
       mNewModelLoadedInDSP = false;
     }
   }
@@ -479,12 +466,7 @@ void NeuralAmpModeler::OnUIOpen()
 
   if (mModel != nullptr)
   {
-    auto* pGraphics = GetUI();
-    assert(pGraphics != nullptr);
-    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
-    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
-    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
-    pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+    _UpdateControlsFromModel();
   }
 }
 
@@ -937,6 +919,31 @@ int NeuralAmpModeler::_UnserializeStateLegacy_0_7_9(const IByteChunk& chunk, int
   };
   pos = unserialize(chunk, pos);
   return pos;
+}
+
+void NeuralAmpModeler::_UpdateControlsFromModel()
+{
+  if (mModel == nullptr)
+  {
+    return;
+  }
+  if (auto* pGraphics = GetUI())
+  {
+    ModelInfo modelInfo;
+    modelInfo.sampleRate.known = true;
+    modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
+    modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
+    modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
+    modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
+    modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+
+    static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
+
+    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
+    pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+  }
 }
 
 void NeuralAmpModeler::_UpdateLatency()
