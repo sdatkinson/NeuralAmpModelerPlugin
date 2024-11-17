@@ -41,6 +41,9 @@ enum EParams
   kEQActive,
   kOutNorm,
   kIRToggle,
+  // Input calibration
+  kCalibrateInput,
+  kInputCalibrationLevel,
   kNumParams
 };
 
@@ -54,6 +57,8 @@ enum ECtrlTags
   kCtrlTagOutputMeter,
   kCtrlTagSettingsBox,
   kCtrlTagOutNorm,
+  kCtrlTagCalibrateInput,
+  kCtrlTagInputCalibrationLevel,
   kNumCtrlTags
 };
 
@@ -102,7 +107,17 @@ public:
     // Get the other information from the encapsulated NAM so that we can tell the outside world about what we're
     // holding.
     if (mEncapsulated->HasLoudness())
+    {
       SetLoudness(mEncapsulated->GetLoudness());
+    }
+    if (mEncapsulated->HasInputLevel())
+    {
+      SetInputLevel(mEncapsulated->GetInputLevel());
+    }
+    if (mEncapsulated->HasOutputLevel())
+    {
+      SetOutputLevel(mEncapsulated->GetOutputLevel());
+    }
 
     // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to
     // go.
@@ -228,6 +243,8 @@ private:
   // Resetting for models and IRs, called by OnReset
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
+  void _SetInputGain();
+
   // Unserialize current-version plug-in data:
   int _UnserializeStateCurrent(const iplug::IByteChunk& chunk, int startPos);
   // Unserialize v0.7.9 legacy data:
@@ -252,6 +269,9 @@ private:
   // Pointer versions
   iplug::sample** mInputPointers = nullptr;
   iplug::sample** mOutputPointers = nullptr;
+
+  // Input and (soon) output gain
+  iplug::sample mInputGain = 1.0;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;

@@ -81,6 +81,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutNorm)->InitBool("OutNorm", true);
   GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kCalibrateInput)->InitBool("CalibrateInput", false);
+  // TODO Double, label "dBu"
+  GetParam(kInputCalibrationLevel)->InitDouble("InputCalibrationLevel", 12.5, -30.0, 30.0, 0.1, "dBu");
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -116,6 +119,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
+    const auto inputLevelBackgroundBitmap = pGraphics->LoadBitmap(INPUTLEVELBACKGROUND_FN);
     const auto linesBitmap = pGraphics->LoadBitmap(LINES_FN);
     const auto knobBackgroundBitmap = pGraphics->LoadBitmap(KNOBBACKGROUND_FN);
     const auto switchHandleBitmap = pGraphics->LoadBitmap(SLIDESWITCHHANDLE_FN);
@@ -130,9 +134,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Areas for knobs
     const auto knobsPad = 20.0f;
     const auto knobsExtraSpaceBelowTitle = 25.0f;
-    const auto knobHeight = 120.f;
     const auto singleKnobPad = -2.0f;
-    const auto knobsArea = contentArea.GetFromTop(knobHeight)
+    const auto knobsArea = contentArea.GetFromTop(NAM_KNOB_HEIGHT)
                              .GetReducedFromLeft(knobsPad)
                              .GetReducedFromRight(knobsPad)
                              .GetVShifted(titleHeight + knobsExtraSpaceBelowTitle);
@@ -250,7 +253,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       },
       gearSVG));
 
-    pGraphics->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, crossSVG, style), kCtrlTagSettingsBox)
+    pGraphics
+      ->AttachControl(new NAMSettingsPageControl(
+                        b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap, crossSVG, style),
+                      kCtrlTagSettingsBox)
       ->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
@@ -258,7 +264,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseOverWhenDisabled(true);
     });
 
-    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    // pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
+    // pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetMouseEventsWhenDisabled(false);
   };
 }
 
@@ -381,9 +388,19 @@ void NeuralAmpModeler::OnIdle()
     {
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
       ModelInfo modelInfo;
-      modelInfo.sampleRate = mModel->GetEncapsulatedSampleRate();
-      modelInfo.knownSampleRate = true;
+      modelInfo.sampleRate.known = true;
+      modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
+      modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
+      modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
+      modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
+      modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+
       static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
+
+      const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+      pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
+      pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+
       mNewModelLoadedInDSP = false;
     }
   }
@@ -461,13 +478,25 @@ void NeuralAmpModeler::OnUIOpen()
   }
 
   if (mModel != nullptr)
-    GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+  {
+    auto* pGraphics = GetUI();
+    assert(pGraphics != nullptr);
+    pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(!mModel->HasLoudness());
+    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+    pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
+    pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+  }
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
 {
   switch (paramIdx)
   {
+    // Changes to the input gain
+    case kCalibrateInput:
+    case kInputCalibrationLevel:
+    case kInputLevel: _SetInputGain(); break;
+    // Tone stack:
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
@@ -487,7 +516,7 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active);
+      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
       default: break;
     }
   }
@@ -551,6 +580,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mShouldRemoveModel = false;
     mModelCleared = true;
     _UpdateLatency();
+    _SetInputGain();
   }
   if (mShouldRemoveIR)
   {
@@ -566,6 +596,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
     _UpdateLatency();
+    _SetInputGain();
   }
   if (mStagedIR != nullptr)
   {
@@ -649,6 +680,17 @@ void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBl
       mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
     }
   }
+}
+
+void NeuralAmpModeler::_SetInputGain()
+{
+  iplug::sample inputGainDB = GetParam(kInputLevel)->Value();
+  // Input calibration
+  if ((mModel != nullptr) && (mModel->HasInputLevel()) && GetParam(kCalibrateInput)->Bool())
+  {
+    inputGainDB += GetParam(kInputCalibrationLevel)->Value() - mModel->GetInputLevel();
+  }
+  mInputGain = DBToAmp(inputGainDB);
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
@@ -787,13 +829,12 @@ void NeuralAmpModeler::_ProcessInput(iplug::sample** inputs, const size_t nFrame
   }
 
   // On the standalone, we can probably assume that the user has plugged into only one input and they expect it to be
-  // carried straight through. Don't apply any division over nCahnsIn because we're just "catching anything out there."
+  // carried straight through. Don't apply any division over nChansIn because we're just "catching anything out there."
   // However, in a DAW, it's probably something providing stereo, and we want to take the average in order to avoid
-  // doubling the loudness.
-#ifdef APP_API
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0);
-#else
-  const double gain = pow(10.0, GetParam(kInputLevel)->Value() / 20.0) / (float)nChansIn;
+  // doubling the loudness. (This would change w/ double mono processing)
+  double gain = mInputGain;
+#ifndef APP_API
+  gain /= (float)nChansIn;
 #endif
   // Assume _PrepareBuffers() was already called
   for (size_t c = 0; c < nChansIn; c++)

@@ -6,6 +6,8 @@
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
+#define NAM_KNOB_HEIGHT 120.0f
+#define NAM_SWTICH_HEIGHT 50.0f
 
 using namespace iplug;
 using namespace igraphics;
@@ -453,12 +455,12 @@ public:
   ~IContainerBaseWithNamedChildren() = default;
 
 protected:
-  IControl* AddNamedChildControl(IControl* control, std::string name)
+  IControl* AddNamedChildControl(IControl* control, std::string name, int ctrlTag = kNoTag, const char* group = "")
   {
     // Make sure we haven't already used this name
     assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
     mChildNameIndexMap[name] = NChildren();
-    return AddChildControl(control);
+    return AddChildControl(control, ctrlTag, group);
   };
 
   IControl* GetNamedChild(std::string name)
@@ -472,10 +474,18 @@ private:
   std::unordered_map<std::string, int> mChildNameIndexMap;
 }; // class IContainerBaseWithNamedChildren
 
+
+struct PossiblyKnownParameter
+{
+  bool known = false;
+  double value = 0.0;
+};
+
 struct ModelInfo
 {
-  bool knownSampleRate = false;
-  double sampleRate = 0.0;
+  PossiblyKnownParameter sampleRate;
+  PossiblyKnownParameter inputCalibrationLevel;
+  PossiblyKnownParameter outputCalibrationLevel;
 };
 
 class ModelInfoControl : public IContainerBaseWithNamedChildren
@@ -499,26 +509,37 @@ public:
 
   void OnAttached() override
   {
-    AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 2, 1), "Model information:", mStyle));
-    AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
+    AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(4, 0), "Model information:", mStyle));
+    AddNamedChildControl(new IVLabelControl(GetRECT().SubRectVertical(4, 1), "", mStyle), mControlNames.sampleRate);
+    // AddNamedChildControl(
+    //   new IVLabelControl(GetRECT().SubRectVertical(4, 2), "", mStyle), mControlNames.inputCalibrationLevel);
+    // AddNamedChildControl(
+    //   new IVLabelControl(GetRECT().SubRectVertical(4, 3), "", mStyle), mControlNames.outputCalibrationLevel);
   };
-
-  // Click through me
-  void OnMouseDown(float x, float y, const IMouseMod& mod) override { GetParent()->OnMouseDown(x, y, mod); }
 
   void SetModelInfo(const ModelInfo& modelInfo)
   {
-    std::stringstream ss;
-    ss << "Sample rate: ";
-    if (modelInfo.knownSampleRate)
-    {
-      ss << (int)modelInfo.sampleRate;
-    }
-    else
-    {
-      ss << "(Unknown)";
-    }
-    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr(ss.str().c_str());
+    auto SetControlStr = [&](const std::string& name, const PossiblyKnownParameter& p, const std::string& units,
+                             const std::string& childName) {
+      std::stringstream ss;
+      ss << name << ": ";
+      if (p.known)
+      {
+        ss << p.value << " " << units;
+      }
+      else
+      {
+        ss << "(Unknown)";
+      }
+      static_cast<IVLabelControl*>(GetNamedChild(childName))->SetStr(ss.str().c_str());
+    };
+
+    SetControlStr("Sample rate", modelInfo.sampleRate, "Hz", mControlNames.sampleRate);
+    // SetControlStr(
+    //   "Input calibration level", modelInfo.inputCalibrationLevel, "dBu", mControlNames.inputCalibrationLevel);
+    // SetControlStr(
+    //   "Output calibration level", modelInfo.outputCalibrationLevel, "dBu", mControlNames.outputCalibrationLevel);
+
     mHasInfo = true;
   };
 
@@ -527,6 +548,8 @@ private:
   struct
   {
     const std::string sampleRate = "sampleRate";
+    // const std::string inputCalibrationLevel = "inputCalibrationLevel";
+    // const std::string outputCalibrationLevel = "outputCalibrationLevel";
   } mControlNames;
   // Do I have info?
   bool mHasInfo = false;
@@ -535,10 +558,13 @@ private:
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
-  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, ISVG closeSVG, const IVStyle& style)
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& inputLevelBackgroundBitmap,
+                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
+  , mInputLevelBackgroundBitmap(inputLevelBackgroundBitmap)
+  , mSwitchBitmap(switchBitmap)
   , mStyle(style)
   , mCloseSVG(closeSVG)
   {
@@ -609,16 +635,41 @@ public:
     const auto style = mStyle.WithDrawFrame(false).WithValueText(text);
     const IVStyle leftStyle = style.WithValueText(leftText);
 
-    // This'll get fixed on OnResize; FIXME
-    AddNamedChildControl(new IBitmapControl(IRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
-    AddNamedChildControl(
-      new IVLabelControl(GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f), "SETTINGS", titleStyle),
-      mControlNames.title);
+    AddNamedChildControl(new IBitmapControl(GetRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
+    const auto titleArea = GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f);
+    AddNamedChildControl(new IVLabelControl(titleArea, "SETTINGS", titleStyle), mControlNames.title);
+
+    // Attach input/output calibration controls
+    {
+      const float height = NAM_KNOB_HEIGHT + NAM_SWTICH_HEIGHT + 10.0f;
+      const float width = titleArea.W();
+      const auto inputOutputArea = titleArea.GetFromBottom(height).GetTranslated(0.0f, height);
+      const auto inputArea = inputOutputArea.GetFromLeft(0.5f * width);
+      // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
+
+      const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
+      const auto inputLevelArea =
+        inputArea.GetFromTop(NAM_KNOB_HEIGHT).GetFromBottom(25.0f).GetMidHPadded(0.5f * knobWidth);
+      const auto inputSwitchArea = inputArea.GetFromBottom(NAM_SWTICH_HEIGHT).GetMidHPadded(0.5f * knobWidth);
+
+      auto* inputLevelControl = AddNamedChildControl(
+        new InputLevelControl(inputLevelArea, kInputCalibrationLevel, mInputLevelBackgroundBitmap, text),
+        mControlNames.inputCalibrationLevel, kCtrlTagInputCalibrationLevel);
+      inputLevelControl->SetTooltip(
+        "The analog level, in dBu RMS, that corresponds to digital level of 0 dBFS peak in the host as its signal "
+        "enters this plugin.");
+      AddNamedChildControl(
+        new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
+        mControlNames.calibrateInput, kCtrlTagCalibrateInput);
+
+      // TODO output--raw, normalized, calibrated
+    }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
     const auto bottomArea = GetRECT().GetPadded(-pad).GetFromBottom(78.0f);
-    const auto modelInfoArea = bottomArea.GetFromLeft(halfWidth).GetFromTop(30.0f);
-    const auto aboutArea = bottomArea.GetFromRight(halfWidth);
+    const float lineHeight = 15.0f;
+    const auto modelInfoArea = bottomArea.GetFromLeft(halfWidth).GetFromTop(4 * lineHeight);
+    const auto aboutArea = bottomArea.GetFromRight(halfWidth).GetFromTop(5 * lineHeight);
     AddNamedChildControl(new ModelInfoControl(modelInfoArea, leftStyle), mControlNames.modelInfo);
     AddNamedChildControl(new AboutControl(aboutArea, leftStyle, leftText), mControlNames.about);
 
@@ -631,15 +682,6 @@ public:
     OnResize();
   }
 
-  void OnResize() override
-  {
-    if (NChildren())
-    {
-      GetNamedChild(mControlNames.bitmap)->SetTargetAndDrawRECTs(mRECT);
-      // Rework this later, but resizing on the main page needs to happen too.
-    }
-  }
-
   void SetModelInfo(const ModelInfo& modelInfo)
   {
     auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
@@ -649,6 +691,8 @@ public:
 
 private:
   IBitmap mBitmap;
+  IBitmap mInputLevelBackgroundBitmap;
+  IBitmap mSwitchBitmap;
   IVStyle mStyle;
   ISVG mCloseSVG;
   int mAnimationTime = 200;
@@ -667,6 +711,51 @@ private:
     const std::string title = "Title";
   } mControlNames;
 
+  class InputLevelControl : public IEditableTextControl
+  {
+  public:
+    InputLevelControl(const IRECT& bounds, int paramIdx, const IBitmap& bitmap, const IText& text = DEFAULT_TEXT,
+                      const IColor& BGColor = DEFAULT_BGCOLOR)
+    : IEditableTextControl(bounds, "", text, BGColor)
+    , mBitmap(bitmap)
+    {
+      SetParamIdx(paramIdx);
+    };
+
+    void Draw(IGraphics& g) override
+    {
+      g.DrawFittedBitmap(mBitmap, mRECT);
+      ITextControl::Draw(g);
+    };
+
+    void SetValueFromUserInput(double normalizedValue, int valIdx) override
+    {
+      IControl::SetValueFromUserInput(normalizedValue, valIdx);
+      const std::string s = ConvertToString(normalizedValue);
+      OnTextEntryCompletion(s.c_str(), valIdx);
+    };
+
+    void SetValueFromDelegate(double normalizedValue, int valIdx) override
+    {
+      IControl::SetValueFromDelegate(normalizedValue, valIdx);
+      const std::string s = ConvertToString(normalizedValue);
+      OnTextEntryCompletion(s.c_str(), valIdx);
+    };
+
+  private:
+    std::string ConvertToString(const double normalizedValue)
+    {
+      const double naturalValue = GetParam()->FromNormalized(normalizedValue);
+      // And make the value to display
+      std::stringstream ss;
+      ss << naturalValue << " dBu";
+      std::string s = ss.str();
+      return s;
+    };
+
+    IBitmap mBitmap;
+  };
+
   class AboutControl : public IContainerBase
   {
   public:
@@ -682,14 +771,14 @@ private:
 
       buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
 
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 5, 1), "NEURAL AMP MODELER", mStyle));
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 5, 1), "By Steven Atkinson", mStyle));
-      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(2, 0, 5, 1), buildInfoStr.Get(), mStyle));
-      AddChildControl(new IURLControl(GetRECT().GetGridCell(3, 0, 5, 1),
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 0), "NEURAL AMP MODELER", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 1), "By Steven Atkinson", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 2), buildInfoStr.Get(), mStyle));
+      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 3),
                                       "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
                                       "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", mText,
                                       COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
-      AddChildControl(new IURLControl(GetRECT().GetGridCell(4, 0, 5, 1), "www.neuralampmodeler.com",
+      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 4), "www.neuralampmodeler.com",
                                       "https://www.neuralampmodeler.com", mText, COLOR_TRANSPARENT,
                                       PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
     };
