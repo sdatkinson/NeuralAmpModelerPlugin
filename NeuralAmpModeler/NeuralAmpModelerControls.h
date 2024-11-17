@@ -2,12 +2,21 @@
 
 #include <cmath> // std::round
 #include <sstream> // std::stringstream
+#include <unordered_map> // std::unordered_map
 #include "IControls.h"
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
 
 using namespace iplug;
 using namespace igraphics;
+
+// Where the corner button on the plugin (settings, close settings) goes
+// :param rect: Rect for the whole plugin's UI
+IRECT CornerButtonArea(const IRECT& rect)
+{
+  const auto mainArea = rect.GetPadded(-20);
+  return mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+};
 
 class NAMSquareButtonControl : public ISVGButtonControl
 {
@@ -437,16 +446,112 @@ public:
   }
 };
 
-class NAMAboutBoxControl : public IContainerBase
+// Container where we can refer to children by names instead of indices
+class IContainerBaseWithNamedChildren : public IContainerBase
 {
 public:
-  NAMAboutBoxControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
-  : IContainerBase(bounds)
+  IContainerBaseWithNamedChildren(const IRECT& bounds)
+  : IContainerBase(bounds) {};
+  ~IContainerBaseWithNamedChildren() = default;
+
+protected:
+  IControl* AddNamedChildControl(IControl* control, std::string name)
+  {
+    // Make sure we haven't already used this name
+    assert(mChildNameIndexMap.find(name) == mChildNameIndexMap.end());
+    mChildNameIndexMap[name] = NChildren();
+    return AddChildControl(control);
+  };
+
+  IControl* GetNamedChild(std::string name)
+  {
+    const int index = mChildNameIndexMap[name];
+    return GetChild(index);
+  };
+
+
+private:
+  std::unordered_map<std::string, int> mChildNameIndexMap;
+}; // class IContainerBaseWithNamedChildren
+
+struct ModelInfo
+{
+  bool knownSampleRate = false;
+  double sampleRate = 0.0;
+};
+
+class ModelInfoControl : public IContainerBaseWithNamedChildren
+{
+public:
+  ModelInfoControl(const IRECT& bounds, const IVStyle& style)
+  : IContainerBaseWithNamedChildren(bounds)
+  , mStyle(style) {};
+
+  void ClearModelInfo()
+  {
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr("");
+    mHasInfo = false;
+  };
+
+  void Hide(bool hide) override
+  {
+    // Don't show me unless I have info to show!
+    IContainerBase::Hide(hide || (!mHasInfo));
+  };
+
+  void OnAttached() override
+  {
+    AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 2, 1), "Model information:", mStyle));
+    AddNamedChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 2, 1), "", mStyle), mControlNames.sampleRate);
+  };
+
+  // Click through me
+  void OnMouseDown(float x, float y, const IMouseMod& mod) override { GetParent()->OnMouseDown(x, y, mod); }
+
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    std::stringstream ss;
+    ss << "Sample rate: ";
+    if (modelInfo.knownSampleRate)
+    {
+      ss << (int)modelInfo.sampleRate;
+    }
+    else
+    {
+      ss << "(Unknown)";
+    }
+    static_cast<IVLabelControl*>(GetNamedChild(mControlNames.sampleRate))->SetStr(ss.str().c_str());
+    mHasInfo = true;
+  };
+
+private:
+  const IVStyle mStyle;
+  struct
+  {
+    const std::string sampleRate = "sampleRate";
+  } mControlNames;
+  // Do I have info?
+  bool mHasInfo = false;
+};
+
+class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
+{
+public:
+  NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, ISVG closeSVG, const IVStyle& style)
+  : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mStyle(style)
+  , mCloseSVG(closeSVG)
   {
     mIgnoreMouse = false;
+  }
+
+  void ClearModelInfo()
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->ClearModelInfo();
   }
 
   bool OnKeyDown(float x, float y, const IKeyPress& key) override
@@ -459,8 +564,6 @@ public:
 
     return false;
   }
-
-  void OnMouseDown(float x, float y, const IMouseMod& mod) override { HideAnimated(true); }
 
   void HideAnimated(bool hide)
   {
@@ -499,39 +602,33 @@ public:
 
   void OnAttached() override
   {
-    AddChildControl(new IBitmapControl(IRECT(), mBitmap))->SetIgnoreMouse(true);
-
+    const float pad = 20.0f;
     const IVStyle titleStyle = DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
                                  .WithDrawFrame(false)
                                  .WithShadowOffset(2.f);
-
-    AddChildControl(new IVLabelControl(IRECT(), "NEURAL AMP MODELER", titleStyle));
-
-    WDL_String verStr, buildInfoStr;
-    PLUG()->GetPluginVersionStr(verStr);
-
-    buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
-
     const auto text = IText(DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT);
+    const auto leftText = text.WithAlign(EAlign::Near);
     const auto style = mStyle.WithDrawFrame(false).WithValueText(text);
+    const IVStyle leftStyle = style.WithValueText(leftText);
 
+    // This'll get fixed on OnResize; FIXME
+    AddNamedChildControl(new IBitmapControl(IRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
+    AddNamedChildControl(
+      new IVLabelControl(GetRECT().GetPadded(-(pad + 10.0f)).GetFromTop(50.0f), "SETTINGS", titleStyle),
+      mControlNames.title);
 
-    AddChildControl(new IVLabelControl(IRECT(), "By Steven Atkinson", style));
-    AddChildControl(new IVLabelControl(IRECT(), buildInfoStr.Get(), style));
-    AddChildControl(new IURLControl(IRECT(), "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
-                                    "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", text,
-                                    COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
-    AddChildControl(new IURLControl(IRECT(), "www.neuralampmodeler.com", "https://www.neuralampmodeler.com", text,
-                                    COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+    const float halfWidth = PLUG_WIDTH / 2.0f - pad;
+    const auto bottomArea = GetRECT().GetPadded(-pad).GetFromBottom(78.0f);
+    const auto modelInfoArea = bottomArea.GetFromLeft(halfWidth).GetFromTop(30.0f);
+    const auto aboutArea = bottomArea.GetFromRight(halfWidth);
+    AddNamedChildControl(new ModelInfoControl(modelInfoArea, leftStyle), mControlNames.modelInfo);
+    AddNamedChildControl(new AboutControl(aboutArea, leftStyle, leftText), mControlNames.about);
 
-    //    AddChildControl(new IVColorSwatchControl(IRECT() , "Highlight", [&](int idx, IColor color){
-    //
-    //      WDL_String colorCodeStr;
-    //      color.ToColorCodeStr(colorCodeStr, false);
-    //      this->GetDelegate()->SendArbitraryMsgFromUI(kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(),
-    //      colorCodeStr.Get());
-    //
-    //    }, mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, {kFG}, {""}));
+    auto closeAction = [&](IControl* pCaller) {
+      static_cast<NAMSettingsPageControl*>(pCaller->GetParent())->HideAnimated(true);
+    };
+    AddNamedChildControl(
+      new NAMSquareButtonControl(CornerButtonArea(GetRECT()), closeAction, mCloseSVG), mControlNames.close);
 
     OnResize();
   }
@@ -540,25 +637,69 @@ public:
   {
     if (NChildren())
     {
-      const IRECT mainArea = mRECT.GetPadded(-20);
-      const auto content = mainArea.GetPadded(-10);
-      const auto titleLabel = content.GetFromTop(50);
-      GetChild(0)->SetTargetAndDrawRECTs(mRECT);
-      GetChild(1)->SetTargetAndDrawRECTs(titleLabel);
-      GetChild(2)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H()));
-      GetChild(3)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 20).GetMidVPadded(5));
-      GetChild(4)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 40).GetMidVPadded(7));
-      GetChild(5)->SetTargetAndDrawRECTs(titleLabel.GetVShifted(titleLabel.H() + 60).GetMidVPadded(7));
-      //      GetChild(6)->SetTargetAndDrawRECTs(content.GetFromBRHC(100, 50));
+      GetNamedChild(mControlNames.bitmap)->SetTargetAndDrawRECTs(mRECT);
+      // Rework this later, but resizing on the main page needs to happen too.
     }
   }
 
+  void SetModelInfo(const ModelInfo& modelInfo)
+  {
+    auto* modelInfoControl = static_cast<ModelInfoControl*>(GetNamedChild(mControlNames.modelInfo));
+    assert(modelInfoControl != nullptr);
+    modelInfoControl->SetModelInfo(modelInfo);
+  };
 
 private:
   IBitmap mBitmap;
   IVStyle mStyle;
+  ISVG mCloseSVG;
   int mAnimationTime = 200;
   bool mWillHide = false;
+
+  // Names for controls
+  // Make sure that these are all unique and that you use them with AddNamedChildControl
+  struct ControlNames
+  {
+    const std::string about = "About";
+    const std::string bitmap = "Bitmap";
+    const std::string calibrateInput = "CalibrateInput";
+    const std::string close = "Close";
+    const std::string inputCalibrationLevel = "InputCalibrationLevel";
+    const std::string modelInfo = "ModelInfo";
+    const std::string title = "Title";
+  } mControlNames;
+
+  class AboutControl : public IContainerBase
+  {
+  public:
+    AboutControl(const IRECT& bounds, const IVStyle& style, const IText& text)
+    : IContainerBase(bounds)
+    , mStyle(style)
+    , mText(text) {};
+
+    void OnAttached() override
+    {
+      WDL_String verStr, buildInfoStr;
+      PLUG()->GetPluginVersionStr(verStr);
+
+      buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
+
+      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(0, 0, 5, 1), "NEURAL AMP MODELER", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(1, 0, 5, 1), "By Steven Atkinson", mStyle));
+      AddChildControl(new IVLabelControl(GetRECT().GetGridCell(2, 0, 5, 1), buildInfoStr.Get(), mStyle));
+      AddChildControl(new IURLControl(GetRECT().GetGridCell(3, 0, 5, 1),
+                                      "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
+                                      "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", mText,
+                                      COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+      AddChildControl(new IURLControl(GetRECT().GetGridCell(4, 0, 5, 1), "www.neuralampmodeler.com",
+                                      "https://www.neuralampmodeler.com", mText, COLOR_TRANSPARENT,
+                                      PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+    };
+
+  private:
+    IVStyle mStyle;
+    IText mText;
+  };
 };
 
 class NAMTitleToggleControl : public ITextToggleControl

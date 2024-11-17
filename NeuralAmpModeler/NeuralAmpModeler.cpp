@@ -6,6 +6,7 @@
 
 #include "Colors.h"
 #include "NeuralAmpModelerCore/NAM/activations.h"
+#include "NeuralAmpModelerCore/NAM/get_dsp.h"
 // clang-format off
 // These includes need to happen in this order or else the latter won't know
 // a bunch of stuff.
@@ -164,7 +165,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto outputMeterArea = contentArea.GetFromRight(30).GetHShifted(20).GetMidVPadded(100).GetVShifted(-25);
 
     // Misc Areas
-    const auto settingsButtonArea = mainArea.GetFromTRHC(50, 50).GetCentredInside(20, 20);
+    const auto settingsButtonArea = CornerButtonArea(b);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -246,11 +247,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(new NAMCircleButtonControl(
       settingsButtonArea,
       [pGraphics](IControl* pCaller) {
-        pGraphics->GetControlWithTag(kCtrlTagSettingsBox)->As<NAMAboutBoxControl>()->HideAnimated(false);
+        pGraphics->GetControlWithTag(kCtrlTagSettingsBox)->As<NAMSettingsPageControl>()->HideAnimated(false);
       },
       gearSVG));
 
-    pGraphics->AttachControl(new NAMAboutBoxControl(b, backgroundBitmap, style), kCtrlTagSettingsBox)->Hide(true);
+    pGraphics->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, crossSVG, style), kCtrlTagSettingsBox)
+      ->Hide(true);
 
     pGraphics->ForAllControlsFunc([](IControl* pControl) {
       pControl->SetMouseEventsWhenDisabled(true);
@@ -390,9 +392,21 @@ void NeuralAmpModeler::OnIdle()
     {
       pGraphics->GetControlWithTag(kCtrlTagOutNorm)
         ->SetDisabled(!mModel->HasLoudness() || !GetParam(kNamToggle)->Value());
+      ModelInfo modelInfo;
+      modelInfo.sampleRate = mModel->GetEncapsulatedSampleRate();
+      modelInfo.knownSampleRate = true;
+      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
+      mNewModelLoadedInDSP = false;
     }
-
-    mNewModelLoadedInDSP = false;
+  }
+  if (mModelCleared)
+  {
+    if (auto* pGraphics = GetUI())
+    {
+      pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(false);
+      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->ClearModelInfo();
+      mModelCleared = false;
+    }
   }
 }
 
@@ -559,6 +573,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = nullptr;
     mNAMPath.Set("");
     mShouldRemoveModel = false;
+    mModelCleared = true;
     _UpdateLatency();
   }
   if (mShouldRemoveIR)
@@ -913,7 +928,12 @@ void NeuralAmpModeler::_UpdateLatency()
     latency += mModel->GetLatency();
   }
   // Other things that add latency here...
-  SetLatency(latency);
+
+  // Feels weird to have to do this.
+  if (GetLatency() != latency)
+  {
+    SetLatency(latency);
+  }
 }
 
 void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPointer, const size_t nFrames,

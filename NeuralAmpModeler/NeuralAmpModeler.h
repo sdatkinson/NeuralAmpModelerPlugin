@@ -272,6 +272,7 @@ private:
   std::atomic<bool> mShouldRemoveIR = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
+  std::atomic<bool> mModelCleared = false;
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
