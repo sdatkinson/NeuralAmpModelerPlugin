@@ -560,13 +560,15 @@ class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
   NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& inputLevelBackgroundBitmap,
-                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style)
+                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style,
+                         const IVStyle& radioButtonStyle)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mInputLevelBackgroundBitmap(inputLevelBackgroundBitmap)
   , mSwitchBitmap(switchBitmap)
   , mStyle(style)
+  , mRadioButtonStyle(radioButtonStyle)
   , mCloseSVG(closeSVG)
   {
     mIgnoreMouse = false;
@@ -664,8 +666,8 @@ public:
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
 
       const float buttonSize = 10.0f;
-      AddNamedChildControl(new OutputModeControl(outputArea, kOutputMode, style, buttonSize), mControlNames.outputMode,
-                           kCtrlTagOutputMode);
+      AddNamedChildControl(new OutputModeControl(outputArea, kOutputMode, mRadioButtonStyle, buttonSize),
+                           mControlNames.outputMode, kCtrlTagOutputMode);
     }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
@@ -697,6 +699,7 @@ private:
   IBitmap mInputLevelBackgroundBitmap;
   IBitmap mSwitchBitmap;
   IVStyle mStyle;
+  IVStyle mRadioButtonStyle;
   ISVG mCloseSVG;
   int mAnimationTime = 200;
   bool mWillHide = false;

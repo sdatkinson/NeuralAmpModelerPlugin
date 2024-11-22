@@ -54,6 +54,8 @@ const IVStyle style =
 const IVStyle titleStyle =
   DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular")).WithDrawFrame(false).WithShadowOffset(2.f);
 
+const IVStyle radioButtonStyle = style.WithColor(EVColor::kON, PluginColors::NAM_THEMEFONTCOLOR);
+
 EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char* str, const char* caption,
                               EMsgBoxType type)
 {
@@ -226,8 +228,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     pGraphics->AttachControl(
       new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
-    // pGraphics->AttachControl(
-    //   new NAMSwitchControl(outNormToggleArea, kOutNorm, "Normalize", style, switchHandleBitmap), kCtrlTagOutputMode);
 
     // The knobs
     pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackgroundBitmap));
@@ -253,8 +253,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       gearSVG));
 
     pGraphics
-      ->AttachControl(new NAMSettingsPageControl(
-                        b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap, crossSVG, style),
+      ->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap,
+                                                 crossSVG, style, radioButtonStyle),
                       kCtrlTagSettingsBox)
       ->Hide(true);
 
