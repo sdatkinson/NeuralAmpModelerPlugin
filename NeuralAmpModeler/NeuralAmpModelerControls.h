@@ -556,6 +556,37 @@ private:
   bool mHasInfo = false;
 };
 
+class OutputModeControl : public IVRadioButtonControl
+{
+public:
+  OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
+  : IVRadioButtonControl(
+      bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
+
+  void SetNormalizedDisable(const bool disable)
+  {
+    // HACK non-DRY string and hard-coded indices
+    std::stringstream ss;
+    ss << "Normalized";
+    if (disable)
+    {
+      ss << " [Not supported by model]";
+    }
+    mTabLabels.Get(1)->Set(ss.str().c_str());
+  };
+  void SetCalibratedDisable(const bool disable)
+  {
+    // HACK non-DRY string and hard-coded indices
+    std::stringstream ss;
+    ss << "Calibrated";
+    if (disable)
+    {
+      ss << " [Not supported by model]";
+    }
+    mTabLabels.Get(2)->Set(ss.str().c_str());
+  };
+};
+
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
@@ -666,8 +697,8 @@ public:
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
 
       // Same-ish height & width as input controls
-      const auto outputRadioArea =
-        outputArea.GetFromBottom(1.1f * (inputLevelArea.H() + inputSwitchArea.H())).GetMidHPadded(0.55f * knobWidth);
+      const auto outputRadioArea = outputArea.GetFromBottom(
+        1.1f * (inputLevelArea.H() + inputSwitchArea.H())); // .GetMidHPadded(0.55f * knobWidth);
       const float buttonSize = 10.0f;
       AddNamedChildControl(new OutputModeControl(outputRadioArea, kOutputMode, mRadioButtonStyle, buttonSize),
                            mControlNames.outputMode, kCtrlTagOutputMode);
@@ -764,14 +795,6 @@ private:
     };
 
     IBitmap mBitmap;
-  };
-
-  class OutputModeControl : public IVRadioButtonControl
-  {
-  public:
-    OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
-    : IVRadioButtonControl(bounds, paramIdx, {"Raw", "Normalized", "Calibrated"}, "Output Mode", style,
-                           EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
   };
 
   class AboutControl : public IContainerBase

@@ -380,8 +380,6 @@ void NeuralAmpModeler::OnIdle()
   {
     if (auto* pGraphics = GetUI())
     {
-      // FIXME -- need to disable only the "normalized" model
-      // pGraphics->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(!mModel->HasLoudness());
       _UpdateControlsFromModel();
       mNewModelLoadedInDSP = false;
     }
@@ -953,10 +951,13 @@ void NeuralAmpModeler::_UpdateControlsFromModel()
     static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
 
     const bool disableInputCalibrationControls = !mModel->HasInputLevel();
-    // FIXME -- need to disable only the "normalized" model
-    //    pGraphics->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(!mModel->HasLoudness());
     pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
     pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
+    {
+      auto* c = static_cast<OutputModeControl*>(pGraphics->GetControlWithTag(kCtrlTagOutputMode));
+      c->SetNormalizedDisable(!mModel->HasLoudness());
+      c->SetCalibratedDisable(!mModel->HasOutputLevel());
+    }
   }
 }
 
