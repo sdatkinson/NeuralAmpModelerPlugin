@@ -665,8 +665,11 @@ public:
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
 
+      // Same-ish height & width as input controls
+      const auto outputRadioArea =
+        outputArea.GetFromBottom(1.1f * (inputLevelArea.H() + inputSwitchArea.H())).GetMidHPadded(0.55f * knobWidth);
       const float buttonSize = 10.0f;
-      AddNamedChildControl(new OutputModeControl(outputArea, kOutputMode, mRadioButtonStyle, buttonSize),
+      AddNamedChildControl(new OutputModeControl(outputRadioArea, kOutputMode, mRadioButtonStyle, buttonSize),
                            mControlNames.outputMode, kCtrlTagOutputMode);
     }
 
