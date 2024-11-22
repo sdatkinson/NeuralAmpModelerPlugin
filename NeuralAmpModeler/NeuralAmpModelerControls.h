@@ -304,7 +304,8 @@ public:
     auto clearFileFunc = [&](IControl* pCaller) {
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
       mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(false);
+      // FIXME disabling output mode...
+      //      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
     };
 
     auto chooseFileFunc = [&, loadFileFunc](IControl* pCaller) {
@@ -645,7 +646,7 @@ public:
       const float width = titleArea.W();
       const auto inputOutputArea = titleArea.GetFromBottom(height).GetTranslated(0.0f, height);
       const auto inputArea = inputOutputArea.GetFromLeft(0.5f * width);
-      // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
+      const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
 
       const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
       const auto inputLevelArea =
@@ -662,7 +663,9 @@ public:
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
 
-      // TODO output--raw, normalized, calibrated
+      const float buttonSize = 10.0f;
+      AddNamedChildControl(new OutputModeControl(outputArea, kOutputMode, style, buttonSize), mControlNames.outputMode,
+                           kCtrlTagOutputMode);
     }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
@@ -708,6 +711,7 @@ private:
     const std::string close = "Close";
     const std::string inputCalibrationLevel = "InputCalibrationLevel";
     const std::string modelInfo = "ModelInfo";
+    const std::string outputMode = "OutputMode";
     const std::string title = "Title";
   } mControlNames;
 
@@ -754,6 +758,14 @@ private:
     };
 
     IBitmap mBitmap;
+  };
+
+  class OutputModeControl : public IVRadioButtonControl
+  {
+  public:
+    OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
+    : IVRadioButtonControl(bounds, paramIdx, {"Raw", "Normalized", "Calibrated"}, "Output Mode", style,
+                           EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
   };
 
   class AboutControl : public IContainerBase
