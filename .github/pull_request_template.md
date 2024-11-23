@@ -10,6 +10,7 @@ Include [Closing words](https://docs.github.com/en/issues/tracking-your-work-wit
 - [ ] Does the VST3 plugin pass all of the unit tests in the [VST3PluginTestHost](https://steinbergmedia.github.io/vst3_dev_portal/pages/What+is+the+VST+3+SDK/Plug-in+Test+Host.html)? (Download it as part of the VST3 SDK [here](https://www.steinberg.net/developers/).)
   - [ ] Windows
   - [ ] macOS
-- [ ] Does your PR add, remove, or rename any plugin parameters?
-  - [ ] If yes, then have you ensured that older versions of the plug-in load correctly? (Usually, this means writing a new legacy unserialization function like [`_UnserializeStateLegacy_0_7_9`](https://github.com/sdatkinson/NeuralAmpModelerPlugin/blob/f755918e3f325f28658700ca954f8a47ec58d021/NeuralAmpModeler/NeuralAmpModeler.cpp#L823).)
+- [ ] Does your PR add, remove, or rename any plugin parameters? If yes...
+  - [ ] Have you ensured that the plug-in unserializes correctly?
+  - [ ] Have you ensured that _older_ versions of the plug-in load correctly? (See [`Unserialization.cpp`](https://github.com/sdatkinson/NeuralAmpModelerPlugin/blob/main/NeuralAmpModeler/Unserialization.cpp).)
   
