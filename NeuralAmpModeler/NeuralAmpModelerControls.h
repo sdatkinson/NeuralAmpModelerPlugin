@@ -304,7 +304,8 @@ public:
     auto clearFileFunc = [&](IControl* pCaller) {
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
       mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutNorm)->SetDisabled(false);
+      // FIXME disabling output mode...
+      //      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
     };
 
     auto chooseFileFunc = [&, loadFileFunc](IControl* pCaller) {
@@ -555,17 +556,50 @@ private:
   bool mHasInfo = false;
 };
 
+class OutputModeControl : public IVRadioButtonControl
+{
+public:
+  OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
+  : IVRadioButtonControl(
+      bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
+
+  void SetNormalizedDisable(const bool disable)
+  {
+    // HACK non-DRY string and hard-coded indices
+    std::stringstream ss;
+    ss << "Normalized";
+    if (disable)
+    {
+      ss << " [Not supported by model]";
+    }
+    mTabLabels.Get(1)->Set(ss.str().c_str());
+  };
+  void SetCalibratedDisable(const bool disable)
+  {
+    // HACK non-DRY string and hard-coded indices
+    std::stringstream ss;
+    ss << "Calibrated";
+    if (disable)
+    {
+      ss << " [Not supported by model]";
+    }
+    mTabLabels.Get(2)->Set(ss.str().c_str());
+  };
+};
+
 class NAMSettingsPageControl : public IContainerBaseWithNamedChildren
 {
 public:
   NAMSettingsPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& inputLevelBackgroundBitmap,
-                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style)
+                         const IBitmap& switchBitmap, ISVG closeSVG, const IVStyle& style,
+                         const IVStyle& radioButtonStyle)
   : IContainerBaseWithNamedChildren(bounds)
   , mAnimationTime(0)
   , mBitmap(bitmap)
   , mInputLevelBackgroundBitmap(inputLevelBackgroundBitmap)
   , mSwitchBitmap(switchBitmap)
   , mStyle(style)
+  , mRadioButtonStyle(radioButtonStyle)
   , mCloseSVG(closeSVG)
   {
     mIgnoreMouse = false;
@@ -645,7 +679,7 @@ public:
       const float width = titleArea.W();
       const auto inputOutputArea = titleArea.GetFromBottom(height).GetTranslated(0.0f, height);
       const auto inputArea = inputOutputArea.GetFromLeft(0.5f * width);
-      // const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
+      const auto outputArea = inputOutputArea.GetFromRight(0.5f * width);
 
       const float knobWidth = 87.0f; // HACK based on looking at the main page knobs.
       const auto inputLevelArea =
@@ -662,7 +696,12 @@ public:
         new NAMSwitchControl(inputSwitchArea, kCalibrateInput, "Calibrate Input", mStyle, mSwitchBitmap),
         mControlNames.calibrateInput, kCtrlTagCalibrateInput);
 
-      // TODO output--raw, normalized, calibrated
+      // Same-ish height & width as input controls
+      const auto outputRadioArea = outputArea.GetFromBottom(
+        1.1f * (inputLevelArea.H() + inputSwitchArea.H())); // .GetMidHPadded(0.55f * knobWidth);
+      const float buttonSize = 10.0f;
+      AddNamedChildControl(new OutputModeControl(outputRadioArea, kOutputMode, mRadioButtonStyle, buttonSize),
+                           mControlNames.outputMode, kCtrlTagOutputMode);
     }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
@@ -694,6 +733,7 @@ private:
   IBitmap mInputLevelBackgroundBitmap;
   IBitmap mSwitchBitmap;
   IVStyle mStyle;
+  IVStyle mRadioButtonStyle;
   ISVG mCloseSVG;
   int mAnimationTime = 200;
   bool mWillHide = false;
@@ -708,6 +748,7 @@ private:
     const std::string close = "Close";
     const std::string inputCalibrationLevel = "InputCalibrationLevel";
     const std::string modelInfo = "ModelInfo";
+    const std::string outputMode = "OutputMode";
     const std::string title = "Title";
   } mControlNames;
 

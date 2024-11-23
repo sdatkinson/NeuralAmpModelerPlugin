@@ -39,11 +39,11 @@ enum EParams
   // The rest is fine though.
   kNoiseGateActive,
   kEQActive,
-  kOutNorm,
   kIRToggle,
   // Input calibration
   kCalibrateInput,
   kInputCalibrationLevel,
+  kOutputMode,
   kNumParams
 };
 
@@ -56,7 +56,7 @@ enum ECtrlTags
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagSettingsBox,
-  kCtrlTagOutNorm,
+  kCtrlTagOutputMode,
   kCtrlTagCalibrateInput,
   kCtrlTagInputCalibrationLevel,
   kNumCtrlTags
@@ -216,8 +216,6 @@ private:
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   void _InitToneStack();
-  // Apply the normalization for the model output (if possible)
-  void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
@@ -244,6 +242,7 @@ private:
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
   void _SetInputGain();
+  void _SetOutputGain();
 
   // Unserialize current-version plug-in data:
   int _UnserializeStateCurrent(const iplug::IByteChunk& chunk, int startPos);
@@ -273,8 +272,9 @@ private:
   iplug::sample** mInputPointers = nullptr;
   iplug::sample** mOutputPointers = nullptr;
 
-  // Input and (soon) output gain
-  iplug::sample mInputGain = 1.0;
+  // Input and output gain
+  double mInputGain = 1.0;
+  double mOutputGain = 1.0;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
