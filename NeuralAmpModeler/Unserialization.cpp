@@ -117,8 +117,18 @@ void _UpdateConfigFrom_0_7_12(nlohmann::json& config)
 int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
 {
   int pos = startPos;
-  std::vector<std::string> paramNames{"Input",  "Threshold",       "Bass",      "Middle",     "Treble",
-                                      "Output", "NoiseGateActive", "ToneStack", "OutputMode", "IRToggle"};
+  std::vector<std::string> paramNames{"Input",
+                                      "Threshold",
+                                      "Bass",
+                                      "Middle",
+                                      "Treble",
+                                      "Output",
+                                      "NoiseGateActive",
+                                      "ToneStack",
+                                      "IRToggle",
+                                      "CalibrateInput",
+                                      "InputCalibrationLevel",
+                                      "OutputMode"};
 
   pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
   // Then update:
@@ -256,6 +266,10 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk&
   else if (version >= _Version(0, 7, 10))
   {
     pos = _GetConfigFrom_0_7_10(chunk, pos, config);
+  }
+  else if (version >= _Version(0, 7, 9))
+  {
+    pos = _GetConfigFrom_Earlier(chunk, pos, config);
   }
   else
   {
