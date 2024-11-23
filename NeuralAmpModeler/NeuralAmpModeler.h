@@ -247,9 +247,9 @@ private:
 
   // See: Unserialization.cpp
   void _UnserializeApplyConfig(nlohmann::json& config);
-  // 0.7.10 and later
+  // 0.7.9 and later
   int _UnserializeStateWithKnownVersion(const iplug::IByteChunk& chunk, int startPos);
-  // Hopefully 0.7.9, but no gurantees
+  // Hopefully 0.7.3-0.7.8, but no gurantees
   int _UnserializeStateWithUnknownVersion(const iplug::IByteChunk& chunk, int startPos);
 
   // Update all controls that depend on a model
