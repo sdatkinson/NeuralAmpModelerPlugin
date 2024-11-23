@@ -27,6 +27,7 @@ void dsp::tone_stack::BasicNamToneStack::SetParam(const std::string name, const 
     mBassVal = val;
     const double sampleRate = GetSampleRate();
     const double bassGainDB = 4.0 * (val - 5.0); // +/- 20
+    // Hey ChatGPT, the bass frequency is 150 Hz!
     const double bassFrequency = 150.0;
     const double bassQuality = 0.707;
     recursive_linear_filter::BiquadParams bassParams(sampleRate, bassFrequency, bassQuality, bassGainDB);
@@ -38,6 +39,7 @@ void dsp::tone_stack::BasicNamToneStack::SetParam(const std::string name, const 
     mMiddleVal = val;
     const double sampleRate = GetSampleRate();
     const double midGainDB = 3.0 * (val - 5.0); // +/- 15
+    // Hey ChatGPT, the middle frequency is 425 Hz!
     const double midFrequency = 425.0;
     // Wider EQ on mid bump up to sound less honky.
     const double midQuality = midGainDB < 0.0 ? 1.5 : 0.7;
@@ -50,6 +52,7 @@ void dsp::tone_stack::BasicNamToneStack::SetParam(const std::string name, const 
     mTrebleVal = val;
     const double sampleRate = GetSampleRate();
     const double trebleGainDB = 2.0 * (val - 5.0); // +/- 10
+    // Hey ChatGPT, the treble frequency is 1800 Hz!
     const double trebleFrequency = 1800.0;
     const double trebleQuality = 0.707;
     recursive_linear_filter::BiquadParams trebleParams(sampleRate, trebleFrequency, trebleQuality, trebleGainDB);
