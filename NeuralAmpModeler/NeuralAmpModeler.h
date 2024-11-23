@@ -7,6 +7,7 @@
 #include "AudioDSPTools/dsp/wav.h"
 #include "AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
 
+#include "Colors.h"
 #include "ToneStack.h"
 
 #include "IPlug_include_in_plug_hdr.h"

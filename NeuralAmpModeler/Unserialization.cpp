@@ -1,11 +1,12 @@
 
-#include <ifstream>
+#include <fstream>
 #include <string>
 #include <vector>
 
 #include "json.hpp"
 
 #include "NeuralAmpModeler.h"
+#include "IPlug_include_in_plug_src.h"
 
 // Unserialization
 //
@@ -31,44 +32,40 @@
 
 void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
 {
-  // cf IPluginBase::UnserializeParams(const IByteChunk& chunk, int startPos)
-
-  nlohmann::json config;
-
-  auto getParamByName = [&, newNames](std::string& name) {
+  auto getParamByName = [&](std::string& name) {
     // Could use a map but eh
     for (int i = 0; i < kNumParams; i++)
     {
-      IParam* param = GetParam(i);
+      iplug::IParam* param = GetParam(i);
       if (strcmp(param->GetName(), name.c_str()) == 0)
       {
         return param;
       }
     }
     // else
-    return (IParam*)nullptr;
+    return (iplug::IParam*)nullptr;
   };
   TRACE
   ENTER_PARAMS_MUTEX
-  int i = 0;
-  for (auto it = config.begin(); it != config.end(); ++it, i++)
+  for (auto it = config.begin(); it != config.end(); ++it)
   {
-    IParam* pParam = getParamByName(it->first);
+    std::string name = it.key();
+    iplug::IParam* pParam = getParamByName(name);
     if (pParam != nullptr)
     {
-      pParam->Set(v);
-      Trace(TRACELOC, "%d %s %f", i, pParam->GetName(), pParam->Value());
+      pParam->Set(*it);
+      iplug::Trace(TRACELOC, "%s %f", pParam->GetName(), pParam->Value());
     }
     else
     {
-      Trace(TRACELOC, "%s NOT-FOUND", it->first.c_str());
+      iplug::Trace(TRACELOC, "%s NOT-FOUND", name.c_str());
     }
   }
-  OnParamReset(kPresetRecall);
+  OnParamReset(iplug::EParamSource::kPresetRecall);
   LEAVE_PARAMS_MUTEX
 
-  mNAMPath.Set(config["NAMPath"].c_str());
-  mIRPath.Set(config["IRPath"].c_str());
+  mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
+  mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
 
   if (mNAMPath.GetLength())
   {
@@ -81,7 +78,7 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
 }
 
 // Unserialize NAM Path, IR path, then named keys
-int _UnserializePathsAndExpectedKeys(const IByteChunk& chunk, inst startPos, nlohmann::json& config,
+int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config,
                                      std::vector<std::string>& paramNames)
 {
   int pos = startPos;
@@ -103,10 +100,10 @@ int _UnserializePathsAndExpectedKeys(const IByteChunk& chunk, inst startPos, nlo
 void _RenameKeys(nlohmann::json& j, std::unordered_map<std::string, std::string> newNames)
 {
   // Assumes no aliasing!
-  for (it = newNames.begin(); it != newNames.end(); ++it)
+  for (auto it = newNames.begin(); it != newNames.end(); ++it)
   {
-    config[it->first] = config[it->second];
-    config.erase(it->first);
+    j[it->second] = j[it->first];
+    j.erase(it->first);
   }
 }
 
@@ -117,17 +114,15 @@ void _UpdateConfigFrom_0_7_12(nlohmann::json& config)
   // Fill me in once something changes!
 }
 
-int _GetConfigFrom_0_7_12(const IByteChunk& chunk, int pos, nlohmann::json& config)
+int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
 {
   int pos = startPos;
-  nlohmann::json config;
   std::vector<std::string> paramNames{"Input",  "Threshold",       "Bass",      "Middle",     "Treble",
                                       "Output", "NoiseGateActive", "ToneStack", "OutputMode", "IRToggle"};
 
   pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
   // Then update:
-  _UnserializeUpdateFrom_0_7_12(config);
-  _UnserializeFromJson(config);
+  _UpdateConfigFrom_0_7_12(config);
   return pos;
 }
 
@@ -135,26 +130,27 @@ int _GetConfigFrom_0_7_12(const IByteChunk& chunk, int pos, nlohmann::json& conf
 
 void _UpdateConfigFrom_0_7_10(nlohmann::json& config)
 {
+  // Note: "OutNorm" is Bool-like in v0.7.10, but "OutputMode" is enum.
+  // This works because 0 is "Raw" (cf OutNorm false) and 1 is "Calibrated" (cf OutNorm true).
   std::unordered_map<std::string, std::string> newNames{{"OutNorm", "OutputMode"}};
   _RenameKeys(config, newNames);
-  _UnserializeUpdateFrom_0_7_12(config);
+  // There are new parameters. If they're not included, then 0.7.12 is ok, but future ones might not be.
+  config[kCalibrateInputParamName] = (double)kDefaultCalibrateInput;
+  config[kInputCalibrationLevelParamName] = kDefaultInputCalibrationLevel;
+  _UpdateConfigFrom_0_7_12(config);
 }
 
-int _GetConfigFrom_0_7_10(const IByteChunk& chunk, int startPos, nlohmann::json& config)
+int _GetConfigFrom_0_7_10(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
 {
-  int pos = startPos;
-  nlohmann::json config;
   std::vector<std::string> paramNames{
     "Input", "Threshold", "Bass", "Middle", "Treble", "Output", "NoiseGateActive", "ToneStack", "OutNorm", "IRToggle"};
-
-  pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
+  int pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
   // Then update:
-  _UnserializeUpdateFrom_0_7_10(config);
-  _UnserializeFromJson(config);
+  _UpdateConfigFrom_0_7_10(config);
   return pos;
 }
 
-// Earlier than 0.7.10 (Assumed to be 0.7.9)
+// Earlier than 0.7.10 (Assumed to be 0.7.3-0.7.9)
 
 void _UpdateConfigFrom_Earlier(nlohmann::json& config)
 {
@@ -163,16 +159,14 @@ void _UpdateConfigFrom_Earlier(nlohmann::json& config)
   _UpdateConfigFrom_0_7_10(config);
 }
 
-int _GetConfigFrom_Earlier(const IByteChunk& chunk, int startPos, nlohmann::json& config)
+int _GetConfigFrom_Earlier(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
 {
-  int pos = startPos;
   std::vector<std::string> paramNames{
     "Input", "Gate", "Bass", "Middle", "Treble", "Output", "NoiseGateActive", "ToneStack", "OutNorm", "IRToggle"};
 
-  pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames);
   // Then update:
   _UpdateConfigFrom_Earlier(config);
-  _UnserializeFromJson(config);
   return pos;
 }
 
@@ -209,50 +203,41 @@ public:
     mPatch = parts[2];
   };
 
-  bool operator<=(const _Version& other) const
+  bool operator>=(const _Version& other) const
   {
     // Compare on major version:
-    if (other.GetMajor() > GetMajor())
+    if (GetMajor() > other.GetMajor())
     {
       return true;
     }
-    if (other.GetMajor() < GetMajor())
+    if (GetMajor() < other.GetMajor())
     {
       return false;
     }
     // Compare on minor
-    if (other.GetMinor() > GetMinor())
+    if (GetMinor() > other.GetMinor())
     {
       return true;
     }
-    if (other.GetMinor() < GetMinor())
+    if (GetMinor() < other.GetMinor())
     {
       return false;
     }
     // Compare on patch
-    return other.GetPatch() <= GetPatch();
-
-    int GetMajor() const
-    {
-      return mMajor;
-    };
-    int GetMinor() const
-    {
-      return mMinor;
-    };
-    int GetPatch() const
-    {
-      return mPatch;
-    };
-
-  private:
-    int mMajor;
-    int mMinor;
-    int mPatch;
+    return GetPatch() >= other.GetPatch();
   };
+
+  int GetMajor() const { return mMajor; };
+  int GetMinor() const { return mMinor; };
+  int GetPatch() const { return mPatch; };
+
+private:
+  int mMajor;
+  int mMinor;
+  int mPatch;
 };
 
-int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const IByteChunk& chunk, int startPos)
+int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk& chunk, int startPos)
 {
   // We already got through the header before calling this.
   int pos = startPos;
@@ -266,17 +251,25 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const IByteChunk& chunk,
   nlohmann::json config;
   if (version >= _Version(0, 7, 12))
   {
-    pos _GetConfigFrom_0_7_12(chunk, pos, config);
+    pos = _GetConfigFrom_0_7_12(chunk, pos, config);
   }
   else if (version >= _Version(0, 7, 10))
   {
-    pos _GetConfigFrom_0_7_10(chunk, pos, config);
+    pos = _GetConfigFrom_0_7_10(chunk, pos, config);
   }
   else
   {
     // You shouldn't be here...
     assert(false);
   }
+  _UnserializeApplyConfig(config);
+  return pos;
+}
+
+int NeuralAmpModeler::_UnserializeStateWithUnknownVersion(const iplug::IByteChunk& chunk, int startPos)
+{
+  nlohmann::json config;
+  int pos = _GetConfigFrom_Earlier(chunk, startPos, config);
   _UnserializeApplyConfig(config);
   return pos;
 }

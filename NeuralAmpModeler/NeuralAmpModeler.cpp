@@ -69,6 +69,11 @@ EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char
 #endif
 }
 
+const std::string kCalibrateInputParamName = "CalibrateInput";
+const bool kDefaultCalibrateInput = false;
+const std::string kInputCalibrationLevelParamName = "InputCalibrationLevel";
+const double kDefaultInputCalibrationLevel = 12.0;
+
 
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
@@ -85,8 +90,9 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutputMode)->InitEnum("OutputMode", 1, {"Raw", "Normalized", "Calibrated"}); // TODO DRY w/ control
   GetParam(kIRToggle)->InitBool("IRToggle", true);
-  GetParam(kCalibrateInput)->InitBool("CalibrateInput", false);
-  GetParam(kInputCalibrationLevel)->InitDouble("InputCalibrationLevel", 12.0, -60.0, 60.0, 0.1, "dBu");
+  GetParam(kCalibrateInput)->InitBool(kCalibrateInputParamName.c_str(), kDefaultCalibrateInput);
+  GetParam(kInputCalibrationLevel)
+    ->InitDouble(kInputCalibrationLevelParamName.c_str(), kDefaultInputCalibrationLevel, -60.0, 60.0, 0.1, "dBu");
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -901,3 +907,6 @@ void NeuralAmpModeler::_UpdateMeters(sample** inputPointer, sample** outputPoint
   mInputSender.ProcessBlock(inputPointer, (int)nFrames, kCtrlTagInputMeter, nChansHack);
   mOutputSender.ProcessBlock(outputPointer, (int)nFrames, kCtrlTagOutputMeter, nChansHack);
 }
+
+// HACK
+#include "Unserialization.cpp"
