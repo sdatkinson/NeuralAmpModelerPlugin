@@ -106,7 +106,6 @@ void _UpdateConfigFrom_0_7_12(nlohmann::json& config)
 
 int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
 {
-  int pos = startPos;
   std::vector<std::string> paramNames{"Input",
                                       "Threshold",
                                       "Bass",
@@ -120,7 +119,7 @@ int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann
                                       "InputCalibrationLevel",
                                       "OutputMode"};
 
-  pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames);
   // Then update:
   _UpdateConfigFrom_0_7_12(config);
   return pos;
@@ -144,7 +143,7 @@ int _GetConfigFrom_0_7_10(const iplug::IByteChunk& chunk, int startPos, nlohmann
 {
   std::vector<std::string> paramNames{
     "Input", "Threshold", "Bass", "Middle", "Treble", "Output", "NoiseGateActive", "ToneStack", "OutNorm", "IRToggle"};
-  int pos = _UnserializePathsAndExpectedKeys(chunk, pos, config, paramNames);
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames);
   // Then update:
   _UpdateConfigFrom_0_7_10(config);
   return pos;
