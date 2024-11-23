@@ -150,7 +150,7 @@ public:
 
   int GetLatency() const { return NeedToResample() ? mResampler.GetLatency() : 0; };
 
-  void Reset(const double sampleRate, const int maxBlockSize)
+  void Reset(const double sampleRate, const int maxBlockSize) override
   {
     mExpectedSampleRate = sampleRate;
     mMaxExternalBlockSize = maxBlockSize;
@@ -247,9 +247,9 @@ private:
   // See: Unserialization.cpp
   void _UnserializeApplyConfig(nlohmann::json& config);
   // 0.7.10 and later
-  int _UnserializeStateWithKnownVersion(const IByteChunk& chunk, int startPos);
+  int _UnserializeStateWithKnownVersion(const iplug::IByteChunk& chunk, int startPos);
   // Hopefully 0.7.9, but no gurantees
-  int _UnserializeStateWithUnknownVersion(const IByteChunk& chunk, int startPos);
+  int _UnserializeStateWithUnknownVersion(const iplug::IByteChunk& chunk, int startPos);
 
   // Update all controls that depend on a model
   void _UpdateControlsFromModel();
