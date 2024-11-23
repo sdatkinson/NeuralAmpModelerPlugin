@@ -244,11 +244,12 @@ private:
   void _SetInputGain();
   void _SetOutputGain();
 
-  // Unserialize current-version plug-in data:
-  int _UnserializeStateCurrent(const iplug::IByteChunk& chunk, int startPos);
-  // Unserialize v0.7.9 legacy data:
-  int _UnserializeStateLegacy_0_7_9(const iplug::IByteChunk& chunk, int startPos);
-  // And other legacy unsrializations if/as needed...
+  // See: Unserialization.cpp
+  void _UnserializeApplyConfig(nlohmann::json& config);
+  // 0.7.10 and later
+  int _UnserializeStateWithKnownVersion(const IByteChunk& chunk, int startPos);
+  // Hopefully 0.7.9, but no gurantees
+  int _UnserializeStateWithUnknownVersion(const IByteChunk& chunk, int startPos);
 
   // Update all controls that depend on a model
   void _UpdateControlsFromModel();
