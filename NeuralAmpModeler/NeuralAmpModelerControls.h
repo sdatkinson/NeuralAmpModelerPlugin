@@ -452,7 +452,7 @@ class IContainerBaseWithNamedChildren : public IContainerBase
 {
 public:
   IContainerBaseWithNamedChildren(const IRECT& bounds)
-  : IContainerBase(bounds) {};
+  : IContainerBase(bounds){};
   ~IContainerBaseWithNamedChildren() = default;
 
 protected:
@@ -494,7 +494,7 @@ class ModelInfoControl : public IContainerBaseWithNamedChildren
 public:
   ModelInfoControl(const IRECT& bounds, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
-  , mStyle(style) {};
+  , mStyle(style){};
 
   void ClearModelInfo()
   {
@@ -561,7 +561,7 @@ class OutputModeControl : public IVRadioButtonControl
 public:
   OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
   : IVRadioButtonControl(
-      bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
+    bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize){};
 
   void SetNormalizedDisable(const bool disable)
   {
@@ -700,8 +700,12 @@ public:
       const auto outputRadioArea = outputArea.GetFromBottom(
         1.1f * (inputLevelArea.H() + inputSwitchArea.H())); // .GetMidHPadded(0.55f * knobWidth);
       const float buttonSize = 10.0f;
-      AddNamedChildControl(new OutputModeControl(outputRadioArea, kOutputMode, mRadioButtonStyle, buttonSize),
-                           mControlNames.outputMode, kCtrlTagOutputMode);
+      auto* outputModeControl =
+        AddNamedChildControl(new OutputModeControl(outputRadioArea, kOutputMode, mRadioButtonStyle, buttonSize),
+                             mControlNames.outputMode, kCtrlTagOutputMode);
+      outputModeControl->SetTooltip(
+        "How to adjust the level of the output.\nRaw=No adjustment.\nNormalized=Adjust the level so that all models "
+        "are about the same loudness.\nCalibrated=Match the input's digital-analog calibration.");
     }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
@@ -803,7 +807,7 @@ private:
     AboutControl(const IRECT& bounds, const IVStyle& style, const IText& text)
     : IContainerBase(bounds)
     , mStyle(style)
-    , mText(text) {};
+    , mText(text){};
 
     void OnAttached() override
     {
