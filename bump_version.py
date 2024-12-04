@@ -87,12 +87,13 @@ def main():
         os.system(f"git tag -d {tagname}")
         os.system(f"git push --delete origin {tagname}")
 
-    edit = input(
-        "\nTag version and git push to origin (will prompt for commit message)? Y/N: "
-    )
-
-    if edit == "y" or edit == "Y":
+    commit = input("\nCommit? Y/N")
+    if commit == "y" or commit == "Y":
         os.system("git commit -a --allow-empty")
+    edit = input(
+        "\nTag version and git push to origin? Y/N: "
+    )
+    if edit == "y" or edit == "Y":
         os.system("git tag " + tagname)
         os.system("git push && git push --tags")
 

@@ -7,6 +7,7 @@
 #include "AudioDSPTools/dsp/wav.h"
 #include "AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
 
+#include "Colors.h"
 #include "ToneStack.h"
 
 #include "IPlug_include_in_plug_hdr.h"
@@ -39,8 +40,11 @@ enum EParams
   // The rest is fine though.
   kNoiseGateActive,
   kEQActive,
-  kOutNorm,
   kIRToggle,
+  // Input calibration
+  kCalibrateInput,
+  kInputCalibrationLevel,
+  kOutputMode,
   kNumParams
 };
 
@@ -52,9 +56,10 @@ enum ECtrlTags
   kCtrlTagIRFileBrowser,
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
-  kCtrlTagAboutBox,
-  kCtrlTagOutNorm,
-  kCtrlTagSampleRateWarning,
+  kCtrlTagSettingsBox,
+  kCtrlTagOutputMode,
+  kCtrlTagCalibrateInput,
+  kCtrlTagInputCalibrationLevel,
   kNumCtrlTags
 };
 
@@ -97,14 +102,23 @@ public:
     // Assign the encapsulated object's processing function  to this object's member so that the resampler can use it:
     auto ProcessBlockFunc = [&](NAM_SAMPLE** input, NAM_SAMPLE** output, int numFrames) {
       mEncapsulated->process(input[0], output[0], numFrames);
-      mEncapsulated->finalize_(numFrames);
     };
     mBlockProcessFunc = ProcessBlockFunc;
 
     // Get the other information from the encapsulated NAM so that we can tell the outside world about what we're
     // holding.
     if (mEncapsulated->HasLoudness())
+    {
       SetLoudness(mEncapsulated->GetLoudness());
+    }
+    if (mEncapsulated->HasInputLevel())
+    {
+      SetInputLevel(mEncapsulated->GetInputLevel());
+    }
+    if (mEncapsulated->HasOutputLevel())
+    {
+      SetOutputLevel(mEncapsulated->GetOutputLevel());
+    }
 
     // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to
     // go.
@@ -121,45 +135,23 @@ public:
 
   void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override
   {
-    if (!mFinalized)
-      throw std::runtime_error("Processing was called before the last block was finalized!");
     if (num_frames > mMaxExternalBlockSize)
       // We can afford to be careful
       throw std::runtime_error("More frames were provided than the max expected!");
 
-    if (GetExpectedSampleRate() == GetEncapsulatedSampleRate())
+    if (!NeedToResample())
     {
       mEncapsulated->process(input, output, num_frames);
-      mEncapsulated->finalize_(num_frames);
     }
     else
     {
       mResampler.ProcessBlock(&input, &output, num_frames, mBlockProcessFunc);
     }
-
-    // Prepare for external call to .finalize_()
-    lastNumExternalFramesProcessed = num_frames;
-    mFinalized = false;
   };
 
-  void finalize_(const int num_frames) override
-  {
-    if (mFinalized)
-      throw std::runtime_error("Call to ResamplingNAM.finalize_() when the object is already in a finalized state!");
-    if (num_frames != lastNumExternalFramesProcessed)
-      throw std::runtime_error(
-        "finalize_() called on ResamplingNAM with a different number of frames from what was just processed. Something "
-        "is probably going wrong.");
+  int GetLatency() const { return NeedToResample() ? mResampler.GetLatency() : 0; };
 
-    // We don't actually do anything--it was taken care of during BlockProcessFunc()!
-
-    // prepare for next call to `.process()`
-    mFinalized = true;
-  };
-
-  int GetLatency() const { return mResampler.GetLatency(); };
-
-  void Reset(const double sampleRate, const int maxBlockSize)
+  void Reset(const double sampleRate, const int maxBlockSize) override
   {
     mExpectedSampleRate = sampleRate;
     mMaxExternalBlockSize = maxBlockSize;
@@ -169,36 +161,22 @@ public:
     // Stolen some code from the resampler; it'd be nice to have these exposed as methods? :)
     const double mUpRatio = sampleRate / GetEncapsulatedSampleRate();
     const auto maxEncapsulatedBlockSize = static_cast<int>(std::ceil(static_cast<double>(maxBlockSize) / mUpRatio));
-    std::vector<NAM_SAMPLE> input, output;
-    for (int i = 0; i < maxEncapsulatedBlockSize; i++)
-      input.push_back((NAM_SAMPLE)0.0);
-    output.resize(maxEncapsulatedBlockSize); // Doesn't matter what's in here
-    mEncapsulated->process(input.data(), output.data(), maxEncapsulatedBlockSize);
-    mEncapsulated->finalize_(maxEncapsulatedBlockSize);
-
-    mFinalized = true; // prepare for `.process()`
+    mEncapsulated->ResetAndPrewarm(sampleRate, maxEncapsulatedBlockSize);
   };
 
   // So that we can let the world know if we're resampling (useful for debugging)
   double GetEncapsulatedSampleRate() const { return GetNAMSampleRate(mEncapsulated); };
 
 private:
+  bool NeedToResample() const { return GetExpectedSampleRate() != GetEncapsulatedSampleRate(); };
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
-  // The processing for NAM is a little weird--there's a call to .finalize_() that's expected.
-  // This flag makes sure that the NAM sees alternating instances of .process() and .finalize_()
-  // A value of `true` means that we expect the ResamplingNAM object to see .process() next;
-  // `false` means we expect .finalize_() next.
-  bool mFinalized = true;
 
   // The resampling wrapper
   dsp::ResamplingContainer<NAM_SAMPLE, 1, 12> mResampler;
 
   // Used to check that we don't get too large a block to process.
   int mMaxExternalBlockSize = 0;
-  // Keep track of how many frames were processed so that we can be sure that finalize_() is being used correctly.
-  // This is kind of hacky, but I'm not sure I want to rethink the core right now.
-  int lastNumExternalFramesProcessed = -1;
 
   // This function is defined to conform to the interface expected by the iPlug2 resampler.
   std::function<void(NAM_SAMPLE**, NAM_SAMPLE**, int)> mBlockProcessFunc;
@@ -232,9 +210,6 @@ private:
   // partially-instantiated.
   void _ApplyDSPStaging();
   // Deallocates mInputPointers and mOutputPointers
-  // Check whether the sample rate is correct for the NAM model.
-  // Adjust the warning control accordingly.
-  void _CheckSampleRateWarning();
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
@@ -242,8 +217,6 @@ private:
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   void _InitToneStack();
-  // Apply the normalization for the model output (if possible)
-  void _NormalizeModelOutput(iplug::sample** buffer, const size_t numChannels, const size_t numFrames);
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
@@ -269,6 +242,22 @@ private:
   // Resetting for models and IRs, called by OnReset
   void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
 
+  void _SetInputGain();
+  void _SetOutputGain();
+
+  // See: Unserialization.cpp
+  void _UnserializeApplyConfig(nlohmann::json& config);
+  // 0.7.9 and later
+  int _UnserializeStateWithKnownVersion(const iplug::IByteChunk& chunk, int startPos);
+  // Hopefully 0.7.3-0.7.8, but no gurantees
+  int _UnserializeStateWithUnknownVersion(const iplug::IByteChunk& chunk, int startPos);
+
+  // Update all controls that depend on a model
+  void _UpdateControlsFromModel();
+
+  // Make sure that the latency is reported correctly.
+  void _UpdateLatency();
+
   // Update level meters
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
@@ -285,6 +274,10 @@ private:
   iplug::sample** mInputPointers = nullptr;
   iplug::sample** mOutputPointers = nullptr;
 
+  // Input and output gain
+  double mInputGain = 1.0;
+  double mOutputGain = 1.0;
+
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
   dsp::noise_gate::Gain mNoiseGateGain;
@@ -300,8 +293,7 @@ private:
   std::atomic<bool> mShouldRemoveIR = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
-  // Flag to check whether the playback sample rate is correct for the model being used.
-  std::atomic<bool> mCheckSampleRateWarning = true;
+  std::atomic<bool> mModelCleared = false;
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
