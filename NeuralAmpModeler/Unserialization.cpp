@@ -56,6 +56,7 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
 
   mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
   mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
+  mHighLightColor.Set(static_cast<std::string>(config["HighLightColor"]).c_str());
 
   if (mNAMPath.GetLength())
   {
@@ -77,6 +78,8 @@ int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPo
   config["NAMPath"] = std::string(path.Get());
   pos = chunk.GetStr(path, pos);
   config["IRPath"] = std::string(path.Get());
+  pos = chunk.GetStr(path, pos);
+  config["HighLightColor"] = std::string(path.Get());
 
   for (auto it = paramNames.begin(); it != paramNames.end(); ++it)
   {
