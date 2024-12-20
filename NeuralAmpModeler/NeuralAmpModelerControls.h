@@ -784,7 +784,8 @@ private:
     {
       IControl::SetValueFromDelegate(normalizedValue, valIdx);
       const std::string s = ConvertToString(normalizedValue);
-      OnTextEntryCompletion(s.c_str(), valIdx);
+      SetStr(s.c_str());
+      SetDirty(false);
     };
 
   private:
