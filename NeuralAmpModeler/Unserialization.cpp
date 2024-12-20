@@ -177,7 +177,7 @@ public:
   _Version(const int major, const int minor, const int patch)
   : mMajor(major)
   , mMinor(minor)
-  , mPatch(patch){};
+  , mPatch(patch) {};
   _Version(const std::string& versionStr)
   {
     std::istringstream stream(versionStr);
