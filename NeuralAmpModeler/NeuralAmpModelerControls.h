@@ -785,6 +785,7 @@ private:
       IControl::SetValueFromDelegate(normalizedValue, valIdx);
       const std::string s = ConvertToString(normalizedValue);
       SetStr(s.c_str());
+      SetDirty(false);
     };
 
   private:
