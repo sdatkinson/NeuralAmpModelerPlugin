@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.12</string>
+	<string>0.7.13</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.12</string>
+	<string>0.7.13</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -49,7 +49,7 @@
 					<key>type</key>
 					<string>aufx</string>
 					<key>version</key>
-					<integer>1804</integer>
+					<integer>1805</integer>
 				</dict>
 			</array>
 		</dict>

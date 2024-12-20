@@ -1,7 +1,7 @@
 #define PLUG_NAME "NeuralAmpModeler"
 #define PLUG_MFR "Steven Atkinson"
-#define PLUG_VERSION_HEX 0x0000070c
-#define PLUG_VERSION_STR "0.7.12"
+#define PLUG_VERSION_HEX 0x0000070d
+#define PLUG_VERSION_STR "0.7.13"
 #define PLUG_UNIQUE_ID '1YEo'
 #define PLUG_MFR_ID 'SDAa'
 #define PLUG_URL_STR "https://github.com/sdatkinson/NeuralAmpModelerPlugin"
