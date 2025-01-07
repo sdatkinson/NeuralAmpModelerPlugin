@@ -12,9 +12,10 @@
 using namespace iplug;
 using namespace igraphics;
 
-enum class NAMBrowserState {
-  Empty,  // when no file loaded, show "Get" button
-  Loaded  // when ile loaded, show "Clear" button
+enum class NAMBrowserState
+{
+  Empty, // when no file loaded, show "Get" button
+  Loaded // when ile loaded, show "Clear" button
 };
 
 // Where the corner button on the plugin (settings, close settings) goes
@@ -215,14 +216,17 @@ public:
 };
 
 // URL control for the "Get" models/irs links
-class NAMGetButtonControl : public NAMSquareButtonControl 
+class NAMGetButtonControl : public NAMSquareButtonControl
 {
 public:
   NAMGetButtonControl(const IRECT& bounds, const char* label, const char* url, const ISVG& globeSVG)
-  : NAMSquareButtonControl(bounds, [url](IControl* pCaller) {
-      WDL_String fullURL(url);
-      pCaller->GetUI()->OpenURL(fullURL.Get());
-    }, globeSVG)
+  : NAMSquareButtonControl(
+      bounds,
+      [url](IControl* pCaller) {
+        WDL_String fullURL(url);
+        pCaller->GetUI()->OpenURL(fullURL.Get());
+      },
+      globeSVG)
   {
     SetTooltip(label);
   }
@@ -404,22 +408,21 @@ public:
         break;
       case kMsgTagLoadedModel:
       case kMsgTagLoadedIR:
-        {
-          WDL_String fileName, directory;
-          fileName.Set(reinterpret_cast<const char*>(pData));
-          directory.Set(reinterpret_cast<const char*>(pData));
-          directory.remove_filepart(true);
+      {
+        WDL_String fileName, directory;
+        fileName.Set(reinterpret_cast<const char*>(pData));
+        directory.Set(reinterpret_cast<const char*>(pData));
+        directory.remove_filepart(true);
 
-          ClearPathList();
-          AddPath(directory.Get(), "");
-          SetupMenu();
-          SetSelectedFile(fileName.Get());
-          mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
-          SetBrowserState(NAMBrowserState::Loaded);
-        }
-        break;
-      default: 
-        break;
+        ClearPathList();
+        AddPath(directory.Get(), "");
+        SetupMenu();
+        SetSelectedFile(fileName.Get());
+        mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+        SetBrowserState(NAMBrowserState::Loaded);
+      }
+      break;
+      default: break;
     }
   }
 
@@ -434,10 +437,12 @@ private:
   }
 
   // set the state of the browser and the visibility of the "Get" vs. "Clear" buttons
-  void SetBrowserState(NAMBrowserState newState) {
+  void SetBrowserState(NAMBrowserState newState)
+  {
     mBrowserState = newState;
-    
-    switch (mBrowserState) {
+
+    switch (mBrowserState)
+    {
       case NAMBrowserState::Empty:
         mClearButton->Hide(true);
         mGetButton->Hide(false);

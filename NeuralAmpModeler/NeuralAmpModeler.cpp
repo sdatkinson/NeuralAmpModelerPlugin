@@ -226,44 +226,17 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const std::string defaultIRString = "Select IR...";
 #endif
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(
-        modelArea, 
-        kMsgTagClearModel,
-        defaultNamFileString.c_str(),
-        "nam",
-        loadModelCompletionHandler,
-        style,
-        fileSVG,
-        crossSVG,
-        leftArrowSVG,
-        rightArrowSVG,
-        fileBackgroundBitmap,
-        globeSVG,
-        "Get NAM Models",
-        "https://tonehunt.org/popular?tags%5B0%5D=nam"
-      ),
-      kCtrlTagModelFileBrowser
-    );
+      new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(), "nam",
+                                loadModelCompletionHandler, style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG,
+                                fileBackgroundBitmap, globeSVG, "Get NAM Models",
+                                "https://tonehunt.org/popular?tags%5B0%5D=nam"),
+      kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(
-        irArea,
-        kMsgTagClearIR,
-        defaultIRString.c_str(),
-        "wav",
-        loadIRCompletionHandler,
-        style,
-        fileSVG,
-        crossSVG,
-        leftArrowSVG,
-        rightArrowSVG,
-        fileBackgroundBitmap,
-        globeSVG,
-        "Get IRs", 
-        "https://tonehunt.org/popular?filter=ir"
-      ),
-      kCtrlTagIRFileBrowser
-    );
+      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
+                                fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap, globeSVG,
+                                "Get IRs", "https://tonehunt.org/popular?filter=ir"),
+      kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(
       new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
