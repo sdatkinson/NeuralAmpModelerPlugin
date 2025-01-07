@@ -67,6 +67,7 @@
 #define MODEL_ICON_FN "ModelIcon.svg"
 #define IR_ICON_ON_FN "IRIconOn.svg"
 #define IR_ICON_OFF_FN "IRIconOff.svg"
+#define GLOBE_ICON_FN "Globe.svg"
 
 #define BACKGROUND_FN "Background.jpg"
 #define BACKGROUND2X_FN "Background@2x.jpg"
