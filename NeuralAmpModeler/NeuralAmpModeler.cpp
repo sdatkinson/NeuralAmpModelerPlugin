@@ -225,17 +225,18 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const std::string defaultNamFileString = "Select model...";
     const std::string defaultIRString = "Select IR...";
 #endif
+    // Getting started page listing 3-rd party sites to get NAM models and IRs
+    const char* const getUrl = "https://www.neuralampmodeler.com/users#comp-li85mj7o";
     pGraphics->AttachControl(
       new NAMFileBrowserControl(modelArea, kMsgTagClearModel, defaultNamFileString.c_str(), "nam",
                                 loadModelCompletionHandler, style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG,
-                                fileBackgroundBitmap, globeSVG, "Get NAM Models",
-                                "https://tonehunt.org/popular?tags%5B0%5D=nam"),
+                                fileBackgroundBitmap, globeSVG, "Get NAM Models", getUrl),
       kCtrlTagModelFileBrowser);
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
       new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
                                 fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap, globeSVG,
-                                "Get IRs", "https://tonehunt.org/popular?filter=ir"),
+                                "Get IRs", getUrl),
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(
       new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
