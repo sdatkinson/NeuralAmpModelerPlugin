@@ -61,7 +61,6 @@
 		4F1A5285205D914A00CF2908 /* IPlugAAX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A5284205D914A00CF2908 /* IPlugAAX.cpp */; };
 		4F1A528C205D916F00CF2908 /* IPlugAU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A528A205D916F00CF2908 /* IPlugAU.cpp */; };
 		4F1B4AE42014D33600BC64D4 /* NeuralAmpModeler-macOS-MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4F1B4AE32014D33600BC64D4 /* NeuralAmpModeler-macOS-MainMenu.xib */; };
-		4F2EA978203A50EA008E4850 /* IPlugAPP_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2EA977203A50E9008E4850 /* IPlugAPP_dialog.cpp */; };
 		4F2FB1542A0047420027AB66 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2FB13A2A0047420027AB66 /* Resample.h */; };
 		4F2FB1552A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB13B2A0047420027AB66 /* RecursiveLinearFilter.cpp */; };
 		4F2FB1562A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB13B2A0047420027AB66 /* RecursiveLinearFilter.cpp */; };
@@ -210,13 +209,10 @@
 		4F3EE1D2231438D000004786 /* swell-misc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D3F13B635A0001D0217 /* swell-misc.mm */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -Wno-shorten-64-to-32"; }; };
 		4F3EE1D3231438D000004786 /* swell-wnd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4113B635AB001D0217 /* swell-wnd.mm */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -Wno-shorten-64-to-32"; }; };
 		4F3EE1D4231438D000004786 /* swell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4313B635B2001D0217 /* swell.cpp */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -Wno-shorten-64-to-32"; }; };
-		4F3EE1D5231438D000004786 /* IPlugAPP_host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F690CA2203A45C700A4A13E /* IPlugAPP_host.cpp */; };
 		4F3EE1D6231438D000004786 /* IPlugAPP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F1A5280205D913300CF2908 /* IPlugAPP.cpp */; };
 		4F3EE1D7231438D000004786 /* IGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F03A55820A4621000EBDFFB /* IGraphics.cpp */; };
-		4F3EE1D8231438D000004786 /* IPlugAPP_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2EA977203A50E9008E4850 /* IPlugAPP_dialog.cpp */; };
 		4F3EE1D9231438D000004786 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F10D3D3203A6711003EF82A /* RtAudio.cpp */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32"; }; };
 		4F3EE1DA231438D000004786 /* IGraphicsCoreText.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F6FD2AF22675B6300FC59E6 /* IGraphicsCoreText.mm */; };
-		4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F690C9A203A345100A4A13E /* IPlugAPP_main.cpp */; };
 		4F3EE1DD231438D000004786 /* IGraphicsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FB1F58120E4AFEE004157C8 /* IGraphicsMac.mm */; };
 		4F3EE1DE231438D000004786 /* NeuralAmpModeler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3862ED2014BBEC0009F402 /* NeuralAmpModeler.cpp */; };
 		4F3EE1E0231438D000004786 /* IPlugAPIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F78D8ED13B63BA40032E0F3 /* IPlugAPIBase.cpp */; };
@@ -233,6 +229,12 @@
 		4F4856892773CA76005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F4856812773BD16005BCF8E /* NeuralAmpModelerAUv3Appex.m */; };
 		4F5C5F6921BED05B00E024A7 /* swellappmain.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4613B635C8001D0217 /* swellappmain.mm */; };
 		4F5C5F6B21BED08700E024A7 /* swell-appstub.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C5F6A21BED08700E024A7 /* swell-appstub.mm */; };
+		4F5C68022D871C4C009B81A1 /* IPlugAPP_host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C67FF2D871C4C009B81A1 /* IPlugAPP_host.cpp */; };
+		4F5C68032D871C4C009B81A1 /* IPlugAPP_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C67FD2D871C4C009B81A1 /* IPlugAPP_dialog.cpp */; };
+		4F5C68042D871C4C009B81A1 /* IPlugAPP_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C68002D871C4C009B81A1 /* IPlugAPP_main.cpp */; };
+		4F5C68052D871C4C009B81A1 /* IPlugAPP_host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C67FF2D871C4C009B81A1 /* IPlugAPP_host.cpp */; };
+		4F5C68062D871C4C009B81A1 /* IPlugAPP_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C67FD2D871C4C009B81A1 /* IPlugAPP_dialog.cpp */; };
+		4F5C68072D871C4C009B81A1 /* IPlugAPP_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C68002D871C4C009B81A1 /* IPlugAPP_main.cpp */; };
 		4F5F344120C0226200487201 /* IPlugPaths.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F5F344020C0226200487201 /* IPlugPaths.mm */; };
 		4F5F344220C0226200487201 /* IPlugPaths.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F5F344020C0226200487201 /* IPlugPaths.mm */; };
 		4F5F344320C0226200487201 /* IPlugPaths.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F5F344020C0226200487201 /* IPlugPaths.mm */; };
@@ -251,8 +253,6 @@
 		4F6369EE20A466470022C370 /* IControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F6369E920A466470022C370 /* IControl.cpp */; };
 		4F6369EF20A466470022C370 /* IControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F6369E920A466470022C370 /* IControl.cpp */; };
 		4F6369F120A466470022C370 /* IControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F6369E920A466470022C370 /* IControl.cpp */; };
-		4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F690C9A203A345100A4A13E /* IPlugAPP_main.cpp */; };
-		4F690CA3203A45C700A4A13E /* IPlugAPP_host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F690CA2203A45C700A4A13E /* IPlugAPP_host.cpp */; };
 		4F6FD2B022675B6300FC59E6 /* IGraphicsCoreText.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F6FD2AD22675B6300FC59E6 /* IGraphicsCoreText.h */; };
 		4F6FD2B122675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F6FD2AF22675B6300FC59E6 /* IGraphicsCoreText.mm */; };
 		4F6FD2B222675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F6FD2AF22675B6300FC59E6 /* IGraphicsCoreText.mm */; };
@@ -650,7 +650,6 @@
 		4F23BA1313B647E50097A67E /* NeuralAmpModeler-AU-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-AU-Info.plist"; path = "../resources/NeuralAmpModeler-AU-Info.plist"; sourceTree = "<group>"; };
 		4F23BA1413B647E50097A67E /* NeuralAmpModeler-macOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-macOS-Info.plist"; path = "../resources/NeuralAmpModeler-macOS-Info.plist"; sourceTree = "<group>"; };
 		4F23BA1513B647E50097A67E /* NeuralAmpModeler-VST2-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "NeuralAmpModeler-VST2-Info.plist"; path = "../resources/NeuralAmpModeler-VST2-Info.plist"; sourceTree = "<group>"; };
-		4F2EA977203A50E9008E4850 /* IPlugAPP_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugAPP_dialog.cpp; path = ../../iPlug2/IPlug/APP/IPlugAPP_dialog.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		4F2FB13A2A0047420027AB66 /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resample.h; sourceTree = "<group>"; };
 		4F2FB13B2A0047420027AB66 /* RecursiveLinearFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecursiveLinearFilter.cpp; sourceTree = "<group>"; };
 		4F2FB13C2A0047420027AB66 /* wav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wav.h; sourceTree = "<group>"; };
@@ -704,13 +703,14 @@
 		4F4CC38D1549B92900A9EA21 /* AAXLibrary_common_release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = AAXLibrary_common_release.xcconfig; path = ../../iPlug2/Dependencies/IPlug/AAX_SDK/Libs/AAXLibrary/MacBuild/AAXLibrary_common_release.xcconfig; sourceTree = SOURCE_ROOT; };
 		4F4CC4401549C15500A9EA21 /* IPlugAAX_Describe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugAAX_Describe.cpp; path = ../../iPlug2/IPlug/AAX/IPlugAAX_Describe.cpp; sourceTree = SOURCE_ROOT; tabWidth = 2; };
 		4F5C5F6A21BED08700E024A7 /* swell-appstub.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "swell-appstub.mm"; path = "../../iPlug2/WDL/swell/swell-appstub.mm"; sourceTree = "<group>"; };
+		4F5C67FD2D871C4C009B81A1 /* IPlugAPP_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IPlugAPP_dialog.cpp; sourceTree = "<group>"; };
+		4F5C67FE2D871C4C009B81A1 /* IPlugAPP_host.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPlugAPP_host.h; sourceTree = "<group>"; };
+		4F5C67FF2D871C4C009B81A1 /* IPlugAPP_host.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IPlugAPP_host.cpp; sourceTree = "<group>"; };
+		4F5C68002D871C4C009B81A1 /* IPlugAPP_main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = IPlugAPP_main.cpp; sourceTree = "<group>"; };
 		4F5F344020C0226200487201 /* IPlugPaths.mm */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.objcpp; name = IPlugPaths.mm; path = ../../iPlug2/IPlug/IPlugPaths.mm; sourceTree = "<group>"; tabWidth = 2; };
 		4F6369DC20A464BB0022C370 /* IGraphicsNanoVG_src.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IGraphicsNanoVG_src.m; sourceTree = "<group>"; };
 		4F6369E820A466470022C370 /* IControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IControl.h; path = ../../iPlug2/IGraphics/IControl.h; sourceTree = "<group>"; };
 		4F6369E920A466470022C370 /* IControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IControl.cpp; path = ../../iPlug2/IGraphics/IControl.cpp; sourceTree = "<group>"; };
-		4F690C9A203A345100A4A13E /* IPlugAPP_main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; indentWidth = 2; name = IPlugAPP_main.cpp; path = ../../iPlug2/IPlug/APP/IPlugAPP_main.cpp; sourceTree = "<group>"; tabWidth = 2; };
-		4F690CA0203A398900A4A13E /* IPlugAPP_host.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugAPP_host.h; path = ../../iPlug2/IPlug/APP/IPlugAPP_host.h; sourceTree = "<group>"; tabWidth = 2; };
-		4F690CA2203A45C700A4A13E /* IPlugAPP_host.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugAPP_host.cpp; path = ../../iPlug2/IPlug/APP/IPlugAPP_host.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		4F6D9DEB2016B7F7009E1E3E /* IPlugPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugPlatform.h; path = ../../iPlug2/IPlug/IPlugPlatform.h; sourceTree = "<group>"; tabWidth = 2; };
 		4F6FD2AD22675B6300FC59E6 /* IGraphicsCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IGraphicsCoreText.h; path = ../../iPlug2/IGraphics/Platforms/IGraphicsCoreText.h; sourceTree = "<group>"; };
 		4F6FD2AF22675B6300FC59E6 /* IGraphicsCoreText.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IGraphicsCoreText.mm; path = ../../iPlug2/IGraphics/Platforms/IGraphicsCoreText.mm; sourceTree = "<group>"; };
@@ -1111,6 +1111,7 @@
 		089C166AFE841209C02AAC07 /* IPlugExample */ = {
 			isa = PBXGroup;
 			children = (
+				4F5C68012D871C4C009B81A1 /* app */,
 				4F2FB1392A0047420027AB66 /* dsp */,
 				4F2FB1452A0047420027AB66 /* NAM */,
 				AA355E2C295B688F0061AA3D /* Colors.h */,
@@ -1397,6 +1398,18 @@
 			path = ../../iPlug2/IPlug/Extras;
 			sourceTree = "<group>";
 		};
+		4F5C68012D871C4C009B81A1 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				4F5C67FD2D871C4C009B81A1 /* IPlugAPP_dialog.cpp */,
+				4F5C67FE2D871C4C009B81A1 /* IPlugAPP_host.h */,
+				4F5C67FF2D871C4C009B81A1 /* IPlugAPP_host.cpp */,
+				4F5C68002D871C4C009B81A1 /* IPlugAPP_main.cpp */,
+			);
+			name = app;
+			path = ../app;
+			sourceTree = SOURCE_ROOT;
+		};
 		4F63695120A463090022C370 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
@@ -1503,10 +1516,6 @@
 				4F10D3D1203A6700003EF82A /* RTAudioMidi */,
 				4F1A5280205D913300CF2908 /* IPlugAPP.cpp */,
 				4F1A527F205D913200CF2908 /* IPlugAPP.h */,
-				4F690C9A203A345100A4A13E /* IPlugAPP_main.cpp */,
-				4F690CA0203A398900A4A13E /* IPlugAPP_host.h */,
-				4F690CA2203A45C700A4A13E /* IPlugAPP_host.cpp */,
-				4F2EA977203A50E9008E4850 /* IPlugAPP_dialog.cpp */,
 			);
 			name = APP;
 			sourceTree = "<group>";
@@ -2726,6 +2735,9 @@
 				4F3EE1C9231438D000004786 /* swellappmain.mm in Sources */,
 				4F3EE1CA231438D000004786 /* swell-kb.mm in Sources */,
 				4F3EE1CC231438D000004786 /* IPlugPaths.mm in Sources */,
+				4F5C68052D871C4C009B81A1 /* IPlugAPP_host.cpp in Sources */,
+				4F5C68062D871C4C009B81A1 /* IPlugAPP_dialog.cpp in Sources */,
+				4F5C68072D871C4C009B81A1 /* IPlugAPP_main.cpp in Sources */,
 				4F3EE1CD231438D000004786 /* swell-miscdlg.mm in Sources */,
 				4F7C496F255DDFCB00DF7588 /* ITextEntryControl.cpp in Sources */,
 				4F3EE1CF231438D000004786 /* swell-menu.mm in Sources */,
@@ -2739,16 +2751,13 @@
 				4F3EE1D2231438D000004786 /* swell-misc.mm in Sources */,
 				4F3EE1D3231438D000004786 /* swell-wnd.mm in Sources */,
 				4F3EE1D4231438D000004786 /* swell.cpp in Sources */,
-				4F3EE1D5231438D000004786 /* IPlugAPP_host.cpp in Sources */,
 				4F2FB15D2A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */,
 				4F3EE1D6231438D000004786 /* IPlugAPP.cpp in Sources */,
 				4F2FB17A2A0047430027AB66 /* ImpulseResponse.cpp in Sources */,
 				4F2FB18F2A0047430027AB66 /* util.cpp in Sources */,
 				4F3EE1D7231438D000004786 /* IGraphics.cpp in Sources */,
-				4F3EE1D8231438D000004786 /* IPlugAPP_dialog.cpp in Sources */,
 				4F3EE1D9231438D000004786 /* RtAudio.cpp in Sources */,
 				4F3EE1DA231438D000004786 /* IGraphicsCoreText.mm in Sources */,
-				4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */,
 				4F2FB1682A0047430027AB66 /* dsp.cpp in Sources */,
 				4F3EE1DD231438D000004786 /* IGraphicsMac.mm in Sources */,
 				4F3EE1DE231438D000004786 /* NeuralAmpModeler.cpp in Sources */,
@@ -2954,6 +2963,9 @@
 				4F5C5F6921BED05B00E024A7 /* swellappmain.mm in Sources */,
 				4FD16D3A13B63582001D0217 /* swell-kb.mm in Sources */,
 				4F5F344120C0226200487201 /* IPlugPaths.mm in Sources */,
+				4F5C68022D871C4C009B81A1 /* IPlugAPP_host.cpp in Sources */,
+				4F5C68032D871C4C009B81A1 /* IPlugAPP_dialog.cpp in Sources */,
+				4F5C68042D871C4C009B81A1 /* IPlugAPP_main.cpp in Sources */,
 				4FD16D3C13B6358C001D0217 /* swell-miscdlg.mm in Sources */,
 				4F7C4957255DDFC300DF7588 /* ITextEntryControl.cpp in Sources */,
 				4FD16D3E13B63595001D0217 /* swell-menu.mm in Sources */,
@@ -2967,16 +2979,13 @@
 				4FD16D4013B635A0001D0217 /* swell-misc.mm in Sources */,
 				4FD16D4213B635AB001D0217 /* swell-wnd.mm in Sources */,
 				4FD16D4413B635B2001D0217 /* swell.cpp in Sources */,
-				4F690CA3203A45C700A4A13E /* IPlugAPP_host.cpp in Sources */,
 				4F2FB1552A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */,
 				4F1A5282205D913300CF2908 /* IPlugAPP.cpp in Sources */,
 				4F2FB1722A0047430027AB66 /* ImpulseResponse.cpp in Sources */,
 				4F2FB1872A0047430027AB66 /* util.cpp in Sources */,
 				4F03A5AC20A4621100EBDFFB /* IGraphics.cpp in Sources */,
-				4F2EA978203A50EA008E4850 /* IPlugAPP_dialog.cpp in Sources */,
 				4FAFFE5821495A4800A6E72D /* RtAudio.cpp in Sources */,
 				4F6FD2B122675B6300FC59E6 /* IGraphicsCoreText.mm in Sources */,
-				4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */,
 				4F2FB1602A0047430027AB66 /* dsp.cpp in Sources */,
 				4FB1F58920E4B004004157C8 /* IGraphicsMac.mm in Sources */,
 				4F3862EF2014BBEC0009F402 /* NeuralAmpModeler.cpp in Sources */,
@@ -4331,7 +4340,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 77BKRC84G3;
+				DEVELOPMENT_TEAM = 686EDA2T8T;
 				DSTROOT = "$(APP_PATH)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4366,7 +4375,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 77BKRC84G3;
+				DEVELOPMENT_TEAM = 686EDA2T8T;
 				DSTROOT = "$(APP_PATH)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4401,7 +4410,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 77BKRC84G3;
+				DEVELOPMENT_TEAM = 686EDA2T8T;
 				DSTROOT = "$(APP_PATH)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
