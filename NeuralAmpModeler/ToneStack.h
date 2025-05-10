@@ -11,6 +11,8 @@ namespace tone_stack
 class AbstractToneStack
 {
 public:
+  AbstractToneStack() = default;
+  virtual ~AbstractToneStack() = default;
   // Compute in the real-time loop
   virtual DSP_SAMPLE** Process(DSP_SAMPLE** inputs, const int numChannels, const int numFrames) = 0;
   // Any preparation. Call from Reset() in the plugin
@@ -40,11 +42,10 @@ public:
   };
   ~BasicNamToneStack() = default;
 
-  DSP_SAMPLE** Process(DSP_SAMPLE** inputs, const int numChannels, const int numFrames);
-  virtual void Reset(const double sampleRate, const int maxBlockSize) override;
+  DSP_SAMPLE** Process(DSP_SAMPLE** inputs, const int numChannels, const int numFrames) override;
+  void Reset(const double sampleRate, const int maxBlockSize) override;
   // :param val: Assumed to be between 0 and 10, 5 is "noon"
-  virtual void SetParam(const std::string name, const double val) override;
-
+  void SetParam(const std::string name, const double val) override;
 
 protected:
   recursive_linear_filter::LowShelf mToneBass;
