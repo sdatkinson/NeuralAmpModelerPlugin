@@ -15,7 +15,7 @@ using namespace igraphics;
 enum class NAMBrowserState
 {
   Empty, // when no file loaded, show "Get" button
-  Loaded // when ile loaded, show "Clear" button
+  Loaded // when file loaded, show "Clear" button
 };
 
 // Where the corner button on the plugin (settings, close settings) goes
