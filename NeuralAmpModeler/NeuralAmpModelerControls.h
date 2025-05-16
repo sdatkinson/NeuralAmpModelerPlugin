@@ -12,6 +12,12 @@
 using namespace iplug;
 using namespace igraphics;
 
+enum class NAMBrowserState
+{
+  Empty, // when no file loaded, show "Get" button
+  Loaded // when file loaded, show "Clear" button
+};
+
 // Where the corner button on the plugin (settings, close settings) goes
 // :param rect: Rect for the whole plugin's UI
 IRECT CornerButtonArea(const IRECT& rect)
@@ -209,12 +215,30 @@ public:
   }
 };
 
+// URL control for the "Get" models/irs links
+class NAMGetButtonControl : public NAMSquareButtonControl
+{
+public:
+  NAMGetButtonControl(const IRECT& bounds, const char* label, const char* url, const ISVG& globeSVG)
+  : NAMSquareButtonControl(
+      bounds,
+      [url](IControl* pCaller) {
+        WDL_String fullURL(url);
+        pCaller->GetUI()->OpenURL(fullURL.Get());
+      },
+      globeSVG)
+  {
+    SetTooltip(label);
+  }
+};
+
 class NAMFileBrowserControl : public IDirBrowseControlBase
 {
 public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
                         IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
-                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap)
+                        const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap,
+                        const ISVG& globeSVG, const char* getButtonLabel, const char* getButtonURL)
   : IDirBrowseControlBase(bounds, fileExtension, false, false)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
@@ -225,6 +249,10 @@ public:
   , mClearSVG(clearSVG)
   , mLeftSVG(leftSVG)
   , mRightSVG(rightSVG)
+  , mGlobeSVG(globeSVG)
+  , mGetButtonLabel(getButtonLabel)
+  , mGetButtonURL(getButtonURL)
+  , mBrowserState(NAMBrowserState::Empty)
   {
     mIgnoreMouse = true;
   }
@@ -304,6 +332,7 @@ public:
     auto clearFileFunc = [&](IControl* pCaller) {
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
       mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
+      SetBrowserState(NAMBrowserState::Empty);
       // FIXME disabling output mode...
       //      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
     };
@@ -328,7 +357,7 @@ public:
     IRECT padded = mRECT.GetPadded(-6.f).GetHPadded(-2.f);
     const auto buttonWidth = padded.H();
     const auto loadFileButtonBounds = padded.ReduceFromLeft(buttonWidth);
-    const auto clearButtonBounds = padded.ReduceFromRight(buttonWidth);
+    const auto clearAndGetButtonBounds = padded.ReduceFromRight(buttonWidth);
     const auto leftButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto rightButtonBounds = padded.ReduceFromLeft(buttonWidth);
     const auto fileNameButtonBounds = padded;
@@ -341,10 +370,17 @@ public:
       ->SetAnimationEndActionFunction(nextFileFunc);
     AddChildControl(mFileNameControl = new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle))
       ->SetAnimationEndActionFunction(chooseFileFunc);
-    AddChildControl(new NAMSquareButtonControl(clearButtonBounds, DefaultClickActionFunc, mClearSVG))
-      ->SetAnimationEndActionFunction(clearFileFunc);
 
-    mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
+    // creates both right-side controls but only show one based on state
+    mClearButton = new NAMSquareButtonControl(clearAndGetButtonBounds, DefaultClickActionFunc, mClearSVG);
+    mClearButton->SetAnimationEndActionFunction(clearFileFunc);
+    AddChildControl(mClearButton);
+
+    mGetButton = new NAMGetButtonControl(clearAndGetButtonBounds, mGetButtonLabel, mGetButtonURL, mGlobeSVG);
+    AddChildControl(mGetButton);
+
+    // initialize control visibility
+    SetBrowserState(NAMBrowserState::Empty);
   }
 
   void LoadFileAtCurrentIndex()
@@ -367,6 +403,7 @@ public:
         {
           std::string label(std::string("(FAILED) ") + std::string(mFileNameControl->GetLabelStr()));
           mFileNameControl->SetLabelAndTooltip(label.c_str());
+          SetBrowserState(NAMBrowserState::Empty);
         }
         break;
       case kMsgTagLoadedModel:
@@ -382,8 +419,9 @@ public:
         SetupMenu();
         SetSelectedFile(fileName.Get());
         mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
-        break;
+        SetBrowserState(NAMBrowserState::Loaded);
       }
+      break;
       default: break;
     }
   }
@@ -398,13 +436,38 @@ private:
     return;
   }
 
+  // set the state of the browser and the visibility of the "Get" vs. "Clear" buttons
+  void SetBrowserState(NAMBrowserState newState)
+  {
+    mBrowserState = newState;
+
+    switch (mBrowserState)
+    {
+      case NAMBrowserState::Empty:
+        mClearButton->Hide(true);
+        mGetButton->Hide(false);
+        break;
+      case NAMBrowserState::Loaded:
+        mClearButton->Hide(false);
+        mGetButton->Hide(true);
+        break;
+    }
+  }
+
   WDL_String mDefaultLabelStr;
   IFileDialogCompletionHandlerFunc mCompletionHandlerFunc;
   NAMFileNameControl* mFileNameControl = nullptr;
   IVStyle mStyle;
   IBitmap mBitmap;
-  ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG;
+  ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG, mGlobeSVG;
   int mClearMsgTag;
+
+  // new members for the "Get" button
+  const char* mGetButtonLabel;
+  const char* mGetButtonURL;
+  NAMBrowserState mBrowserState;
+  NAMSquareButtonControl* mClearButton = nullptr;
+  NAMGetButtonControl* mGetButton = nullptr;
 };
 
 class NAMMeterControl : public IVPeakAvgMeterControl<>, public IBitmapBase
