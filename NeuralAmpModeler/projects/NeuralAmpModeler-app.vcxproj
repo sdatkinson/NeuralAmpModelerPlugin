@@ -301,7 +301,6 @@
     <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWeb.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP.h" />
-    <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugAPIBase.h" />
@@ -319,6 +318,7 @@
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugUtilities.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_hdr.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_src.h" />
+    <ClInclude Include="..\app\IPlugAPP_host.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\dsp.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\AudioDSPTools\dsp\NoiseGate.h" />
@@ -376,15 +376,15 @@
     <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp" />
     <ClCompile Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP.cpp" />
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_dialog.cpp" />
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.cpp" />
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_main.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugAPIBase.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugParameter.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugPaths.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugPluginBase.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugProcessor.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugTimer.cpp" />
+    <ClCompile Include="..\app\IPlugAPP_dialog.cpp" />
+    <ClCompile Include="..\app\IPlugAPP_host.cpp" />
+    <ClCompile Include="..\app\IPlugAPP_main.cpp" />
     <ClCompile Include="..\AudioDSPTools\dsp\dsp.cpp" />
     <ClCompile Include="..\AudioDSPTools\dsp\ImpulseResponse.cpp" />
     <ClCompile Include="..\AudioDSPTools\dsp\NoiseGate.cpp" />
