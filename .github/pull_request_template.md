@@ -13,4 +13,5 @@ Include [Closing words](https://docs.github.com/en/issues/tracking-your-work-wit
 - [ ] Does your PR add, remove, or rename any plugin parameters? If yes...
   - [ ] Have you ensured that the plug-in unserializes correctly?
   - [ ] Have you ensured that _older_ versions of the plug-in load correctly? (See [`Unserialization.cpp`](https://github.com/sdatkinson/NeuralAmpModelerPlugin/blob/main/NeuralAmpModeler/Unserialization.cpp).)
+- [ ] Does your PR add or remove any graphical assets? If yes, are they defined in [config.h](https://github.com/olilarkin/NeuralAmpModelerPlugin/blob/main/NeuralAmpModeler/config.h) and added in the two required locations in [main.rc](https://github.com/olilarkin/NeuralAmpModelerPlugin/blob/main/NeuralAmpModeler/resources/main.rc)?
   
