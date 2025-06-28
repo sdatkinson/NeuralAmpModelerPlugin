@@ -1,0 +1,8 @@
+- Prerequisites:
+  You must have cmake 3.10 or newer installed in your system.
+  
+- Windows / Visual Studio 2022
+  Run CreateProject-win.cmd
+
+- Mac OSX / Xcode:
+  Run ./CreateProject-mac.sh
