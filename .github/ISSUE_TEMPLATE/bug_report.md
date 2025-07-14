@@ -39,7 +39,7 @@ If applicable, add screenshots to help explain your problem.
  - Audio interface [e.g. Focusrite Scarlett Solo 3rd Gen]
  - Sample rate [e.g. 44.1 kHz]
  - Buffer size [e.g. 256 samples]
- - Provide a model that the bug happens with (_except_ if the bug happens _without_ a model loaded)
+ - Provide a model that the bug happens with (_except_ if the bug happens _without_ a model loaded) _Note: Please try using [linear_10.nam](https://github.com/sdatkinson/neural-amp-modeler/blob/8cf2580121f181e751da9b7003fe72195d80955c/tests/resources/models/identity/linear_10.nam) and [wavenet_minimal](https://github.com/sdatkinson/neural-amp-modeler/blob/8cf2580121f181e751da9b7003fe72195d80955c/tests/resources/models/identity/wavenet_minimal.nam) and check whether they work as expected._
  - Provide an IR that the bug happens with (_except_ if the bug happens _without_ an IR loaded)
  - **Does the bug _not_ happen under some other conditions?** If you can find what _one_ thing makes the difference between the bug appearing and not, this _drastically_ improves the chances I can fix it.
 
