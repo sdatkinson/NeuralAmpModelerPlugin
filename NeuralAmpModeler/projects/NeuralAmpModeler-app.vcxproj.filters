@@ -35,15 +35,6 @@
     <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP.cpp">
       <Filter>IPlug\APP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_dialog.cpp">
-      <Filter>IPlug\APP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.cpp">
-      <Filter>IPlug\APP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\iPlug2\IPlug\APP\IPlugAPP_main.cpp">
-      <Filter>IPlug\APP</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\RtAudio.cpp">
       <Filter>IPlug\APP\RTAudioMidi</Filter>
     </ClCompile>
@@ -114,6 +105,15 @@
       <Filter>dsp</Filter>
     </ClCompile>
     <ClCompile Include="..\ToneStack.cpp" />
+    <ClCompile Include="..\app\IPlugAPP_dialog.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\app\IPlugAPP_host.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\app\IPlugAPP_main.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NeuralAmpModeler.h" />
@@ -215,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="../config.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP.h">
-      <Filter>IPlug\APP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\iPlug2\IPlug\APP\IPlugAPP_host.h">
       <Filter>IPlug\APP</Filter>
     </ClInclude>
     <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\RTAudio\RtAudio.h">
@@ -364,6 +361,9 @@
     <ClInclude Include="..\NeuralAmpModelerCore\NAM\get_dsp.h">
       <Filter>NAM</Filter>
     </ClInclude>
+    <ClInclude Include="..\app\IPlugAPP_host.h">
+      <Filter>app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -413,6 +413,9 @@
     </Filter>
     <Filter Include="dsp\ResamplingContainer\Dependencies\WDL">
       <UniqueIdentifier>{f22f96a8-fd44-4509-987d-7683e32f3592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{720c216c-fbf2-49d7-a507-e5bb64c99c87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
