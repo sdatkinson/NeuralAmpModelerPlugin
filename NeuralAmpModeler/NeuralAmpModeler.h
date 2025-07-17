@@ -1,11 +1,11 @@
 #pragma once
 
-#include "NeuralAmpModelerCore/NAM/dsp.h"
-#include "AudioDSPTools/dsp/ImpulseResponse.h"
-#include "AudioDSPTools/dsp/NoiseGate.h"
-#include "AudioDSPTools/dsp/dsp.h"
-#include "AudioDSPTools/dsp/wav.h"
-#include "AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
+#include "../AudioDSPTools/dsp/ImpulseResponse.h"
+#include "../AudioDSPTools/dsp/NoiseGate.h"
+#include "../AudioDSPTools/dsp/dsp.h"
+#include "../AudioDSPTools/dsp/wav.h"
+#include "../AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
+#include "../NeuralAmpModelerCore/NAM/dsp.h"
 
 #include "Colors.h"
 #include "ToneStack.h"

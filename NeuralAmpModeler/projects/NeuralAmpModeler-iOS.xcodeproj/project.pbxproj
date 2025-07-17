@@ -651,7 +651,7 @@
 				4FBDC93529FFF143004FF203 /* wav.h */,
 			);
 			name = dsp;
-			path = ../AudioDSPTools/dsp;
+			path = ../../AudioDSPTools/dsp;
 			sourceTree = "<group>";
 		};
 		4FBDC93E29FFF143004FF203 /* NAM */ = {
@@ -674,7 +674,7 @@
 				4FBDC94529FFF143004FF203 /* wavenet.h */,
 			);
 			name = NAM;
-			path = ../NeuralAmpModelerCore/NAM;
+			path = ../../NeuralAmpModelerCore/NAM;
 			sourceTree = "<group>";
 		};
 		4FDF6D712267CE540007B686 /* iOSApp */ = {

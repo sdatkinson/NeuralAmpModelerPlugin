@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include "AudioDSPTools/dsp/dsp.h"
-#include "AudioDSPTools/dsp/RecursiveLinearFilter.h"
+#include "../AudioDSPTools/dsp/dsp.h"
+#include "../AudioDSPTools/dsp/RecursiveLinearFilter.h"
 
 namespace dsp
 {
