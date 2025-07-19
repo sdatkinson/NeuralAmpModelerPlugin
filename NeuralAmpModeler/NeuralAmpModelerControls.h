@@ -769,6 +769,23 @@ public:
       outputModeControl->SetTooltip(
         "How to adjust the level of the output.\nRaw=No adjustment.\nNormalized=Adjust the level so that all models "
         "are about the same loudness.\nCalibrated=Match the input's digital-analog calibration.");
+
+      // Attach highlight color controls
+      const auto colorArea =
+          titleArea.GetFromTop(0.5f * height).GetFromLeft(0.5f * width).GetTranslated(0.0f, 47.0f);
+      const auto highlightArea = colorArea.GetFromLeft(0.5f * width).GetHPadded(-92.0f).GetVPadded(-15.0f);
+      ;
+      AddNamedChildControl(
+          new IVColorSwatchControl(highlightArea, "Highlight Color",
+              [&](int idx, IColor color) {
+                  WDL_String colorCodeStr;
+                  color.ToColorCodeStr(colorCodeStr, false);
+                  this->GetDelegate()->SendArbitraryMsgFromUI(
+                      kMsgTagHighlightColor, kNoTag, colorCodeStr.GetLength(), colorCodeStr.Get());
+              },
+              mStyle, IVColorSwatchControl::ECellLayout::kHorizontal, { kX1 }, { "" }),
+          mControlNames.highlightColor)
+          ->SetTooltip("choose your favorite color \nfor the plugin controls");
     }
 
     const float halfWidth = PLUG_WIDTH / 2.0f - pad;
@@ -817,6 +834,7 @@ private:
     const std::string modelInfo = "ModelInfo";
     const std::string outputMode = "OutputMode";
     const std::string title = "Title";
+    const std::string highlightColor = "Highlight Color";
   } mControlNames;
 
   class InputLevelControl : public IEditableTextControl
