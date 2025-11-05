@@ -221,12 +221,12 @@ class NAMGetButtonControl : public NAMSquareButtonControl
 public:
   NAMGetButtonControl(const IRECT& bounds, const char* label, const char* url, const ISVG& globeSVG)
   : NAMSquareButtonControl(
-      bounds,
-      [url](IControl* pCaller) {
-        WDL_String fullURL(url);
-        pCaller->GetUI()->OpenURL(fullURL.Get());
-      },
-      globeSVG)
+    bounds,
+    [url](IControl* pCaller) {
+      WDL_String fullURL(url);
+      pCaller->GetUI()->OpenURL(fullURL.Get());
+    },
+    globeSVG)
   {
     SetTooltip(label);
   }
@@ -515,7 +515,7 @@ class IContainerBaseWithNamedChildren : public IContainerBase
 {
 public:
   IContainerBaseWithNamedChildren(const IRECT& bounds)
-  : IContainerBase(bounds) {};
+  : IContainerBase(bounds){};
   ~IContainerBaseWithNamedChildren() = default;
 
 protected:
@@ -557,7 +557,7 @@ class ModelInfoControl : public IContainerBaseWithNamedChildren
 public:
   ModelInfoControl(const IRECT& bounds, const IVStyle& style)
   : IContainerBaseWithNamedChildren(bounds)
-  , mStyle(style) {};
+  , mStyle(style){};
 
   void ClearModelInfo()
   {
@@ -624,7 +624,7 @@ class OutputModeControl : public IVRadioButtonControl
 public:
   OutputModeControl(const IRECT& bounds, int paramIdx, const IVStyle& style, float buttonSize)
   : IVRadioButtonControl(
-      bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize) {};
+    bounds, paramIdx, {}, "Output Mode", style, EVShape::Ellipse, EDirection::Vertical, buttonSize){};
 
   void SetNormalizedDisable(const bool disable)
   {
@@ -871,7 +871,7 @@ private:
     AboutControl(const IRECT& bounds, const IVStyle& style, const IText& text)
     : IContainerBase(bounds)
     , mStyle(style)
-    , mText(text) {};
+    , mText(text){};
 
     void OnAttached() override
     {

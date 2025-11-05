@@ -220,10 +220,14 @@ private:
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
+  // Loads a NAM model from embedded binary data
+  std::string _StageModelFromData(const std::vector<uint8_t>& data, const WDL_String& originalPath);
   // Loads an IR and stores it to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
   dsp::wav::LoadReturnCode _StageIR(const WDL_String& irPath);
+  // Loads an IR from embedded binary data
+  dsp::wav::LoadReturnCode _StageIRFromData(const std::vector<uint8_t>& data, const WDL_String& originalPath);
 
   bool _HaveModel() const { return this->mModel != nullptr; };
   // Prepare the input & output buffers
@@ -306,6 +310,11 @@ private:
   WDL_String mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
+
+  // Embedded file data for portability (stored with DAW session)
+  // Mutable so SerializeState (const method) can read files if needed
+  mutable std::vector<uint8_t> mNAMData;
+  mutable std::vector<uint8_t> mIRData;
 
   WDL_String mHighLightColor{PluginColors::NAM_THEMECOLOR.ToColorCode()};
 

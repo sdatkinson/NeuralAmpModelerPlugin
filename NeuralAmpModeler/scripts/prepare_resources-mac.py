@@ -42,14 +42,24 @@ def main():
     if os.path.exists(projectpath + "/resources/img/"):
         imgs = os.listdir(projectpath + "/resources/img/")
         for img in imgs:
-            print("copying " + img + " to " + dst)
-            shutil.copy(projectpath + "/resources/img/" + img, dst)
+            src_path = projectpath + "/resources/img/" + img
+            if os.path.isfile(src_path):
+                print("copying " + img + " to " + dst)
+                try:
+                    shutil.copy(src_path, dst)
+                except Exception as e:
+                    print("ERROR copying " + img + ": " + str(e))
 
     if os.path.exists(projectpath + "/resources/fonts/"):
         fonts = os.listdir(projectpath + "/resources/fonts/")
         for font in fonts:
-            print("copying " + font + " to " + dst)
-            shutil.copy(projectpath + "/resources/fonts/" + font, dst)
+            src_path = projectpath + "/resources/fonts/" + font
+            if os.path.isfile(src_path):
+                print("copying " + font + " to " + dst)
+                try:
+                    shutil.copy(src_path, dst)
+                except Exception as e:
+                    print("ERROR copying " + font + ": " + str(e))
 
 
 if __name__ == "__main__":

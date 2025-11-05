@@ -113,6 +113,8 @@ sleep 2
 echo "touching source to force recompile"
 echo ""
 touch *.cpp
+# CRITICAL: Also touch AudioDSPTools submodule source to force recompilation
+touch ../AudioDSPTools/dsp/*.cpp
 
 #---------------------------------------------------------------------------------------------------------
 #remove existing binaries
@@ -147,6 +149,31 @@ fi
 #---------------------------------------------------------------------------------------------------------
 # build xcode project. Change target to build individual formats, or add to All target in the xcode project
 
+# FORCE COMPLETE CLEAN - Remove ALL build artifacts including derived data and submodule builds
+echo "FORCE cleaning ALL build artifacts (including derived data)"
+echo ""
+
+# Clean derived data to ensure no Xcode caching
+rm -rf ~/Library/Developer/Xcode/DerivedData/NeuralAmpModeler-*
+# CRITICAL: Also clean ANY AudioDSPTools derived data that may be cached
+rm -rf ~/Library/Developer/Xcode/DerivedData/AudioDSPTools-*
+rm -rf ~/Library/Developer/Xcode/DerivedData/*
+rm -rf ./build-mac
+
+# Clean the main project
+xcodebuild clean -project ./projects/$PLUGIN_NAME-macOS.xcodeproj -xcconfig ./config/$PLUGIN_NAME-mac.xcconfig DEMO_VERSION=$DEMO -target "All" -UseModernBuildSystem=NO -configuration Release
+
+# CRITICAL: Clean AudioDSPTools submodule build artifacts
+echo "cleaning AudioDSPTools submodule build artifacts"
+rm -rf ../AudioDSPTools/build
+
+# NUCLEAR: Remove ALL object files from the project tree
+echo "removing all object files from project tree"
+find .. -name "*.o" -delete
+find ../AudioDSPTools -name "*.o" -delete
+
+echo "building fresh (with forced submodule recompilation)"
+echo ""
 xcodebuild -project ./projects/$PLUGIN_NAME-macOS.xcodeproj -xcconfig ./config/$PLUGIN_NAME-mac.xcconfig DEMO_VERSION=$DEMO -target "All" -UseModernBuildSystem=NO -configuration Release | tee build-mac.log | xcpretty #&& exit ${PIPESTATUS[0]}
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -178,6 +205,37 @@ fi
 
 if [ -d "${AAX}" ]; then
   ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file "${AAX}"
+fi
+
+#---------------------------------------------------------------------------------------------------------
+# copy font resources into all plugin bundles
+
+echo "copying font resources to plugin bundles"
+echo ""
+
+if [ -d "$APP" ]; then
+  mkdir -p "$APP/Contents/Resources"
+  cp -v resources/fonts/*.ttf "$APP/Contents/Resources/"
+fi
+
+if [ -d "$VST2" ]; then
+  mkdir -p "$VST2/Contents/Resources"
+  cp -v resources/fonts/*.ttf "$VST2/Contents/Resources/"
+fi
+
+if [ -d "$VST3" ]; then
+  mkdir -p "$VST3/Contents/Resources"
+  cp -v resources/fonts/*.ttf "$VST3/Contents/Resources/"
+fi
+
+if [ -d "$AU" ]; then
+  mkdir -p "$AU/Contents/Resources"
+  cp -v resources/fonts/*.ttf "$AU/Contents/Resources/"
+fi
+
+if [ -d "${AAX}" ]; then
+  mkdir -p "${AAX}/Contents/Resources"
+  cp -v resources/fonts/*.ttf "${AAX}/Contents/Resources/"
 fi
 
 #---------------------------------------------------------------------------------------------------------

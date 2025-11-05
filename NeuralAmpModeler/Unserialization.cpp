@@ -57,11 +57,47 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
   mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
 
-  if (mNAMPath.GetLength())
+  // NEW: Prefer embedded data over file paths
+  // Try to load NAM from embedded data first
+  bool namLoaded = false;
+  if (config.contains("NAMData"))
+  {
+    auto namData = config["NAMData"].get<std::vector<uint8_t>>();
+    if (!namData.empty())
+    {
+      mNAMData = namData;
+      std::string error = _StageModelFromData(mNAMData, mNAMPath);
+      if (error.empty())
+      {
+        namLoaded = true;
+      }
+    }
+  }
+
+  // Fallback to file path if embedded data not available
+  if (!namLoaded && mNAMPath.GetLength())
   {
     _StageModel(mNAMPath);
   }
-  if (mIRPath.GetLength())
+
+  // Try to load IR from embedded data first
+  bool irLoaded = false;
+  if (config.contains("IRData"))
+  {
+    auto irData = config["IRData"].get<std::vector<uint8_t>>();
+    if (!irData.empty())
+    {
+      mIRData = irData;
+      dsp::wav::LoadReturnCode loadResult = _StageIRFromData(mIRData, mIRPath);
+      if (loadResult == dsp::wav::LoadReturnCode::SUCCESS)
+      {
+        irLoaded = true;
+      }
+    }
+  }
+
+  // Fallback to file path if embedded data not available
+  if (!irLoaded && mIRPath.GetLength())
   {
     _StageIR(mIRPath);
   }
@@ -77,6 +113,41 @@ int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPo
   config["NAMPath"] = std::string(path.Get());
   pos = chunk.GetStr(path, pos);
   config["IRPath"] = std::string(path.Get());
+
+  // NEW: Check for embedded data (version 0.8.0+)
+  // Try to read embedded NAM data
+  int namDataSize = 0;
+  int tempPos = chunk.Get(&namDataSize, pos);
+  if (tempPos > pos && namDataSize > 0)
+  {
+    // We have embedded NAM data
+    pos = tempPos;
+    std::vector<uint8_t> namData(namDataSize);
+    pos = chunk.GetBytes(namData.data(), namDataSize, pos);
+    config["NAMData"] = namData;
+  }
+  else if (tempPos > pos)
+  {
+    // Size was read but is 0, no embedded data
+    pos = tempPos;
+  }
+
+  // Try to read embedded IR data
+  int irDataSize = 0;
+  tempPos = chunk.Get(&irDataSize, pos);
+  if (tempPos > pos && irDataSize > 0)
+  {
+    // We have embedded IR data
+    pos = tempPos;
+    std::vector<uint8_t> irData(irDataSize);
+    pos = chunk.GetBytes(irData.data(), irDataSize, pos);
+    config["IRData"] = irData;
+  }
+  else if (tempPos > pos)
+  {
+    // Size was read but is 0, no embedded data
+    pos = tempPos;
+  }
 
   for (auto it = paramNames.begin(); it != paramNames.end(); ++it)
   {
@@ -177,7 +248,7 @@ public:
   _Version(const int major, const int minor, const int patch)
   : mMajor(major)
   , mMinor(minor)
-  , mPatch(patch) {};
+  , mPatch(patch){};
   _Version(const std::string& versionStr)
   {
     std::istringstream stream(versionStr);

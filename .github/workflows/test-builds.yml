@@ -1,0 +1,70 @@
+name: Test Builds
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+env:
+  PROJECT_NAME: NeuralAmpModeler
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        include:
+          - os: macos-latest
+            build_script: ./makedist-mac.sh
+            build_args: full noinstaller
+          - os: windows-latest
+            build_script: .\makedist-win.bat
+            build_args: full noinstaller
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Get VST3 SDK
+      run: |
+        cd iPlug2/Dependencies/IPlug
+        ./download-iplug-sdks.sh
+      shell: bash
+
+    - name: Get Prebuilt Libs
+      run: |
+        cd iPlug2/Dependencies
+        ./download-prebuilt-libs.sh
+      shell: bash
+
+    - name: Add msbuild to PATH (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Build macOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        cd ${{env.PROJECT_NAME}}/scripts
+        ${{ matrix.build_script }} ${{ matrix.build_args }}
+      shell: bash
+
+    - name: Build Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd ${{env.PROJECT_NAME}}\scripts
+        ${{ matrix.build_script }} ${{ matrix.build_args }}
+      shell: pwsh
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.os }}-build
+        path: |
+          ${{env.PROJECT_NAME}}/build-*/**/*.vst3
+          ${{env.PROJECT_NAME}}/build-*/**/*.component
+          ${{env.PROJECT_NAME}}/build-*/**/*.app
+        if-no-files-found: warn

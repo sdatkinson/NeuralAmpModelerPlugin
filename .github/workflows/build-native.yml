@@ -29,9 +29,67 @@ jobs:
 
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         submodules: recursive
+        fetch-depth: 0
+        clean: true  # Force clean checkout
+
+    - name: Clear GitHub Actions cache
+      if: matrix.os == 'macOS-latest'
+      run: |
+        echo "=== Clearing GitHub Actions cache ==="
+        # Clear any cached actions
+        rm -rf ~/.cache
+        rm -rf ~/Library/Caches
+        rm -rf /private/tmp/*
+        echo "=== Cache cleared ==="
+      shell: bash
+      continue-on-error: true
+
+    - name: FORCE DELETE all cached build artifacts (macOS)
+      if: matrix.os == 'macOS-latest'
+      run: |
+        echo "=== AGGRESSIVE CACHE PURGE - Build $(date +%s) ==="
+        # Remove EVERYTHING that could be cached
+        rm -rf ~/Library/Developer/Xcode/DerivedData/*
+        rm -rf ~/Library/Developer/Xcode/Archives/*
+        rm -rf ~/Library/Developer/Xcode/Products/*
+        rm -rf ~/Library/Caches/com.apple.dt.Xcode/*
+        # Remove plugin directories that block xcodebuild clean (use sudo for permissions)
+        sudo rm -rf ~/Library/Audio/Plug-Ins/Components || true
+        sudo rm -rf ~/Library/Audio/Plug-Ins/VST || true
+        sudo rm -rf ~/Library/Audio/Plug-Ins/VST3 || true
+        rm -rf ./AudioDSPTools/build
+        rm -rf ./AudioDSPTools/CMakeCache.txt
+        rm -rf ./AudioDSPTools/CMakeFiles
+        rm -rf ./build-mac
+        rm -rf ./NeuralAmpModeler/build
+        rm -rf ./iPlug2/build
+        # Force timestamp on source files to invalidate any cached builds
+        touch AudioDSPTools/dsp/ImpulseResponse.cpp
+        touch AudioDSPTools/dsp/ImpulseResponse.h
+        # Also force clean the Xcode project (after removing conflicting dirs)
+        cd NeuralAmpModeler/projects
+        xcodebuild clean -project NeuralAmpModeler-macOS.xcodeproj -alltargets || true
+        cd ../..
+        echo "=== UUID MUST change this time - timestamp: $(date) ==="
+      shell: bash
+
+    - name: Verify submodule commits
+      run: |
+        echo "=== Verifying build commits ==="
+        echo "Main repo commit:"
+        git log --oneline -1
+        echo ""
+        echo "AudioDSPTools submodule commit:"
+        cd AudioDSPTools && git log --oneline -1 && cd ..
+        echo ""
+        echo "Expected AudioDSPTools commit: 08b7b6a (Layer 10B)"
+        echo ""
+        echo "Checking for Layer 10B in code:"
+        grep -n "Layer 10B" AudioDSPTools/dsp/ImpulseResponse.cpp || echo "WARNING: Layer 10B not found!"
+      shell: bash
 
     - name: Get VST3 SDK
       run: |
