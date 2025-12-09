@@ -31,9 +31,9 @@ def main():
             + "/Resources"
         )
     else:
-        dst = (
-            os.environ["TARGET_BUILD_DIR"]
-            + os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
+        dst = os.path.join(
+            os.environ["TARGET_BUILD_DIR"],
+            os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
         )
 
     if os.path.exists(dst) == False:
