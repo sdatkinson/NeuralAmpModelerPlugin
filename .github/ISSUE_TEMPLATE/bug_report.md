@@ -15,6 +15,7 @@ assignees: ''
 
 ## Description
 Provide a clear and concise description of what the bug is.
+If the plugin is crashing, include the complete crash log.
 
 ## To reproduce
 Steps to reproduce the behavior:
