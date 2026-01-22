@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="PaceFixLogs" AssemblyFile="$(PACE_FUSION_HOME)PaceFusionUi2013.dll" />
   <ItemGroup Label="ProjectConfigurations">
@@ -344,10 +344,15 @@
     <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\NeuralAmpModelerControls.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\activations.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\conv1d.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\convnet.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\dsp.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\film.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\gating_activations.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\lstm.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\registry.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\util.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\version.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet.h" />
@@ -420,6 +425,7 @@
     <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\activations.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\conv1d.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\convnet.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\dsp.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
@@ -431,6 +437,7 @@
     </ClCompile>
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\lstm.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\util.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet.cpp" />
     <ClCompile Include="..\ToneStack.cpp" />
