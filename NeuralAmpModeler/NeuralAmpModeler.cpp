@@ -693,7 +693,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
     std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
-    
+
     // Check that the model has 1 input and 1 output channel
     if (model->NumInputChannels() != 1)
     {
@@ -701,9 +701,10 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     }
     if (model->NumOutputChannels() != 1)
     {
-      throw std::runtime_error("Model must have 1 output channel, but has " + std::to_string(model->NumOutputChannels()));
+      throw std::runtime_error("Model must have 1 output channel, but has "
+                               + std::to_string(model->NumOutputChannels()));
     }
-    
+
     std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
     temp->Reset(GetSampleRate(), GetBlockSize());
     mStagedModel = std::move(temp);
