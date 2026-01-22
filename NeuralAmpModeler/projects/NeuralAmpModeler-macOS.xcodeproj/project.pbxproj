@@ -164,6 +164,9 @@
 		4F2FB1A32A0047430027AB66 /* convnet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB14B2A0047420027AB66 /* convnet.cpp */; };
 		4F2FB1A42A0047430027AB66 /* convnet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB14B2A0047420027AB66 /* convnet.cpp */; };
 		4F2FB1A52A0047430027AB66 /* wavenet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2FB14C2A0047420027AB66 /* wavenet.h */; };
+		4F2FB1E22A0047430027AB68 /* film.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2FB15A2A0047420027AB68 /* film.h */; };
+		4F2FB1E32A0047430027AB68 /* gating_activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2FB15B2A0047420027AB68 /* gating_activations.h */; };
+		4F2FB1E42A0047430027AB68 /* registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2FB15C2A0047420027AB68 /* registry.h */; };
 		4F2FB1A62A0047430027AB66 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB14D2A0047420027AB66 /* lstm.cpp */; };
 		4F2FB1A72A0047430027AB66 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB14D2A0047420027AB66 /* lstm.cpp */; };
 		4F2FB1A82A0047430027AB66 /* lstm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB14D2A0047420027AB66 /* lstm.cpp */; };
@@ -693,6 +696,9 @@
 		4F2FB1582A0047420027AB67 /* ring_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ring_buffer.cpp; sourceTree = "<group>"; };
 		4F2FB1592A0047420027AB67 /* ring_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ring_buffer.h; sourceTree = "<group>"; };
 		4F2FB14C2A0047420027AB66 /* wavenet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet.h; sourceTree = "<group>"; };
+		4F2FB15A2A0047420027AB68 /* film.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = film.h; sourceTree = "<group>"; };
+		4F2FB15B2A0047420027AB68 /* gating_activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gating_activations.h; sourceTree = "<group>"; };
+		4F2FB15C2A0047420027AB68 /* registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = registry.h; sourceTree = "<group>"; };
 		4F2FB14D2A0047420027AB66 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lstm.cpp; sourceTree = "<group>"; };
 		4F2FB14E2A0047420027AB66 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		4F2FB14F2A0047420027AB66 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
@@ -1333,6 +1339,9 @@
 				4F2FB1472A0047420027AB66 /* version.h */,
 				4F2FB1522A0047420027AB66 /* wavenet.cpp */,
 				4F2FB14C2A0047420027AB66 /* wavenet.h */,
+				4F2FB15A2A0047420027AB68 /* film.h */,
+				4F2FB15B2A0047420027AB68 /* gating_activations.h */,
+				4F2FB15C2A0047420027AB68 /* registry.h */,
 			);
 			name = NAM;
 			path = ../../NeuralAmpModelerCore/NAM;
@@ -2046,6 +2055,9 @@
 				4F2FB15F2A0047420027AB66 /* NoiseGate.h in Headers */,
 				4F2FB17D2A0047430027AB66 /* dsp.h in Headers */,
 				4F2FB1A52A0047430027AB66 /* wavenet.h in Headers */,
+				4F2FB1E22A0047430027AB68 /* film.h in Headers */,
+				4F2FB1E32A0047430027AB68 /* gating_activations.h in Headers */,
+				4F2FB1E42A0047430027AB68 /* registry.h in Headers */,
 				4F78BE1222E73DD900AD537E /* NeuralAmpModelerAU.h in Headers */,
 				4F2FB1542A0047420027AB66 /* Resample.h in Headers */,
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
