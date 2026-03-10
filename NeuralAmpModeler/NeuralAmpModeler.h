@@ -164,6 +164,8 @@ public:
     mEncapsulated->ResetAndPrewarm(sampleRate, maxEncapsulatedBlockSize);
   };
 
+  int GetMaxBufferSize() const { return mMaxExternalBlockSize; };
+
   // So that we can let the world know if we're resampling (useful for debugging)
   double GetEncapsulatedSampleRate() const { return GetNAMSampleRate(mEncapsulated); };
 

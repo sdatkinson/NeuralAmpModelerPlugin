@@ -613,14 +613,20 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
 
 void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
+  auto needsReset = [&](const std::unique_ptr<ResamplingNAM>& m) {
+    return m->GetExpectedSampleRate() != sampleRate || m->GetMaxBufferSize() != maxBlockSize;
+  };
+
   // Model
   if (mStagedModel != nullptr)
   {
-    mStagedModel->Reset(sampleRate, maxBlockSize);
+    if (needsReset(mStagedModel))
+      mStagedModel->Reset(sampleRate, maxBlockSize);
   }
   else if (mModel != nullptr)
   {
-    mModel->Reset(sampleRate, maxBlockSize);
+    if (needsReset(mModel))
+      mModel->Reset(sampleRate, maxBlockSize);
   }
 
   // IR
