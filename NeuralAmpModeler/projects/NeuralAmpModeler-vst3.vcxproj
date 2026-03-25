@@ -440,6 +440,7 @@
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\util.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\slimmable_wavenet.cpp" />
     <ClCompile Include="..\ToneStack.cpp" />
   </ItemGroup>
   <ItemGroup>
