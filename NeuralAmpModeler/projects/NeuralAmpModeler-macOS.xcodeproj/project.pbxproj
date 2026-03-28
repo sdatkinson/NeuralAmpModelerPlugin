@@ -197,6 +197,15 @@
 		4F2FB1C12A0047430027AB66 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1522A0047420027AB66 /* wavenet.cpp */; };
 		4F2FB1C22A0047430027AB66 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1522A0047420027AB66 /* wavenet.cpp */; };
 		4F2FB1C32A0047430027AB66 /* wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1522A0047420027AB66 /* wavenet.cpp */; };
+		B1D2F7012D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7022D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7032D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7042D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7052D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7062D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7072D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7082D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
+		B1D2F7092D0000020027AB66 /* slimmable_wavenet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */; };
 		4F2FB1C42A0047430027AB66 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1532A0047420027AB66 /* get_dsp.cpp */; };
 		4F2FB1C52A0047430027AB66 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1532A0047420027AB66 /* get_dsp.cpp */; };
 		4F2FB1C62A0047430027AB66 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F2FB1532A0047420027AB66 /* get_dsp.cpp */; };
@@ -705,6 +714,7 @@
 		4F2FB1502A0047420027AB66 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
 		4F2FB1512A0047420027AB66 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = activations.cpp; sourceTree = "<group>"; };
 		4F2FB1522A0047420027AB66 /* wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet.cpp; sourceTree = "<group>"; };
+		B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = slimmable_wavenet.cpp; sourceTree = "<group>"; };
 		4F2FB1532A0047420027AB66 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4F35DEAB207E5C5A00867D8F /* IPlugPluginBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugPluginBase.cpp; path = ../../iPlug2/IPlug/IPlugPluginBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		4F35DEAC207E5C5A00867D8F /* IPlugPluginBase.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugPluginBase.h; path = ../../iPlug2/IPlug/IPlugPluginBase.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1338,6 +1348,7 @@
 				4F2FB14E2A0047420027AB66 /* util.h */,
 				4F2FB1472A0047420027AB66 /* version.h */,
 				4F2FB1522A0047420027AB66 /* wavenet.cpp */,
+				B1D2F7002D0000010027AB66 /* slimmable_wavenet.cpp */,
 				4F2FB14C2A0047420027AB66 /* wavenet.h */,
 				4F2FB15A2A0047420027AB68 /* film.h */,
 				4F2FB15B2A0047420027AB68 /* gating_activations.h */,
@@ -2675,6 +2686,7 @@
 				4F7C4958255DDFC400DF7588 /* IControls.cpp in Sources */,
 				4F2FB1562A0047420027AB66 /* RecursiveLinearFilter.cpp in Sources */,
 				4F2FB1BC2A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7022D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1CE2A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1D82A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1922A0047430027AB66 /* dsp.cpp in Sources */,
@@ -2700,6 +2712,7 @@
 				4F2FB1A22A0047430027AB66 /* convnet.cpp in Sources */,
 				4F2FB1842A0047430027AB66 /* wav.cpp in Sources */,
 				4F2FB1C12A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7072D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1CF2A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1D92A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1662A0047430027AB66 /* dsp.cpp in Sources */,
@@ -2737,6 +2750,7 @@
 				4F2FB18A2A0047430027AB66 /* util.cpp in Sources */,
 				4F993F7423055C96000313AF /* IPlugProcessor.cpp in Sources */,
 				4F2FB1BE2A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7042D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D02A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DA2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F8C10E320BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
@@ -2777,6 +2791,7 @@
 				4F3EE1CF231438D000004786 /* swell-menu.mm in Sources */,
 				4F2FB1992A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1C32A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7092D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D12A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DB2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F3EE1D0231438D000004786 /* IGraphicsMac_view.mm in Sources */,
@@ -2843,6 +2858,7 @@
 				AA341E252B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F78BE2522E7406D00AD537E /* IPlugPluginBase.cpp in Sources */,
 				4F2FB1C22A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7082D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D22A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DC2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1A32A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2877,6 +2893,7 @@
 				4F2FB1802A0047430027AB66 /* wav.cpp in Sources */,
 				4F2FB1622A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1BD2A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7032D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D32A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DD2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F815919205D50EB00393585 /* memorystream.cpp in Sources */,
@@ -2957,6 +2974,7 @@
 				AA341E212B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4FB600231567CB0A0020189A /* IPlugParameter.cpp in Sources */,
 				4F2FB1BF2A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7052D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D42A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DE2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1A02A0047430027AB66 /* convnet.cpp in Sources */,
@@ -3013,6 +3031,7 @@
 				4FD16D3E13B63595001D0217 /* swell-menu.mm in Sources */,
 				4F2FB1912A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1BB2A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7012D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D52A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DF2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4FB1F59120E4B011004157C8 /* IGraphicsMac_view.mm in Sources */,
@@ -3088,6 +3107,7 @@
 				4F2FB1652A0047430027AB66 /* dsp.cpp in Sources */,
 				4F2FB1AB2A0047430027AB66 /* lstm.cpp in Sources */,
 				4F2FB1C02A0047430027AB66 /* wavenet.cpp in Sources */,
+				B1D2F7062D0000020027AB66 /* slimmable_wavenet.cpp in Sources */,
 				4F2FB1D62A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1E02A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4FFBB91F20863B0E00DDD0E7 /* vstparameters.cpp in Sources */,
