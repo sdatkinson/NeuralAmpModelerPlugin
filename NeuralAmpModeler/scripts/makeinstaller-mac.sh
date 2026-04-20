@@ -31,7 +31,6 @@ PRODUCT_NAME=NeuralAmpModeler
 # locations
 PRODUCTS="build-mac"
 
-VST2="${PRODUCT_NAME}.vst"
 VST3="${PRODUCT_NAME}.vst3"
 AU="${PRODUCT_NAME}.component"
 APP="${PRODUCT_NAME}.app"
@@ -70,11 +69,6 @@ build_flavor()
   rm -r $TMPDIR
 }
 
-# try to build VST2 package
-if [[ -d $PRODUCTS/$VST2 ]]; then
-  build_flavor "VST2" $VST2 "com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}" "/Library/Audio/Plug-Ins/VST"
-fi
-
 # # try to build VST3 package
 if [[ -d $PRODUCTS/$VST3 ]]; then
   build_flavor "VST3" $VST3 "com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}" "/Library/Audio/Plug-Ins/VST3"
@@ -111,11 +105,6 @@ fi
 
 # create distribution.xml
 
-if [[ -d $PRODUCTS/$VST2 ]]; then
-	VST2_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}\"/>"
-	VST2_CHOICE="<line choice=\"com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}\"/>"
-	VST2_CHOICE_DEF="<choice id=\"com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}\" visible=\"true\" start_selected=\"true\" title=\"VST2 Plug-in\"><pkg-ref id=\"com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.vst2.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_VST2.pkg</pkg-ref>"
-fi
 if [[ -d $PRODUCTS/$VST3 ]]; then
 	VST3_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\"/>"
 	VST3_CHOICE="<line choice=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\"/>"
@@ -151,7 +140,6 @@ cat > ${TARGET_DIR}/distribution.xml << XMLEND
     <readme file="readme-mac.rtf" mime-type="application/rtf"/>
     <welcome file="intro.rtf" mime-type="application/rtf"/>
     <background file="${PRODUCT_NAME}-installer-bg.png" alignment="topleft" scaling="none"/>
-    ${VST2_PKG_REF}
     ${VST3_PKG_REF}
     ${AU_PKG_REF}
     ${AAX_PKG_REF}
@@ -159,14 +147,12 @@ cat > ${TARGET_DIR}/distribution.xml << XMLEND
     ${RES_PKG_REF}
     <options require-scripts="false" customize="always" hostArchitectures="arm64,x86_64"/>
     <choices-outline>
-        ${VST2_CHOICE}
         ${VST3_CHOICE}
         ${AU_CHOICE}
         ${AAX_CHOICE}
         ${APP_CHOICE}
         ${RES_CHOICE}
     </choices-outline>
-    ${VST2_CHOICE_DEF}
     ${VST3_CHOICE_DEF}
     ${AU_CHOICE_DEF}
     ${AAX_CHOICE_DEF}
