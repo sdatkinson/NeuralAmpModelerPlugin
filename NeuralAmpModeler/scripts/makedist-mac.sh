@@ -69,6 +69,9 @@ fi
 #   ARCHIVE_NAME=`python3 ${SCRIPTS}/get_archive_name.py ${PLUGIN_NAME} mac full`
 # fi
 
+VST2=`echo | grep VST2_PATH $XCCONFIG`
+VST2=$HOME${VST2//\VST2_PATH = \$(HOME)}/$PLUGIN_NAME.vst
+
 VST3=`echo | grep VST3_PATH $XCCONFIG`
 VST3=$HOME${VST3//\VST3_PATH = \$(HOME)}/$PLUGIN_NAME.vst3
 
@@ -91,6 +94,7 @@ CERT_ID=${CERT_ID//\CERTIFICATE_ID = }
 DEV_ID_APP_STR="Developer ID Application: ${CERT_ID}"
 DEV_ID_INST_STR="Developer ID Installer: ${CERT_ID}"
 
+echo $VST2
 echo $VST3
 echo $AU
 echo $APP
@@ -122,6 +126,10 @@ fi
 
 if [ -d $AU ]; then
  sudo rm -f -R $AU
+fi
+
+if [ -d $VST2 ]; then
+  sudo rm -f -R $VST2
 fi
 
 if [ -d $VST3 ]; then
@@ -160,6 +168,10 @@ if [ -d $AU ]; then
   ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $AU
 fi
 
+if [ -d $VST2 ]; then
+  ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $VST2
+fi
+
 if [ -d $VST3 ]; then
   ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $VST3
 fi
@@ -180,6 +192,10 @@ fi
 
 if [ -d $AU ]; then
   strip -x $AU/Contents/MacOS/$PLUGIN_NAME
+fi
+
+if [ -d $VST2 ]; then
+  strip -x $VST2/Contents/MacOS/$PLUGIN_NAME
 fi
 
 if [ -d $VST3 ]; then
@@ -210,6 +226,8 @@ if [ $CODESIGN == 1 ]; then
   codesign --force -s "${DEV_ID_APP_STR}" -v $APP --deep --strict --options=runtime #hardened runtime for app
   xattr -cr $AU 
   codesign --force -s "${DEV_ID_APP_STR}" -v $AU --deep --strict
+  # xattr -cr $VST2 
+  # codesign --force -s "${DEV_ID_APP_STR}" -v $VST2 --deep --strict
   xattr -cr $VST3 
   codesign --force -s "${DEV_ID_APP_STR}" -v $VST3 --deep --strict
   #---------------------------------------------------------------------------------------------------------
@@ -293,6 +311,10 @@ else
 
   if [ -d $AU ]; then
     cp -R $AU build-mac/zip/$PLUGIN_NAME.component
+  fi
+
+  if [ -d $VST2 ]; then
+    cp -R $VST2 build-mac/zip/$PLUGIN_NAME.vst
   fi
 
   if [ -d $VST3 ]; then
