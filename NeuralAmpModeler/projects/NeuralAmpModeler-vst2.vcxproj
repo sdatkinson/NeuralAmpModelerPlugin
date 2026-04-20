@@ -113,13 +113,11 @@
     <LinkIncremental>
     </LinkIncremental>
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\int\</IntDir>
     <LinkIncremental />
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\</OutDir>
@@ -130,12 +128,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\int\</IntDir>
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\int\</IntDir>
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">
     <OutDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\</OutDir>
@@ -146,12 +142,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">
     <IntDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\int\</IntDir>
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">
     <IntDir>$(SolutionDir)build-win\vst2\$(Platform)\$(Configuration)\int\</IntDir>
     <TargetName>$(BINARY_NAME)</TargetName>
-    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -163,8 +157,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -178,9 +170,11 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Resources\img;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -197,8 +191,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -217,7 +209,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -235,7 +226,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -253,25 +243,27 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="../config.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\VST2_SDK\aeffect.h" />
+    <ClInclude Include="..\..\iPlug2\Dependencies\IPlug\VST2_SDK\aeffectx.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IControls.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IFPSDisplayControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IPopupMenuControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\ITextEntryControl.h" />
-    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVDropDownListControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVKeyboardControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVMeterControl.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVMultiSliderControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Controls\IVScopeControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsNanoVG.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Drawing\IGraphicsSkia.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IControl.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IGraphics.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsConstants.h" />
+    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsLiveEdit.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsPopupMenu.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsStructs.h" />
@@ -286,17 +278,14 @@
     <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsMac_view.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWeb.h" />
     <ClInclude Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.h" />
-    <ClInclude Include="..\..\iPlug2\IPlug\Extras\LanczosResampler.h" />
-    <ClInclude Include="..\..\iPlug2\IPlug\Extras\NonIntegerResampler.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugAPIBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugConstants.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugEditorDelegate.h" />
-    <ClInclude Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugLogger.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugMidi.h" />
-    <ClInclude Include="..\..\iPlug2\IPlug\IPlugParameter.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugPaths.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugPlatform.h" />
+    <ClInclude Include="..\..\iPlug2\IPlug\IPlugParameter.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugPluginBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugProcessor.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlugStructs.h" />
@@ -305,38 +294,22 @@
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_hdr.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\IPlug_include_in_plug_src.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\VST2\IPlugVST2.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\dsp.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ImpulseResponse.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\NoiseGate.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\Resample.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\LanczosResampler.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\heapbuf.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\ptrlist.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\ResamplingContainer.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\version.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\wav.h" />
     <ClInclude Include="..\Colors.h" />
+    <ClInclude Include="..\dsp\activations.h" />
+    <ClInclude Include="..\dsp\cnpy.h" />
+    <ClInclude Include="..\dsp\dsp.h" />
+    <ClInclude Include="..\dsp\HardCodedModel.h" />
+    <ClInclude Include="..\dsp\ImpulseResponse.h" />
+    <ClInclude Include="..\dsp\lstm.h" />
+    <ClInclude Include="..\dsp\NoiseGate.h" />
+    <ClInclude Include="..\dsp\numpy_util.h" />
+    <ClInclude Include="..\dsp\RecursiveLinearFilter.h" />
+    <ClInclude Include="..\dsp\Resample.h" />
+    <ClInclude Include="..\dsp\util.h" />
+    <ClInclude Include="..\dsp\wav.h" />
+    <ClInclude Include="..\dsp\wavenet.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
-    <ClInclude Include="..\NeuralAmpModelerControls.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\activations.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\conv1d.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\convnet.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\dsp.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\film.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\gating_activations.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\lstm.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\registry.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\util.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\version.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\slimmable.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\model.h" />
-    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_fast.h" />
     <ClInclude Include="..\resources\resource.h" />
-    <ClInclude Include="..\ToneStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\iPlug2\IGraphics\Controls\IControls.cpp" />
@@ -360,52 +333,36 @@
     </ClCompile>
     <ClCompile Include="..\..\iPlug2\IGraphics\IControl.cpp" />
     <ClCompile Include="..\..\iPlug2\IGraphics\IGraphics.cpp" />
+    <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp" />
     <ClCompile Include="..\..\iPlug2\IGraphics\Platforms\IGraphicsWin.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugAPIBase.cpp" />
-    <ClCompile Include="..\..\iPlug2\IGraphics\IGraphicsEditorDelegate.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugParameter.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugPaths.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugPluginBase.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugProcessor.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\IPlugTimer.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\VST2\IPlugVST2.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\dsp.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\ImpulseResponse.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\NoiseGate.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp" />
+    <ClCompile Include="..\dsp\cnpy.cpp" />
+    <ClCompile Include="..\dsp\dsp.cpp" />
+    <ClCompile Include="..\dsp\get_dsp.cpp" />
+    <ClCompile Include="..\dsp\ImpulseResponse.cpp" />
+    <ClCompile Include="..\dsp\lstm.cpp" />
+    <ClCompile Include="..\dsp\NoiseGate.cpp" />
+    <ClCompile Include="..\dsp\numpy_util.cpp" />
+    <ClCompile Include="..\dsp\RecursiveLinearFilter.cpp" />
+    <ClCompile Include="..\dsp\util.cpp" />
+    <ClCompile Include="..\dsp\wav.cpp" />
+    <ClCompile Include="..\dsp\wavenet.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\activations.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\conv1d.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\convnet.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\dsp.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(RelativeDir)</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Tracer|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\lstm.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\util.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\container.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\model.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_fast.cpp" />
-    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\slimmable.cpp" />
-    <ClCompile Include="..\ToneStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resources\main.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\config\NeuralAmpModeler-ios.xcconfig" />
-    <None Include="..\config\NeuralAmpModeler-mac.xcconfig" />
     <None Include="..\config\NeuralAmpModeler-web.mk" />
-    <None Include="..\config\NeuralAmpModeler-win.props">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="..\config\NeuralAmpModeler-win.props" />
+    <None Include="..\config\NeuralAmpModeler-mac.xcconfig" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
