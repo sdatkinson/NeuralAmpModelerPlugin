@@ -33,7 +33,6 @@ TRACER_DEFS = $DEBUG_DEFS TRACER_BUILD // here you can change if a TRACER build 
 // macros for individual plug-in format builds etc
 ALL_DEFS = NOMINMAX 
 PLUGIN_DEFS = SWELL_CLEANUP_ON_UNLOAD // macros for all plug-in builds
-VST2_DEFS = VST2_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
 VST3_DEFS = VST3_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=1
 VST3C_DEFS = VST3C_API $PLUGIN_DEFS IPLUG_EDITOR=1 IPLUG_DSP=0
 VST3P_DEFS = VST3P_API $PLUGIN_DEFS IPLUG_EDITOR=0 IPLUG_DSP=1 //NO_IGRAPHICS
@@ -83,7 +82,6 @@ JSON_INC_PATH = $(DEPS_PATH)/Extras/nlohmann
 EXTRAS_INC_PATHS = $(EXTRAS_PATH) $(EXTRAS_PATH)/Synth $(EXTRAS_PATH)/Faust $(EXTRAS_PATH)/OSC $(EXTRAS_PATH)/HIIR $(EXTRAS_PATH)/WebSocket $(CIVETWEB_INC_PATHS) $(JSON11_PATH) $(RTAUDIO_PATH) $(RTMIDI_PATH) $(JSON_INC_PATH)
 
 // Plug-in SDK paths
-VST2_SDK = $(DEPS_PATH)/IPlug/VST2_SDK
 VST3_SDK = $(DEPS_PATH)/IPlug/VST3_SDK
 AAX_SDK = $(DEPS_PATH)/IPlug/AAX_SDK
 REAPER_SDK = $(DEPS_PATH)/IPlug/Reaper
@@ -145,7 +143,6 @@ AUv3_FRAMEWORKS = -framework AudioToolbox -framework AVFoundation -framework Cor
 // You can also build to the system plug-in folder, but you will need to explicitly add write permissions to build stuff there
 // The AAX folder should be the location of the PT Dev build plug-ins folder, installer scripts will copy to the non-developer build
 
-VST2_PATH = $(HOME)/Library/Audio/Plug-Ins/VST
 VST3_PATH = $(HOME)/Library/Audio/Plug-Ins/VST3
 AU_PATH = $(HOME)/Library/Audio/Plug-Ins/Components
 AAX_PATH = /Library/Application Support/Avid/Audio/Plug-Ins

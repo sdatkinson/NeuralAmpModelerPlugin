@@ -1,38 +1,32 @@
 @echo off
 
-REM - CALL "$(SolutionDir)scripts\postbuild-win.bat" "$(TargetExt)" "$(BINARY_NAME)" "$(Platform)" "$(COPY_VST2)" "$(TargetPath)" "$(VST2_32_PATH)" "$(VST2_64_PATH)" "$(VST3_32_PATH)" "$(VST3_64_PATH)" "$(AAX_32_PATH)" "$(AAX_64_PATH)" "$(BUILD_DIR)" "$(VST_ICON)" "$(AAX_ICON)" "
+REM - CALL "$(SolutionDir)scripts\postbuild-win.bat" "$(TargetExt)" "$(BINARY_NAME)" "$(Platform)" "$(TargetPath)" "$(VST3_32_PATH)" "$(VST3_64_PATH)" "$(AAX_32_PATH)" "$(AAX_64_PATH)" "$(BUILD_DIR)" "$(VST_ICON)" "$(AAX_ICON)" "
 REM $(CREATE_BUNDLE_SCRIPT)"
 
 set FORMAT=%1
 set NAME=%2
 set PLATFORM=%3
-set COPY_VST2=%4
-set BUILT_BINARY=%5
-set VST2_32_PATH=%6
-set VST2_64_PATH=%7 
-set VST3_32_PATH=%8
-set VST3_64_PATH=%9
+set BUILT_BINARY=%4
+set VST3_32_PATH=%5
+set VST3_64_PATH=%6
 shift
 shift 
 shift
 shift
 shift 
 shift
-set AAX_32_PATH=%4
-set AAX_64_PATH=%5
-set BUILD_DIR=%6
-set VST_ICON=%7
-set AAX_ICON=%8
-set CREATE_BUNDLE_SCRIPT=%9
+set AAX_32_PATH=%1
+set AAX_64_PATH=%2
+set BUILD_DIR=%3
+set VST_ICON=%4
+set AAX_ICON=%5
+set CREATE_BUNDLE_SCRIPT=%6
 
 echo POSTBUILD SCRIPT VARIABLES -----------------------------------------------------
 echo FORMAT %FORMAT% 
 echo NAME %NAME% 
 echo PLATFORM %PLATFORM% 
-echo COPY_VST2 %COPY_VST2% 
 echo BUILT_BINARY %BUILT_BINARY% 
-echo VST2_32_PATH %VST2_32_PATH% 
-echo VST2_64_PATH %VST2_64_PATH% 
 echo VST3_32_PATH %VST3_32_PATH% 
 echo VST3_64_PATH %VST3_64_PATH% 
 echo BUILD_DIR %BUILD_DIR%
@@ -48,15 +42,6 @@ if %PLATFORM% == "Win32" (
 
   if %FORMAT% == ".dll" (
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%_%PLATFORM%.dll
-  )
-  
-  if %FORMAT% == ".dll" (
-    if %COPY_VST2% == "1" (
-      echo copying 32bit binary to 32bit VST2 Plugins folder ... 
-      copy /y %BUILT_BINARY% %VST2_32_PATH%
-    ) else (
-      echo not copying 32bit VST2 binary
-    )
   )
   
   if %FORMAT% == ".vst3" (
@@ -91,15 +76,6 @@ if %PLATFORM% == "x64" (
 
   if %FORMAT% == ".dll" (
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%_%PLATFORM%.dll
-  )
-  
-  if %FORMAT% == ".dll" (
-    if %COPY_VST2% == "1" (
-      echo copying 64bit binary to 64bit VST2 Plugins folder ... 
-      copy /y %BUILT_BINARY% %VST2_64_PATH%
-    ) else (
-      echo not copying 64bit VST2 binary
-    )
   )
   
   if %FORMAT% == ".vst3" (
