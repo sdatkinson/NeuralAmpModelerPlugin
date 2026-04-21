@@ -57,17 +57,72 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
   mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
 
+  // v0.7.13+: Try to load from file path first (if file exists), fall back to embedded data
+  bool namLoaded = false;
   if (mNAMPath.GetLength())
+  {
+    std::filesystem::path namFilePath = std::filesystem::u8path(mNAMPath.Get());
+    if (std::filesystem::exists(namFilePath))
+    {
+      std::string error = _StageModel(mNAMPath);
+      if (error.empty())
+      {
+        namLoaded = true;
+      }
+    }
+  }
+
+  // Fallback to embedded data if file not available or doesn't exist
+  if (!namLoaded && config.contains("NAMData"))
+  {
+    auto namData = config["NAMData"].get<std::vector<uint8_t>>();
+    if (!namData.empty())
+    {
+      std::string error = _StageModelFromData(namData, mNAMPath);
+      namLoaded = error.empty();
+    }
+  }
+
+  // If neither file nor embedded data worked, try loading from file anyway to show error
+  if (!namLoaded && mNAMPath.GetLength())
   {
     _StageModel(mNAMPath);
   }
+
+  // Try to load IR from file path first (if file exists)
+  bool irLoaded = false;
   if (mIRPath.GetLength())
+  {
+    std::filesystem::path irFilePath = std::filesystem::u8path(mIRPath.Get());
+    if (std::filesystem::exists(irFilePath))
+    {
+      dsp::wav::LoadReturnCode loadResult = _StageIR(mIRPath);
+      if (loadResult == dsp::wav::LoadReturnCode::SUCCESS)
+      {
+        irLoaded = true;
+      }
+    }
+  }
+
+  // Fallback to embedded data if file not available or doesn't exist
+  if (!irLoaded && config.contains("IRData"))
+  {
+    auto irData = config["IRData"].get<std::vector<uint8_t>>();
+    if (!irData.empty())
+    {
+      dsp::wav::LoadReturnCode loadResult = _StageIRFromData(irData, mIRPath);
+      irLoaded = (loadResult == dsp::wav::LoadReturnCode::SUCCESS);
+    }
+  }
+
+  // If neither file nor embedded data worked, try loading from file anyway to show error
+  if (!irLoaded && mIRPath.GetLength())
   {
     _StageIR(mIRPath);
   }
 }
 
-// Unserialize NAM Path, IR path, then named keys
+// Unserialize NAM Path, IR path, then named keys (for versions before 0.7.13)
 int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config,
                                      std::vector<std::string>& paramNames)
 {
@@ -77,6 +132,46 @@ int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPo
   config["NAMPath"] = std::string(path.Get());
   pos = chunk.GetStr(path, pos);
   config["IRPath"] = std::string(path.Get());
+
+  for (auto it = paramNames.begin(); it != paramNames.end(); ++it)
+  {
+    double v = 0.0;
+    pos = chunk.Get(&v, pos);
+    config[*it] = v;
+  }
+  return pos;
+}
+
+// Unserialize NAM Path, IR path, embedded data, then named keys (for v0.7.13+)
+int _UnserializePathsEmbeddedDataAndExpectedKeys(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config,
+                                                  std::vector<std::string>& paramNames)
+{
+  int pos = startPos;
+  WDL_String path;
+  pos = chunk.GetStr(path, pos);
+  config["NAMPath"] = std::string(path.Get());
+  pos = chunk.GetStr(path, pos);
+  config["IRPath"] = std::string(path.Get());
+
+  // Read embedded NAM data size and data
+  int namDataSize = 0;
+  pos = chunk.Get(&namDataSize, pos);
+  if (namDataSize > 0)
+  {
+    std::vector<uint8_t> namData(namDataSize);
+    pos = chunk.GetBytes(namData.data(), namDataSize, pos);
+    config["NAMData"] = namData;
+  }
+
+  // Read embedded IR data size and data
+  int irDataSize = 0;
+  pos = chunk.Get(&irDataSize, pos);
+  if (irDataSize > 0)
+  {
+    std::vector<uint8_t> irData(irDataSize);
+    pos = chunk.GetBytes(irData.data(), irDataSize, pos);
+    config["IRData"] = irData;
+  }
 
   for (auto it = paramNames.begin(); it != paramNames.end(); ++it)
   {
@@ -97,11 +192,40 @@ void _RenameKeys(nlohmann::json& j, std::unordered_map<std::string, std::string>
   }
 }
 
+// v0.7.13 - Adds embedded NAM/IR data support
+
+void _UpdateConfigFrom_0_7_13(nlohmann::json& config)
+{
+  // Fill me in once something changes!
+}
+
+int _GetConfigFrom_0_7_13(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
+{
+  std::vector<std::string> paramNames{"Input",
+                                      "Threshold",
+                                      "Bass",
+                                      "Middle",
+                                      "Treble",
+                                      "Output",
+                                      "NoiseGateActive",
+                                      "ToneStack",
+                                      "IRToggle",
+                                      "CalibrateInput",
+                                      "InputCalibrationLevel",
+                                      "OutputMode"};
+
+  int pos = _UnserializePathsEmbeddedDataAndExpectedKeys(chunk, startPos, config, paramNames);
+  // Then update:
+  _UpdateConfigFrom_0_7_13(config);
+  return pos;
+}
+
 // v0.7.12
 
 void _UpdateConfigFrom_0_7_12(nlohmann::json& config)
 {
-  // Fill me in once something changes!
+  // Chain to next version
+  _UpdateConfigFrom_0_7_13(config);
 }
 
 int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
@@ -248,7 +372,11 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk&
   _Version version(versionStr);
   // Act accordingly
   nlohmann::json config;
-  if (version >= _Version(0, 7, 12))
+  if (version >= _Version(0, 7, 13))
+  {
+    pos = _GetConfigFrom_0_7_13(chunk, pos, config);
+  }
+  else if (version >= _Version(0, 7, 12))
   {
     pos = _GetConfigFrom_0_7_12(chunk, pos, config);
   }
