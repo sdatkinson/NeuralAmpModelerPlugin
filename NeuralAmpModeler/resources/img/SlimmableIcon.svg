@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="324" height="300" viewBox="0 0 324 300" fill="none">
+  <g>
+    <rect x="0" y="0" width="0" height="0" fill="none"></rect>
+
+    <!-- Funnel bars -->
+    <rect x="20" y="20" width="200" height="40" rx="20" fill="#F0F1F4"></rect>
+    <rect x="40" y="95" width="160" height="40" rx="20" fill="#F0F1F4"></rect>
+    <rect x="60" y="170" width="120" height="40" rx="20" fill="#F0F1F4"></rect>
+    <rect x="90" y="245" width="60" height="40" rx="20" fill="#F0F1F4"></rect>
+
+    <!-- Vertical slider track -->
+    <rect x="268" y="20" width="16" height="265" rx="8" fill="#4C84FF"></rect>
+
+    <!-- Slider knob outer ring -->
+    <circle cx="276" cy="152.5" r="32" fill="#F0F1F4"></circle>
+    <!-- Slider knob -->
+    <circle cx="276" cy="152.5" r="24" fill="#4C84FF"></circle>
+  </g>
+</svg>
