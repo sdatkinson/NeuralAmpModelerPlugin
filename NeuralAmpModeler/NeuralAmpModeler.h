@@ -95,13 +95,13 @@ class ResamplingNAM : public nam::DSP
 public:
   // Resampling wrapper around the NAM models
   ResamplingNAM(std::unique_ptr<nam::DSP> encapsulated, const double expected_sample_rate)
-  : nam::DSP(expected_sample_rate)
+  : nam::DSP(encapsulated->NumInputChannels(), encapsulated->NumOutputChannels(), expected_sample_rate)
   , mEncapsulated(std::move(encapsulated))
   , mResampler(GetNAMSampleRate(mEncapsulated))
   {
     // Assign the encapsulated object's processing function  to this object's member so that the resampler can use it:
     auto ProcessBlockFunc = [&](NAM_SAMPLE** input, NAM_SAMPLE** output, int numFrames) {
-      mEncapsulated->process(input[0], output[0], numFrames);
+      mEncapsulated->process(input, output, numFrames);
     };
     mBlockProcessFunc = ProcessBlockFunc;
 
@@ -133,7 +133,7 @@ public:
 
   void prewarm() override { mEncapsulated->prewarm(); };
 
-  void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override
+  void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override
   {
     if (num_frames > mMaxExternalBlockSize)
       // We can afford to be careful
@@ -145,7 +145,7 @@ public:
     }
     else
     {
-      mResampler.ProcessBlock(&input, &output, num_frames, mBlockProcessFunc);
+      mResampler.ProcessBlock(input, output, num_frames, mBlockProcessFunc);
     }
   };
 
