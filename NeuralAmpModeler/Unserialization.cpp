@@ -97,11 +97,40 @@ void _RenameKeys(nlohmann::json& j, std::unordered_map<std::string, std::string>
   }
 }
 
+// v0.7.14
+
+void _UpdateConfigFrom_0_7_14(nlohmann::json& config)
+{
+  // Fill me in once something changes!
+}
+
+int _GetConfigFrom_0_7_14(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
+{
+  std::vector<std::string> paramNames{"Input",
+                                      "Threshold",
+                                      "Bass",
+                                      "Middle",
+                                      "Treble",
+                                      "Output",
+                                      "NoiseGateActive",
+                                      "ToneStack",
+                                      "IRToggle",
+                                      "CalibrateInput",
+                                      "InputCalibrationLevel",
+                                      "OutputMode",
+                                      "Slim"};
+
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames);
+  _UpdateConfigFrom_0_7_14(config);
+  return pos;
+}
+
 // v0.7.12
 
 void _UpdateConfigFrom_0_7_12(nlohmann::json& config)
 {
-  // Fill me in once something changes!
+  config["Slim"] = 1.0;
+  _UpdateConfigFrom_0_7_14(config);
 }
 
 int _GetConfigFrom_0_7_12(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
@@ -248,7 +277,11 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk&
   _Version version(versionStr);
   // Act accordingly
   nlohmann::json config;
-  if (version >= _Version(0, 7, 12))
+  if (version >= _Version(0, 7, 14))
+  {
+    pos = _GetConfigFrom_0_7_14(chunk, pos, config);
+  }
+  else if (version >= _Version(0, 7, 12))
   {
     pos = _GetConfigFrom_0_7_12(chunk, pos, config);
   }

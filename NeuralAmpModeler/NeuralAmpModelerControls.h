@@ -60,6 +60,28 @@ public:
   }
 };
 
+/// Full-window dim layer; click dismisses (used for Slim overlay).
+class NAMSlimOverlayBackdropControl : public IControl
+{
+public:
+  NAMSlimOverlayBackdropControl(const IRECT& bounds, IActionFunction dismiss)
+  : IControl(bounds, dismiss)
+  , mDismiss(dismiss)
+  {
+  }
+
+  void Draw(IGraphics& g) override { g.FillRect(COLOR_BLACK.WithOpacity(0.45f), mRECT); }
+
+  void OnMouseDown(float x, float y, const IMouseMod& mod) override
+  {
+    if (mDismiss)
+      mDismiss(this);
+  }
+
+private:
+  IActionFunction mDismiss;
+};
+
 class NAMKnobControl : public IVKnobControl, public IBitmapBase
 {
 public:

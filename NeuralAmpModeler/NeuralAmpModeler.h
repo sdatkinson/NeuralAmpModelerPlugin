@@ -6,6 +6,7 @@
 #include "../AudioDSPTools/dsp/wav.h"
 #include "../AudioDSPTools/dsp/ResamplingContainer/ResamplingContainer.h"
 #include "../NeuralAmpModelerCore/NAM/dsp.h"
+#include "../NeuralAmpModelerCore/NAM/slimmable.h"
 
 #include "Colors.h"
 #include "ToneStack.h"
@@ -45,6 +46,7 @@ enum EParams
   kCalibrateInput,
   kInputCalibrationLevel,
   kOutputMode,
+  kSlim,
   kNumParams
 };
 
@@ -60,6 +62,9 @@ enum ECtrlTags
   kCtrlTagOutputMode,
   kCtrlTagCalibrateInput,
   kCtrlTagInputCalibrationLevel,
+  kCtrlTagSlimmableIcon,
+  kCtrlTagSlimOverlayBackdrop,
+  kCtrlTagSlimKnob,
   kNumCtrlTags
 };
 
@@ -167,6 +172,12 @@ public:
   // So that we can let the world know if we're resampling (useful for debugging)
   double GetEncapsulatedSampleRate() const { return GetNAMSampleRate(mEncapsulated); };
 
+  nam::SlimmableModel* GetSlimmableModel() { return dynamic_cast<nam::SlimmableModel*>(mEncapsulated.get()); }
+  const nam::SlimmableModel* GetSlimmableModel() const
+  {
+    return dynamic_cast<const nam::SlimmableModel*>(mEncapsulated.get());
+  }
+
 private:
   bool NeedToResample() const { return GetExpectedSampleRate() != GetEncapsulatedSampleRate(); };
   // The encapsulated NAM
@@ -244,6 +255,7 @@ private:
 
   void _SetInputGain();
   void _SetOutputGain();
+  void _ApplySlimParamToLoadedNAMs();
 
   // See: Unserialization.cpp
   void _UnserializeApplyConfig(nlohmann::json& config);
