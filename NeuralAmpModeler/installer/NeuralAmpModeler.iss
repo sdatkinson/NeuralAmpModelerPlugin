@@ -1,12 +1,12 @@
 [Setup]
 AppName=NeuralAmpModeler
-AppContact=neuralampmodeler@gmail.com
-AppCopyright=Copyright (C) 2024 Steven Atkinson
-AppPublisher=Steven Atkinson
-AppPublisherURL=https://www.neuralampmodeler.com/
-AppSupportURL=https://www.neuralampmodeler.com/
+AppContact=https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues
+AppCopyright=Copyright (C) NeuralAmpModeler contributors
+AppPublisher=NeuralAmpModeler contributors
+AppPublisherURL=https://github.com/sdatkinson/NeuralAmpModelerPlugin
+AppSupportURL=https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues
 AppVersion=0.7.14
-VersionInfoVersion=1.0.0
+VersionInfoVersion=0.7.14
 DefaultDirName={pf}\NeuralAmpModeler
 DefaultGroupName=NeuralAmpModeler
 Compression=lzma2
