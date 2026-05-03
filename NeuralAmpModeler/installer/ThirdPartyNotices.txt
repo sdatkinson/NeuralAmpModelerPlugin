@@ -15,7 +15,7 @@ NeuralAmpModelerPlugin
 
 MIT License
 
-Copyright (c) 2022-2025 Steven Atkinson
+Copyright (c) 2022 Steven Atkinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ NeuralAmpModelerCore
 
 MIT License
 
-Copyright (c) 2023-2025 Steven Atkinson
+Copyright (c) 2023 Steven Atkinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -444,49 +444,33 @@ SOFTWARE.
 Eigen
 -----
 
-Eigen is primarily distributed under the Mozilla Public License Version 2.0
-(MPL-2.0). A copy of the MPL-2.0 is available at:
-
-https://www.mozilla.org/MPL/2.0/
-
-The Eigen source tree states:
-
-Eigen is primarily MPL2 licensed. Some files contain third-party code under BSD
-or LGPL licenses. If you want to guarantee that the Eigen code that you are
-including is licensed under the MPL2 and possibly more permissive licenses, add
-the preprocessor symbol EIGEN_MPL2_ONLY.
-
-Source availability notice:
-
-For Neural Amp Modeler, source code for Eigen and the other open-source
-components used by this distribution is available from the corresponding source
-distribution and submodules for this project:
-
-https://github.com/sdatkinson/NeuralAmpModelerPlugin
-
-Downstream distributors of modified products should provide their own source
-location or written offer for MPL-covered Eigen source files and any
-modifications they distribute.
+Source code for Eigen is available from https://gitlab.com/libeigen/eigen.
 
 
 AudioDSPTools Lanczos Resampler Derivation
 ------------------------------------------
 
-AudioDSPTools includes a Lanczos resampler derived from iPlug2 and from
-sst-basic-blocks:
+MIT License
 
-sst-basic-blocks - an open source library of core audio utilities built by
-Surge Synth Team.
+Copyright (c) 2023 Paul Walker
 
-Copyright 2023, various authors, as described in the GitHub transaction log.
-Parts of this code are derived from similar functions original in Surge or
-ShortCircuit.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-sst-basic-blocks is generally released under GPL-3.0-or-later, but the
-LanczosResampler.h source used here carries an explicit file-specific exception
-from its sole author to date. The exception states that this file, and only
-this file, can be used in an MIT/BSD context as well as a GPL3 context, by
-copying it and modifying it as needed. The exception applies only to that file.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 Additional System Frameworks and SDKs
