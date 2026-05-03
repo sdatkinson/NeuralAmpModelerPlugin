@@ -8,7 +8,7 @@
 #include "IPlugPaths.h"
 
 #ifdef OS_WIN
-#include <Shellapi.h>
+  #include <Shellapi.h>
 #endif
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
