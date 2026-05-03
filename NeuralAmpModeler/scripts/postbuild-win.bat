@@ -7,6 +7,7 @@ set FORMAT=%1
 set NAME=%2
 set PLATFORM=%3
 set BUILT_BINARY=%4
+set BUILT_BINARY_DIR=%~dp4
 set VST3_32_PATH=%5
 set VST3_64_PATH=%6
 shift
@@ -21,6 +22,7 @@ set BUILD_DIR=%3
 set VST_ICON=%4
 set AAX_ICON=%5
 set CREATE_BUNDLE_SCRIPT=%6
+set THIRD_PARTY_NOTICES=%~dp0..\installer\ThirdPartyNotices.txt
 
 echo POSTBUILD SCRIPT VARIABLES -----------------------------------------------------
 echo FORMAT %FORMAT% 
@@ -35,9 +37,15 @@ echo AAX_ICON %AAX_ICON%
 echo CREATE_BUNDLE_SCRIPT %CREATE_BUNDLE_SCRIPT%
 echo END POSTBUILD SCRIPT VARIABLES -----------------------------------------------------
 
+if not exist "%THIRD_PARTY_NOTICES%" (
+  echo ThirdPartyNotices.txt not found at "%THIRD_PARTY_NOTICES%"
+)
+
 if %PLATFORM% == "Win32" (
   if %FORMAT% == ".exe" (
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%_%PLATFORM%.exe
+    call :CopyThirdPartyNotices "%BUILD_DIR%"
+    call :CopyThirdPartyNotices "%BUILT_BINARY_DIR%"
   )
 
   if %FORMAT% == ".dll" (
@@ -48,6 +56,7 @@ if %PLATFORM% == "Win32" (
     echo copying 32bit binary to VST3 BUNDLE ..
     call %CREATE_BUNDLE_SCRIPT% %BUILD_DIR%\%NAME%.vst3 %VST_ICON% %FORMAT%
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%.vst3\Contents\x86-win
+    call :CopyThirdPartyNotices "%BUILD_DIR%\%NAME%.vst3\Contents\Resources"
     if exist %VST3_32_PATH% ( 
       echo copying VST3 bundle to 32bit VST3 Plugins folder ...
       call %CREATE_BUNDLE_SCRIPT% %VST3_32_PATH%\%NAME%.vst3 %VST_ICON% %FORMAT%
@@ -72,6 +81,8 @@ if %PLATFORM% == "x64" (
 
   if %FORMAT% == ".exe" (
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%_%PLATFORM%.exe
+    call :CopyThirdPartyNotices "%BUILD_DIR%"
+    call :CopyThirdPartyNotices "%BUILT_BINARY_DIR%"
   )
 
   if %FORMAT% == ".dll" (
@@ -82,6 +93,7 @@ if %PLATFORM% == "x64" (
     echo copying 64bit binary to VST3 BUNDLE ...
     call %CREATE_BUNDLE_SCRIPT% %BUILD_DIR%\%NAME%.vst3 %VST_ICON% %FORMAT%
     copy /y %BUILT_BINARY% %BUILD_DIR%\%NAME%.vst3\Contents\x86_64-win
+    call :CopyThirdPartyNotices "%BUILD_DIR%\%NAME%.vst3\Contents\Resources"
     if exist %VST3_64_PATH% (
       echo copying VST3 bundle to 64bit VST3 Plugins folder ...
       call %CREATE_BUNDLE_SCRIPT% %VST3_64_PATH%\%NAME%.vst3 %VST_ICON% %FORMAT%
@@ -98,3 +110,12 @@ if %PLATFORM% == "x64" (
     xcopy /E /H /Y %BUILD_DIR%\%NAME%.aaxplugin\Contents\* %AAX_64_PATH%\%NAME%.aaxplugin\Contents\
   )
 )
+
+goto :eof
+
+:CopyThirdPartyNotices
+if exist "%THIRD_PARTY_NOTICES%" (
+  if not exist "%~1" mkdir "%~1"
+  copy /y "%THIRD_PARTY_NOTICES%" "%~1\ThirdPartyNotices.txt"
+)
+goto :eof
