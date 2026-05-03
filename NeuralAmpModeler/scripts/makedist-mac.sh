@@ -59,6 +59,17 @@ NOTARIZE_BUNDLE_ID=${NOTARIZE_BUNDLE_ID:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAM
 NOTARIZE_BUNDLE_ID_DEMO=${NOTARIZE_BUNDLE_ID_DEMO:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAME}.DEMO}
 
 ARCHIVE_NAME=$PLUGIN_NAME-v$FULL_VERSION-mac
+THIRD_PARTY_NOTICES="./installer/ThirdPartyNotices.txt"
+
+copy_third_party_notices()
+{
+  bundle_path=$1
+
+  if [ -d "$bundle_path" ] && [ -f "$THIRD_PARTY_NOTICES" ]; then
+    mkdir -p "$bundle_path/Contents/Resources"
+    cp "$THIRD_PARTY_NOTICES" "$bundle_path/Contents/Resources/"
+  fi
+}
 
 if [ $DEMO == 1 ]; then
   ARCHIVE_NAME=$ARCHIVE_NAME-demo
@@ -191,6 +202,13 @@ fi
 if [ -d "${AAX}" ]; then
   strip -x "${AAX}/Contents/MacOS/$PLUGIN_NAME"
 fi
+
+echo "copying third-party notices"
+echo ""
+
+copy_third_party_notices "$APP"
+copy_third_party_notices "$AU"
+copy_third_party_notices "$VST3"
 
 if [ $CODESIGN == 1 ]; then
   #---------------------------------------------------------------------------------------------------------

@@ -16,6 +16,8 @@ The Windows distribution script calls `scripts/update_installer-win.py`, which a
 
 The macOS installer package identifiers default to `com.neuralampmodeler.*`. Set `INSTALLER_PKG_ID_PREFIX` to use your own reverse-DNS prefix, for example `com.example.myproduct`.
 
+`ThirdPartyNotices.txt` is installed with the standalone application and inside the VST3/AU bundle resources. Keep it current when adding, removing, or replacing dependencies. Private/product forks should update any source-availability language that points at this public repository.
+
 For notarized macOS release builds, `scripts/makedist-mac.sh` also accepts:
 
 - `NOTARIZE_BUNDLE_ID`

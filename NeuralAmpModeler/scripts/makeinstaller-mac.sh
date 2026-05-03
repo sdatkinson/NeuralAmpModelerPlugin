@@ -46,6 +46,7 @@ RES_PKG_ID="${PKG_ID_PREFIX}.resources.pkg.${PRODUCT_NAME}"
 RSRCS="~/Music/${PRODUCT_NAME}/Resources"
 
 OUTPUT_BASE_FILENAME="${PRODUCT_NAME} Installer.pkg"
+THIRD_PARTY_NOTICES="./installer/ThirdPartyNotices.txt"
 
 TARGET_DIR="./build-mac/installer"
 PKG_DIR=${TARGET_DIR}/pkgs
@@ -70,6 +71,30 @@ build_flavor()
 
   mkdir -p $TMPDIR
   cp -R -L $PRODUCTS/$flavorprod $TMPDIR
+
+  case "$flavor" in
+    VST3|AU|APP)
+      if [[ -f "$THIRD_PARTY_NOTICES" ]]; then
+        bundled_notices="$TMPDIR/$flavorprod/Contents/Resources/ThirdPartyNotices.txt"
+        if [[ -f "$bundled_notices" ]]; then
+          if ! cmp -s "$THIRD_PARTY_NOTICES" "$bundled_notices"; then
+            echo "The bundled ThirdPartyNotices.txt in $flavorprod differs from $THIRD_PARTY_NOTICES."
+            echo "Update the bundle before signing, then rerun the installer build."
+            exit 1
+          fi
+        else
+          if codesign --verify --strict "$PRODUCTS/$flavorprod" >/dev/null 2>&1; then
+            echo "$flavorprod appears to be signed but does not contain ThirdPartyNotices.txt."
+            echo "Add the notices before signing to avoid invalidating the code signature."
+            exit 1
+          fi
+
+          mkdir -p "$TMPDIR/$flavorprod/Contents/Resources"
+          cp "$THIRD_PARTY_NOTICES" "$bundled_notices"
+        fi
+      fi
+      ;;
+  esac
 
   pkgbuild --root $TMPDIR --identifier $ident --version $VERSION --install-location $loc ${PKG_DIR}/${PRODUCT_NAME}_${flavor}.pkg #|| exit 1
 
