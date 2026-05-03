@@ -27,7 +27,7 @@ if [ "$VERSION" == "" ]; then
 fi
 
 PRODUCT_NAME=NeuralAmpModeler
-PKG_ID_PREFIX="${INSTALLER_PKG_ID_PREFIX:-com.neuralampmodeler}"
+PKG_ID_PREFIX="${INSTALLER_PKG_ID_PREFIX:-com.StevenAtkinson}"
 
 # locations
 PRODUCTS="build-mac"

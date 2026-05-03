@@ -46,22 +46,22 @@ def main():
         "AppName": display_name,
         "AppContact": env_or_default(
             "INSTALLER_APP_CONTACT",
-            "https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues",
+            "neuralampmodeler@gmail.com",
         ),
         "AppCopyright": env_or_default(
             "INSTALLER_APP_COPYRIGHT",
-            "Copyright (C) NeuralAmpModeler contributors",
+            "Copyright (C) 2022 Steven Atkinson",
         ),
         "AppPublisher": env_or_default(
-            "INSTALLER_APP_PUBLISHER", "NeuralAmpModeler contributors"
+            "INSTALLER_APP_PUBLISHER", "Steven Atkinson"
         ),
         "AppPublisherURL": env_or_default(
             "INSTALLER_APP_PUBLISHER_URL",
-            "https://github.com/sdatkinson/NeuralAmpModelerPlugin",
+            "https://www.neuralampmodeler.com/",
         ),
         "AppSupportURL": env_or_default(
             "INSTALLER_APP_SUPPORT_URL",
-            "https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues",
+            "https://www.neuralampmodeler.com/",
         ),
         "AppVersion": config["FULL_VER_STR"],
         "VersionInfoVersion": config["FULL_VER_STR"],
