@@ -1,9 +1,15 @@
 #pragma once
 
 #include <cmath> // std::round
+#include <cstdio> // FILE, fclose
 #include <sstream> // std::stringstream
 #include <unordered_map> // std::unordered_map
 #include "IControls.h"
+#include "IPlugPaths.h"
+
+#ifdef OS_WIN
+#include <Shellapi.h>
+#endif
 
 #define PLUG() static_cast<PLUG_CLASS_NAME*>(GetDelegate())
 #define NAM_KNOB_HEIGHT 120.0f
@@ -902,19 +908,142 @@ private:
 
       buildInfoStr.SetFormatted(100, "Version %s %s %s", verStr.Get(), PLUG()->GetArchStr(), PLUG()->GetAPIStr());
 
-      AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 0), "NEURAL AMP MODELER", mStyle));
+      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 0), "NEURAL AMP MODELER",
+                                      "https://www.neuralampmodeler.com", mText, COLOR_TRANSPARENT,
+                                      PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
       AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 1), "By Steven Atkinson", mStyle));
       AddChildControl(new IVLabelControl(GetRECT().SubRectVertical(5, 2), buildInfoStr.Get(), mStyle));
       AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 3),
                                       "Plug-in development: Steve Atkinson, Oli Larkin, ... ",
                                       "https://github.com/sdatkinson/NeuralAmpModelerPlugin/graphs/contributors", mText,
                                       COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
-      AddChildControl(new IURLControl(GetRECT().SubRectVertical(5, 4), "www.neuralampmodeler.com",
-                                      "https://www.neuralampmodeler.com", mText, COLOR_TRANSPARENT,
-                                      PluginColors::HELP_TEXT_MO, PluginColors::HELP_TEXT_CLICKED));
+      AddChildControl(new ThirdPartyNoticesControl(GetRECT().SubRectVertical(5, 4), mText));
     };
 
   private:
+    class ThirdPartyNoticesControl : public IURLControl
+    {
+    public:
+      ThirdPartyNoticesControl(const IRECT& bounds, const IText& text)
+      : IURLControl(bounds, "Third party notices", "", text, COLOR_TRANSPARENT, PluginColors::HELP_TEXT_MO,
+                    PluginColors::HELP_TEXT_CLICKED)
+      {
+      }
+
+      void OnMouseDown(float x, float y, const IMouseMod& mod) override
+      {
+        WDL_String path;
+        bool opened = false;
+
+        if (ResolveNoticesPath(GetUI(), path))
+          opened = OpenNoticesPath(GetUI(), path);
+
+        if (!opened)
+          ShowOpenError(GetUI());
+
+        GetUI()->ReleaseMouseCapture();
+        mClicked = true;
+        SetDirty(false);
+      }
+
+    private:
+      static bool FileExists(const WDL_String& path)
+      {
+        if (!CStringHasContents(path.Get()))
+          return false;
+
+        FILE* file = WDL_fopenA(path.Get(), "rb");
+        if (file == nullptr)
+          return false;
+
+        fclose(file);
+        return true;
+      }
+
+      static bool TryNoticePathInDirectory(WDL_String& result, const WDL_String& directory)
+      {
+        if (!CStringHasContents(directory.Get()))
+          return false;
+
+        WDL_String candidate(directory);
+        const char lastChar = candidate.Get()[candidate.GetLength() - 1];
+
+        if (!WDL_IS_DIRCHAR(lastChar))
+          candidate.Append(WDL_DIRCHAR_STR);
+
+        candidate.Append(kNoticesFileName);
+
+        if (!FileExists(candidate))
+          return false;
+
+        result.Set(candidate.Get());
+        return true;
+      }
+
+      static bool ResolveNoticesPath(IGraphics* pGraphics, WDL_String& path)
+      {
+        path.Set("");
+
+        if (pGraphics == nullptr)
+          return false;
+
+#ifdef OS_WIN
+        WDL_String directory;
+        const auto moduleHandle = static_cast<PluginIDType>(pGraphics->GetWinModuleHandle());
+
+        BundleResourcePath(directory, moduleHandle);
+        if (TryNoticePathInDirectory(path, directory))
+          return true;
+
+        directory.Set("");
+        PluginPath(directory, moduleHandle);
+        if (TryNoticePathInDirectory(path, directory))
+          return true;
+#endif
+
+        const auto resourceLocation =
+          LocateResource(kNoticesFileName, "txt", path, pGraphics->GetBundleID(), pGraphics->GetWinModuleHandle(),
+                         pGraphics->GetSharedResourcesSubPath());
+
+        return resourceLocation == EResourceLocation::kAbsolutePath && FileExists(path);
+      }
+
+      static bool OpenNoticesPath(IGraphics* pGraphics, const WDL_String& path)
+      {
+        if (pGraphics == nullptr || !CStringHasContents(path.Get()))
+          return false;
+
+#ifdef OS_WIN
+        WCHAR pathWide[IPLUG_WIN_MAX_WIDE_PATH];
+        UTF8ToUTF16(pathWide, path.Get(), IPLUG_WIN_MAX_WIDE_PATH);
+
+        if (pathWide[0] == 0)
+          return false;
+
+        return ShellExecuteW(nullptr, L"open", pathWide, nullptr, nullptr, SW_SHOWNORMAL) > HINSTANCE(32);
+#else
+        return pGraphics->OpenURL(path.Get());
+#endif
+      }
+
+      static void ShowOpenError(IGraphics* pGraphics)
+      {
+        if (pGraphics == nullptr)
+          return;
+
+        const char* const title = "Third party notices";
+        const char* const message = "Could not open ThirdPartyNotices.txt.";
+
+#ifdef OS_MAC
+        pGraphics->ShowMessageBox(title, message, kMB_OK);
+#else
+        pGraphics->ShowMessageBox(message, title, kMB_OK);
+#endif
+      }
+
+      static constexpr const char* kNoticesFileName = "ThirdPartyNotices.txt";
+    };
+
     IVStyle mStyle;
     IText mText;
   };
