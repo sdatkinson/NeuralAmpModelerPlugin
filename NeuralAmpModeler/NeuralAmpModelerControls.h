@@ -8,6 +8,7 @@
 #include "IPlugPaths.h"
 
 #ifdef OS_WIN
+  #include <Windows.h>
   #include <Shellapi.h>
 #endif
 
@@ -980,6 +981,32 @@ private:
         return true;
       }
 
+      // AAX (and similar) load the binary from Contents\x64 or Contents\Win32 while notices live in
+      // Contents\Resources. Same layout as a VST3 bundle; this path is not covered by BundleResourcePath
+      // when the plug-in is built as AAX_API only (no VST3_API).
+      static bool TryNoticePathSiblingResources(WDL_String& result, const WDL_String& moduleDirectory)
+      {
+        if (!CStringHasContents(moduleDirectory.Get()))
+          return false;
+
+        WDL_String candidate(moduleDirectory);
+        const char lastChar = candidate.Get()[candidate.GetLength() - 1];
+        if (!WDL_IS_DIRCHAR(lastChar))
+          candidate.Append(WDL_DIRCHAR_STR);
+
+        candidate.Append("..");
+        candidate.Append(WDL_DIRCHAR_STR);
+        candidate.Append("Resources");
+        candidate.Append(WDL_DIRCHAR_STR);
+        candidate.Append(kNoticesFileName);
+
+        if (!FileExists(candidate))
+          return false;
+
+        result.Set(candidate.Get());
+        return true;
+      }
+
       static bool ResolveNoticesPath(IGraphics* pGraphics, WDL_String& path)
       {
         path.Set("");
@@ -998,6 +1025,9 @@ private:
         directory.Set("");
         PluginPath(directory, moduleHandle);
         if (TryNoticePathInDirectory(path, directory))
+          return true;
+
+        if (TryNoticePathSiblingResources(path, directory))
           return true;
 #endif
 
@@ -1020,7 +1050,12 @@ private:
         if (pathWide[0] == 0)
           return false;
 
-        return ShellExecuteW(nullptr, L"open", pathWide, nullptr, nullptr, SW_SHOWNORMAL) > HINSTANCE(32);
+        WCHAR canon[IPLUG_WIN_MAX_WIDE_PATH];
+        const DWORD nCanon = GetFullPathNameW(pathWide, IPLUG_WIN_MAX_WIDE_PATH, canon, nullptr);
+        const WCHAR* const launchPath =
+          (nCanon > 0 && nCanon < IPLUG_WIN_MAX_WIDE_PATH) ? canon : pathWide;
+
+        return ShellExecuteW(nullptr, L"open", launchPath, nullptr, nullptr, SW_SHOWNORMAL) > HINSTANCE(32);
 #else
         return pGraphics->OpenURL(path.Get());
 #endif
