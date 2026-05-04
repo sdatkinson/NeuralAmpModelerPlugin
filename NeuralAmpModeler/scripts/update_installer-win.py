@@ -23,6 +23,10 @@ def replacestrs(filename, s, r):
         sys.stdout.write(line)
 
 
+def env_or_default(name, default):
+    return os.environ.get(name, default)
+
+
 def main():
     demo = 0
 
@@ -33,38 +37,65 @@ def main():
         demo = int(sys.argv[1])
 
     config = parse_config(projectpath)
+    bundle_name = config["BUNDLE_NAME"]
+    display_name = env_or_default("INSTALLER_DISPLAY_NAME", bundle_name)
+    installer_suffix = " Demo" if demo else ""
+    default_output_name = display_name + installer_suffix + " Installer"
+
+    setup_values = {
+        "AppName": display_name,
+        "AppContact": env_or_default(
+            "INSTALLER_APP_CONTACT",
+            "neuralampmodeler@gmail.com",
+        ),
+        "AppCopyright": env_or_default(
+            "INSTALLER_APP_COPYRIGHT",
+            "Copyright (C) 2022 Steven Atkinson",
+        ),
+        "AppPublisher": env_or_default(
+            "INSTALLER_APP_PUBLISHER", "Steven Atkinson"
+        ),
+        "AppPublisherURL": env_or_default(
+            "INSTALLER_APP_PUBLISHER_URL",
+            "https://www.neuralampmodeler.com/",
+        ),
+        "AppSupportURL": env_or_default(
+            "INSTALLER_APP_SUPPORT_URL",
+            "https://www.neuralampmodeler.com/",
+        ),
+        "AppVersion": config["FULL_VER_STR"],
+        "VersionInfoVersion": config["FULL_VER_STR"],
+        "DefaultDirName": "{pf}\\" + display_name,
+        "DefaultGroupName": display_name,
+        "OutputBaseFilename": env_or_default(
+            "INSTALLER_OUTPUT_BASE_FILENAME", default_output_name
+        ),
+        "WelcomeLabel1": env_or_default(
+            "INSTALLER_WELCOME_LABEL",
+            "Welcome to the " + display_name + installer_suffix + " installer",
+        ),
+        "SetupWindowTitle": env_or_default(
+            "INSTALLER_SETUP_WINDOW_TITLE",
+            display_name + installer_suffix + " installer",
+        ),
+    }
 
     # WIN INSTALLER
     print("Updating Windows Installer version info...")
 
     for line in fileinput.input(
-        projectpath + "/installer/" + config["BUNDLE_NAME"] + ".iss", inplace=1
+        projectpath + "/installer/" + bundle_name + ".iss", inplace=1
     ):
-        if "AppVersion" in line:
-            line = "AppVersion=" + config["FULL_VER_STR"] + "\n"
-        if "OutputBaseFilename" in line:
-            if demo:
-                line = "OutputBaseFilename=NeuralAmpModeler Demo Installer\n"
-            else:
-                line = "OutputBaseFilename=NeuralAmpModeler Installer\n"
+        if "=" in line:
+            key = line.split("=", 1)[0]
+            if key in setup_values:
+                line = key + "=" + setup_values[key] + "\n"
 
         if 'Source: "readme' in line:
             if demo:
                 line = 'Source: "readme-win-demo.rtf"; DestDir: "{app}"; DestName: "readme.rtf"; Flags: isreadme\n'
             else:
                 line = 'Source: "readme-win.rtf"; DestDir: "{app}"; DestName: "readme.rtf"; Flags: isreadme\n'
-
-        if "WelcomeLabel1" in line:
-            if demo:
-                line = "WelcomeLabel1=Welcome to the NeuralAmpModeler Demo installer\n"
-            else:
-                line = "WelcomeLabel1=Welcome to the NeuralAmpModeler installer\n"
-
-        if "SetupWindowTitle" in line:
-            if demo:
-                line = "SetupWindowTitle=NeuralAmpModeler Demo installer\n"
-            else:
-                line = "SetupWindowTitle=NeuralAmpModeler installer\n"
 
         sys.stdout.write(line)
 

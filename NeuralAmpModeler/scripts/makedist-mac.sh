@@ -21,15 +21,14 @@ SCRIPTS=$IPLUG2_ROOT/Scripts
 CODESIGN=0
 
 # macOS codesigning/notarization
-NOTARIZE_BUNDLE_ID=com.StevenAtkinson.NeuralAmpModeler
-NOTARIZE_BUNDLE_ID_DEMO=com.StevenAtkinson.NeuralAmpModeler.DEMO
-APP_SPECIFIC_ID=TODO
-APP_SPECIFIC_PWD=TODO
+INSTALLER_PKG_ID_PREFIX=${INSTALLER_PKG_ID_PREFIX:-com.StevenAtkinson}
+APP_SPECIFIC_ID=${APP_SPECIFIC_ID:-TODO}
+APP_SPECIFIC_PWD=${APP_SPECIFIC_PWD:-TODO}
 
 # AAX/PACE wraptool codesigning
-ILOK_ID=TODO
-ILOK_PWD=TODO
-WRAP_GUID=TODO
+ILOK_ID=${ILOK_ID:-TODO}
+ILOK_PWD=${ILOK_PWD:-TODO}
+WRAP_GUID=${WRAP_GUID:-TODO}
 
 DEMO=0
 if [ "$1" == "demo" ]; then
@@ -56,7 +55,21 @@ PLUGIN_NAME=`echo | grep BUNDLE_NAME config.h`
 PLUGIN_NAME=${PLUGIN_NAME//\#define BUNDLE_NAME }
 PLUGIN_NAME=${PLUGIN_NAME//\"}
 
+NOTARIZE_BUNDLE_ID=${NOTARIZE_BUNDLE_ID:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAME}}
+NOTARIZE_BUNDLE_ID_DEMO=${NOTARIZE_BUNDLE_ID_DEMO:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAME}.DEMO}
+
 ARCHIVE_NAME=$PLUGIN_NAME-v$FULL_VERSION-mac
+THIRD_PARTY_NOTICES="./installer/ThirdPartyNotices.txt"
+
+copy_third_party_notices()
+{
+  bundle_path=$1
+
+  if [ -d "$bundle_path" ] && [ -f "$THIRD_PARTY_NOTICES" ]; then
+    mkdir -p "$bundle_path/Contents/Resources"
+    cp "$THIRD_PARTY_NOTICES" "$bundle_path/Contents/Resources/"
+  fi
+}
 
 if [ $DEMO == 1 ]; then
   ARCHIVE_NAME=$ARCHIVE_NAME-demo
@@ -190,6 +203,13 @@ if [ -d "${AAX}" ]; then
   strip -x "${AAX}/Contents/MacOS/$PLUGIN_NAME"
 fi
 
+echo "copying third-party notices"
+echo ""
+
+copy_third_party_notices "$APP"
+copy_third_party_notices "$AU"
+copy_third_party_notices "$VST3"
+
 if [ $CODESIGN == 1 ]; then
   #---------------------------------------------------------------------------------------------------------
   # code sign AAX binary with wraptool
@@ -266,9 +286,9 @@ if [ $BUILD_INSTALLER == 1 ]; then
     PWD=`pwd`
 
     if [ $DEMO == 1 ]; then
-      ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
-    else
       ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID_DEMO $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
+    else
+      ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
     fi
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then

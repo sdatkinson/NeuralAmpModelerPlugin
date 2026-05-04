@@ -144,7 +144,10 @@ def main():
         auv3["CFBundlePackageType"] = "XPC!"
         auv3["NSExtension"] = dict(
             NSExtensionAttributes=dict(
-                AudioComponentBundle="com.StevenAtkinson.app."
+                AudioComponentBundle=config["BUNDLE_DOMAIN"]
+                + "."
+                + config["BUNDLE_MFR"]
+                + ".app."
                 + config["BUNDLE_NAME"]
                 + ".AUv3Framework",
                 AudioComponents=[{}],

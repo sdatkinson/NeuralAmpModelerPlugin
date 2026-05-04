@@ -51,6 +51,11 @@ def main():
             print("copying " + font + " to " + dst)
             shutil.copy(projectpath + "/resources/fonts/" + font, dst)
 
+    third_party_notices = projectpath + "/installer/ThirdPartyNotices.txt"
+    if os.path.exists(third_party_notices):
+        print("copying ThirdPartyNotices.txt to " + dst)
+        shutil.copy(third_party_notices, dst)
+
 
 if __name__ == "__main__":
     main()

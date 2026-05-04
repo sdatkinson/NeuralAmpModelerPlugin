@@ -27,6 +27,7 @@ if [ "$VERSION" == "" ]; then
 fi
 
 PRODUCT_NAME=NeuralAmpModeler
+PKG_ID_PREFIX="${INSTALLER_PKG_ID_PREFIX:-com.StevenAtkinson}"
 
 # locations
 PRODUCTS="build-mac"
@@ -36,9 +37,16 @@ AU="${PRODUCT_NAME}.component"
 APP="${PRODUCT_NAME}.app"
 AAX="${PRODUCT_NAME}.aaxplugin"
 
+VST3_PKG_ID="${PKG_ID_PREFIX}.vst3.pkg.${PRODUCT_NAME}"
+AU_PKG_ID="${PKG_ID_PREFIX}.au.pkg.${PRODUCT_NAME}"
+AAX_PKG_ID="${PKG_ID_PREFIX}.aax.pkg.${PRODUCT_NAME}"
+APP_PKG_ID="${PKG_ID_PREFIX}.app.pkg.${PRODUCT_NAME}"
+RES_PKG_ID="${PKG_ID_PREFIX}.resources.pkg.${PRODUCT_NAME}"
+
 RSRCS="~/Music/${PRODUCT_NAME}/Resources"
 
 OUTPUT_BASE_FILENAME="${PRODUCT_NAME} Installer.pkg"
+THIRD_PARTY_NOTICES="./installer/ThirdPartyNotices.txt"
 
 TARGET_DIR="./build-mac/installer"
 PKG_DIR=${TARGET_DIR}/pkgs
@@ -64,6 +72,30 @@ build_flavor()
   mkdir -p $TMPDIR
   cp -R -L $PRODUCTS/$flavorprod $TMPDIR
 
+  case "$flavor" in
+    VST3|AU|APP)
+      if [[ -f "$THIRD_PARTY_NOTICES" ]]; then
+        bundled_notices="$TMPDIR/$flavorprod/Contents/Resources/ThirdPartyNotices.txt"
+        if [[ -f "$bundled_notices" ]]; then
+          if ! cmp -s "$THIRD_PARTY_NOTICES" "$bundled_notices"; then
+            echo "The bundled ThirdPartyNotices.txt in $flavorprod differs from $THIRD_PARTY_NOTICES."
+            echo "Update the bundle before signing, then rerun the installer build."
+            exit 1
+          fi
+        else
+          if codesign --verify --strict "$PRODUCTS/$flavorprod" >/dev/null 2>&1; then
+            echo "$flavorprod appears to be signed but does not contain ThirdPartyNotices.txt."
+            echo "Add the notices before signing to avoid invalidating the code signature."
+            exit 1
+          fi
+
+          mkdir -p "$TMPDIR/$flavorprod/Contents/Resources"
+          cp "$THIRD_PARTY_NOTICES" "$bundled_notices"
+        fi
+      fi
+      ;;
+  esac
+
   pkgbuild --root $TMPDIR --identifier $ident --version $VERSION --install-location $loc ${PKG_DIR}/${PRODUCT_NAME}_${flavor}.pkg #|| exit 1
 
   rm -r $TMPDIR
@@ -71,22 +103,22 @@ build_flavor()
 
 # # try to build VST3 package
 if [[ -d $PRODUCTS/$VST3 ]]; then
-  build_flavor "VST3" $VST3 "com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}" "/Library/Audio/Plug-Ins/VST3"
+  build_flavor "VST3" $VST3 "$VST3_PKG_ID" "/Library/Audio/Plug-Ins/VST3"
 fi
 
 # # try to build AU package
 if [[ -d $PRODUCTS/$AU ]]; then
-  build_flavor "AU" $AU "com.StevenAtkinson.au.pkg.${PRODUCT_NAME}" "/Library/Audio/Plug-Ins/Components"
+  build_flavor "AU" $AU "$AU_PKG_ID" "/Library/Audio/Plug-Ins/Components"
 fi
 
 # # try to build AAX package
 if [[ -d $PRODUCTS/$AAX ]]; then
-  build_flavor "AAX" $AAX "com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}" ""/Library/Application Support/Avid/Audio/Plug-Ins""
+  build_flavor "AAX" $AAX "$AAX_PKG_ID" ""/Library/Application Support/Avid/Audio/Plug-Ins""
 fi
 
 # try to build App package
 if [[ -d $PRODUCTS/$APP ]]; then
-  build_flavor "APP" $APP "com.StevenAtkinson.app.pkg.${PRODUCT_NAME}" "/Applications"
+  build_flavor "APP" $APP "$APP_PKG_ID" "/Applications"
 fi
 
 # write build info to resources folder
@@ -98,7 +130,7 @@ fi
 
 # build resources package
 # --scripts ResourcesPackageScript
-# pkgbuild --root "$RSRCS" --identifier "com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}" --version $VERSION --install-location "/tmp/${PRODUCT_NAME}" ${PRODUCT_NAME}_RES.pkg
+# pkgbuild --root "$RSRCS" --identifier "$RES_PKG_ID" --version $VERSION --install-location "/tmp/${PRODUCT_NAME}" ${PRODUCT_NAME}_RES.pkg
 
 # remove build info from resource folder
 # rm "$RSRCS/BuildInfo.txt"
@@ -106,30 +138,30 @@ fi
 # create distribution.xml
 
 if [[ -d $PRODUCTS/$VST3 ]]; then
-	VST3_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\"/>"
-	VST3_CHOICE="<line choice=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\"/>"
-	VST3_CHOICE_DEF="<choice id=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\" visible=\"true\" start_selected=\"true\" title=\"VST3 Plug-in\"><pkg-ref id=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.vst3.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_VST3.pkg</pkg-ref>"
+	VST3_PKG_REF="<pkg-ref id=\"${VST3_PKG_ID}\"/>"
+	VST3_CHOICE="<line choice=\"${VST3_PKG_ID}\"/>"
+	VST3_CHOICE_DEF="<choice id=\"${VST3_PKG_ID}\" visible=\"true\" start_selected=\"true\" title=\"VST3 Plug-in\"><pkg-ref id=\"${VST3_PKG_ID}\"/></choice><pkg-ref id=\"${VST3_PKG_ID}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_VST3.pkg</pkg-ref>"
 fi
 if [[ -d $PRODUCTS/$AU ]]; then
-	AU_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.au.pkg.${PRODUCT_NAME}\"/>"
-	AU_CHOICE="<line choice=\"com.StevenAtkinson.au.pkg.${PRODUCT_NAME}\"/>"
-	AU_CHOICE_DEF="<choice id=\"com.StevenAtkinson.au.pkg.${PRODUCT_NAME}\" visible=\"true\" start_selected=\"true\" title=\"Audio Unit (v2) Plug-in\"><pkg-ref id=\"com.StevenAtkinson.au.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.au.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_AU.pkg</pkg-ref>"
+	AU_PKG_REF="<pkg-ref id=\"${AU_PKG_ID}\"/>"
+	AU_CHOICE="<line choice=\"${AU_PKG_ID}\"/>"
+	AU_CHOICE_DEF="<choice id=\"${AU_PKG_ID}\" visible=\"true\" start_selected=\"true\" title=\"Audio Unit (v2) Plug-in\"><pkg-ref id=\"${AU_PKG_ID}\"/></choice><pkg-ref id=\"${AU_PKG_ID}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_AU.pkg</pkg-ref>"
 fi
 if [[ -d $PRODUCTS/$AAX ]]; then
-	AAX_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}\"/>"
-	AAX_CHOICE="<line choice=\"com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}\"/>"
-	AAX_CHOICE_DEF="<choice id=\"com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}\" visible=\"true\" start_selected=\"true\" title=\"AAX Plug-in\"><pkg-ref id=\"com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.aax.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_AAX.pkg</pkg-ref>"
+	AAX_PKG_REF="<pkg-ref id=\"${AAX_PKG_ID}\"/>"
+	AAX_CHOICE="<line choice=\"${AAX_PKG_ID}\"/>"
+	AAX_CHOICE_DEF="<choice id=\"${AAX_PKG_ID}\" visible=\"true\" start_selected=\"true\" title=\"AAX Plug-in\"><pkg-ref id=\"${AAX_PKG_ID}\"/></choice><pkg-ref id=\"${AAX_PKG_ID}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_AAX.pkg</pkg-ref>"
 fi
 if [[ -d $PRODUCTS/$APP ]]; then
-	APP_PKG_REF="<pkg-ref id=\"com.StevenAtkinson.app.pkg.${PRODUCT_NAME}\"/>"
-	APP_CHOICE="<line choice=\"com.StevenAtkinson.app.pkg.${PRODUCT_NAME}\"/>"
-	APP_CHOICE_DEF="<choice id=\"com.StevenAtkinson.app.pkg.${PRODUCT_NAME}\" visible=\"true\" start_selected=\"true\" title=\"Stand-alone App\"><pkg-ref id=\"com.StevenAtkinson.app.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.app.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_APP.pkg</pkg-ref>"
+	APP_PKG_REF="<pkg-ref id=\"${APP_PKG_ID}\"/>"
+	APP_CHOICE="<line choice=\"${APP_PKG_ID}\"/>"
+	APP_CHOICE_DEF="<choice id=\"${APP_PKG_ID}\" visible=\"true\" start_selected=\"true\" title=\"Stand-alone App\"><pkg-ref id=\"${APP_PKG_ID}\"/></choice><pkg-ref id=\"${APP_PKG_ID}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_APP.pkg</pkg-ref>"
 fi
 
 # if [[ -d $PRODUCTS/$RES ]]; then
-	# RES_PKG_REF="<pkg-ref id="com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}"/>'
-	# RES_CHOICE="<line choice="com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}"/>'
-	# RES_CHOICE_DEF="<choice id=\"com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}\" visible=\"true\" enabled=\"false\" selected=\"true\" title=\"Shared Resources\"><pkg-ref id=\"com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}\"/></choice><pkg-ref id=\"com.StevenAtkinson.resources.pkg.${PRODUCT_NAME}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_RES.pkg</pkg-ref>"
+	# RES_PKG_REF="<pkg-ref id="${RES_PKG_ID}"/>'
+	# RES_CHOICE="<line choice="${RES_PKG_ID}"/>'
+	# RES_CHOICE_DEF="<choice id=\"${RES_PKG_ID}\" visible=\"true\" enabled=\"false\" selected=\"true\" title=\"Shared Resources\"><pkg-ref id=\"${RES_PKG_ID}\"/></choice><pkg-ref id=\"${RES_PKG_ID}\" version=\"${VERSION}\" onConclusion=\"none\">${PRODUCT_NAME}_RES.pkg</pkg-ref>"
 # fi
 
 cat > ${TARGET_DIR}/distribution.xml << XMLEND
