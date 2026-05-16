@@ -306,6 +306,14 @@ private:
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
   std::atomic<bool> mModelCleared = false;
+  // Holds a model evicted from mModel that must be deleted on the UI thread (OnIdle) rather
+  // than the audio thread, to avoid freeing large Eigen weight matrices inside ProcessBlock
+  // and causing a buffer-deadline miss.
+  std::atomic<ResamplingNAM*> mModelPendingDeletion{nullptr};
+
+  // Last format seen by OnReset(). Used to guard _ResetModelAndIR() — see OnReset() for rationale.
+  double mLastResetSampleRate{0.0};
+  int mLastResetBlockSize{0};
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
