@@ -304,67 +304,13 @@ public:
 
   void OnAttached() override
   {
-    auto prevFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex--;
+    auto prevFileFunc = [&](IControl* pCaller) { PrevFile(); };
 
-      if (mSelectedItemIndex < 0)
-        mSelectedItemIndex = nItems - 1;
+    auto nextFileFunc = [&](IControl* pCaller) { NextFile(); };
 
-      LoadFileAtCurrentIndex();
-    };
+    auto loadFileFunc = [&](IControl* pCaller) { LoadFile(); };
 
-    auto nextFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex++;
-
-      if (mSelectedItemIndex >= nItems)
-        mSelectedItemIndex = 0;
-
-      LoadFileAtCurrentIndex();
-    };
-
-    auto loadFileFunc = [&](IControl* pCaller) {
-      WDL_String fileName;
-      WDL_String path;
-      GetSelectedFileDirectory(path);
-#ifdef NAM_PICK_DIRECTORY
-      pCaller->GetUI()->PromptForDirectory(path, [&](const WDL_String& fileName, const WDL_String& path) {
-        if (path.GetLength())
-        {
-          ClearPathList();
-          AddPath(path.Get(), "");
-          SetupMenu();
-          SelectFirstFile();
-          LoadFileAtCurrentIndex();
-        }
-      });
-#else
-      pCaller->GetUI()->PromptForFile(
-        fileName, path, EFileAction::Open, mExtension.Get(), [&](const WDL_String& fileName, const WDL_String& path) {
-          if (fileName.GetLength())
-          {
-            ClearPathList();
-            AddPath(path.Get(), "");
-            SetupMenu();
-            SetSelectedFile(fileName.Get());
-            LoadFileAtCurrentIndex();
-          }
-        });
-#endif
-    };
-
-    auto clearFileFunc = [&](IControl* pCaller) {
-      pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
-      mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-      SetBrowserState(NAMBrowserState::Empty);
-      // FIXME disabling output mode...
-      //      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
-    };
+    auto clearFileFunc = [&](IControl* pCaller) { ClearOrGet(); };
 
     auto chooseFileFunc = [&, loadFileFunc](IControl* pCaller) {
       if (std::string_view(pCaller->As<IVButtonControl>()->GetLabelStr()) == mDefaultLabelStr.Get())
@@ -410,6 +356,77 @@ public:
 
     // initialize control visibility
     SetBrowserState(NAMBrowserState::Empty);
+  }
+
+  void LoadFile()
+  {
+    WDL_String fileName;
+    WDL_String path;
+    GetSelectedFileDirectory(path);
+#ifdef NAM_PICK_DIRECTORY
+    GetUI()->PromptForDirectory(path, [&](const WDL_String& fileName, const WDL_String& path) {
+      if (path.GetLength())
+      {
+        ClearPathList();
+        AddPath(path.Get(), "");
+        SetupMenu();
+        SelectFirstFile();
+        LoadFileAtCurrentIndex();
+      }
+    });
+#else
+    GetUI()->PromptForFile(
+      fileName, path, EFileAction::Open, mExtension.Get(),
+      [&](const WDL_String& fileName, const WDL_String& path) {
+        if (fileName.GetLength())
+        {
+          ClearPathList();
+          AddPath(path.Get(), "");
+          SetupMenu();
+          SetSelectedFile(fileName.Get());
+          LoadFileAtCurrentIndex();
+        }
+      });
+#endif
+  }
+
+  void PrevFile()
+  {
+    const auto nItems = NItems();
+    if (nItems == 0)
+      return;
+    mSelectedItemIndex--;
+    if (mSelectedItemIndex < 0)
+      mSelectedItemIndex = nItems - 1;
+    LoadFileAtCurrentIndex();
+  }
+
+  void NextFile()
+  {
+    const auto nItems = NItems();
+    if (nItems == 0)
+      return;
+    mSelectedItemIndex++;
+    if (mSelectedItemIndex >= nItems)
+      mSelectedItemIndex = 0;
+    LoadFileAtCurrentIndex();
+  }
+
+  void ClearOrGet()
+  {
+    if (mBrowserState == NAMBrowserState::Loaded)
+    {
+      GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
+      mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
+      SetBrowserState(NAMBrowserState::Empty);
+      // FIXME disabling output mode...
+      //      GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
+    }
+    else
+    {
+      WDL_String url(mGetButtonURL);
+      GetUI()->OpenURL(url.Get());
+    }
   }
 
   void LoadFileAtCurrentIndex()
