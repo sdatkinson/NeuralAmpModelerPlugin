@@ -7,9 +7,14 @@ A VST3/AudioUnit plug-in\* for [Neural Amp Modeler](https://github.com/sdatkinso
 - https://www.youtube.com/user/RunawayThumbtack
 - https://github.com/sdatkinson/neural-amp-modeler
 
-## Installation
+## Building and Installation
 
-Check the [Releases](https://github.com/sdatkinson/NeuralAmpModelerPlugin/releases) for pre-built installers for the plugin!
+To build the app or plugin, there are build scripts in [NeuralAmpModeler/scripts/](https://github.com/sdatkinson/NeuralAmpModelerPlugin/tree/main/NeuralAmpModeler/scripts).
+The [workflows](https://github.com/sdatkinson/NeuralAmpModelerPlugin/tree/main/.github/workflows) can show you how to do this.
+
+### Pre-built installers
+
+If you want a pre-built installer from this repo without having to , I've made "Gateway", a fork of this repo, availble at https://neuralampmodeler.com/users!
 
 ## Supported Platforms
 
