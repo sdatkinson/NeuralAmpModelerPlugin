@@ -31,9 +31,9 @@ def main():
             + "/Resources"
         )
     else:
-        dst = (
-            os.environ["TARGET_BUILD_DIR"]
-            + os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
+        dst = os.path.join(
+            os.environ["TARGET_BUILD_DIR"],
+            os.environ["UNLOCALIZED_RESOURCES_FOLDER_PATH"]
         )
 
     if os.path.exists(dst) == False:
@@ -50,6 +50,11 @@ def main():
         for font in fonts:
             print("copying " + font + " to " + dst)
             shutil.copy(projectpath + "/resources/fonts/" + font, dst)
+
+    third_party_notices = projectpath + "/installer/ThirdPartyNotices.txt"
+    if os.path.exists(third_party_notices):
+        print("copying ThirdPartyNotices.txt to " + dst)
+        shutil.copy(third_party_notices, dst)
 
 
 if __name__ == "__main__":

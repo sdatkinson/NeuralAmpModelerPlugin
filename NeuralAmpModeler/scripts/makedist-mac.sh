@@ -21,15 +21,14 @@ SCRIPTS=$IPLUG2_ROOT/Scripts
 CODESIGN=0
 
 # macOS codesigning/notarization
-NOTARIZE_BUNDLE_ID=com.StevenAtkinson.NeuralAmpModeler
-NOTARIZE_BUNDLE_ID_DEMO=com.StevenAtkinson.NeuralAmpModeler.DEMO
-APP_SPECIFIC_ID=TODO
-APP_SPECIFIC_PWD=TODO
+INSTALLER_PKG_ID_PREFIX=${INSTALLER_PKG_ID_PREFIX:-com.StevenAtkinson}
+APP_SPECIFIC_ID=${APP_SPECIFIC_ID:-TODO}
+APP_SPECIFIC_PWD=${APP_SPECIFIC_PWD:-TODO}
 
 # AAX/PACE wraptool codesigning
-ILOK_ID=TODO
-ILOK_PWD=TODO
-WRAP_GUID=TODO
+ILOK_ID=${ILOK_ID:-TODO}
+ILOK_PWD=${ILOK_PWD:-TODO}
+WRAP_GUID=${WRAP_GUID:-TODO}
 
 DEMO=0
 if [ "$1" == "demo" ]; then
@@ -56,7 +55,21 @@ PLUGIN_NAME=`echo | grep BUNDLE_NAME config.h`
 PLUGIN_NAME=${PLUGIN_NAME//\#define BUNDLE_NAME }
 PLUGIN_NAME=${PLUGIN_NAME//\"}
 
+NOTARIZE_BUNDLE_ID=${NOTARIZE_BUNDLE_ID:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAME}}
+NOTARIZE_BUNDLE_ID_DEMO=${NOTARIZE_BUNDLE_ID_DEMO:-${INSTALLER_PKG_ID_PREFIX}.${PLUGIN_NAME}.DEMO}
+
 ARCHIVE_NAME=$PLUGIN_NAME-v$FULL_VERSION-mac
+THIRD_PARTY_NOTICES="./installer/ThirdPartyNotices.txt"
+
+copy_third_party_notices()
+{
+  bundle_path=$1
+
+  if [ -d "$bundle_path" ] && [ -f "$THIRD_PARTY_NOTICES" ]; then
+    mkdir -p "$bundle_path/Contents/Resources"
+    cp "$THIRD_PARTY_NOTICES" "$bundle_path/Contents/Resources/"
+  fi
+}
 
 if [ $DEMO == 1 ]; then
   ARCHIVE_NAME=$ARCHIVE_NAME-demo
@@ -68,9 +81,6 @@ fi
 # else
 #   ARCHIVE_NAME=`python3 ${SCRIPTS}/get_archive_name.py ${PLUGIN_NAME} mac full`
 # fi
-
-VST2=`echo | grep VST2_PATH $XCCONFIG`
-VST2=$HOME${VST2//\VST2_PATH = \$(HOME)}/$PLUGIN_NAME.vst
 
 VST3=`echo | grep VST3_PATH $XCCONFIG`
 VST3=$HOME${VST3//\VST3_PATH = \$(HOME)}/$PLUGIN_NAME.vst3
@@ -94,7 +104,6 @@ CERT_ID=${CERT_ID//\CERTIFICATE_ID = }
 DEV_ID_APP_STR="Developer ID Application: ${CERT_ID}"
 DEV_ID_INST_STR="Developer ID Installer: ${CERT_ID}"
 
-echo $VST2
 echo $VST3
 echo $AU
 echo $APP
@@ -126,10 +135,6 @@ fi
 
 if [ -d $AU ]; then
  sudo rm -f -R $AU
-fi
-
-if [ -d $VST2 ]; then
-  sudo rm -f -R $VST2
 fi
 
 if [ -d $VST3 ]; then
@@ -168,10 +173,6 @@ if [ -d $AU ]; then
   ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $AU
 fi
 
-if [ -d $VST2 ]; then
-  ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $VST2
-fi
-
 if [ -d $VST3 ]; then
   ./$SCRIPTS/SetFileIcon -image resources/$PLUGIN_NAME.icns -file $VST3
 fi
@@ -194,10 +195,6 @@ if [ -d $AU ]; then
   strip -x $AU/Contents/MacOS/$PLUGIN_NAME
 fi
 
-if [ -d $VST2 ]; then
-  strip -x $VST2/Contents/MacOS/$PLUGIN_NAME
-fi
-
 if [ -d $VST3 ]; then
   strip -x $VST3/Contents/MacOS/$PLUGIN_NAME
 fi
@@ -205,6 +202,13 @@ fi
 if [ -d "${AAX}" ]; then
   strip -x "${AAX}/Contents/MacOS/$PLUGIN_NAME"
 fi
+
+echo "copying third-party notices"
+echo ""
+
+copy_third_party_notices "$APP"
+copy_third_party_notices "$AU"
+copy_third_party_notices "$VST3"
 
 if [ $CODESIGN == 1 ]; then
   #---------------------------------------------------------------------------------------------------------
@@ -226,8 +230,6 @@ if [ $CODESIGN == 1 ]; then
   codesign --force -s "${DEV_ID_APP_STR}" -v $APP --deep --strict --options=runtime #hardened runtime for app
   xattr -cr $AU 
   codesign --force -s "${DEV_ID_APP_STR}" -v $AU --deep --strict
-  # xattr -cr $VST2 
-  # codesign --force -s "${DEV_ID_APP_STR}" -v $VST2 --deep --strict
   xattr -cr $VST3 
   codesign --force -s "${DEV_ID_APP_STR}" -v $VST3 --deep --strict
   #---------------------------------------------------------------------------------------------------------
@@ -284,9 +286,9 @@ if [ $BUILD_INSTALLER == 1 ]; then
     PWD=`pwd`
 
     if [ $DEMO == 1 ]; then
-      ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
-    else
       ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID_DEMO $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
+    else
+      ./$SCRIPTS/notarise.sh "${PWD}/build-mac" "${PWD}/build-mac/${ARCHIVE_NAME}.dmg" $NOTARIZE_BUNDLE_ID $APP_SPECIFIC_ID $APP_SPECIFIC_PWD
     fi
 
     if [ "${PIPESTATUS[0]}" -ne "0" ]; then
@@ -311,10 +313,6 @@ else
 
   if [ -d $AU ]; then
     cp -R $AU build-mac/zip/$PLUGIN_NAME.component
-  fi
-
-  if [ -d $VST2 ]; then
-    cp -R $VST2 build-mac/zip/$PLUGIN_NAME.vst
   fi
 
   if [ -d $VST3 ]; then

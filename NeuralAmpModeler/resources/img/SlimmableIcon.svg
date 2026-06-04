@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="64" viewBox="0 0 128 64" fill="none">
+  <title>Slimmable NAM slider ring icon</title>
+  <desc>Minimal slider-ring icon for NeuralAmpModelerPlugin slimmable model indicator.</desc>
+  <!-- NAM Azure: rgb(80,133,232) / #5085E8 -->
+  <!-- Transparent background -->
+  <g shape-rendering="geometricPrecision">
+    <!-- Left track -->
+    <line x1="24" y1="32" x2="68" y2="32" stroke="#5085E8" stroke-width="8" stroke-linecap="round"/>
+    <!-- Right track -->
+    <line x1="92" y1="32" x2="104" y2="32" stroke="#F2F2F2" stroke-width="8" stroke-linecap="round"/>
+    <!-- Knob ring, nudged slightly right -->
+    <circle cx="80" cy="32" r="11" stroke="#5085E8" stroke-width="8" fill="none"/>
+  </g>
+</svg>
