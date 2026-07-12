@@ -473,13 +473,21 @@
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		C2A2FAE112D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED112D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE122D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED122D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE132D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED132D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE142D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED142D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE152D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED152D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE162D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED162D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE172D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED172D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 		C2A2FAE182D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
+		C2F05ED182D0000120027AB66 /* wavenet/fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1045,7 +1053,9 @@
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
 		C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/a2_fast.cpp; sourceTree = "<group>"; };
+		C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/fused.cpp; sourceTree = "<group>"; };
 		C2A2FAE022D0000110027AB66 /* wavenet/a2_fast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet/a2_fast.h; sourceTree = "<group>"; };
+		C2F05ED022D0000110027AB66 /* wavenet/fused.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet/fused.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1311,7 +1321,9 @@
 				4F2FB1472A0047420027AB66 /* version.h */,
 				4F2FB1522A0047420027AB66 /* wavenet/model.cpp */,
 				C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */,
+				C2F05ED012D0000110027AB66 /* wavenet/fused.cpp */,
 				C2A2FAE022D0000110027AB66 /* wavenet/a2_fast.h */,
+				C2F05ED022D0000110027AB66 /* wavenet/fused.h */,
 				B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */,
 				4F2FB14C2A0047420027AB66 /* wavenet/model.h */,
 				4F2FB15A2A0047420027AB68 /* film.h */,
@@ -2573,6 +2585,7 @@
 				4F2FB1C12A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7072D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE112D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED112D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0122CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1CF2A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1D92A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2613,6 +2626,7 @@
 				4F2FB1BE2A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7042D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE122D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED122D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0132CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D02A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DA2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2656,6 +2670,7 @@
 				4F2FB1C32A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7092D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE132D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED132D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0142CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D12A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DB2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2725,6 +2740,7 @@
 				4F2FB1C22A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7082D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE142D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED142D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0152CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D22A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DC2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2762,6 +2778,7 @@
 				4F2FB1BD2A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7032D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE152D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED152D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0162CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D32A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DD2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2845,6 +2862,7 @@
 				4F2FB1BF2A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7052D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE162D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED162D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0172CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D42A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DE2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2904,6 +2922,7 @@
 				4F2FB1BB2A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7012D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE172D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED172D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0182CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D52A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DF2A0047430027AB66 /* ring_buffer.cpp in Sources */,
@@ -2982,6 +3001,7 @@
 				4F2FB1C02A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7062D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE182D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
+				C2F05ED182D0000120027AB66 /* wavenet/fused.cpp in Sources */,
 				AAB7E0192CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1D62A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1E02A0047430027AB66 /* ring_buffer.cpp in Sources */,

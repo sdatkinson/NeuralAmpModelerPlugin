@@ -52,6 +52,8 @@
 		4FBDC96329FFF143004FF203 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94A29FFF143004FF203 /* activations.cpp */; };
 		4FBDC96429FFF143004FF203 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94B29FFF143004FF203 /* model.cpp */; };
 		4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97E29FFF143004FF203 /* slimmable.cpp */; };
+		4FBDC980A2FA5701004FF203 /* a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97EA2FA5701004FF203 /* a2_fast.cpp */; };
+		4FBDC980A2FA5701004FF203 /* fused.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97EA2FA5701004FF203 /* fused.cpp */; };
 		4FBDC98129FFF143004FF203 /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97F29FFF143004FF203 /* container.cpp */; };
 		4FBDC96529FFF143004FF203 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94C29FFF143004FF203 /* get_dsp.cpp */; };
 		4FBDC97729FFF143004FF203 /* conv1d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97029FFF143004FF203 /* conv1d.cpp */; };
@@ -304,6 +306,8 @@
 		4FBDC94A29FFF143004FF203 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = activations.cpp; sourceTree = "<group>"; };
 		4FBDC94B29FFF143004FF203 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/model.cpp; sourceTree = "<group>"; };
 		4FBDC97E29FFF143004FF203 /* slimmable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/slimmable.cpp; sourceTree = "<group>"; };
+		4FBDC97EA2FA5701004FF203 /* a2_fast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/a2_fast.cpp; sourceTree = "<group>"; };
+		4FBDC97EA2FA5701004FF203 /* fused.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/fused.cpp; sourceTree = "<group>"; };
 		4FBDC97F29FFF143004FF203 /* container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = container.cpp; sourceTree = "<group>"; };
 		4FBDC94C29FFF143004FF203 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4FC46E58231440C8000045E7 /* web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = web; path = ../resources/web; sourceTree = "<group>"; };
@@ -690,6 +694,8 @@
 				4FBDC94029FFF143004FF203 /* version.h */,
 				4FBDC94B29FFF143004FF203 /* model.cpp */,
 				4FBDC97E29FFF143004FF203 /* slimmable.cpp */,
+				4FBDC97EA2FA5701004FF203 /* a2_fast.cpp */,
+				4FBDC97EA2FA5701004FF203 /* fused.cpp */,
 				4FBDC97F29FFF143004FF203 /* container.cpp */,
 				4FBDC94529FFF143004FF203 /* model.h */,
 				4FBDC97029FFF143004FF203 /* conv1d.cpp */,
@@ -1092,6 +1098,8 @@
 				4FC69849293BA5F90076EC33 /* ITextEntryControl.cpp in Sources */,
 				4FBDC96429FFF143004FF203 /* model.cpp in Sources */,
 				4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */,
+				4FBDC980A2FA5701004FF203 /* a2_fast.cpp in Sources */,
+				4FBDC980A2FA5701004FF203 /* fused.cpp in Sources */,
 				4FBDC98129FFF143004FF203 /* container.cpp in Sources */,
 				4FBDC97729FFF143004FF203 /* conv1d.cpp in Sources */,
 				4FBDC97929FFF143004FF203 /* ring_buffer.cpp in Sources */,
