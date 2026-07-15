@@ -302,31 +302,36 @@ public:
     }
   }
 
+  void SelectPreviousFile()
+  {
+    const auto nItems = NItems();
+    if (nItems == 0)
+      return;
+    mSelectedItemIndex--;
+
+    if (mSelectedItemIndex < 0)
+      mSelectedItemIndex = nItems - 1;
+
+    LoadFileAtCurrentIndex();
+  }
+
+  void SelectNextFile()
+  {
+    const auto nItems = NItems();
+    if (nItems == 0)
+      return;
+    mSelectedItemIndex++;
+
+    if (mSelectedItemIndex >= nItems)
+      mSelectedItemIndex = 0;
+
+    LoadFileAtCurrentIndex();
+  }
+
   void OnAttached() override
   {
-    auto prevFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex--;
-
-      if (mSelectedItemIndex < 0)
-        mSelectedItemIndex = nItems - 1;
-
-      LoadFileAtCurrentIndex();
-    };
-
-    auto nextFileFunc = [&](IControl* pCaller) {
-      const auto nItems = NItems();
-      if (nItems == 0)
-        return;
-      mSelectedItemIndex++;
-
-      if (mSelectedItemIndex >= nItems)
-        mSelectedItemIndex = 0;
-
-      LoadFileAtCurrentIndex();
-    };
+    auto prevFileFunc = [&](IControl* pCaller) { SelectPreviousFile(); };
+    auto nextFileFunc = [&](IControl* pCaller) { SelectNextFile(); };
 
     auto loadFileFunc = [&](IControl* pCaller) {
       WDL_String fileName;

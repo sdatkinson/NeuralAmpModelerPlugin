@@ -309,6 +309,26 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       pControl->SetMouseOverWhenDisabled(true);
     });
 
+    pGraphics->SetKeyHandlerFunc([pGraphics](const IKeyPress& key, bool isUp) {
+      if (isUp)
+        return false;
+      auto* pBrowser = pGraphics->GetControlWithTag(kCtrlTagModelFileBrowser);
+      if (pBrowser == nullptr)
+        return false;
+      auto* pModelBrowser = static_cast<NAMFileBrowserControl*>(pBrowser);
+      if (key.utf8[0] == ',')
+      {
+        pModelBrowser->SelectPreviousFile();
+        return true;
+      }
+      if (key.utf8[0] == '.')
+      {
+        pModelBrowser->SelectNextFile();
+        return true;
+      }
+      return false;
+    });
+
     // pGraphics->GetControlWithTag(kCtrlTagOutNorm)->SetMouseEventsWhenDisabled(false);
     // pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetMouseEventsWhenDisabled(false);
   };
