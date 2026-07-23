@@ -41,10 +41,6 @@ def main():
         ]
     else:
         files = [
-            projectpath
-            + "\\build-win\\NeuralAmpModeler.vst3\\Contents\\x86_64-win\\NeuralAmpModeler.vst3",
-            projectpath
-            + "\\build-win\\NeuralAmpModeler.vst3\\Contents\\arm64ec-win\\NeuralAmpModeler.vst3",
             projectpath + "\\build-win\\NeuralAmpModeler_x64.exe",
             projectpath + "\\build-win\\NeuralAmpModeler_ARM64EC.exe",
         ]
@@ -58,6 +54,20 @@ def main():
     for f in files:
         print("adding " + f)
         zf.write(f, os.path.basename(f), zipfile.ZIP_DEFLATED)
+
+    if zip:
+        # add the multi-arch VST3 bundle (x86_64-win + arm64ec-win), preserving structure
+        bundlepath = projectpath + "\\build-win\\NeuralAmpModeler.vst3"
+        excluded_exts = (".pdb", ".exp", ".lib", ".ilk", ".ico", ".ini")
+        for root, dirs, bundlefiles in os.walk(bundlepath):
+            dirs[:] = [d for d in dirs if d != "x86-win"]  # stale 32-bit folder from old builds
+            for bf in bundlefiles:
+                fullpath = os.path.join(root, bf)
+                if os.path.splitext(bf)[1].lower() in excluded_exts:
+                    continue
+                arcname = "NeuralAmpModeler.vst3\\" + os.path.relpath(fullpath, bundlepath)
+                print("adding " + fullpath)
+                zf.write(fullpath, arcname, zipfile.ZIP_DEFLATED)
 
     zf.close()
     print("wrote " + zipname)
