@@ -2,6 +2,7 @@
 #include <cmath> // pow
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <utility>
 
 #include "Colors.h"
@@ -67,6 +68,23 @@ EMsgBoxResult _ShowMessageBox(iplug::igraphics::IGraphics* pGraphics, const char
 #else
   return pGraphics->ShowMessageBox(str, caption, type);
 #endif
+}
+
+std::string _GetModelDisplayName(const nam::dspData& modelData)
+{
+  if (!modelData.metadata.is_object())
+  {
+    return "";
+  }
+
+  auto it = modelData.metadata.find("name");
+  if (it == modelData.metadata.end() || !it->is_string())
+  {
+    return "";
+  }
+
+  const std::string name = it->get<std::string>();
+  return name.empty() ? "" : name;
 }
 
 const std::string kCalibrateInputParamName = "CalibrateInput";
@@ -486,7 +504,7 @@ void NeuralAmpModeler::OnUIOpen()
 
   if (mNAMPath.GetLength())
   {
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    _SendLoadedModelMessage();
     // If it's not loaded yet, then mark as failed.
     // If it's yet to be loaded, then the completion handler will set us straight once it runs.
     if (mModel == nullptr && mStagedModel == nullptr)
@@ -599,6 +617,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   {
     mModel = nullptr;
     mNAMPath.Set("");
+    mNAMDisplayName.Set("");
     mShouldRemoveModel = false;
     mModelCleared = true;
     _UpdateLatency();
@@ -742,13 +761,30 @@ void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
   apply(mStagedModel.get());
 }
 
+void NeuralAmpModeler::_SendLoadedModelMessage()
+{
+  std::string payload(mNAMPath.Get(), mNAMPath.GetLength());
+  payload.push_back('\0');
+
+  if (mNAMDisplayName.GetLength())
+  {
+    payload.append(mNAMDisplayName.Get(), mNAMDisplayName.GetLength());
+    payload.push_back('\0');
+  }
+
+  SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, static_cast<int>(payload.size()),
+                             payload.data());
+}
+
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
 {
   WDL_String previousNAMPath = mNAMPath;
+  WDL_String previousNAMDisplayName = mNAMDisplayName;
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
+    nam::dspData modelData;
+    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath, modelData);
 
     // Check that the model has 1 input and 1 output channel
     if (model->NumInputChannels() != 1)
@@ -769,7 +805,8 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     }
     mStagedModel = std::move(temp);
     mNAMPath = modelPath;
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    mNAMDisplayName.Set(_GetModelDisplayName(modelData).c_str());
+    _SendLoadedModelMessage();
   }
   catch (std::runtime_error& e)
   {
@@ -780,6 +817,7 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
       mStagedModel = nullptr;
     }
     mNAMPath = previousNAMPath;
+    mNAMDisplayName = previousNAMDisplayName;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
     return e.what();

@@ -256,6 +256,7 @@ private:
   void _SetInputGain();
   void _SetOutputGain();
   void _ApplySlimParamToLoadedNAMs();
+  void _SendLoadedModelMessage();
 
   // See: Unserialization.cpp
   void _UnserializeApplyConfig(nlohmann::json& config);
@@ -316,6 +317,8 @@ private:
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
+  // Name from the model metadata, if present.
+  WDL_String mNAMDisplayName;
   // Path to IR (.wav file)
   WDL_String mIRPath;
 

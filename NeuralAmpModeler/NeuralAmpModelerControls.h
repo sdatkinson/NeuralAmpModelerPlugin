@@ -1,11 +1,17 @@
 #pragma once
 
+#include <algorithm> // std::find
 #include <cmath> // std::round
 #include <cstdio> // FILE, fclose
+#include <fstream> // std::ifstream
 #include <sstream> // std::stringstream
+#include <string> // std::string
+#include <string_view> // std::string_view
 #include <unordered_map> // std::unordered_map
 #include "IControls.h"
 #include "IPlugPaths.h"
+
+#include "../NeuralAmpModelerCore/Dependencies/nlohmann/json.hpp"
 
 #ifdef OS_WIN
   #include <Windows.h>
@@ -269,7 +275,6 @@ public:
                         const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap,
                         const ISVG& globeSVG, const char* getButtonLabel, const char* getButtonURL)
   : IDirBrowseControlBase(bounds, fileExtension, false, false)
-  , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
   , mCompletionHandlerFunc(ch)
   , mStyle(style.WithColor(kFG, COLOR_TRANSPARENT).WithDrawFrame(false))
@@ -279,6 +284,8 @@ public:
   , mLeftSVG(leftSVG)
   , mRightSVG(rightSVG)
   , mGlobeSVG(globeSVG)
+  , mClearMsgTag(clearMsgTag)
+  , mUseModelMetadataNames(std::string_view(fileExtension) == "nam")
   , mGetButtonLabel(getButtonLabel)
   , mGetButtonURL(getButtonURL)
   , mBrowserState(NAMBrowserState::Empty)
@@ -338,7 +345,7 @@ public:
         {
           ClearPathList();
           AddPath(path.Get(), "");
-          SetupMenu();
+          SetupMenuWithDisplayNames();
           SelectFirstFile();
           LoadFileAtCurrentIndex();
         }
@@ -350,7 +357,7 @@ public:
           {
             ClearPathList();
             AddPath(path.Get(), "");
-            SetupMenu();
+            SetupMenuWithDisplayNames();
             SetSelectedFile(fileName.Get());
             LoadFileAtCurrentIndex();
           }
@@ -425,6 +432,21 @@ public:
 
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
   {
+    auto ReadPayloadString = [](const void* payload, int size, int& offset) {
+      if (payload == nullptr || offset >= size)
+      {
+        return std::string();
+      }
+
+      const char* data = reinterpret_cast<const char*>(payload);
+      const char* begin = data + offset;
+      const char* end = data + size;
+      const char* terminator = std::find(begin, end, '\0');
+      std::string value(begin, terminator);
+      offset = terminator == end ? size : static_cast<int>(terminator - data) + 1;
+      return value;
+    };
+
     switch (msgTag)
     {
       case kMsgTagLoadFailed:
@@ -438,16 +460,26 @@ public:
       case kMsgTagLoadedModel:
       case kMsgTagLoadedIR:
       {
+        int offset = 0;
+        const std::string pathString = ReadPayloadString(pData, dataSize, offset);
+        const std::string displayName = msgTag == kMsgTagLoadedModel ? ReadPayloadString(pData, dataSize, offset) : "";
         WDL_String fileName, directory;
-        fileName.Set(reinterpret_cast<const char*>(pData));
-        directory.Set(reinterpret_cast<const char*>(pData));
+        fileName.Set(pathString.c_str());
+        directory.Set(pathString.c_str());
         directory.remove_filepart(true);
 
         ClearPathList();
         AddPath(directory.Get(), "");
-        SetupMenu();
+        SetupMenuWithDisplayNames();
         SetSelectedFile(fileName.Get());
-        mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+        if (displayName.empty())
+        {
+          mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+        }
+        else
+        {
+          mFileNameControl->SetLabelAndTooltip(displayName.c_str());
+        }
         SetBrowserState(NAMBrowserState::Loaded);
       }
       break;
@@ -457,6 +489,75 @@ public:
 
 private:
   void SelectFirstFile() { mSelectedItemIndex = mFiles.GetSize() ? 0 : -1; }
+
+  void SetupMenuWithDisplayNames()
+  {
+    SetupMenu();
+    UpdateModelMenuDisplayNames();
+  }
+
+  std::string GetCachedModelMetadataName(const char* filePath)
+  {
+    const std::string key(filePath);
+    auto cached = mModelMetadataNames.find(key);
+    if (cached != mModelMetadataNames.end())
+    {
+      return cached->second;
+    }
+
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+      mModelMetadataNames[key] = "";
+      return "";
+    }
+
+    try
+    {
+      nlohmann::json modelJson;
+      file >> modelJson;
+      const auto metadata = modelJson.find("metadata");
+      if (metadata != modelJson.end() && metadata->is_object())
+      {
+        const auto name = metadata->find("name");
+        if (name != metadata->end() && name->is_string())
+        {
+          mModelMetadataNames[key] = name->get<std::string>();
+          return mModelMetadataNames[key];
+        }
+      }
+    }
+    catch (const nlohmann::json::exception&)
+    {
+    }
+
+    mModelMetadataNames[key] = "";
+    return "";
+  }
+
+  void UpdateModelMenuDisplayNames()
+  {
+    if (!mUseModelMetadataNames)
+    {
+      return;
+    }
+
+    for (int itemIdx = 0; itemIdx < mItems.GetSize(); itemIdx++)
+    {
+      IPopupMenu::Item* pItem = mItems.Get(itemIdx);
+      const int fileIdx = pItem->GetTag();
+      if (fileIdx < 0 || fileIdx >= mFiles.GetSize())
+      {
+        continue;
+      }
+
+      const std::string displayName = GetCachedModelMetadataName(mFiles.Get(fileIdx)->Get());
+      if (!displayName.empty())
+      {
+        pItem->SetText(displayName.c_str());
+      }
+    }
+  }
 
   void GetSelectedFileDirectory(WDL_String& path)
   {
@@ -490,6 +591,8 @@ private:
   IBitmap mBitmap;
   ISVG mLoadSVG, mClearSVG, mLeftSVG, mRightSVG, mGlobeSVG;
   int mClearMsgTag;
+  bool mUseModelMetadataNames;
+  std::unordered_map<std::string, std::string> mModelMetadataNames;
 
   // new members for the "Get" button
   const char* mGetButtonLabel;
