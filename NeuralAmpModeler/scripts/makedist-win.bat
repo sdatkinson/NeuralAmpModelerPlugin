@@ -51,21 +51,15 @@ echo Building ...
 REM Remove previous build logs
 if exist "build-win.log" (del build-win.log)
 
-if exist "%ProgramFiles(x86)%" (goto 64-Bit) else (goto 32-Bit)
-
-if not defined DevEnvDir (
-:32-Bit
-echo 32-Bit O/S detected
-call "%ProgramFiles%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_x64
-goto END
-
-:64-Bit
-echo 64-Bit Host O/S detected
-call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_x64
-goto END
-:END
+if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" (
+  call "%ProgramFiles%\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
+) else if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" (
+  call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+) else if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" (
+  call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+) else (
+  echo vcvarsall.bat not found, assuming msbuild is already on the PATH
 )
-
 
 REM - set preprocessor macros like this, for instance to set demo preprocessor macro:
 if %DEMO% == 1 (
@@ -77,14 +71,14 @@ if %DEMO% == 1 (
 )
 
 REM - Could build individual targets like this:
-REM - msbuild NeuralAmpModeler-app.vcxproj /p:configuration=release /p:platform=win32
+REM - msbuild NeuralAmpModeler-app.vcxproj /p:configuration=release /p:platform=x64
 
-REM echo Building 32 bit binaries...
-REM msbuild NeuralAmpModeler.sln /p:configuration=release /p:platform=win32 /nologo /verbosity:minimal /fileLogger /m /flp:logfile=build-win.log;errorsonly 
-
-REM echo Building 64 bit binaries...
-REM add projects with /t to build VST3 and AAX
+echo Building x64 binaries...
+REM add projects with /t to build AAX
 msbuild NeuralAmpModeler.sln /t:NeuralAmpModeler-app;NeuralAmpModeler-vst3 /p:configuration=release /p:platform=x64 /nologo /verbosity:minimal /fileLogger /m /flp:logfile=build-win.log;errorsonly;append
+
+echo Building ARM64EC binaries...
+msbuild NeuralAmpModeler.sln /t:NeuralAmpModeler-app;NeuralAmpModeler-vst3 /p:configuration=release /p:platform=ARM64EC /nologo /verbosity:minimal /fileLogger /m /flp:logfile=build-win.log;errorsonly;append
 
 REM --echo Copying AAX Presets
 
