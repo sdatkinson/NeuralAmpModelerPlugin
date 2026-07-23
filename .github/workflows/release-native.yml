@@ -38,11 +38,11 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-2022]
         include:
           - os: macos-latest
             build_dir: build-mac
-          - os: windows-latest
+          - os: windows-2022
             build_dir: build-win
 
     steps:
@@ -101,11 +101,11 @@ jobs:
         asset_content_type: application/octet-stream
 
     - name: Add msbuild to PATH (Windows)
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Setup Python3
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
@@ -113,21 +113,21 @@ jobs:
 
     - name: Get Archive Name Windows
       id: win_archivename_step
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       run: |
         ARCHIVE_NAME=`python.exe iPlug2/Scripts/get_archive_name.py ${{env.PROJECT_NAME}} win full`
         echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Build Windows
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       run: |
         cd ${{env.PROJECT_NAME}}\scripts
         .\makedist-win.bat full installer
       shell: pwsh
 
     - name: Upload Windows pdb release asset
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -138,7 +138,7 @@ jobs:
         asset_content_type: application/zip
 
     - name: Upload Windows zip release asset
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

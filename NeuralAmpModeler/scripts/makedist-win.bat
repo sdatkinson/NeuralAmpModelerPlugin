@@ -76,9 +76,19 @@ REM - msbuild NeuralAmpModeler-app.vcxproj /p:configuration=release /p:platform=
 echo Building x64 binaries...
 REM add projects with /t to build AAX
 msbuild NeuralAmpModeler.sln /t:NeuralAmpModeler-app;NeuralAmpModeler-vst3 /p:configuration=release /p:platform=x64 /nologo /verbosity:minimal /fileLogger /m /flp:logfile=build-win.log;errorsonly;append
+if %errorlevel% neq 0 (
+  echo ERROR: x64 build failed, aborting
+  type build-win.log
+  exit /B 1
+)
 
 echo Building ARM64EC binaries...
 msbuild NeuralAmpModeler.sln /t:NeuralAmpModeler-app;NeuralAmpModeler-vst3 /p:configuration=release /p:platform=ARM64EC /nologo /verbosity:minimal /fileLogger /m /flp:logfile=build-win.log;errorsonly;append
+if %errorlevel% neq 0 (
+  echo ERROR: ARM64EC build failed, aborting
+  type build-win.log
+  exit /B 1
+)
 
 REM --echo Copying AAX Presets
 
@@ -119,8 +129,10 @@ echo Making Installer ...
   echo Making Zip File ...
 )
 
-FOR /F "tokens=* USEBACKQ" %%F IN (`call python scripts\makezip-win.py %DEMO% %ZIP%`) DO (
-SET ZIP_NAME=%%F
+call python scripts\makezip-win.py %DEMO% %ZIP%
+if %errorlevel% neq 0 (
+  echo ERROR: makezip-win.py failed, aborting
+  exit /B 1
 )
 
 echo ------------------------------------------------------------------
@@ -134,6 +146,4 @@ echo Usage: %0 [demo/full] [zip/installer]
 exit /B 1
 
 :SUCCESS
-echo %ZIP_NAME%
-
 exit /B 0
