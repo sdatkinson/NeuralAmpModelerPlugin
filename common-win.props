@@ -54,7 +54,7 @@
     <APP_LIBS>dsound.lib;winmm.lib;</APP_LIBS>
     <VST3_X64_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_X64_COMMAND_ARGS>
     <VST3_ARM64EC_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_ARM64EC_COMMAND_ARGS>
-    <REAPER_INC_PATHS>$(IPLUG_DEPS_PATH)/Reaper;$(IPLUG_PATH)\ReaperExt;</REAPER_INC_PATHS>
+    <REAPER_INC_PATHS>$(IPLUG_DEPS_PATH)\REAPER_SDK;$(IPLUG_PATH)\ReaperExt;</REAPER_INC_PATHS>
     <AAX_ICON>$(AAX_SDK)\Utilities\PlugIn.ico</AAX_ICON>
     <VST_ICON>$(IPLUG2_ROOT)\Scripts\icons\VST_Logo_Steinberg.ico</VST_ICON>
     <FAUST_LIB_PATH>$(DEPS_PATH)\Build\win\Faust\lib</FAUST_LIB_PATH>
