@@ -343,6 +343,7 @@
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\NeuralAmpModelerControls.h" />
+    <ClInclude Include="..\PresetManager.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\activations.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\conv1d.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\convnet.h" />
@@ -426,6 +427,7 @@
     <ClCompile Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp" />
     <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
+    <ClCompile Include="..\PresetManager.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\activations.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\conv1d.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\convnet.cpp" />
