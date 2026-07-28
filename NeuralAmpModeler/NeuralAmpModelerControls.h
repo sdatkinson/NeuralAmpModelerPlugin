@@ -2,8 +2,11 @@
 
 #include <cmath> // std::round
 #include <cstdio> // FILE, fclose
+#include <cstring> // strlen
 #include <sstream> // std::stringstream
+#include <string>
 #include <unordered_map> // std::unordered_map
+#include <vector>
 #include "IControls.h"
 #include "IPlugPaths.h"
 
@@ -261,6 +264,122 @@ public:
   }
 };
 
+// Presets button (issue #252): click opens a menu to load an existing preset, or
+// save the current model/IR/EQ/volume state as a new one. Message tags/handling
+// live in NeuralAmpModeler::OnMessage; this control only builds/reads the menu.
+class NAMPresetControl : public IVButtonControl
+{
+public:
+  NAMPresetControl(const IRECT& bounds, const IVStyle& style)
+  : IVButtonControl(bounds, DefaultClickActionFunc, kDefaultLabel, style)
+  {
+  }
+
+  // Called by the click handler with the current preset names, right before showing the menu.
+  void ShowMenu(std::vector<std::string> presetNames)
+  {
+    mPresetNames = std::move(presetNames);
+
+    // mMenu.Clear() destroys its previous Items, and an Item that owns a submenu
+    // (via std::unique_ptr<IPopupMenu>) deletes it on destruction. So the delete
+    // submenu must be heap-allocated with `new` here, freshly, every time -- it must
+    // never point at a member/stack IPopupMenu, or that delete is undefined behavior.
+    mMenu.Clear();
+    mDeleteMenuPtr = nullptr;
+
+    mMenu.AddItem(new IPopupMenu::Item("Save current as preset...", IPopupMenu::Item::kNoFlags, kSaveTag));
+
+    if (mPresetNames.size())
+    {
+      mMenu.AddSeparator();
+      for (int i = 0; i < (int) mPresetNames.size(); i++)
+        mMenu.AddItem(new IPopupMenu::Item(mPresetNames[i].c_str(), IPopupMenu::Item::kNoFlags, i));
+
+      auto* pDeleteMenu = new IPopupMenu();
+      for (int i = 0; i < (int) mPresetNames.size(); i++)
+        pDeleteMenu->AddItem(new IPopupMenu::Item(mPresetNames[i].c_str(), IPopupMenu::Item::kNoFlags, i));
+      mMenu.AddItem("Delete preset", -1, pDeleteMenu); // mMenu's Item now owns pDeleteMenu
+      mDeleteMenuPtr = pDeleteMenu;
+    }
+
+    GetUI()->CreatePopupMenu(*this, mMenu, GetRECT());
+  }
+
+  void OnPopupMenuSelection(IPopupMenu* pSelectedMenu, int valIdx) override
+  {
+    if (pSelectedMenu == nullptr)
+      return;
+
+    IPopupMenu::Item* pItem = pSelectedMenu->GetChosenItem();
+    if (pItem == nullptr)
+      return;
+
+    const int tag = pItem->GetTag();
+
+    if (pSelectedMenu == mDeleteMenuPtr)
+    {
+      if (tag >= 0 && static_cast<size_t>(tag) < mPresetNames.size())
+      {
+        const std::string& name = mPresetNames[tag];
+        GetDelegate()->SendArbitraryMsgFromUI(kMsgTagDeletePreset, kNoTag, (int) name.size() + 1, name.c_str());
+      }
+      return;
+    }
+
+    if (tag == kSaveTag)
+    {
+      GetUI()->CreateTextEntry(*this, mText, GetRECT(), "");
+    }
+    else if (tag >= 0 && static_cast<size_t>(tag) < mPresetNames.size())
+    {
+      const std::string& name = mPresetNames[tag];
+      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagLoadPreset, kNoTag, (int) name.size() + 1, name.c_str());
+    }
+  }
+
+  void OnTextEntryCompletion(const char* str, int valIdx) override
+  {
+    if (str && str[0])
+      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagSavePreset, kNoTag, (int) strlen(str) + 1, str);
+  }
+
+  void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
+  {
+    if (msgTag != kMsgTagPresetNameChanged)
+      return;
+
+    if (dataSize > 0)
+    {
+      const char* name = reinterpret_cast<const char*>(pData);
+      SetLabelStr(TruncatedForLabel(name).c_str());
+      SetTooltip(name); // full name available on hover
+    }
+    else
+    {
+      SetLabelStr(kDefaultLabel);
+      SetTooltip("");
+    }
+  }
+
+private:
+  static std::string TruncatedForLabel(const std::string& name)
+  {
+    static constexpr size_t kMaxChars = 8;
+    if (name.size() <= kMaxChars)
+      return name;
+    return name.substr(0, kMaxChars) + "...";
+  }
+
+  static constexpr int kSaveTag = -1;
+  static constexpr const char* kDefaultLabel = "Presets";
+
+  IPopupMenu mMenu;
+  // Non-owning: owned by mMenu's "Delete preset" Item (its unique_ptr<IPopupMenu>).
+  // Only used to identify, in OnPopupMenuSelection, which menu the click came from.
+  IPopupMenu* mDeleteMenuPtr = nullptr;
+  std::vector<std::string> mPresetNames;
+};
+
 class NAMFileBrowserControl : public IDirBrowseControlBase
 {
 public:
@@ -451,6 +570,12 @@ public:
         SetBrowserState(NAMBrowserState::Loaded);
       }
       break;
+      case kMsgTagClearedFile:
+        // Same reset the clear button does locally, for when the DSP unloads the file on
+        // its own (applying a preset that has no model/IR).
+        mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
+        SetBrowserState(NAMBrowserState::Empty);
+        break;
       default: break;
     }
   }

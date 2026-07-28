@@ -2,6 +2,8 @@
 #include <cmath> // pow
 #include <filesystem>
 #include <iostream>
+#include <map>
+#include <optional>
 #include <utility>
 
 #include "Colors.h"
@@ -75,10 +77,24 @@ const std::string kInputCalibrationLevelParamName = "InputCalibrationLevel";
 const double kDefaultInputCalibrationLevel = 12.0;
 
 
+namespace
+{
+std::string GetPresetsBasePath()
+{
+  WDL_String appSupportPath;
+  AppSupportPath(appSupportPath, false);
+  return std::string(appSupportPath.Get()) + "/NeuralAmpModeler";
+}
+} // namespace
+
 NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 : Plugin(info, MakeConfig(kNumParams, kNumPresets))
+, mPresetManager(GetPresetsBasePath())
 {
   _InitToneStack();
+  // Silently proceeds with an empty in-memory preset list on failure (e.g. corrupt
+  // presets.json); the user finds out when Save()/Add() fail on next use.
+  mPresetManager.Load();
   nam::activations::Activation::enable_fast_tanh();
   GetParam(kInputLevel)->InitGain("Input", 0.0, -20.0, 20.0, 0.1);
   GetParam(kToneBass)->InitDouble("Bass", 5.0, 0.0, 10.0, 0.1);
@@ -180,6 +196,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // Misc Areas
     const auto settingsButtonArea = CornerButtonArea(b);
+    // Preset menu button (issue #252), top-left corner.
+    const auto presetButtonArea = mainArea.GetFromTLHC(56.0f, 18.0f).GetVShifted(16.0f).GetHShifted(15.0f);
 
     // Model loader button
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -290,6 +308,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
         pGraphics->GetControlWithTag(kCtrlTagSettingsBox)->As<NAMSettingsPageControl>()->HideAnimated(false);
       },
       gearSVG));
+
+    // Presets (issue #252): click builds the menu from the current preset names and shows it.
+    // Black fill, no vector frame (DrawFrame(false) skips the border draw regardless of kFR).
+    const auto presetButtonStyle = style.WithColor(EVColor::kFG, COLOR_BLACK).WithDrawFrame(false);
+    auto showPresetMenuFunc = [&](IControl* pCaller) { pCaller->As<NAMPresetControl>()->ShowMenu(GetPresetNames()); };
+    pGraphics->AttachControl(new NAMPresetControl(presetButtonArea, presetButtonStyle), kCtrlTagPresetControl)
+      ->SetAnimationEndActionFunction(showPresetMenuFunc);
 
     pGraphics
       ->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap,
@@ -504,6 +529,10 @@ void NeuralAmpModeler::OnUIOpen()
   {
     _UpdateControlsFromModel();
   }
+
+  if (mCurrentPresetName.GetLength())
+    SendControlMsgFromDelegate(
+      kCtrlTagPresetControl, kMsgTagPresetNameChanged, mCurrentPresetName.GetLength(), mCurrentPresetName.Get());
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
@@ -570,6 +599,75 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
         });
       }
 
+      return true;
+    }
+    case kMsgTagLoadPreset:
+    {
+      const std::string name(reinterpret_cast<const char*>(pData));
+      const std::optional<nam_presets::PresetData> preset = mPresetManager.Get(name);
+      if (preset)
+      {
+        _ApplyPreset(*preset);
+        _SetCurrentPresetName(name);
+      }
+      else
+        _ShowMessageBox(GetUI(), ("Preset \"" + name + "\" not found.").c_str(), "Failed to load preset!", kMB_OK);
+      return true;
+    }
+    case kMsgTagSavePreset:
+    {
+      const std::string name(reinterpret_cast<const char*>(pData));
+      const nam_presets::PresetData preset = _CollectCurrentState(name);
+      // Set only when overwriting: the preset being replaced, kept so a failed disk
+      // write can put it back (see the rollback below).
+      std::optional<nam_presets::PresetData> replaced;
+
+      if (mPresetManager.Add(preset) == nam_presets::PresetError::kDuplicateName)
+      {
+        const EMsgBoxResult result = _ShowMessageBox(
+          GetUI(), ("Overwrite preset \"" + name + "\"?").c_str(), "Preset already exists", kMB_YESNO);
+        if (result != kYES)
+          return true;
+
+        replaced = mPresetManager.Get(name);
+        mPresetManager.Remove(name);
+        mPresetManager.Add(preset); // Can't fail: the name was just removed.
+      }
+
+      if (mPresetManager.Save() != nam_presets::PresetError::kNone)
+      {
+        // Disk write failed: put the store back exactly as it was, so the preset list on
+        // screen never diverges from what's actually persisted. When overwriting, that
+        // means restoring the replaced preset, not just dropping the new one.
+        mPresetManager.Remove(name);
+        if (replaced)
+          mPresetManager.Add(*replaced);
+        _ShowMessageBox(GetUI(), "Failed to write presets file to disk.", "Failed to save preset!", kMB_OK);
+      }
+      else
+        _SetCurrentPresetName(name);
+      return true;
+    }
+    case kMsgTagDeletePreset:
+    {
+      const std::string name(reinterpret_cast<const char*>(pData));
+      const EMsgBoxResult result =
+        _ShowMessageBox(GetUI(), ("Delete preset \"" + name + "\"?").c_str(), "Delete preset?", kMB_YESNO);
+      if (result == kYES)
+      {
+        const std::optional<nam_presets::PresetData> removed = mPresetManager.Get(name);
+        mPresetManager.Remove(name);
+        if (mPresetManager.Save() != nam_presets::PresetError::kNone)
+        {
+          // Disk write failed: roll back the in-memory removal so the preset list on
+          // screen never claims a preset is gone when it's still on disk.
+          if (removed)
+            mPresetManager.Add(*removed);
+          _ShowMessageBox(GetUI(), "Failed to write presets file to disk.", "Failed to delete preset!", kMB_OK);
+        }
+        else if (name == mCurrentPresetName.Get())
+          _SetCurrentPresetName("");
+      }
       return true;
     }
     default: return false;
@@ -740,6 +838,107 @@ void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
   };
   apply(mModel.get());
   apply(mStagedModel.get());
+}
+
+namespace
+{
+// Maps the EQ/volume params exposed by presets (issue #252) to the string keys
+// stored in PresetData::paramValues. Local to this translation unit: PresetManager
+// itself doesn't know about EParams.
+const std::map<EParams, std::string> kPresetParamNames = {
+  {kInputLevel, "InputLevel"},
+  {kOutputLevel, "OutputLevel"},
+  {kNoiseGateThreshold, "NoiseGateThreshold"},
+  {kNoiseGateActive, "NoiseGateActive"},
+  {kToneBass, "ToneBass"},
+  {kToneMid, "ToneMid"},
+  {kToneTreble, "ToneTreble"},
+  {kEQActive, "EQActive"},
+};
+} // namespace
+
+nam_presets::PresetData NeuralAmpModeler::_CollectCurrentState(const std::string& presetName) const
+{
+  nam_presets::PresetData preset;
+  preset.name = presetName;
+  preset.modelPath = mNAMPath.Get();
+  preset.irPath = mIRPath.Get();
+  for (const auto& [paramIdx, paramName] : kPresetParamNames)
+    preset.paramValues[paramName] = GetParam(paramIdx)->Value();
+  return preset;
+}
+
+void NeuralAmpModeler::_ApplyPreset(const nam_presets::PresetData& preset)
+{
+  for (const auto& [paramIdx, paramName] : kPresetParamNames)
+  {
+    const auto it = preset.paramValues.find(paramName);
+    if (it == preset.paramValues.end())
+      continue;
+    SetParameterValue(paramIdx, GetParam(paramIdx)->ToNormalized(it->second));
+  }
+  // SetParameterValue() updates the DSP-side value and informs the host, but doesn't push
+  // the new values to the knobs on screen (that's only needed when params change from code,
+  // as opposed to the user dragging a knob, which is why nothing else in this plugin needed it).
+  SendCurrentParamValuesFromDelegate();
+
+  if (preset.modelPath.size())
+  {
+    const WDL_String modelPath(preset.modelPath.c_str());
+    const std::string msg = _StageModel(modelPath);
+    if (msg.size())
+    {
+      std::stringstream ss;
+      ss << "Failed to load NAM model from preset. Message:\n\n" << msg;
+      _ShowMessageBox(GetUI(), ss.str().c_str(), "Failed to load model!", kMB_OK);
+    }
+    else if (GetUI() != nullptr)
+    {
+      SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    }
+  }
+  else
+  {
+    // The preset was saved without a model, so it means "no model": unload whatever is
+    // loaded rather than leaving it behind. _ApplyDSPStaging picks the flag up on the
+    // audio thread, same as the browser's clear button does.
+    mShouldRemoveModel = true;
+    if (GetUI() != nullptr)
+      SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagClearedFile, 0, nullptr);
+  }
+
+  if (preset.irPath.size())
+  {
+    const WDL_String irPath(preset.irPath.c_str());
+    const dsp::wav::LoadReturnCode retCode = _StageIR(irPath);
+    if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
+    {
+      std::stringstream message;
+      message << "Failed to load IR file " << preset.irPath << " from preset:\n";
+      message << dsp::wav::GetMsgForLoadReturnCode(retCode);
+      _ShowMessageBox(GetUI(), message.str().c_str(), "Failed to load IR!", kMB_OK);
+    }
+    else if (GetUI() != nullptr)
+    {
+      SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
+    }
+  }
+  else
+  {
+    // Likewise for the IR: an empty path in the preset means "no IR", not "leave it alone".
+    mShouldRemoveIR = true;
+    if (GetUI() != nullptr)
+      SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagClearedFile, 0, nullptr);
+  }
+}
+
+void NeuralAmpModeler::_SetCurrentPresetName(const std::string& name)
+{
+  mCurrentPresetName.Set(name.c_str());
+
+  if (GetUI() != nullptr)
+    SendControlMsgFromDelegate(
+      kCtrlTagPresetControl, kMsgTagPresetNameChanged, mCurrentPresetName.GetLength(), mCurrentPresetName.Get());
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
