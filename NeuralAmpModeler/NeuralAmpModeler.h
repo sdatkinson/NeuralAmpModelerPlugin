@@ -14,10 +14,23 @@
 #include "IPlug_include_in_plug_hdr.h"
 #include "ISender.h"
 
+#include <algorithm> // std::fill, std::max, std::min
+#include <array>
+#include <vector>
 
 const int kNumPresets = 1;
 // The plugin is mono inside
 constexpr size_t kNumChannelsInternal = 1;
+// How many NAM models can be blended together at once.
+// Slot 0 is the "primary" one: it's the model browser on the main page, and it's the one that the input/output
+// calibration is referenced to, so that a session using a single model behaves exactly as it did before blending
+// existed.
+constexpr size_t kNumModelSlots = 3;
+// Blend level at or below which a slot is considered muted.
+constexpr double kBlendMuteDB = -40.0;
+// Capacity of the per-slot time-alignment delay lines. Comfortably above any latency a resampler will report, so that
+// the delay can be changed from the audio thread without reallocating.
+constexpr size_t kMaxSlotDelaySamples = 8192;
 
 class NAMSender : public iplug::IPeakAvgSender<>
 {
@@ -47,6 +60,20 @@ enum EParams
   kInputCalibrationLevel,
   kOutputMode,
   kSlim,
+  // Model blending. One level and one polarity invert per model slot.
+  // These are last so that the indices above stay put; see the comment at the top of the enum.
+  kBlendLevel1,
+  kBlendLevel2,
+  kBlendLevel3,
+  kBlendInvert1,
+  kBlendInvert2,
+  kBlendInvert3,
+  kBlendMute1,
+  kBlendMute2,
+  kBlendMute3,
+  kBlendSolo1,
+  kBlendSolo2,
+  kBlendSolo3,
   kNumParams
 };
 
@@ -65,6 +92,13 @@ enum ECtrlTags
   kCtrlTagSlimmableIcon,
   kCtrlTagSlimOverlayBackdrop,
   kCtrlTagSlimKnob,
+  kCtrlTagBlendIcon,
+  kCtrlTagBlendPage,
+  // Model browsers living on the blend page. Slot 0 has two browsers (this one and the main page's), which is why it
+  // gets its own tag here.
+  kCtrlTagBlendModelFileBrowser1,
+  kCtrlTagBlendModelFileBrowser2,
+  kCtrlTagBlendModelFileBrowser3,
   kNumCtrlTags
 };
 
@@ -72,12 +106,20 @@ enum EMsgTags
 {
   // These tags are used from UI -> DSP
   kMsgTagClearModel = 0,
+  kMsgTagClearModel2,
+  kMsgTagClearModel3,
   kMsgTagClearIR,
   kMsgTagHighlightColor,
   // The following tags are from DSP -> UI
   kMsgTagLoadFailed,
   kMsgTagLoadedModel,
   kMsgTagLoadedIR,
+  // Echoed back to every browser bound to a slot once the model has actually been removed, so that the browser that
+  // didn't initiate the clear also resets itself.
+  kMsgTagModelCleared,
+  // Hands an empty slot's browser the folder that another slot just loaded from, so its arrows work without having
+  // to pick the same folder again. Carries a file path; the browser takes the directory and stays "empty".
+  kMsgTagSeedFolder,
   kNumMsgTags
 };
 
@@ -193,6 +235,70 @@ private:
   std::function<void(NAM_SAMPLE**, NAM_SAMPLE**, int)> mBlockProcessFunc;
 };
 
+// Fixed-capacity delay line used to time-align model slots against each other.
+//
+// Models don't all report the same latency: ResamplingNAM only introduces latency when it has to resample, so blending
+// (say) a 44.1k model with a 48k one at a 96k session would sum two signals that are offset in time, which comb-filters
+// exactly the way two badly-placed microphones do. Every slot is therefore delayed by (max latency - its own latency).
+//
+// The buffer is allocated once, in OnReset. Changing the delay only moves the read offset, so the latency update that
+// happens inside _ApplyDSPStaging -- on the audio thread -- never allocates.
+class SlotDelay
+{
+public:
+  void Resize(const size_t capacity)
+  {
+    mBuffer.resize(std::max(capacity, (size_t)1));
+    Clear();
+  };
+
+  void SetDelay(const int numSamples)
+  {
+    const int clamped = std::max(0, std::min(numSamples, (int)mBuffer.size() - 1));
+    if (clamped == mDelay)
+    {
+      return;
+    }
+    mDelay = clamped;
+    Clear();
+  };
+
+  void Clear()
+  {
+    std::fill(mBuffer.begin(), mBuffer.end(), 0.0);
+    mWriteIndex = 0;
+  };
+
+  // Delay in place.
+  void Process(iplug::sample* samples, const int numFrames)
+  {
+    if (mDelay == 0)
+    {
+      return;
+    }
+    const int size = (int)mBuffer.size();
+    for (int s = 0; s < numFrames; s++)
+    {
+      int readIndex = mWriteIndex - mDelay;
+      if (readIndex < 0)
+      {
+        readIndex += size;
+      }
+      mBuffer[mWriteIndex] = samples[s];
+      samples[s] = mBuffer[readIndex];
+      if (++mWriteIndex >= size)
+      {
+        mWriteIndex = 0;
+      }
+    }
+  };
+
+private:
+  std::vector<iplug::sample> mBuffer;
+  int mWriteIndex = 0;
+  int mDelay = 0;
+};
+
 class NeuralAmpModeler final : public iplug::Plugin
 {
 public:
@@ -224,19 +330,31 @@ private:
   void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
+  // Run every loaded model on the (gated) input and sum them into mOutputArray, applying each slot's trims, blend
+  // level and polarity. Falls back to a passthrough if no slot holds a model.
+  void _BlendModels(iplug::sample** triggerOutput, const size_t numFrames);
   // Sizes based on mInputArray
   size_t _GetBufferNumChannels() const;
   size_t _GetBufferNumFrames() const;
   void _InitToneStack();
-  // Loads a NAM model and stores it to mStagedNAM
+  // Loads a NAM model and stores it to mStagedModel[slot]
   // Returns an empty string on success, or an error message on failure.
-  std::string _StageModel(const WDL_String& dspFile);
+  std::string _StageModel(const WDL_String& dspFile, const size_t slot);
   // Loads an IR and stores it to mStagedIR.
   // Return status code so that error messages can be relayed if
   // it wasn't successful.
   dsp::wav::LoadReturnCode _StageIR(const WDL_String& irPath);
 
-  bool _HaveModel() const { return this->mModel != nullptr; };
+  // The lowest-numbered slot that currently holds a model, or -1 if there are none.
+  // Everything that used to read the one and only model (calibration, model info, ...) is referenced to this slot.
+  int _ReferenceSlot() const;
+  bool _HaveModel() const { return _ReferenceSlot() >= 0; };
+  // Send a message to every model browser bound to a slot. Slot 0 has two of them.
+  void _SendToSlotBrowsers(const size_t slot, const int msgTag, const int dataSize = 0, const void* pData = nullptr);
+  // Offer a just-loaded model's folder to any slot that's still empty, so that stepping through a folder of captures
+  // only costs one trip to the file dialog.
+  void _SeedFolderIntoEmptySlots(const WDL_String& modelPath, const size_t sourceSlot);
+  bool _AnyModelIsSlimmable() const;
   // Prepare the input & output buffers
   void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
   // Manage pointers
@@ -255,6 +373,14 @@ private:
 
   void _SetInputGain();
   void _SetOutputGain();
+  // Per-slot corrections that put the non-reference slots at the same level as the reference slot.
+  // The global input/output gains already carry the reference slot's calibration; these are only the deltas.
+  void _SetSlotTrims();
+  // Recompute the blend gain (level + polarity + mute/solo) for one slot, or all of them.
+  void _SetBlendGain(const size_t slot);
+  void _SetBlendGains();
+  // Whether a slot should be heard, given its own mute and the solo state of the whole set.
+  bool _SlotIsAudible(const size_t slot);
   void _ApplySlimParamToLoadedNAMs();
 
   // See: Unserialization.cpp
@@ -280,32 +406,49 @@ private:
 
   // Input arrays to NAM
   std::vector<std::vector<iplug::sample>> mInputArray;
-  // Output from NAM
+  // Blended output from the NAMs
   std::vector<std::vector<iplug::sample>> mOutputArray;
+  // Per-slot scratch. The input copy is only used when a slot needs an input trim; the reference slot is fed the
+  // shared buffer directly so that the single-model path is untouched.
+  std::array<std::vector<std::vector<iplug::sample>>, kNumModelSlots> mSlotInputArrays;
+  std::array<std::vector<std::vector<iplug::sample>>, kNumModelSlots> mSlotOutputArrays;
   // Pointer versions
   iplug::sample** mInputPointers = nullptr;
   iplug::sample** mOutputPointers = nullptr;
+  std::array<iplug::sample**, kNumModelSlots> mSlotInputPointers{};
+  std::array<iplug::sample**, kNumModelSlots> mSlotOutputPointers{};
 
   // Input and output gain
   double mInputGain = 1.0;
   double mOutputGain = 1.0;
 
+  // Per-slot level correction relative to the reference slot. Input trims go before the model, output trims after --
+  // the model is nonlinear, so they don't commute.
+  std::array<double, kNumModelSlots> mSlotInputTrim{};
+  std::array<double, kNumModelSlots> mSlotOutputTrim{};
+  // Per-slot blend gain: level in dB turned into an amplitude, times -1 when the slot's polarity is inverted.
+  // The previous value is kept so that the gain can be ramped across a block; without that, flipping polarity clicks.
+  std::array<double, kNumModelSlots> mSlotBlendGain{};
+  std::array<double, kNumModelSlots> mSlotBlendGainPrev{};
+  // Time alignment between slots with different resampler latencies.
+  std::array<SlotDelay, kNumModelSlots> mSlotDelays;
+
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger;
   dsp::noise_gate::Gain mNoiseGateGain;
-  // The model actually being used:
-  std::unique_ptr<ResamplingNAM> mModel;
+  // The models actually being used. Their outputs are summed; the IR, tone stack and gate are shared downstream.
+  std::array<std::unique_ptr<ResamplingNAM>, kNumModelSlots> mModel;
   // And the IR
   std::unique_ptr<dsp::ImpulseResponse> mIR;
   // Manages switching what DSP is being used.
-  std::unique_ptr<ResamplingNAM> mStagedModel;
+  std::array<std::unique_ptr<ResamplingNAM>, kNumModelSlots> mStagedModel;
   std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
   // Flags to take away the modules at a safe time.
-  std::atomic<bool> mShouldRemoveModel = false;
+  std::array<std::atomic<bool>, kNumModelSlots> mShouldRemoveModel{};
   std::atomic<bool> mShouldRemoveIR = false;
 
-  std::atomic<bool> mNewModelLoadedInDSP = false;
-  std::atomic<bool> mModelCleared = false;
+  std::array<std::atomic<bool>, kNumModelSlots> mNewModelLoadedInDSP{};
+  std::array<std::atomic<bool>, kNumModelSlots> mModelCleared{};
 
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
@@ -314,8 +457,8 @@ private:
   recursive_linear_filter::HighPass mHighPass;
   //  recursive_linear_filter::LowPass mLowPass;
 
-  // Path to model's config.json or model.nam
-  WDL_String mNAMPath;
+  // Paths to each slot's config.json or model.nam
+  std::array<WDL_String, kNumModelSlots> mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
 

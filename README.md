@@ -29,6 +29,39 @@ This is a cleaned up version of [the original iPlug2-based NAM plugin](https://g
 
 \*could also support AAX, CLAP, Linux, iOS soon.
 
+## Model blending
+
+Up to three models can be loaded at once and summed, which is useful when you have several captures of the same amp
+through different microphones and want to balance them without running the plugin three times.
+
+Click the blend icon to the right of the model row to open the blend page. It holds one row per slot: a model browser,
+a level, and three toggles — **Ø** (polarity), **M** (mute) and **S** (solo). Slot 1 is the same model as the one on
+the main page.
+
+- **Levels sum like mixer channels.** Two slots at 0 dB are about 6 dB louder than one; trim the total with the Output
+  knob. Pulling a level to its minimum mutes that slot.
+- **Polarity invert** flips a slot's sign. Reach for it when two captures of the same cab thin each other out — mics at
+  different distances rarely sum cleanly.
+- **Mute and solo** behave the way they do on a console: with any solo engaged, only soloed slots are heard, and an
+  explicit mute still wins over solo. A solo left on an empty slot is ignored rather than silencing everything.
+- Level, polarity, mute and solo changes are ramped over a block, so toggling them mid-note doesn't click.
+
+**You only have to find the folder once.** Loading a model hands its folder to any slot that's still empty, so those
+rows' arrows work straight away — they stay blank and silent until you press one. Each row parks on the most recently
+loaded capture, so for a folder of mic captures the whole blend is one file dialog and one arrow press per row:
+
+    pick "Mesa Crunch 421.nam" on slot 1   ->  1: 421   2: (empty)   3: (empty)
+    press > on row 2                       ->  1: 421   2: 545       3: (empty)
+    press > on row 3                       ->  1: 421   2: 545       3: M160
+
+A slot that already has a model is never touched, and the folder button still overrides any row.
+- Slots are automatically time-aligned with each other when their models run at different sample rates.
+- Levelling (input calibration, Normalized and Calibrated output modes) is referenced to the first loaded slot, and the
+  others are matched to it, so the blend balances the models rather than their metadata. Normalized and Calibrated are
+  only offered when *every* loaded model supports them.
+- The noise gate, tone stack and IR are shared, and run after the blend.
+- Each loaded model costs its own CPU: three models is roughly three times the load of one.
+
 ## Rough edges
 
 ### Standalone I/O

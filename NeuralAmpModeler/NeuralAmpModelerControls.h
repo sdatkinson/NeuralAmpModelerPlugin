@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array> // std::array
 #include <cmath> // std::round
 #include <cstdio> // FILE, fclose
 #include <sstream> // std::stringstream
@@ -207,11 +208,45 @@ public:
   }
 };
 
+// How much of a file name fits on a row, in characters. The defaults are tuned to the 400px-wide rows on the main
+// page; narrower rows (the blend page) pass smaller numbers.
+struct NAMFileNameEllipsis
+{
+  size_t prefixLength = 22;
+  size_t suffixLength = 22;
+  size_t maxLength = 45;
+};
+
+// Compact mixer-style toggle: a small square button showing a fixed letter, lit when engaged.
+// Used for the polarity/mute/solo trio on each blend row, where three slide switches wouldn't fit and wouldn't read
+// as a mixer strip anyway.
+class NAMToggleButtonControl : public IVToggleControl
+{
+public:
+  NAMToggleButtonControl(const IRECT& bounds, int paramIdx, const char* text, const IVStyle& style,
+                         const IColor& onColor)
+  : IVToggleControl(bounds, paramIdx, "",
+                    style.WithShowLabel(false)
+                      .WithDrawShadows(false)
+                      .WithRoundness(0.3f)
+                      .WithFrameThickness(1.0f)
+                      // DrawPressableShape picks kPR when the toggle is on and kFG when it's off.
+                      .WithColor(kPR, onColor)
+                      .WithColor(kFG, PluginColors::NAM_THEMEFONTCOLOR.WithOpacity(0.07f))
+                      .WithColor(kFR, PluginColors::NAM_THEMEFONTCOLOR.WithOpacity(0.25f))
+                      .WithValueText(IText(14.f, EVAlign::Middle, PluginColors::NAM_THEMEFONTCOLOR)),
+                    text, text)
+  {
+  }
+};
+
 class NAMFileNameControl : public IVButtonControl
 {
 public:
-  NAMFileNameControl(const IRECT& bounds, const char* label, const IVStyle& style)
+  NAMFileNameControl(const IRECT& bounds, const char* label, const IVStyle& style,
+                     const NAMFileNameEllipsis& ellipsis = NAMFileNameEllipsis())
   : IVButtonControl(bounds, DefaultClickActionFunc, label, style)
+  , mEllipsis(ellipsis)
   {
   }
 
@@ -238,10 +273,14 @@ public:
       }
     };
 
-    auto ellipsizedFileName = EllipsizeFilePath(fileName.get_filepart(), 22, 22, 45);
+    auto ellipsizedFileName =
+      EllipsizeFilePath(fileName.get_filepart(), mEllipsis.prefixLength, mEllipsis.suffixLength, mEllipsis.maxLength);
     SetLabelStr(ellipsizedFileName.c_str());
     SetTooltip(fileName.get_filepart());
   }
+
+private:
+  NAMFileNameEllipsis mEllipsis;
 };
 
 // URL control for the "Get" models/irs links
@@ -267,7 +306,8 @@ public:
   NAMFileBrowserControl(const IRECT& bounds, int clearMsgTag, const char* labelStr, const char* fileExtension,
                         IFileDialogCompletionHandlerFunc ch, const IVStyle& style, const ISVG& loadSVG,
                         const ISVG& clearSVG, const ISVG& leftSVG, const ISVG& rightSVG, const IBitmap& bitmap,
-                        const ISVG& globeSVG, const char* getButtonLabel, const char* getButtonURL)
+                        const ISVG& globeSVG, const char* getButtonLabel, const char* getButtonURL,
+                        const NAMFileNameEllipsis& ellipsis = NAMFileNameEllipsis())
   : IDirBrowseControlBase(bounds, fileExtension, false, false)
   , mClearMsgTag(clearMsgTag)
   , mDefaultLabelStr(labelStr)
@@ -282,6 +322,7 @@ public:
   , mGetButtonLabel(getButtonLabel)
   , mGetButtonURL(getButtonURL)
   , mBrowserState(NAMBrowserState::Empty)
+  , mEllipsis(ellipsis)
   {
     mIgnoreMouse = true;
   }
@@ -359,9 +400,14 @@ public:
     };
 
     auto clearFileFunc = [&](IControl* pCaller) {
+      // Only tell the DSP. It echoes kMsgTagModelCleared back to every browser bound to the slot once the model is
+      // actually gone, so a slot that's shown in two places (slot 1, on the main page and the blend page) resets in
+      // both. The IR browser has no second view, so it resets itself here.
       pCaller->GetDelegate()->SendArbitraryMsgFromUI(mClearMsgTag);
-      mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
-      SetBrowserState(NAMBrowserState::Empty);
+      if (mClearMsgTag == kMsgTagClearIR)
+      {
+        ResetToEmpty();
+      }
       // FIXME disabling output mode...
       //      pCaller->GetUI()->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
     };
@@ -397,7 +443,8 @@ public:
       ->SetAnimationEndActionFunction(prevFileFunc);
     AddChildControl(new NAMSquareButtonControl(rightButtonBounds, DefaultClickActionFunc, mRightSVG))
       ->SetAnimationEndActionFunction(nextFileFunc);
-    AddChildControl(mFileNameControl = new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle))
+    AddChildControl(mFileNameControl =
+                      new NAMFileNameControl(fileNameButtonBounds, mDefaultLabelStr.Get(), mStyle, mEllipsis))
       ->SetAnimationEndActionFunction(chooseFileFunc);
 
     // creates both right-side controls but only show one based on state
@@ -451,8 +498,47 @@ public:
         SetBrowserState(NAMBrowserState::Loaded);
       }
       break;
+      case kMsgTagSeedFolder:
+      {
+        // Adopt another slot's folder so the arrows work, but stay visually empty: nothing is loaded until the user
+        // actually steps to a file, so this can't change what's being heard.
+        if (mBrowserState == NAMBrowserState::Loaded)
+          break;
+
+        WDL_String fileName, directory;
+        fileName.Set(reinterpret_cast<const char*>(pData));
+        directory.Set(reinterpret_cast<const char*>(pData));
+        directory.remove_filepart(true);
+
+        ClearPathList();
+        AddPath(directory.Get(), "");
+        SetupMenu();
+        // Park on the source slot's file so that one press of ">" lands on the next capture in the folder.
+        SetSelectedFile(fileName.Get());
+      }
+      break;
+      case kMsgTagModelCleared: ResetToEmpty(); break;
       default: break;
     }
+  }
+
+  void Hide(bool hide) override
+  {
+    IDirBrowseControlBase::Hide(hide);
+    if (!hide)
+    {
+      // IContainerBase::Hide un-hides every child, which would bring back the "Get" button on a browser that's
+      // showing a loaded file -- only one of Get/Clear is ever meant to be visible. Matters for the browsers on the
+      // blend page, since that whole page gets hidden and shown.
+      SetBrowserState(mBrowserState);
+    }
+  }
+
+  // Back to "nothing loaded".
+  void ResetToEmpty()
+  {
+    mFileNameControl->SetLabelAndTooltip(mDefaultLabelStr.Get());
+    SetBrowserState(NAMBrowserState::Empty);
   }
 
 private:
@@ -469,6 +555,10 @@ private:
   void SetBrowserState(NAMBrowserState newState)
   {
     mBrowserState = newState;
+
+    // The buttons don't exist until OnAttached runs.
+    if (mClearButton == nullptr || mGetButton == nullptr)
+      return;
 
     switch (mBrowserState)
     {
@@ -497,6 +587,7 @@ private:
   NAMBrowserState mBrowserState;
   NAMSquareButtonControl* mClearButton = nullptr;
   NAMGetButtonControl* mGetButton = nullptr;
+  NAMFileNameEllipsis mEllipsis;
 };
 
 class NAMMeterControl : public IVPeakAvgMeterControl<>, public IBitmapBase
@@ -1081,4 +1172,187 @@ private:
     IVStyle mStyle;
     IText mText;
   };
+};
+
+// Full-window overlay holding one row per model slot: file browser, blend level, polarity invert.
+//
+// Slot 0's browser also appears on the main page. Both are kept in sync through the DSP rather than through each
+// other: a load or a clear on either one goes to the plugin, which echoes the result back to every browser bound to
+// that slot.
+class NAMBlendPageControl : public IContainerBaseWithNamedChildren
+{
+public:
+  NAMBlendPageControl(const IRECT& bounds, const IBitmap& bitmap, const IBitmap& fileBackgroundBitmap,
+                      const IBitmap& knobBitmap, const ISVG& closeSVG, const ISVG& loadSVG, const ISVG& clearSVG,
+                      const ISVG& leftSVG, const ISVG& rightSVG, const ISVG& globeSVG, const IVStyle& style,
+                      const char* defaultLabelStr, const char* getButtonURL,
+                      const std::array<IFileDialogCompletionHandlerFunc, kNumModelSlots>& completionHandlers)
+  : IContainerBaseWithNamedChildren(bounds)
+  , mBitmap(bitmap)
+  , mFileBackgroundBitmap(fileBackgroundBitmap)
+  , mKnobBitmap(knobBitmap)
+  , mStyle(style)
+  , mCloseSVG(closeSVG)
+  , mLoadSVG(loadSVG)
+  , mClearSVG(clearSVG)
+  , mLeftSVG(leftSVG)
+  , mRightSVG(rightSVG)
+  , mGlobeSVG(globeSVG)
+  , mDefaultLabelStr(defaultLabelStr)
+  , mGetButtonURL(getButtonURL)
+  , mCompletionHandlers(completionHandlers)
+  {
+    mIgnoreMouse = false;
+  }
+
+  bool OnKeyDown(float x, float y, const IKeyPress& key) override
+  {
+    if (key.VK == kVK_ESCAPE)
+    {
+      HideAnimated(true);
+      return true;
+    }
+
+    return false;
+  }
+
+  void HideAnimated(bool hide)
+  {
+    mWillHide = hide;
+
+    if (hide == false)
+    {
+      mHide = false;
+    }
+    else // hide subcontrols immediately
+    {
+      ForAllChildrenFunc([hide](int childIdx, IControl* pChild) { pChild->Hide(hide); });
+    }
+
+    SetAnimation(
+      [&](IControl* pCaller) {
+        auto progress = static_cast<float>(pCaller->GetAnimationProgress());
+
+        if (mWillHide)
+          SetBlend(IBlend(EBlend::Default, 1.0f - progress));
+        else
+          SetBlend(IBlend(EBlend::Default, progress));
+
+        if (progress > 1.0f)
+        {
+          pCaller->OnEndAnimation();
+          IContainerBase::Hide(mWillHide);
+          GetUI()->SetAllControlsDirty();
+          return;
+        }
+      },
+      mAnimationTime);
+
+    SetDirty(true);
+  }
+
+  void OnAttached() override
+  {
+    const float pad = 20.0f;
+    const IVStyle titleStyle = DEFAULT_STYLE.WithValueText(IText(30, COLOR_WHITE, "Michroma-Regular"))
+                                 .WithDrawFrame(false)
+                                 .WithShadowOffset(2.f);
+    const auto text = IText(DEFAULT_TEXT_SIZE, EAlign::Center, PluginColors::HELP_TEXT);
+
+    AddNamedChildControl(new IBitmapControl(GetRECT(), mBitmap), mControlNames.bitmap)->SetIgnoreMouse(true);
+    const auto contentArea = GetRECT().GetPadded(-(pad + 10.0f));
+    AddNamedChildControl(new IVLabelControl(contentArea.GetFromTop(50.0f), "BLEND", titleStyle), mControlNames.title);
+
+    // The rows are hand-placed: this UI is a fixed 600x400 canvas that scales as a whole and never reflows.
+    // Everything in a row hangs off the row's centre line so the knob and switch line up with the browser.
+    const float rowTop = 92.0f;
+    const float rowPitch = 90.0f;
+    const float rowHeight = 30.0f;
+    // Narrower rows than the main page, so file names have to ellipsize sooner.
+    const NAMFileNameEllipsis ellipsis{16, 16, 33};
+    const int clearMsgTags[kNumModelSlots] = {kMsgTagClearModel, kMsgTagClearModel2, kMsgTagClearModel3};
+    const int browserCtrlTags[kNumModelSlots] = {
+      kCtrlTagBlendModelFileBrowser1, kCtrlTagBlendModelFileBrowser2, kCtrlTagBlendModelFileBrowser3};
+    // The knobs carry their value but not a per-row label: three stacked "Level" captions don't fit between the rows,
+    // and one caption above the column says it once.
+    const auto knobStyle = mStyle.WithShowLabel(false);
+    AddNamedChildControl(
+      new IVLabelControl(IRECT(378.f, 74.f, 444.f, 90.f), "Level", mStyle.WithValueText(text).WithDrawFrame(false)),
+      mControlNames.levelCaption);
+
+    for (size_t slot = 0; slot < kNumModelSlots; slot++)
+    {
+      const float centre = rowTop + rowPitch * ((float)slot + 0.5f);
+      const auto numberArea = IRECT(30.f, centre - 0.5f * rowHeight, 54.f, centre + 0.5f * rowHeight);
+      const auto browserArea = IRECT(58.f, centre - 0.5f * rowHeight, 372.f, centre + 0.5f * rowHeight);
+      // Nudged down by half the value-text height: the knob circle sits above the value readout inside this rect, so
+      // offsetting the rect is what actually centres the circle on the row.
+      const auto knobArea = IRECT(378.f, centre - 28.f, 444.f, centre + 44.f);
+      // Polarity / mute / solo, in that order, as one compact button group.
+      const float toggleSize = 28.f;
+      const auto invertArea = IRECT(454.f, centre - 0.5f * toggleSize, 454.f + toggleSize, centre + 0.5f * toggleSize);
+      const auto muteArea = invertArea.GetHShifted(toggleSize + 6.f);
+      const auto soloArea = invertArea.GetHShifted(2.f * (toggleSize + 6.f));
+      const std::string suffix = std::to_string(slot + 1);
+
+      AddNamedChildControl(
+        new IVLabelControl(numberArea, suffix.c_str(), mStyle.WithValueText(text)), mControlNames.number + suffix);
+      AddNamedChildControl(
+        new NAMFileBrowserControl(browserArea, clearMsgTags[slot], mDefaultLabelStr.Get(), "nam",
+                                  mCompletionHandlers[slot], mStyle, mLoadSVG, mClearSVG, mLeftSVG, mRightSVG,
+                                  mFileBackgroundBitmap, mGlobeSVG, "Get NAM Models", mGetButtonURL.Get(), ellipsis),
+        mControlNames.browser + suffix, browserCtrlTags[slot]);
+      auto* pLevel =
+        AddNamedChildControl(new NAMKnobControl(knobArea, (int)(kBlendLevel1 + slot), "", knobStyle, mKnobBitmap),
+                             mControlNames.level + suffix);
+      pLevel->SetTooltip("How much of this model to blend in. Slots sum like mixer channels; the minimum mutes.");
+      auto* pInvert = AddNamedChildControl(new NAMToggleButtonControl(invertArea, (int)(kBlendInvert1 + slot),
+                                                                      "\xC3\x98", mStyle, PluginColors::NAM_THEMECOLOR),
+                                           mControlNames.invert + suffix);
+      pInvert->SetTooltip("Invert this model's polarity. Use it when two captures of the same cab fight each other.");
+      auto* pMute = AddNamedChildControl(
+        new NAMToggleButtonControl(muteArea, (int)(kBlendMute1 + slot), "M", mStyle, PluginColors::NAM_MUTECOLOR),
+        mControlNames.mute + suffix);
+      pMute->SetTooltip("Mute this model.");
+      auto* pSolo = AddNamedChildControl(
+        new NAMToggleButtonControl(soloArea, (int)(kBlendSolo1 + slot), "S", mStyle, PluginColors::NAM_SOLOCOLOR),
+        mControlNames.solo + suffix);
+      pSolo->SetTooltip("Solo this model. With any solo on, only soloed models are heard; mute still wins.");
+    }
+
+    auto closeAction = [&](IControl* pCaller) {
+      static_cast<NAMBlendPageControl*>(pCaller->GetParent())->HideAnimated(true);
+    };
+    AddNamedChildControl(
+      new NAMSquareButtonControl(CornerButtonArea(GetRECT()), closeAction, mCloseSVG), mControlNames.close);
+
+    OnResize();
+  }
+
+private:
+  IBitmap mBitmap;
+  IBitmap mFileBackgroundBitmap;
+  IBitmap mKnobBitmap;
+  IVStyle mStyle;
+  ISVG mCloseSVG, mLoadSVG, mClearSVG, mLeftSVG, mRightSVG, mGlobeSVG;
+  WDL_String mDefaultLabelStr;
+  WDL_String mGetButtonURL;
+  std::array<IFileDialogCompletionHandlerFunc, kNumModelSlots> mCompletionHandlers;
+  int mAnimationTime = 200;
+  bool mWillHide = false;
+
+  // Names for controls. The per-slot ones get a 1-based slot number appended.
+  struct ControlNames
+  {
+    const std::string bitmap = "Bitmap";
+    const std::string browser = "Browser";
+    const std::string close = "Close";
+    const std::string invert = "Invert";
+    const std::string level = "Level";
+    const std::string levelCaption = "LevelCaption";
+    const std::string mute = "Mute";
+    const std::string number = "Number";
+    const std::string solo = "Solo";
+    const std::string title = "Title";
+  } mControlNames;
 };

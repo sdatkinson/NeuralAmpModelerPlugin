@@ -94,6 +94,27 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kInputCalibrationLevel)
     ->InitDouble(kInputCalibrationLevelParamName.c_str(), kDefaultInputCalibrationLevel, -60.0, 60.0, 0.1, "dBu");
   GetParam(kSlim)->InitDouble("Slim", 0.0, 0.0, 1.0, 0.01);
+  // Model blending. Slots sum like mixer channels: two slots at 0 dB are about 6 dB louder than one.
+  GetParam(kBlendLevel1)->InitGain("Blend1", 0.0, kBlendMuteDB, 6.0, 0.1);
+  GetParam(kBlendLevel2)->InitGain("Blend2", 0.0, kBlendMuteDB, 6.0, 0.1);
+  GetParam(kBlendLevel3)->InitGain("Blend3", 0.0, kBlendMuteDB, 6.0, 0.1);
+  GetParam(kBlendInvert1)->InitBool("Invert1", false);
+  GetParam(kBlendInvert2)->InitBool("Invert2", false);
+  GetParam(kBlendInvert3)->InitBool("Invert3", false);
+  GetParam(kBlendMute1)->InitBool("Mute1", false);
+  GetParam(kBlendMute2)->InitBool("Mute2", false);
+  GetParam(kBlendMute3)->InitBool("Mute3", false);
+  GetParam(kBlendSolo1)->InitBool("Solo1", false);
+  GetParam(kBlendSolo2)->InitBool("Solo2", false);
+  GetParam(kBlendSolo3)->InitBool("Solo3", false);
+
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    mSlotInputTrim[slot] = 1.0;
+    mSlotOutputTrim[slot] = 1.0;
+  }
+  _SetBlendGains();
+  mSlotBlendGainPrev = mSlotBlendGain;
 
   mNoiseGateTrigger.AddListener(&mNoiseGateGain);
 
@@ -128,6 +149,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
     const auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
     const auto slimIconSVG = pGraphics->LoadSVG(SLIMMABLE_ICON_FN);
+    const auto blendIconSVG = pGraphics->LoadSVG(BLEND_ICON_FN);
 
     const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
     const auto fileBackgroundBitmap = pGraphics->LoadBitmap(FILEBACKGROUND_FN);
@@ -168,8 +190,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto irYOffset = 38.0f;
     const auto modelArea =
       contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
+    // Two 28-wide icon slots to the right of the model row: the blend page button (always visible) and the slim knob
+    // button (only shown for slimmable models).
+    const auto blendIconArea =
+      IRECT(modelArea.R + 6.f, modelArea.MH() - 14.f, modelArea.R + 6.f + 28.f, modelArea.MH() + 14.f);
     const auto slimIconArea =
-      IRECT(modelArea.R + 6.f, modelArea.MH() - 14.f, modelArea.R + 6.f + 2.f * 28.f, modelArea.MH() + 14.f);
+      IRECT(modelArea.R + 38.f, modelArea.MH() - 14.f, modelArea.R + 38.f + 28.f, modelArea.MH() + 14.f);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
     const auto irArea = modelArea.GetVShifted(irYOffset);
     const auto irSwitchArea = irArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
@@ -181,22 +207,25 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     // Misc Areas
     const auto settingsButtonArea = CornerButtonArea(b);
 
-    // Model loader button
-    auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
-      if (fileName.GetLength())
-      {
-        // Sets mNAMPath and mStagedNAM
-        const std::string msg = _StageModel(fileName);
-        // TODO error messages like the IR loader.
-        if (msg.size())
+    // Model loader button. One handler per slot; they all do the same thing to a different slot.
+    auto makeLoadModelCompletionHandler = [this](const size_t slot) {
+      return [this, slot](const WDL_String& fileName, const WDL_String& path) {
+        if (fileName.GetLength())
         {
-          std::stringstream ss;
-          ss << "Failed to load NAM model. Message:\n\n" << msg;
-          _ShowMessageBox(GetUI(), ss.str().c_str(), "Failed to load model!", kMB_OK);
+          // Sets mNAMPath[slot] and mStagedModel[slot]
+          const std::string msg = _StageModel(fileName, slot);
+          // TODO error messages like the IR loader.
+          if (msg.size())
+          {
+            std::stringstream ss;
+            ss << "Failed to load NAM model. Message:\n\n" << msg;
+            _ShowMessageBox(GetUI(), ss.str().c_str(), "Failed to load model!", kMB_OK);
+          }
+          std::cout << "Loaded: " << fileName.Get() << std::endl;
         }
-        std::cout << "Loaded: " << fileName.Get() << std::endl;
-      }
+      };
     };
+    auto loadModelCompletionHandler = makeLoadModelCompletionHandler(0);
 
     // IR loader button
     auto loadIRCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
@@ -258,6 +287,15 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->SetAnimationEndActionFunction(showSlimOverlay)
       ->Hide(true);
 
+    auto showBlendPage = [](IControl* pCaller) {
+      pCaller->GetUI()->GetControlWithTag(kCtrlTagBlendPage)->As<NAMBlendPageControl>()->HideAnimated(false);
+    };
+    pGraphics
+      ->AttachControl(
+        new NAMSquareButtonControl(blendIconArea, DefaultClickActionFunc, blendIconSVG), kCtrlTagBlendIcon)
+      ->SetAnimationEndActionFunction(showBlendPage)
+      ->SetTooltip("Blend up to 3 models together");
+
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
     pGraphics->AttachControl(
       new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
@@ -295,6 +333,19 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->AttachControl(new NAMSettingsPageControl(b, backgroundBitmap, inputLevelBackgroundBitmap, switchHandleBitmap,
                                                  crossSVG, style, radioButtonStyle),
                       kCtrlTagSettingsBox)
+      ->Hide(true);
+
+    // Blend page: the other two model slots, plus a level and a polarity invert for each of the three.
+    std::array<IFileDialogCompletionHandlerFunc, kNumModelSlots> blendCompletionHandlers;
+    for (size_t slot = 0; slot < kNumModelSlots; slot++)
+    {
+      blendCompletionHandlers[slot] = makeLoadModelCompletionHandler(slot);
+    }
+    pGraphics
+      ->AttachControl(new NAMBlendPageControl(b, backgroundBitmap, fileBackgroundBitmap, knobBackgroundBitmap, crossSVG,
+                                              fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, globeSVG, style,
+                                              defaultNamFileString.c_str(), getUrl, blendCompletionHandlers),
+                      kCtrlTagBlendPage)
       ->Hide(true);
 
     const auto slimKnobArea = b.GetCentredInside(100.f, NAM_KNOB_HEIGHT + 24.f);
@@ -355,14 +406,8 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     triggerOutput = mNoiseGateTrigger.Process(mInputPointers, numChannelsInternal, numFrames);
   }
 
-  if (mModel != nullptr)
-  {
-    mModel->process(triggerOutput, mOutputPointers, nFrames);
-  }
-  else
-  {
-    _FallbackDSP(triggerOutput, mOutputPointers, numChannelsInternal, numFrames);
-  }
+  // Run every loaded model on the same signal and sum them into mOutputArray.
+  _BlendModels(triggerOutput, numFrames);
   // Apply the noise gate after the NAM
   sample** gateGainOutput =
     noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
@@ -409,6 +454,11 @@ void NeuralAmpModeler::OnReset()
   SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
+  // Allocate the slot alignment delays here, once, so that _UpdateLatency never allocates on the audio thread.
+  for (auto& delay : mSlotDelays)
+  {
+    delay.Resize(kMaxSlotDelaySamples);
+  }
   // If there is a model or IR loaded, they need to be checked for resampling.
   _ResetModelAndIR(sampleRate, GetBlockSize());
   mToneStack->Reset(sampleRate, maxBlockSize);
@@ -420,29 +470,45 @@ void NeuralAmpModeler::OnIdle()
   mInputSender.TransmitData(*this);
   mOutputSender.TransmitData(*this);
 
-  if (mNewModelLoadedInDSP)
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    if (auto* pGraphics = GetUI())
+    if (mNewModelLoadedInDSP[slot])
     {
-      _UpdateControlsFromModel();
-      mNewModelLoadedInDSP = false;
+      if (auto* pGraphics = GetUI())
+      {
+        _UpdateControlsFromModel();
+        mNewModelLoadedInDSP[slot] = false;
+      }
     }
-  }
-  if (mModelCleared)
-  {
-    if (auto* pGraphics = GetUI())
+    if (mModelCleared[slot])
     {
-      // FIXME -- need to disable only the "normalized" model
-      // pGraphics->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
-      static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->ClearModelInfo();
-      if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimmableIcon))
-        p->Hide(true);
-      if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimOverlayBackdrop))
-        p->Hide(true);
-      if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimKnob))
-        p->Hide(true);
-      pGraphics->SetAllControlsDirty();
-      mModelCleared = false;
+      if (auto* pGraphics = GetUI())
+      {
+        // Let every browser bound to this slot know, including the one that didn't ask for the clear.
+        _SendToSlotBrowsers(slot, kMsgTagModelCleared);
+        // FIXME -- need to disable only the "normalized" model
+        // pGraphics->GetControlWithTag(kCtrlTagOutputMode)->SetDisabled(false);
+        if (!_HaveModel())
+        {
+          static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->ClearModelInfo();
+        }
+        else
+        {
+          // Other slots are still loaded, so the model-dependent controls need to follow whatever's left.
+          _UpdateControlsFromModel();
+        }
+        if (!_AnyModelIsSlimmable())
+        {
+          if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimmableIcon))
+            p->Hide(true);
+          if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimOverlayBackdrop))
+            p->Hide(true);
+          if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimKnob))
+            p->Hide(true);
+        }
+        pGraphics->SetAllControlsDirty();
+        mModelCleared[slot] = false;
+      }
     }
   }
 }
@@ -455,9 +521,12 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
   // Plugin version, so we can load legacy serialized states in the future!
   WDL_String version(PLUG_VERSION_STR);
   chunk.PutStr(version.Get());
-  // Model directory (don't serialize the model itself; we'll just load it again
-  // when we unserialize)
-  chunk.PutStr(mNAMPath.Get());
+  // Model directories (don't serialize the models themselves; we'll just load them again
+  // when we unserialize). One per blend slot, in order.
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    chunk.PutStr(mNAMPath[slot].Get());
+  }
   chunk.PutStr(mIRPath.Get());
   return SerializeParams(chunk);
 }
@@ -484,13 +553,18 @@ void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
 
-  if (mNAMPath.GetLength())
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
-    // If it's not loaded yet, then mark as failed.
-    // If it's yet to be loaded, then the completion handler will set us straight once it runs.
-    if (mModel == nullptr && mStagedModel == nullptr)
-      SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
+    if (mNAMPath[slot].GetLength())
+    {
+      _SendToSlotBrowsers(slot, kMsgTagLoadedModel, mNAMPath[slot].GetLength(), mNAMPath[slot].Get());
+      // If it's not loaded yet, then mark as failed.
+      // If it's yet to be loaded, then the completion handler will set us straight once it runs.
+      if (mModel[slot] == nullptr && mStagedModel[slot] == nullptr)
+        _SendToSlotBrowsers(slot, kMsgTagLoadFailed);
+      // Reopening the UI shouldn't cost the folder convenience that was there before it was closed.
+      _SeedFolderIntoEmptySlots(mNAMPath[slot], slot);
+    }
   }
 
   if (mIRPath.GetLength())
@@ -500,7 +574,7 @@ void NeuralAmpModeler::OnUIOpen()
       SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadFailed);
   }
 
-  if (mModel != nullptr)
+  if (_HaveModel())
   {
     _UpdateControlsFromModel();
   }
@@ -513,10 +587,30 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     // Changes to the input gain
     case kCalibrateInput:
     case kInputCalibrationLevel:
+      _SetInputGain();
+      _SetSlotTrims();
+      break;
     case kInputLevel: _SetInputGain(); break;
     // Changes to the output gain
-    case kOutputLevel:
-    case kOutputMode: _SetOutputGain(); break;
+    case kOutputLevel: _SetOutputGain(); break;
+    case kOutputMode:
+      _SetOutputGain();
+      _SetSlotTrims();
+      break;
+    // Model blending. Mute only affects its own slot, but solo changes what every other slot does, so those
+    // recompute the whole set.
+    case kBlendLevel1:
+    case kBlendInvert1:
+    case kBlendMute1: _SetBlendGain(0); break;
+    case kBlendLevel2:
+    case kBlendInvert2:
+    case kBlendMute2: _SetBlendGain(1); break;
+    case kBlendLevel3:
+    case kBlendInvert3:
+    case kBlendMute3: _SetBlendGain(2); break;
+    case kBlendSolo1:
+    case kBlendSolo2:
+    case kBlendSolo3: _SetBlendGains(); break;
     // Tone stack:
     case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
@@ -548,7 +642,9 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 {
   switch (msgTag)
   {
-    case kMsgTagClearModel: mShouldRemoveModel = true; return true;
+    case kMsgTagClearModel: mShouldRemoveModel[0] = true; return true;
+    case kMsgTagClearModel2: mShouldRemoveModel[1] = true; return true;
+    case kMsgTagClearModel3: mShouldRemoveModel[2] = true; return true;
     case kMsgTagClearIR: mShouldRemoveIR = true; return true;
     case kMsgTagHighlightColor:
     {
@@ -590,20 +686,32 @@ void NeuralAmpModeler::_AllocateIOPointers(const size_t nChans)
   mOutputPointers = new sample*[nChans];
   if (mOutputPointers == nullptr)
     throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    if (mSlotInputPointers[slot] != nullptr || mSlotOutputPointers[slot] != nullptr)
+      throw std::runtime_error("Tried to re-allocate slot pointers without freeing");
+    mSlotInputPointers[slot] = new sample*[nChans];
+    mSlotOutputPointers[slot] = new sample*[nChans];
+    if (mSlotInputPointers[slot] == nullptr || mSlotOutputPointers[slot] == nullptr)
+      throw std::runtime_error("Failed to allocate pointer to slot buffer!\n");
+  }
 }
 
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
+  bool modelsChanged = false;
+
   // Remove marked modules
-  if (mShouldRemoveModel)
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    mModel = nullptr;
-    mNAMPath.Set("");
-    mShouldRemoveModel = false;
-    mModelCleared = true;
-    _UpdateLatency();
-    _SetInputGain();
-    _SetOutputGain();
+    if (mShouldRemoveModel[slot])
+    {
+      mModel[slot] = nullptr;
+      mNAMPath[slot].Set("");
+      mShouldRemoveModel[slot] = false;
+      mModelCleared[slot] = true;
+      modelsChanged = true;
+    }
   }
   if (mShouldRemoveIR)
   {
@@ -612,19 +720,86 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mShouldRemoveIR = false;
   }
   // Move things from staged to live
-  if (mStagedModel != nullptr)
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    mModel = std::move(mStagedModel);
-    mStagedModel = nullptr;
-    mNewModelLoadedInDSP = true;
+    if (mStagedModel[slot] != nullptr)
+    {
+      mModel[slot] = std::move(mStagedModel[slot]);
+      mStagedModel[slot] = nullptr;
+      mNewModelLoadedInDSP[slot] = true;
+      modelsChanged = true;
+    }
+  }
+  // The reference slot -- and therefore every gain derived from it -- can move when any slot changes, so these are
+  // recomputed once for the whole set rather than per slot.
+  if (modelsChanged)
+  {
     _UpdateLatency();
     _SetInputGain();
     _SetOutputGain();
+    _SetSlotTrims();
+    // Which slots are loaded decides whether a solo is in effect at all, so the blend gains have to follow too.
+    _SetBlendGains();
   }
   if (mStagedIR != nullptr)
   {
     mIR = std::move(mStagedIR);
     mStagedIR = nullptr;
+  }
+}
+
+void NeuralAmpModeler::_BlendModels(sample** triggerOutput, const size_t numFrames)
+{
+  const int nFrames = (int)numFrames;
+  bool anyModel = false;
+
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    if (mModel[slot] == nullptr)
+      continue;
+    anyModel = true;
+
+    // The reference slot's trim is exactly 1.0, so it gets the shared buffer without a copy. That keeps the
+    // single-model signal path identical to what it was before blending existed.
+    sample** modelInput = triggerOutput;
+    if (mSlotInputTrim[slot] != 1.0)
+    {
+      const double trim = mSlotInputTrim[slot];
+      sample* dest = mSlotInputArrays[slot][0].data();
+      for (size_t s = 0; s < numFrames; s++)
+        dest[s] = trim * triggerOutput[0][s];
+      modelInput = mSlotInputPointers[slot];
+    }
+    mModel[slot]->process(modelInput, mSlotOutputPointers[slot], nFrames);
+    // Line this slot up with whichever slot has the most latency.
+    mSlotDelays[slot].Process(mSlotOutputArrays[slot][0].data(), nFrames);
+  }
+
+  if (!anyModel)
+  {
+    // Keep the ramp's starting point current even while nothing is loaded, so that the first block after a model
+    // finally loads doesn't ramp away from a gain that was never actually applied.
+    for (size_t slot = 0; slot < kNumModelSlots; slot++)
+      mSlotBlendGainPrev[slot] = mSlotBlendGain[slot] * mSlotOutputTrim[slot];
+    _FallbackDSP(triggerOutput, mOutputPointers, kNumChannelsInternal, numFrames);
+    return;
+  }
+
+  sample* out = mOutputArray[0].data();
+  std::fill(out, out + numFrames, 0.0);
+  const double rampScale = numFrames > 0 ? 1.0 / (double)numFrames : 0.0;
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    const double target = mSlotBlendGain[slot] * mSlotOutputTrim[slot];
+    const double start = mSlotBlendGainPrev[slot];
+    mSlotBlendGainPrev[slot] = target;
+    if (mModel[slot] == nullptr || (start == 0.0 && target == 0.0))
+      continue;
+    // Ramp across the block. A polarity flip is a full sign change and would click otherwise.
+    const double step = (target - start) * rampScale;
+    const sample* in = mSlotOutputArrays[slot][0].data();
+    for (size_t s = 0; s < numFrames; s++)
+      out[s] += (start + step * (double)s) * in[s];
   }
 }
 
@@ -644,6 +819,13 @@ void NeuralAmpModeler::_DeallocateIOPointers()
   }
   if (mOutputPointers != nullptr)
     throw std::runtime_error("Failed to deallocate pointer to output buffer!\n");
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    delete[] mSlotInputPointers[slot];
+    mSlotInputPointers[slot] = nullptr;
+    delete[] mSlotOutputPointers[slot];
+    mSlotOutputPointers[slot] = nullptr;
+  }
 }
 
 void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels,
@@ -656,14 +838,17 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
 
 void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
 {
-  // Model
-  if (mStagedModel != nullptr)
+  // Models
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    mStagedModel->Reset(sampleRate, maxBlockSize);
-  }
-  else if (mModel != nullptr)
-  {
-    mModel->Reset(sampleRate, maxBlockSize);
+    if (mStagedModel[slot] != nullptr)
+    {
+      mStagedModel[slot]->Reset(sampleRate, maxBlockSize);
+    }
+    else if (mModel[slot] != nullptr)
+    {
+      mModel[slot]->Reset(sampleRate, maxBlockSize);
+    }
   }
 
   // IR
@@ -687,13 +872,60 @@ void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBl
   }
 }
 
+int NeuralAmpModeler::_ReferenceSlot() const
+{
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    if (mModel[slot] != nullptr)
+      return (int)slot;
+  }
+  return -1;
+}
+
+bool NeuralAmpModeler::_AnyModelIsSlimmable() const
+{
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    if (mModel[slot] != nullptr && mModel[slot]->GetSlimmableModel() != nullptr)
+      return true;
+  }
+  return false;
+}
+
+void NeuralAmpModeler::_SendToSlotBrowsers(const size_t slot, const int msgTag, const int dataSize, const void* pData)
+{
+  // Slot 0 is shown twice: on the main page and on the blend page.
+  if (slot == 0)
+  {
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, msgTag, dataSize, pData);
+  }
+  const int blendTags[kNumModelSlots] = {
+    kCtrlTagBlendModelFileBrowser1, kCtrlTagBlendModelFileBrowser2, kCtrlTagBlendModelFileBrowser3};
+  SendControlMsgFromDelegate(blendTags[slot], msgTag, dataSize, pData);
+}
+
+void NeuralAmpModeler::_SeedFolderIntoEmptySlots(const WDL_String& modelPath, const size_t sourceSlot)
+{
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    if (slot == sourceSlot)
+      continue;
+    // Only offer it to slots the user hasn't put anything in yet -- never step on a slot that already has a model,
+    // or one that's mid-load.
+    if (mModel[slot] != nullptr || mStagedModel[slot] != nullptr || mNAMPath[slot].GetLength())
+      continue;
+    _SendToSlotBrowsers(slot, kMsgTagSeedFolder, modelPath.GetLength(), modelPath.Get());
+  }
+}
+
 void NeuralAmpModeler::_SetInputGain()
 {
   iplug::sample inputGainDB = GetParam(kInputLevel)->Value();
-  // Input calibration
-  if ((mModel != nullptr) && (mModel->HasInputLevel()) && GetParam(kCalibrateInput)->Bool())
+  // Input calibration, referenced to the first loaded slot.
+  const int ref = _ReferenceSlot();
+  if ((ref >= 0) && (mModel[ref]->HasInputLevel()) && GetParam(kCalibrateInput)->Bool())
   {
-    inputGainDB += GetParam(kInputCalibrationLevel)->Value() - mModel->GetInputLevel();
+    inputGainDB += GetParam(kInputCalibrationLevel)->Value() - mModel[ref]->GetInputLevel();
   }
   mInputGain = DBToAmp(inputGainDB);
 }
@@ -701,24 +933,25 @@ void NeuralAmpModeler::_SetInputGain()
 void NeuralAmpModeler::_SetOutputGain()
 {
   double gainDB = GetParam(kOutputLevel)->Value();
-  if (mModel != nullptr)
+  const int ref = _ReferenceSlot();
+  if (ref >= 0)
   {
     const int outputMode = GetParam(kOutputMode)->Int();
     switch (outputMode)
     {
       case 1: // Normalized
-        if (mModel->HasLoudness())
+        if (mModel[ref]->HasLoudness())
         {
-          const double loudness = mModel->GetLoudness();
+          const double loudness = mModel[ref]->GetLoudness();
           const double targetLoudness = -18.0;
           gainDB += (targetLoudness - loudness);
         }
         break;
       case 2: // Calibrated
-        if (mModel->HasOutputLevel())
+        if (mModel[ref]->HasOutputLevel())
         {
           const double inputLevel = GetParam(kInputCalibrationLevel)->Value();
-          const double outputLevel = mModel->GetOutputLevel();
+          const double outputLevel = mModel[ref]->GetOutputLevel();
           gainDB += (outputLevel - inputLevel);
         }
         break;
@@ -727,6 +960,94 @@ void NeuralAmpModeler::_SetOutputGain()
     }
   }
   mOutputGain = DBToAmp(gainDB);
+}
+
+void NeuralAmpModeler::_SetSlotTrims()
+{
+  // mInputGain and mOutputGain already carry the reference slot's calibration. What's left is to bring the other
+  // slots to the same place, so that the blend balances the models rather than their metadata.
+  const int ref = _ReferenceSlot();
+  const int outputMode = GetParam(kOutputMode)->Int();
+  const bool calibrateInput = GetParam(kCalibrateInput)->Bool();
+
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    double inputTrimDB = 0.0;
+    double outputTrimDB = 0.0;
+
+    if (ref >= 0 && (int)slot != ref && mModel[slot] != nullptr)
+    {
+      // Not const: nam::DSP's metadata accessors aren't const-qualified.
+      ResamplingNAM* reference = mModel[ref].get();
+      ResamplingNAM* model = mModel[slot].get();
+
+      if (calibrateInput && reference->HasInputLevel() && model->HasInputLevel())
+      {
+        inputTrimDB = reference->GetInputLevel() - model->GetInputLevel();
+      }
+      switch (outputMode)
+      {
+        case 1: // Normalized
+          if (reference->HasLoudness() && model->HasLoudness())
+          {
+            outputTrimDB = reference->GetLoudness() - model->GetLoudness();
+          }
+          break;
+        case 2: // Calibrated
+          if (reference->HasOutputLevel() && model->HasOutputLevel())
+          {
+            outputTrimDB = model->GetOutputLevel() - reference->GetOutputLevel();
+          }
+          break;
+        case 0: // Raw
+        default: break;
+      }
+    }
+
+    mSlotInputTrim[slot] = inputTrimDB == 0.0 ? 1.0 : DBToAmp(inputTrimDB);
+    mSlotOutputTrim[slot] = outputTrimDB == 0.0 ? 1.0 : DBToAmp(outputTrimDB);
+  }
+}
+
+bool NeuralAmpModeler::_SlotIsAudible(const size_t slot)
+{
+  if (GetParam((int)(kBlendMute1 + slot))->Bool())
+  {
+    return false;
+  }
+  // Solo silences everything that isn't soloed. Only loaded slots count towards "is anything soloed", so that a solo
+  // left on an empty row doesn't silence the whole blend.
+  bool anySolo = false;
+  for (size_t i = 0; i < kNumModelSlots; i++)
+  {
+    if (mModel[i] != nullptr && GetParam((int)(kBlendSolo1 + i))->Bool())
+    {
+      anySolo = true;
+      break;
+    }
+  }
+  return !anySolo || GetParam((int)(kBlendSolo1 + slot))->Bool();
+}
+
+void NeuralAmpModeler::_SetBlendGain(const size_t slot)
+{
+  if (!_SlotIsAudible(slot))
+  {
+    mSlotBlendGain[slot] = 0.0;
+    return;
+  }
+  const double levelDB = GetParam((int)(kBlendLevel1 + slot))->Value();
+  const double amp = levelDB <= kBlendMuteDB ? 0.0 : DBToAmp(levelDB);
+  const bool invert = GetParam((int)(kBlendInvert1 + slot))->Bool();
+  mSlotBlendGain[slot] = invert ? -amp : amp;
+}
+
+void NeuralAmpModeler::_SetBlendGains()
+{
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    _SetBlendGain(slot);
+  }
 }
 
 void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
@@ -738,13 +1059,16 @@ void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
     if (nam::SlimmableModel* s = p->GetSlimmableModel())
       s->SetSlimmableSize(v);
   };
-  apply(mModel.get());
-  apply(mStagedModel.get());
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    apply(mModel[slot].get());
+    apply(mStagedModel[slot].get());
+  }
 }
 
-std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
+std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath, const size_t slot)
 {
-  WDL_String previousNAMPath = mNAMPath;
+  WDL_String previousNAMPath = mNAMPath[slot];
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
@@ -767,19 +1091,20 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     {
       slimmable->SetSlimmableSize(GetParam(kSlim)->Value());
     }
-    mStagedModel = std::move(temp);
-    mNAMPath = modelPath;
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    mStagedModel[slot] = std::move(temp);
+    mNAMPath[slot] = modelPath;
+    _SendToSlotBrowsers(slot, kMsgTagLoadedModel, mNAMPath[slot].GetLength(), mNAMPath[slot].Get());
+    _SeedFolderIntoEmptySlots(mNAMPath[slot], slot);
   }
   catch (std::runtime_error& e)
   {
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
+    _SendToSlotBrowsers(slot, kMsgTagLoadFailed);
 
-    if (mStagedModel != nullptr)
+    if (mStagedModel[slot] != nullptr)
     {
-      mStagedModel = nullptr;
+      mStagedModel[slot] = nullptr;
     }
-    mNAMPath = previousNAMPath;
+    mNAMPath[slot] = previousNAMPath;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
     return e.what();
@@ -855,18 +1180,27 @@ void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t nu
     _PrepareIOPointers(numChannels);
     mInputArray.resize(numChannels);
     mOutputArray.resize(numChannels);
+    for (size_t slot = 0; slot < kNumModelSlots; slot++)
+    {
+      mSlotInputArrays[slot].resize(numChannels);
+      mSlotOutputArrays[slot].resize(numChannels);
+    }
   }
   if (updateFrames)
   {
-    for (auto c = 0; c < mInputArray.size(); c++)
+    auto resizeAndClear = [numFrames](std::vector<std::vector<iplug::sample>>& array) {
+      for (auto c = 0; c < array.size(); c++)
+      {
+        array[c].resize(numFrames);
+        std::fill(array[c].begin(), array[c].end(), 0.0);
+      }
+    };
+    resizeAndClear(mInputArray);
+    resizeAndClear(mOutputArray);
+    for (size_t slot = 0; slot < kNumModelSlots; slot++)
     {
-      mInputArray[c].resize(numFrames);
-      std::fill(mInputArray[c].begin(), mInputArray[c].end(), 0.0);
-    }
-    for (auto c = 0; c < mOutputArray.size(); c++)
-    {
-      mOutputArray[c].resize(numFrames);
-      std::fill(mOutputArray[c].begin(), mOutputArray[c].end(), 0.0);
+      resizeAndClear(mSlotInputArrays[slot]);
+      resizeAndClear(mSlotOutputArrays[slot]);
     }
   }
   // Would these ever get changed by something?
@@ -874,6 +1208,13 @@ void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t nu
     mInputPointers[c] = mInputArray[c].data();
   for (auto c = 0; c < mOutputArray.size(); c++)
     mOutputPointers[c] = mOutputArray[c].data();
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    for (auto c = 0; c < mSlotInputArrays[slot].size(); c++)
+      mSlotInputPointers[slot][c] = mSlotInputArrays[slot][c].data();
+    for (auto c = 0; c < mSlotOutputArrays[slot].size(); c++)
+      mSlotOutputPointers[slot][c] = mSlotOutputArrays[slot][c].data();
+  }
 }
 
 void NeuralAmpModeler::_PrepareIOPointers(const size_t numChannels)
@@ -931,45 +1272,67 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 
 void NeuralAmpModeler::_UpdateControlsFromModel()
 {
-  if (mModel == nullptr)
+  const int ref = _ReferenceSlot();
+  if (ref < 0)
   {
     return;
   }
   if (auto* pGraphics = GetUI())
   {
+    // The model info panel describes the reference slot.
+    ResamplingNAM* reference = mModel[ref].get();
     ModelInfo modelInfo;
     modelInfo.sampleRate.known = true;
-    modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
-    modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
-    modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
-    modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
-    modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+    modelInfo.sampleRate.value = reference->GetEncapsulatedSampleRate();
+    modelInfo.inputCalibrationLevel.known = reference->HasInputLevel();
+    modelInfo.inputCalibrationLevel.value = reference->HasInputLevel() ? reference->GetInputLevel() : 0.0;
+    modelInfo.outputCalibrationLevel.known = reference->HasOutputLevel();
+    modelInfo.outputCalibrationLevel.value = reference->HasOutputLevel() ? reference->GetOutputLevel() : 0.0;
 
     static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
 
-    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+    const bool disableInputCalibrationControls = !reference->HasInputLevel();
     pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
     pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
     {
+      // These modes are only meaningful if *every* loaded model can be levelled that way; otherwise one of them would
+      // sit at the wrong level in the blend. So take the intersection.
+      bool allHaveLoudness = true;
+      bool allHaveOutputLevel = true;
+      for (size_t slot = 0; slot < kNumModelSlots; slot++)
+      {
+        if (mModel[slot] == nullptr)
+          continue;
+        allHaveLoudness = allHaveLoudness && mModel[slot]->HasLoudness();
+        allHaveOutputLevel = allHaveOutputLevel && mModel[slot]->HasOutputLevel();
+      }
       auto* c = static_cast<OutputModeControl*>(pGraphics->GetControlWithTag(kCtrlTagOutputMode));
-      c->SetNormalizedDisable(!mModel->HasLoudness());
-      c->SetCalibratedDisable(!mModel->HasOutputLevel());
+      c->SetNormalizedDisable(!allHaveLoudness);
+      c->SetCalibratedDisable(!allHaveOutputLevel);
     }
 
     if (auto* pSlimIcon = pGraphics->GetControlWithTag(kCtrlTagSlimmableIcon))
     {
-      const bool show = mModel->GetSlimmableModel() != nullptr;
-      pSlimIcon->Hide(!show);
+      pSlimIcon->Hide(!_AnyModelIsSlimmable());
     }
   }
 }
 
 void NeuralAmpModeler::_UpdateLatency()
 {
+  // Slots don't all report the same latency, so report the largest and delay the others up to match it. Blending
+  // signals that aren't time-aligned would comb-filter.
   int latency = 0;
-  if (mModel)
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    latency += mModel->GetLatency();
+    if (mModel[slot] != nullptr)
+    {
+      latency = std::max(latency, mModel[slot]->GetLatency());
+    }
+  }
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    mSlotDelays[slot].SetDelay(mModel[slot] != nullptr ? latency - mModel[slot]->GetLatency() : 0);
   }
   // Other things that add latency here...
 

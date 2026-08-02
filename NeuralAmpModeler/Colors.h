@@ -73,6 +73,11 @@ const iplug::igraphics::IColor NAM_THEMECOLOR(255, 80, 133, 232); // Azure
 // const iplug::igraphics::IColor NAM_THEMECOLOR(255, 23, 190, 187); // Custom :)
 const iplug::igraphics::IColor NAM_THEMEFONTCOLOR(255, 242, 242, 242); // Dark White
 
+// Mixer-style indicators on the blend page. Red for mute and amber for solo is the convention every engineer
+// already knows, so they're deliberately not the theme colour.
+const iplug::igraphics::IColor NAM_MUTECOLOR(255, 232, 96, 80); // Warm red
+const iplug::igraphics::IColor NAM_SOLOCOLOR(255, 232, 186, 80); // Amber
+
 // Misc
 // const iplug::igraphics::IColor MOUSEOVER = NAM_3.WithOpacity(0.3);
 const iplug::igraphics::IColor MOUSEOVER = NAM_THEMEFONTCOLOR.WithOpacity(0.1);

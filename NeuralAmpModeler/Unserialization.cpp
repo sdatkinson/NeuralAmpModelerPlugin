@@ -54,12 +54,19 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   OnParamReset(iplug::EParamSource::kPresetRecall);
   LEAVE_PARAMS_MUTEX
 
-  mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
+  const std::string namPathKeys[kNumModelSlots] = {"NAMPath", "NAMPath2", "NAMPath3"};
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
+  {
+    mNAMPath[slot].Set(static_cast<std::string>(config[namPathKeys[slot]]).c_str());
+  }
   mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
 
-  if (mNAMPath.GetLength())
+  for (size_t slot = 0; slot < kNumModelSlots; slot++)
   {
-    _StageModel(mNAMPath);
+    if (mNAMPath[slot].GetLength())
+    {
+      _StageModel(mNAMPath[slot], slot);
+    }
   }
   if (mIRPath.GetLength())
   {
@@ -67,14 +74,21 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   }
 }
 
-// Unserialize NAM Path, IR path, then named keys
+// Unserialize the NAM paths, the IR path, then named keys.
+// :param numModelPaths: How many model paths this version wrote. Versions before blending existed wrote one.
 int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config,
-                                     std::vector<std::string>& paramNames)
+                                     std::vector<std::string>& paramNames, const size_t numModelPaths = 1)
 {
+  const std::string namPathKeys[kNumModelSlots] = {"NAMPath", "NAMPath2", "NAMPath3"};
+  assert(numModelPaths >= 1 && numModelPaths <= kNumModelSlots);
+
   int pos = startPos;
   WDL_String path;
-  pos = chunk.GetStr(path, pos);
-  config["NAMPath"] = std::string(path.Get());
+  for (size_t slot = 0; slot < numModelPaths; slot++)
+  {
+    pos = chunk.GetStr(path, pos);
+    config[namPathKeys[slot]] = std::string(path.Get());
+  }
   pos = chunk.GetStr(path, pos);
   config["IRPath"] = std::string(path.Get());
 
@@ -97,11 +111,67 @@ void _RenameKeys(nlohmann::json& j, std::unordered_map<std::string, std::string>
   }
 }
 
+// v0.7.16
+
+void _UpdateConfigFrom_0_7_16(nlohmann::json& config)
+{
+  // Fill me in once something changes!
+}
+
+int _GetConfigFrom_0_7_16(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
+{
+  std::vector<std::string> paramNames{"Input",
+                                      "Threshold",
+                                      "Bass",
+                                      "Middle",
+                                      "Treble",
+                                      "Output",
+                                      "NoiseGateActive",
+                                      "ToneStack",
+                                      "IRToggle",
+                                      "CalibrateInput",
+                                      "InputCalibrationLevel",
+                                      "OutputMode",
+                                      "Slim",
+                                      "Blend1",
+                                      "Blend2",
+                                      "Blend3",
+                                      "Invert1",
+                                      "Invert2",
+                                      "Invert3",
+                                      "Mute1",
+                                      "Mute2",
+                                      "Mute3",
+                                      "Solo1",
+                                      "Solo2",
+                                      "Solo3"};
+
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames, kNumModelSlots);
+  _UpdateConfigFrom_0_7_16(config);
+  return pos;
+}
+
 // v0.7.14
 
 void _UpdateConfigFrom_0_7_14(nlohmann::json& config)
 {
-  // Fill me in once something changes!
+  // Model blending arrived in 0.7.16. Older sessions only ever had one model, so it becomes slot 1 with the other
+  // slots empty and every slot at unity gain -- which sounds exactly like it did before.
+  config["NAMPath2"] = "";
+  config["NAMPath3"] = "";
+  config["Blend1"] = 0.0;
+  config["Blend2"] = 0.0;
+  config["Blend3"] = 0.0;
+  config["Invert1"] = 0.0;
+  config["Invert2"] = 0.0;
+  config["Invert3"] = 0.0;
+  config["Mute1"] = 0.0;
+  config["Mute2"] = 0.0;
+  config["Mute3"] = 0.0;
+  config["Solo1"] = 0.0;
+  config["Solo2"] = 0.0;
+  config["Solo3"] = 0.0;
+  _UpdateConfigFrom_0_7_16(config);
 }
 
 int _GetConfigFrom_0_7_14(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
@@ -277,7 +347,11 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk&
   _Version version(versionStr);
   // Act accordingly
   nlohmann::json config;
-  if (version >= _Version(0, 7, 14))
+  if (version >= _Version(0, 7, 16))
+  {
+    pos = _GetConfigFrom_0_7_16(chunk, pos, config);
+  }
+  else if (version >= _Version(0, 7, 14))
   {
     pos = _GetConfigFrom_0_7_14(chunk, pos, config);
   }
