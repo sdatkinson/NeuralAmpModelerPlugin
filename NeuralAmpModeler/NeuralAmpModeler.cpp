@@ -624,8 +624,8 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 
       if (mPresetManager.Add(preset) == nam_presets::PresetError::kDuplicateName)
       {
-        const EMsgBoxResult result = _ShowMessageBox(
-          GetUI(), ("Overwrite preset \"" + name + "\"?").c_str(), "Preset already exists", kMB_YESNO);
+        const EMsgBoxResult result =
+          _ShowMessageBox(GetUI(), ("Overwrite preset \"" + name + "\"?").c_str(), "Preset already exists", kMB_YESNO);
         if (result != kYES)
           return true;
 
@@ -846,14 +846,9 @@ namespace
 // stored in PresetData::paramValues. Local to this translation unit: PresetManager
 // itself doesn't know about EParams.
 const std::map<EParams, std::string> kPresetParamNames = {
-  {kInputLevel, "InputLevel"},
-  {kOutputLevel, "OutputLevel"},
-  {kNoiseGateThreshold, "NoiseGateThreshold"},
-  {kNoiseGateActive, "NoiseGateActive"},
-  {kToneBass, "ToneBass"},
-  {kToneMid, "ToneMid"},
-  {kToneTreble, "ToneTreble"},
-  {kEQActive, "EQActive"},
+  {kInputLevel, "InputLevel"},           {kOutputLevel, "OutputLevel"}, {kNoiseGateThreshold, "NoiseGateThreshold"},
+  {kNoiseGateActive, "NoiseGateActive"}, {kToneBass, "ToneBass"},       {kToneMid, "ToneMid"},
+  {kToneTreble, "ToneTreble"},           {kEQActive, "EQActive"},
 };
 } // namespace
 

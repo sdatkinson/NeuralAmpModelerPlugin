@@ -292,11 +292,11 @@ public:
     if (mPresetNames.size())
     {
       mMenu.AddSeparator();
-      for (int i = 0; i < (int) mPresetNames.size(); i++)
+      for (int i = 0; i < (int)mPresetNames.size(); i++)
         mMenu.AddItem(new IPopupMenu::Item(mPresetNames[i].c_str(), IPopupMenu::Item::kNoFlags, i));
 
       auto* pDeleteMenu = new IPopupMenu();
-      for (int i = 0; i < (int) mPresetNames.size(); i++)
+      for (int i = 0; i < (int)mPresetNames.size(); i++)
         pDeleteMenu->AddItem(new IPopupMenu::Item(mPresetNames[i].c_str(), IPopupMenu::Item::kNoFlags, i));
       mMenu.AddItem("Delete preset", -1, pDeleteMenu); // mMenu's Item now owns pDeleteMenu
       mDeleteMenuPtr = pDeleteMenu;
@@ -321,7 +321,7 @@ public:
       if (tag >= 0 && static_cast<size_t>(tag) < mPresetNames.size())
       {
         const std::string& name = mPresetNames[tag];
-        GetDelegate()->SendArbitraryMsgFromUI(kMsgTagDeletePreset, kNoTag, (int) name.size() + 1, name.c_str());
+        GetDelegate()->SendArbitraryMsgFromUI(kMsgTagDeletePreset, kNoTag, (int)name.size() + 1, name.c_str());
       }
       return;
     }
@@ -333,14 +333,14 @@ public:
     else if (tag >= 0 && static_cast<size_t>(tag) < mPresetNames.size())
     {
       const std::string& name = mPresetNames[tag];
-      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagLoadPreset, kNoTag, (int) name.size() + 1, name.c_str());
+      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagLoadPreset, kNoTag, (int)name.size() + 1, name.c_str());
     }
   }
 
   void OnTextEntryCompletion(const char* str, int valIdx) override
   {
     if (str && str[0])
-      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagSavePreset, kNoTag, (int) strlen(str) + 1, str);
+      GetDelegate()->SendArbitraryMsgFromUI(kMsgTagSavePreset, kNoTag, (int)strlen(str) + 1, str);
   }
 
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
