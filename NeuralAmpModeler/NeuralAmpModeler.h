@@ -9,6 +9,7 @@
 #include "../NeuralAmpModelerCore/NAM/slimmable.h"
 
 #include "Colors.h"
+#include "PresetManager.h"
 #include "ToneStack.h"
 
 #include "IPlug_include_in_plug_hdr.h"
@@ -65,6 +66,7 @@ enum ECtrlTags
   kCtrlTagSlimmableIcon,
   kCtrlTagSlimOverlayBackdrop,
   kCtrlTagSlimKnob,
+  kCtrlTagPresetControl,
   kNumCtrlTags
 };
 
@@ -74,10 +76,20 @@ enum EMsgTags
   kMsgTagClearModel = 0,
   kMsgTagClearIR,
   kMsgTagHighlightColor,
+  // Presets (issue #252): pData is a null-terminated preset name string.
+  kMsgTagLoadPreset,
+  kMsgTagSavePreset,
+  kMsgTagDeletePreset,
   // The following tags are from DSP -> UI
   kMsgTagLoadFailed,
   kMsgTagLoadedModel,
   kMsgTagLoadedIR,
+  // Presets: pData is the current preset name, or dataSize == 0 if none (reset to default label).
+  kMsgTagPresetNameChanged,
+  // Presets: a preset was applied that has no model/IR, so the DSP unloaded the current one
+  // and the file browser must reset to its default label. No payload: the control tag it's
+  // sent to says which browser is meant.
+  kMsgTagClearedFile,
   kNumMsgTags
 };
 
@@ -212,6 +224,9 @@ public:
   void OnParamChangeUI(int paramIdx, iplug::EParamSource source) override;
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
+  // Read-only: names of presets currently in the local preset store, for the UI to build its menu.
+  std::vector<std::string> GetPresetNames() const { return mPresetManager.ListNames(); }
+
 private:
   // Allocates mInputPointers and mOutputPointers
   void _AllocateIOPointers(const size_t nChans);
@@ -256,6 +271,14 @@ private:
   void _SetInputGain();
   void _SetOutputGain();
   void _ApplySlimParamToLoadedNAMs();
+
+  // Presets: build a PresetData snapshot from the current model/IR/EQ/volume state,
+  // or push a PresetData's model/IR/EQ/volume state into the plugin.
+  nam_presets::PresetData _CollectCurrentState(const std::string& presetName) const;
+  void _ApplyPreset(const nam_presets::PresetData& preset);
+  // Updates mCurrentPresetName and, if the UI is open, pushes it to the preset button's
+  // label. Pass an empty name to reset the button back to its default label.
+  void _SetCurrentPresetName(const std::string& name);
 
   // See: Unserialization.cpp
   void _UnserializeApplyConfig(nlohmann::json& config);
@@ -318,6 +341,12 @@ private:
   WDL_String mNAMPath;
   // Path to IR (.wav file)
   WDL_String mIRPath;
+
+  // Local preset store (issue #252 / #428). Lives outside host/DAW state.
+  nam_presets::PresetManager mPresetManager;
+  // Name of the preset currently loaded/saved, for display only. Session-scoped:
+  // not part of host-serialized state (Unserialization.cpp is untouched by design).
+  WDL_String mCurrentPresetName;
 
   WDL_String mHighLightColor{PluginColors::NAM_THEMECOLOR.ToColorCode()};
 

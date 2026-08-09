@@ -472,6 +472,17 @@
 		B885CBC52304AE7300D73128 /* IPlugProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F8F61A8202807B9003F2573 /* IPlugProcessor.cpp */; };
 		B8E22A0C220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
 		B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */; };
+		C26CF4CE2FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4CF2FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D02FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D12FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D22FFD902F0069318D /* PresetManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C26CF4CC2FFD902F0069318D /* PresetManager.h */; };
+		C26CF4D32FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D42FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D52FFD902F0069318D /* PresetManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C26CF4CC2FFD902F0069318D /* PresetManager.h */; };
+		C26CF4D62FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D72FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
+		C26CF4D82FFD902F0069318D /* PresetManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C26CF4CD2FFD902F0069318D /* PresetManager.cpp */; };
 		C2A2FAE112D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
 		C2A2FAE122D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
 		C2A2FAE132D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */; };
@@ -1044,6 +1055,8 @@
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
 		B8EA6B932203868500D23A86 /* IPlugVST3_Common.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_Common.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_Common.h; sourceTree = "<group>"; tabWidth = 2; };
+		C26CF4CC2FFD902F0069318D /* PresetManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../PresetManager.h; sourceTree = "<group>"; };
+		C26CF4CD2FFD902F0069318D /* PresetManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ../PresetManager.cpp; sourceTree = "<group>"; };
 		C2A2FAE012D0000110027AB66 /* wavenet/a2_fast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/a2_fast.cpp; sourceTree = "<group>"; };
 		C2A2FAE022D0000110027AB66 /* wavenet/a2_fast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet/a2_fast.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1114,6 +1127,8 @@
 		089C166AFE841209C02AAC07 /* IPlugExample */ = {
 			isa = PBXGroup;
 			children = (
+				C26CF4CC2FFD902F0069318D /* PresetManager.h */,
+				C26CF4CD2FFD902F0069318D /* PresetManager.cpp */,
 				4F2FB1392A0047420027AB66 /* dsp */,
 				4F2FB1452A0047420027AB66 /* NAM */,
 				AA355E2C295B688F0061AA3D /* Colors.h */,
@@ -2018,6 +2033,7 @@
 				AAB7BBB72CC4B8C6000B8B6E /* get_dsp.h in Headers */,
 				4F2FB1902A0047430027AB66 /* version.h in Headers */,
 				AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */,
+				C26CF4D52FFD902F0069318D /* PresetManager.h in Headers */,
 				4F4856852773C3B5005BCF8E /* IPlugAUViewController.h in Headers */,
 				AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4F2FB17C2A0047430027AB66 /* ImpulseResponse.h in Headers */,
@@ -2048,6 +2064,7 @@
 				4F03A5D420A4621100EBDFFB /* IGraphicsUtilities.h in Headers */,
 				AA7C85FF2B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F03A5AA20A4621100EBDFFB /* IGraphicsLiveEdit.h in Headers */,
+				C26CF4D22FFD902F0069318D /* PresetManager.h in Headers */,
 				4F6369EA20A466470022C370 /* IControl.h in Headers */,
 				4F03A5D520A4621100EBDFFB /* IGraphicsConstants.h in Headers */,
 				4FF3205820B2BFAB00269268 /* IPlugPaths.h in Headers */,
@@ -2572,6 +2589,7 @@
 				4F2FB1842A0047430027AB66 /* wav.cpp in Sources */,
 				4F2FB1C12A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7072D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
+				C26CF4D72FFD902F0069318D /* PresetManager.cpp in Sources */,
 				C2A2FAE112D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0122CC4B8C6000B8B6E /* container.cpp in Sources */,
 				4F2FB1CF2A0047430027AB66 /* conv1d.cpp in Sources */,
@@ -2625,6 +2643,7 @@
 				4FD52136202A5BD000A4D22A /* dfx-au-utilities.c in Sources */,
 				4F7C4960255DDFC500DF7588 /* ITextEntryControl.cpp in Sources */,
 				4F5F344420C0226200487201 /* IPlugPaths.mm in Sources */,
+				C26CF4D02FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F2FB1752A0047430027AB66 /* ImpulseResponse.cpp in Sources */,
 				4F7C495E255DDFC500DF7588 /* IControls.cpp in Sources */,
 				4F35DEB0207E5C5A00867D8F /* IPlugPluginBase.cpp in Sources */,
@@ -2679,6 +2698,7 @@
 				4F3EE1DB231438D000004786 /* IPlugAPP_main.cpp in Sources */,
 				4F2FB1682A0047430027AB66 /* dsp.cpp in Sources */,
 				4F3EE1DD231438D000004786 /* IGraphicsMac.mm in Sources */,
+				C26CF4CE2FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F3EE1DE231438D000004786 /* NeuralAmpModeler.cpp in Sources */,
 				4F2FB1A42A0047430027AB66 /* convnet.cpp in Sources */,
 				4F3EE1E0231438D000004786 /* IPlugAPIBase.cpp in Sources */,
@@ -2722,6 +2742,7 @@
 				4F2FB1982A0047430027AB66 /* dsp.cpp in Sources */,
 				AA341E252B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4F78BE2522E7406D00AD537E /* IPlugPluginBase.cpp in Sources */,
+				C26CF4D62FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F2FB1C22A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7082D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE142D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
@@ -2744,6 +2765,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C26CF4D42FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F81597C205D50EB00393585 /* baseiids.cpp in Sources */,
 				4FDAC0EC207D76C600299363 /* IPlugTimer.cpp in Sources */,
 				4F7C495D255DDFC400DF7588 /* ITextEntryControl.cpp in Sources */,
@@ -2842,6 +2864,7 @@
 				4F2FB1952A0047430027AB66 /* dsp.cpp in Sources */,
 				AA341E212B9E5A530069C260 /* ToneStack.cpp in Sources */,
 				4FB600231567CB0A0020189A /* IPlugParameter.cpp in Sources */,
+				C26CF4D12FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F2FB1BF2A0047430027AB66 /* wavenet/model.cpp in Sources */,
 				B1D2F7052D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE162D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
@@ -2864,6 +2887,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C26CF4D32FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F7C4964255DDFC800DF7588 /* IControls.cpp in Sources */,
 				4F03A5B220A4621100EBDFFB /* IGraphics.cpp in Sources */,
 				4F7C4966255DDFC800DF7588 /* ITextEntryControl.cpp in Sources */,
@@ -2927,6 +2951,7 @@
 				4F690C9B203A345100A4A13E /* IPlugAPP_main.cpp in Sources */,
 				4F2FB1602A0047430027AB66 /* dsp.cpp in Sources */,
 				4FB1F58920E4B004004157C8 /* IGraphicsMac.mm in Sources */,
+				C26CF4D82FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4F3862EF2014BBEC0009F402 /* NeuralAmpModeler.cpp in Sources */,
 				4F2FB19C2A0047430027AB66 /* convnet.cpp in Sources */,
 				4F78D90B13B63BA50032E0F3 /* IPlugAPIBase.cpp in Sources */,
@@ -2956,6 +2981,7 @@
 				4FFBB90820863B0E00DDD0E7 /* pluginfactory.cpp in Sources */,
 				4FFBB90920863B0E00DDD0E7 /* vstinitiids.cpp in Sources */,
 				4FFBB90A20863B0E00DDD0E7 /* fdebug.cpp in Sources */,
+				C26CF4CF2FFD902F0069318D /* PresetManager.cpp in Sources */,
 				4FFBB90C20863B0E00DDD0E7 /* IPlugAPIBase.cpp in Sources */,
 				B8E22A0D220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp in Sources */,
 				4FFBB90D20863B0E00DDD0E7 /* fdynlib.cpp in Sources */,
