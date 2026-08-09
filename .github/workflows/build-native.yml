@@ -18,12 +18,14 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        # windows-2022 pinned: windows-latest images ship VS2026, which lacks
+        # the v143 ARM64EC toolset the projects target
+        os: [macos-latest, windows-2022]
         include:
           - os: macos-latest
             build_dir: build-mac
             artifact_ext: mac
-          - os: windows-latest
+          - os: windows-2022
             build_dir: build-win
             artifact_ext: win
 
@@ -53,11 +55,11 @@ jobs:
       shell: bash
 
     - name: Add msbuild to PATH (Windows)
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build Windows
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       run: |
         cd ${{env.PROJECT_NAME}}\scripts
         .\makedist-win.bat full zip

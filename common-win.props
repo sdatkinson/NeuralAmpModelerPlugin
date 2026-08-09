@@ -31,12 +31,12 @@
     <VST3_SDK Condition="'$(VST3_SDK)'==''">$(IPLUG_DEPS_PATH)\VST3_SDK</VST3_SDK>
     <ASIO_SDK Condition="'$(ASIO_SDK)'==''">$(IPLUG_DEPS_PATH)\RTAudio\include</ASIO_SDK>
     <AAX_SDK Condition="'$(AAX_SDK)'==''">$(IPLUG_DEPS_PATH)\AAX_SDK</AAX_SDK>
-    <VST3_32_HOST_PATH Condition="'$(VST3_32_HOST_PATH)'==''">$(ProgramFiles)\REAPER\reaper.exe</VST3_32_HOST_PATH>
-    <VST3_64_HOST_PATH Condition="'$(VST3_64_HOST_PATH)'==''">$(ProgramW6432)\REAPER (x64)\reaper.exe</VST3_64_HOST_PATH>
-    <VST3_32_PATH Condition="'$(VST3_32_PATH)'==''">$(CommonProgramFiles)\VST3</VST3_32_PATH>
-    <VST3_64_PATH Condition="'$(VST3_64_PATH)'==''">$(CommonProgramW6432)\VST3</VST3_64_PATH>
-    <AAX_32_PATH Condition="'$(AAX_32_PATH)'==''">$(CommonProgramFiles)\Avid\Audio\Plug-Ins</AAX_32_PATH>
-    <AAX_64_PATH Condition="'$(AAX_64_PATH)'==''">$(CommonProgramW6432)\Avid\Audio\Plug-Ins</AAX_64_PATH>
+    <VST3_ARM64EC_HOST_PATH Condition="'$(VST3_ARM64EC_HOST_PATH)'==''">$(ProgramW6432)\REAPER (arm64)\reaper.exe</VST3_ARM64EC_HOST_PATH>
+    <VST3_X64_HOST_PATH Condition="'$(VST3_X64_HOST_PATH)'==''">$(ProgramW6432)\REAPER (x64)\reaper.exe</VST3_X64_HOST_PATH>
+    <VST3_ARM64EC_PATH Condition="'$(VST3_ARM64EC_PATH)'==''">$(CommonProgramW6432)\VST3</VST3_ARM64EC_PATH>
+    <VST3_X64_PATH Condition="'$(VST3_X64_PATH)'==''">$(CommonProgramW6432)\VST3</VST3_X64_PATH>
+    <AAX_ARM64EC_PATH Condition="'$(AAX_ARM64EC_PATH)'==''">$(CommonProgramW6432)\Avid\Audio\Plug-Ins</AAX_ARM64EC_PATH>
+    <AAX_X64_PATH Condition="'$(AAX_X64_PATH)'==''">$(CommonProgramW6432)\Avid\Audio\Plug-Ins</AAX_X64_PATH>
     <REAPER_EXT_PATH>$(APPDATA)\REAPER\UserPlugins</REAPER_EXT_PATH>
     <APP_DEFS>APP_API;__WINDOWS_DS__;__WINDOWS_MM__;__WINDOWS_ASIO__;IPLUG_EDITOR=1;IPLUG_DSP=1</APP_DEFS>
     <VST3_DEFS>VST3_API;IPLUG_EDITOR=1;IPLUG_DSP=1</VST3_DEFS>
@@ -52,9 +52,9 @@
     <ALL_DEFS>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX</ALL_DEFS>
     <AAX_LIBS>wininet.lib;odbc32.lib;odbccp32.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comctl32.lib;</AAX_LIBS>
     <APP_LIBS>dsound.lib;winmm.lib;</APP_LIBS>
-    <VST3_64_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_64_COMMAND_ARGS>
-    <VST3_32_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_32_COMMAND_ARGS>
-    <REAPER_INC_PATHS>$(IPLUG_DEPS_PATH)/Reaper;$(IPLUG_PATH)\ReaperExt;</REAPER_INC_PATHS>
+    <VST3_X64_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_X64_COMMAND_ARGS>
+    <VST3_ARM64EC_COMMAND_ARGS>$(SolutionDir)$(SolutionName).RPP</VST3_ARM64EC_COMMAND_ARGS>
+    <REAPER_INC_PATHS>$(IPLUG_DEPS_PATH)\REAPER_SDK;$(IPLUG_PATH)\ReaperExt;</REAPER_INC_PATHS>
     <AAX_ICON>$(AAX_SDK)\Utilities\PlugIn.ico</AAX_ICON>
     <VST_ICON>$(IPLUG2_ROOT)\Scripts\icons\VST_Logo_Steinberg.ico</VST_ICON>
     <FAUST_LIB_PATH>$(DEPS_PATH)\Build\win\Faust\lib</FAUST_LIB_PATH>
@@ -71,9 +71,6 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <ItemDefinitionGroup Condition=" '$(Platform)' == 'Win32' ">
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(STATIC_LIBS_PATH);$(AAX_SDK)\Libs\$(Configuration);$(FAUST_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -171,23 +168,23 @@
     <BuildMacro Include="AAX_SDK">
       <Value>$(AAX_SDK)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_32_HOST_PATH">
-      <Value>$(VST3_32_HOST_PATH)</Value>
+    <BuildMacro Include="VST3_ARM64EC_HOST_PATH">
+      <Value>$(VST3_ARM64EC_HOST_PATH)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_64_HOST_PATH">
-      <Value>$(VST3_64_HOST_PATH)</Value>
+    <BuildMacro Include="VST3_X64_HOST_PATH">
+      <Value>$(VST3_X64_HOST_PATH)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_32_PATH">
-      <Value>$(VST3_32_PATH)</Value>
+    <BuildMacro Include="VST3_ARM64EC_PATH">
+      <Value>$(VST3_ARM64EC_PATH)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_64_PATH">
-      <Value>$(VST3_64_PATH)</Value>
+    <BuildMacro Include="VST3_X64_PATH">
+      <Value>$(VST3_X64_PATH)</Value>
     </BuildMacro>
-    <BuildMacro Include="AAX_32_PATH">
-      <Value>$(AAX_32_PATH)</Value>
+    <BuildMacro Include="AAX_ARM64EC_PATH">
+      <Value>$(AAX_ARM64EC_PATH)</Value>
     </BuildMacro>
-    <BuildMacro Include="AAX_64_PATH">
-      <Value>$(AAX_64_PATH)</Value>
+    <BuildMacro Include="AAX_X64_PATH">
+      <Value>$(AAX_X64_PATH)</Value>
     </BuildMacro>
     <BuildMacro Include="REAPER_EXT_PATH">
       <Value>$(REAPER_EXT_PATH)</Value>
@@ -234,11 +231,11 @@
     <BuildMacro Include="APP_LIBS">
       <Value>$(APP_LIBS)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_64_COMMAND_ARGS">
-      <Value>$(VST3_64_COMMAND_ARGS)</Value>
+    <BuildMacro Include="VST3_X64_COMMAND_ARGS">
+      <Value>$(VST3_X64_COMMAND_ARGS)</Value>
     </BuildMacro>
-    <BuildMacro Include="VST3_32_COMMAND_ARGS">
-      <Value>$(VST3_32_COMMAND_ARGS)</Value>
+    <BuildMacro Include="VST3_ARM64EC_COMMAND_ARGS">
+      <Value>$(VST3_ARM64EC_COMMAND_ARGS)</Value>
     </BuildMacro>
     <BuildMacro Include="REAPER_INC_PATHS">
       <Value>$(REAPER_INC_PATHS)</Value>

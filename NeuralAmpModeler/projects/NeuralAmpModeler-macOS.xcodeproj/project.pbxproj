@@ -386,7 +386,7 @@
 		4FD16D4213B635AB001D0217 /* swell-wnd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4113B635AB001D0217 /* swell-wnd.mm */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -Wno-shorten-64-to-32 -Wno-deprecated-implementations"; }; };
 		4FD16D4413B635B2001D0217 /* swell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4313B635B2001D0217 /* swell.cpp */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -Wno-shorten-64-to-32 -Wno-deprecated-implementations"; }; };
 		4FD52131202A5B9B00A4D22A /* IPlugAU_view_factory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5212E202A5B9B00A4D22A /* IPlugAU_view_factory.mm */; };
-		4FD52133202A5B9B00A4D22A /* IPlugAU.r in Rez */ = {isa = PBXBuildFile; fileRef = 4FD52130202A5B9B00A4D22A /* IPlugAU.r */; };
+		4FD52133202A5B9B00A4D22A /* IPlugAU.r in Resources */ = {isa = PBXBuildFile; fileRef = 4FD52130202A5B9B00A4D22A /* IPlugAU.r */; };
 		4FD52136202A5BD000A4D22A /* dfx-au-utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FD52134202A5BD000A4D22A /* dfx-au-utilities.c */; };
 		4FDAC0EA207D76C600299363 /* IPlugTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAC0E6207D76C600299363 /* IPlugTimer.cpp */; };
 		4FDAC0EC207D76C600299363 /* IPlugTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAC0E6207D76C600299363 /* IPlugTimer.cpp */; };
@@ -448,10 +448,6 @@
 		AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */; };
 		AA7C85FD2B439AC000B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F62B439AC000B5FB3A /* wdltypes.h */; };
 		AA7C85FE2B439AC000B5FB3A /* wdltypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F62B439AC000B5FB3A /* wdltypes.h */; };
-		AA7C85FF2B439AC000B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F72B439AC000B5FB3A /* ptrlist.h */; };
-		AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F72B439AC000B5FB3A /* ptrlist.h */; };
-		AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
-		AA7C86022B439AC000B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C85F82B439AC000B5FB3A /* heapbuf.h */; };
 		AAB7BBB72CC4B8C6000B8B6E /* get_dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */; };
 		AAB7E0122CC4B8C6000B8B6E /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB7E0102CC4B8C6000B8B6E /* container.cpp */; };
 		AAB7E0132CC4B8C6000B8B6E /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB7E0102CC4B8C6000B8B6E /* container.cpp */; };
@@ -1036,8 +1032,6 @@
 		AA7C85F22B439AC000B5FB3A /* ResamplingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResamplingContainer.h; sourceTree = "<group>"; };
 		AA7C85F42B439AC000B5FB3A /* _LanczosResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _LanczosResampler.h; sourceTree = "<group>"; };
 		AA7C85F62B439AC000B5FB3A /* wdltypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wdltypes.h; sourceTree = "<group>"; };
-		AA7C85F72B439AC000B5FB3A /* ptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrlist.h; sourceTree = "<group>"; };
-		AA7C85F82B439AC000B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
 		AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_dsp.h; sourceTree = "<group>"; };
 		AAB7E0102CC4B8C6000B8B6E /* container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = container.cpp; sourceTree = "<group>"; };
 		B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/slimmable.cpp; sourceTree = "<group>"; };
@@ -1986,8 +1980,6 @@
 			isa = PBXGroup;
 			children = (
 				AA7C85F62B439AC000B5FB3A /* wdltypes.h */,
-				AA7C85F72B439AC000B5FB3A /* ptrlist.h */,
-				AA7C85F82B439AC000B5FB3A /* heapbuf.h */,
 			);
 			path = WDL;
 			sourceTree = "<group>";
@@ -2003,7 +1995,6 @@
 				4F2FB19B2A0047430027AB66 /* lstm.h in Headers */,
 				4F2FB1B02A0047430027AB66 /* dsp.h in Headers */,
 				4F2FB19A2A0047430027AB66 /* convnet.h in Headers */,
-				AA7C86022B439AC000B5FB3A /* heapbuf.h in Headers */,
 				AA7C85FE2B439AC000B5FB3A /* wdltypes.h in Headers */,
 				4F4856862773C3B5005BCF8E /* IPlugAUAudioUnit.h in Headers */,
 				4F2FB15F2A0047420027AB66 /* NoiseGate.h in Headers */,
@@ -2017,7 +2008,6 @@
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
 				AAB7BBB72CC4B8C6000B8B6E /* get_dsp.h in Headers */,
 				4F2FB1902A0047430027AB66 /* version.h in Headers */,
-				AA7C86002B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F4856852773C3B5005BCF8E /* IPlugAUViewController.h in Headers */,
 				AA7C85FC2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4F2FB17C2A0047430027AB66 /* ImpulseResponse.h in Headers */,
@@ -2046,7 +2036,6 @@
 				AA7C85FB2B439AC000B5FB3A /* _LanczosResampler.h in Headers */,
 				4FC3EFF22086CE5700BD11FA /* hostclasses.h in Headers */,
 				4F03A5D420A4621100EBDFFB /* IGraphicsUtilities.h in Headers */,
-				AA7C85FF2B439AC000B5FB3A /* ptrlist.h in Headers */,
 				4F03A5AA20A4621100EBDFFB /* IGraphicsLiveEdit.h in Headers */,
 				4F6369EA20A466470022C370 /* IControl.h in Headers */,
 				4F03A5D520A4621100EBDFFB /* IGraphicsConstants.h in Headers */,
@@ -2059,7 +2048,6 @@
 				4F8C10E720BA2796006320CD /* IGraphicsEditorDelegate.h in Headers */,
 				AA7C85F92B439AC000B5FB3A /* ResamplingContainer.h in Headers */,
 				AA341E272B9E5A530069C260 /* ToneStack.h in Headers */,
-				AA7C86012B439AC000B5FB3A /* heapbuf.h in Headers */,
 				4FC3EFFA2086CE5700BD11FA /* parameterchanges.h in Headers */,
 				4F03A5B320A4621100EBDFFB /* IGraphics_include_in_plug_src.h in Headers */,
 				4FC3EFFC2086CE5700BD11FA /* plugprovider.h in Headers */,
@@ -2095,7 +2083,6 @@
 				4FBCC1A21FD59C7300EFE550 /* Run Script - prepare_resources-mac.py */,
 				4F3AE1A212C0E5E2001FD7A4 /* Sources */,
 				4F25BECE12C61F47005D51F7 /* Resources */,
-				4F3AE1DA12C0E5E2001FD7A4 /* Rez */,
 				4F744D4C14005ADA002FAD90 /* Run Script - clear_audiounit_caches.sh */,
 				4FBDD26520A319580054B111 /* Frameworks */,
 			);
@@ -2344,6 +2331,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FD52133202A5B9B00A4D22A /* IPlugAU.r in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2402,17 +2390,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXRezBuildPhase section */
-		4F3AE1DA12C0E5E2001FD7A4 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4FD52133202A5B9B00A4D22A /* IPlugAU.r in Rez */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		4F02E1D723144CDA00731A7D /* Run Script - Force register AUv3 */ = {

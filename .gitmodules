@@ -1,6 +1,6 @@
 [submodule "iPlug2"]
 	path = iPlug2
-	url = https://github.com/sdatkinson/iPlug2.git
+	url = https://github.com/olilarkin/iPlug2.git
 [submodule "eigen"]
 	path = eigen
 	url = https://gitlab.com/libeigen/eigen.git

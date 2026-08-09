@@ -157,7 +157,8 @@ xcodebuild -project ./projects/$PLUGIN_NAME-macOS.xcodeproj -xcconfig ./config/$
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then
   echo "ERROR: build failed, aborting"
   echo ""
-  # cat build-mac.log
+  echo "---- errors from build-mac.log ----"
+  grep -B 2 -A 8 -E "error:|fatal error" build-mac.log || tail -100 build-mac.log
   exit 1
 else
   rm build-mac.log
