@@ -335,13 +335,16 @@
     <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\NeuralAmpModelerControls.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\activations.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\compiler.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\conv1d.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\convnet.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\dsp.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\film.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\gating_activations.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\linear.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\lstm.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\nam_file.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\registry.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\util.h" />
@@ -410,7 +413,9 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\get_dsp.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\linear.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\lstm.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\nam_file.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\util.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\container.cpp" />

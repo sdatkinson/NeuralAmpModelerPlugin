@@ -53,6 +53,11 @@
 		4FBDC96429FFF143004FF203 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94B29FFF143004FF203 /* model.cpp */; };
 		4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97E29FFF143004FF203 /* slimmable.cpp */; };
 		4FBDC98129FFF143004FF203 /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97F29FFF143004FF203 /* container.cpp */; };
+		C05510000000000000000101 /* compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = C05510000000000000000001 /* compiler.h */; };
+		C05510000000000000000102 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05510000000000000000002 /* linear.cpp */; };
+		C05510000000000000000103 /* linear.h in Headers */ = {isa = PBXBuildFile; fileRef = C05510000000000000000003 /* linear.h */; };
+		C05510000000000000000104 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05510000000000000000004 /* nam_file.cpp */; };
+		C05510000000000000000105 /* nam_file.h in Headers */ = {isa = PBXBuildFile; fileRef = C05510000000000000000005 /* nam_file.h */; };
 		4FBDC96529FFF143004FF203 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94C29FFF143004FF203 /* get_dsp.cpp */; };
 		4FBDC97729FFF143004FF203 /* conv1d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97029FFF143004FF203 /* conv1d.cpp */; };
 		4FBDC97829FFF143004FF203 /* conv1d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC97129FFF143004FF203 /* conv1d.h */; };
@@ -305,6 +310,11 @@
 		4FBDC94B29FFF143004FF203 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/model.cpp; sourceTree = "<group>"; };
 		4FBDC97E29FFF143004FF203 /* slimmable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/slimmable.cpp; sourceTree = "<group>"; };
 		4FBDC97F29FFF143004FF203 /* container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = container.cpp; sourceTree = "<group>"; };
+		C05510000000000000000001 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
+		C05510000000000000000002 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linear.cpp; sourceTree = "<group>"; };
+		C05510000000000000000003 /* linear.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linear.h; sourceTree = "<group>"; };
+		C05510000000000000000004 /* nam_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nam_file.cpp; sourceTree = "<group>"; };
+		C05510000000000000000005 /* nam_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nam_file.h; sourceTree = "<group>"; };
 		4FBDC94C29FFF143004FF203 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4FC46E58231440C8000045E7 /* web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = web; path = ../resources/web; sourceTree = "<group>"; };
 		4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NeuralAmpModelerAU.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -691,6 +701,11 @@
 				4FBDC94B29FFF143004FF203 /* model.cpp */,
 				4FBDC97E29FFF143004FF203 /* slimmable.cpp */,
 				4FBDC97F29FFF143004FF203 /* container.cpp */,
+				C05510000000000000000001 /* compiler.h */,
+				C05510000000000000000002 /* linear.cpp */,
+				C05510000000000000000003 /* linear.h */,
+				C05510000000000000000004 /* nam_file.cpp */,
+				C05510000000000000000005 /* nam_file.h */,
 				4FBDC94529FFF143004FF203 /* model.h */,
 				4FBDC97029FFF143004FF203 /* conv1d.cpp */,
 				4FBDC97129FFF143004FF203 /* conv1d.h */,
@@ -879,6 +894,9 @@
 				4FBDC95029FFF143004FF203 /* NoiseGate.h in Headers */,
 				4FBDC96129FFF143004FF203 /* dsp.h in Headers */,
 				AAB7BBB92CC4B8D6000B8B6E /* get_dsp.h in Headers */,
+				C05510000000000000000101 /* compiler.h in Headers */,
+				C05510000000000000000103 /* linear.h in Headers */,
+				C05510000000000000000105 /* nam_file.h in Headers */,
 				4FBDC96029FFF143004FF203 /* util.h in Headers */,
 				4FBDC94F29FFF143004FF203 /* wav.h in Headers */,
 			);
@@ -1093,6 +1111,8 @@
 				4FBDC96429FFF143004FF203 /* model.cpp in Sources */,
 				4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */,
 				4FBDC98129FFF143004FF203 /* container.cpp in Sources */,
+				C05510000000000000000102 /* linear.cpp in Sources */,
+				C05510000000000000000104 /* nam_file.cpp in Sources */,
 				4FBDC97729FFF143004FF203 /* conv1d.cpp in Sources */,
 				4FBDC97929FFF143004FF203 /* ring_buffer.cpp in Sources */,
 				4FC6984C293BA6010076EC33 /* IGraphicsCoreText.mm in Sources */,

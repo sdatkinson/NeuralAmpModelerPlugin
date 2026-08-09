@@ -461,6 +461,25 @@
 		AAB7E0172CC4B8C6000B8B6E /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB7E0102CC4B8C6000B8B6E /* container.cpp */; };
 		AAB7E0182CC4B8C6000B8B6E /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB7E0102CC4B8C6000B8B6E /* container.cpp */; };
 		AAB7E0192CC4B8C6000B8B6E /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAB7E0102CC4B8C6000B8B6E /* container.cpp */; };
+		C05500000000000000000101 /* compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = C05500000000000000000001 /* compiler.h */; };
+		C05500000000000000000102 /* linear.h in Headers */ = {isa = PBXBuildFile; fileRef = C05500000000000000000003 /* linear.h */; };
+		C05500000000000000000103 /* nam_file.h in Headers */ = {isa = PBXBuildFile; fileRef = C05500000000000000000005 /* nam_file.h */; };
+		C05500000000000000000201 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000202 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000203 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000204 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000205 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000206 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000207 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000208 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000002 /* linear.cpp */; };
+		C05500000000000000000301 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000302 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000303 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000304 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000305 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000306 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000307 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
+		C05500000000000000000308 /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05500000000000000000004 /* nam_file.cpp */; };
 		B1D2F7012D0000020027AB66 /* wavenet/slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */; };
 		B1D2F7032D0000020027AB66 /* wavenet/slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */; };
 		B1D2F7042D0000020027AB66 /* wavenet/slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */; };
@@ -1040,6 +1059,11 @@
 		AA7C85F82B439AC000B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
 		AAB7BBB62CC4B8C6000B8B6E /* get_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_dsp.h; sourceTree = "<group>"; };
 		AAB7E0102CC4B8C6000B8B6E /* container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = container.cpp; sourceTree = "<group>"; };
+		C05500000000000000000001 /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
+		C05500000000000000000002 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linear.cpp; sourceTree = "<group>"; };
+		C05500000000000000000003 /* linear.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linear.h; sourceTree = "<group>"; };
+		C05500000000000000000004 /* nam_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nam_file.cpp; sourceTree = "<group>"; };
+		C05500000000000000000005 /* nam_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nam_file.h; sourceTree = "<group>"; };
 		B1D2F7002D0000010027AB66 /* wavenet/slimmable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/slimmable.cpp; sourceTree = "<group>"; };
 		B8E22A0A220268C4007CBF4C /* IPlugVST3_ProcessorBase.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = IPlugVST3_ProcessorBase.cpp; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		B8E22A0B220268C4007CBF4C /* IPlugVST3_ProcessorBase.h */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = IPlugVST3_ProcessorBase.h; path = ../../iPlug2/IPlug/VST3/IPlugVST3_ProcessorBase.h; sourceTree = "<group>"; tabWidth = 2; };
@@ -1294,6 +1318,11 @@
 				4F2FB1512A0047420027AB66 /* activations.cpp */,
 				4F2FB1502A0047420027AB66 /* activations.h */,
 				AAB7E0102CC4B8C6000B8B6E /* container.cpp */,
+				C05500000000000000000001 /* compiler.h */,
+				C05500000000000000000002 /* linear.cpp */,
+				C05500000000000000000003 /* linear.h */,
+				C05500000000000000000004 /* nam_file.cpp */,
+				C05500000000000000000005 /* nam_file.h */,
 				4F2FB14B2A0047420027AB66 /* convnet.cpp */,
 				4F2FB1492A0047420027AB66 /* convnet.h */,
 				4F2FB1562A0047420027AB67 /* conv1d.cpp */,
@@ -2012,6 +2041,9 @@
 				4F2FB1E22A0047430027AB68 /* film.h in Headers */,
 				4F2FB1E32A0047430027AB68 /* gating_activations.h in Headers */,
 				4F2FB1E42A0047430027AB68 /* registry.h in Headers */,
+				C05500000000000000000101 /* compiler.h in Headers */,
+				C05500000000000000000102 /* linear.h in Headers */,
+				C05500000000000000000103 /* nam_file.h in Headers */,
 				4F78BE1222E73DD900AD537E /* NeuralAmpModelerAU.h in Headers */,
 				4F2FB1542A0047420027AB66 /* Resample.h in Headers */,
 				4F2FB15E2A0047420027AB66 /* wav.h in Headers */,
@@ -2574,6 +2606,8 @@
 				B1D2F7072D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE112D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0122CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000201 /* linear.cpp in Sources */,
+				C05500000000000000000301 /* nam_file.cpp in Sources */,
 				4F2FB1CF2A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1D92A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1662A0047430027AB66 /* dsp.cpp in Sources */,
@@ -2614,6 +2648,8 @@
 				B1D2F7042D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE122D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0132CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000202 /* linear.cpp in Sources */,
+				C05500000000000000000302 /* nam_file.cpp in Sources */,
 				4F2FB1D02A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DA2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F8C10E320BA2796006320CD /* IGraphicsEditorDelegate.cpp in Sources */,
@@ -2657,6 +2693,8 @@
 				B1D2F7092D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE132D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0142CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000203 /* linear.cpp in Sources */,
+				C05500000000000000000303 /* nam_file.cpp in Sources */,
 				4F2FB1D12A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DB2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F3EE1D0231438D000004786 /* IGraphicsMac_view.mm in Sources */,
@@ -2726,6 +2764,8 @@
 				B1D2F7082D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE142D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0152CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000204 /* linear.cpp in Sources */,
+				C05500000000000000000304 /* nam_file.cpp in Sources */,
 				4F2FB1D22A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DC2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1A32A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2763,6 +2803,8 @@
 				B1D2F7032D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE152D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0162CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000205 /* linear.cpp in Sources */,
+				C05500000000000000000305 /* nam_file.cpp in Sources */,
 				4F2FB1D32A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DD2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F815919205D50EB00393585 /* memorystream.cpp in Sources */,
@@ -2846,6 +2888,8 @@
 				B1D2F7052D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE162D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0172CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000206 /* linear.cpp in Sources */,
+				C05500000000000000000306 /* nam_file.cpp in Sources */,
 				4F2FB1D42A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DE2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4F2FB1A02A0047430027AB66 /* convnet.cpp in Sources */,
@@ -2905,6 +2949,8 @@
 				B1D2F7012D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE172D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0182CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000207 /* linear.cpp in Sources */,
+				C05500000000000000000307 /* nam_file.cpp in Sources */,
 				4F2FB1D52A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1DF2A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4FB1F59120E4B011004157C8 /* IGraphicsMac_view.mm in Sources */,
@@ -2983,6 +3029,8 @@
 				B1D2F7062D0000020027AB66 /* wavenet/slimmable.cpp in Sources */,
 				C2A2FAE182D0000120027AB66 /* wavenet/a2_fast.cpp in Sources */,
 				AAB7E0192CC4B8C6000B8B6E /* container.cpp in Sources */,
+				C05500000000000000000208 /* linear.cpp in Sources */,
+				C05500000000000000000308 /* nam_file.cpp in Sources */,
 				4F2FB1D62A0047430027AB66 /* conv1d.cpp in Sources */,
 				4F2FB1E02A0047430027AB66 /* ring_buffer.cpp in Sources */,
 				4FFBB91F20863B0E00DDD0E7 /* vstparameters.cpp in Sources */,
