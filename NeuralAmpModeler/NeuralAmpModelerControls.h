@@ -25,6 +25,12 @@ enum class NAMBrowserState
   Loaded // when file loaded, show "Clear" button
 };
 
+enum class NAMFileLoadSource
+{
+  ExistingBrowserSelection,
+  FilePickerSelection
+};
+
 // Where the corner button on the plugin (settings, close settings) goes
 // :param rect: Rect for the whole plugin's UI
 IRECT CornerButtonArea(const IRECT& rect)
@@ -297,7 +303,7 @@ public:
       if (pItem)
       {
         mSelectedItemIndex = mItems.Find(pItem);
-        LoadFileAtCurrentIndex();
+        LoadFileAtCurrentIndex(NAMFileLoadSource::ExistingBrowserSelection);
       }
     }
   }
@@ -313,7 +319,7 @@ public:
       if (mSelectedItemIndex < 0)
         mSelectedItemIndex = nItems - 1;
 
-      LoadFileAtCurrentIndex();
+      LoadFileAtCurrentIndex(NAMFileLoadSource::ExistingBrowserSelection);
     };
 
     auto nextFileFunc = [&](IControl* pCaller) {
@@ -325,7 +331,7 @@ public:
       if (mSelectedItemIndex >= nItems)
         mSelectedItemIndex = 0;
 
-      LoadFileAtCurrentIndex();
+      LoadFileAtCurrentIndex(NAMFileLoadSource::ExistingBrowserSelection);
     };
 
     auto loadFileFunc = [&](IControl* pCaller) {
@@ -340,7 +346,7 @@ public:
           AddPath(path.Get(), "");
           SetupMenu();
           SelectFirstFile();
-          LoadFileAtCurrentIndex();
+          LoadFileAtCurrentIndex(NAMFileLoadSource::ExistingBrowserSelection);
         }
       });
 #else
@@ -352,8 +358,7 @@ public:
             AddPath(path.Get(), "");
             SetupMenu();
             SetSelectedFile(fileName.Get());
-            if (!LoadFileAtCurrentIndex())
-              ReportDirectoryScanFailure(fileName, path);
+            LoadFileAtCurrentIndex(NAMFileLoadSource::FilePickerSelection, &fileName, &path);
           }
         });
 #endif
@@ -413,18 +418,26 @@ public:
     SetBrowserState(NAMBrowserState::Empty);
   }
 
-  bool LoadFileAtCurrentIndex()
+  void LoadFileAtCurrentIndex(NAMFileLoadSource source, const WDL_String* filePickerFileName = nullptr,
+                              const WDL_String* filePickerPath = nullptr)
   {
-    if (mSelectedItemIndex > -1 && mSelectedItemIndex < NItems())
+    if (source == NAMFileLoadSource::FilePickerSelection && mSelectedItemIndex == -1 &&
+        filePickerFileName != nullptr && filePickerPath != nullptr)
     {
-      WDL_String fileName, path;
-      GetSelectedFile(fileName);
-      mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
-      mCompletionHandlerFunc(fileName, path);
-      return true;
+      ReportDirectoryScanFailure(*filePickerFileName, *filePickerPath);
+      return;
     }
 
-    return false;
+    if (mSelectedItemIndex < 0 || mSelectedItemIndex >= NItems())
+    {
+      ReportUnexpectedLoadFailure(source, filePickerFileName);
+      return;
+    }
+
+    WDL_String fileName, path;
+    GetSelectedFile(fileName);
+    mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+    mCompletionHandlerFunc(fileName, path);
   }
 
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
@@ -472,7 +485,24 @@ private:
     mFileNameControl->SetLabelStr(label.c_str());
     mFileNameControl->SetTooltip(message.str().c_str());
     SetBrowserState(NAMBrowserState::Empty);
-    std::fprintf(stderr, "NAM: %s\n", message.str().c_str());
+    std::fprintf(stderr, "NAM: File picker selection produced index -1. %s\n", message.str().c_str());
+  }
+
+  void ReportUnexpectedLoadFailure(NAMFileLoadSource source, const WDL_String* filePickerFileName)
+  {
+    if (filePickerFileName != nullptr)
+      mFileNameControl->SetLabelAndTooltipEllipsizing(*filePickerFileName);
+
+    const std::string label = std::string("(FAILED) ") + mFileNameControl->GetLabelStr();
+    const std::string message = "The selected file could not be loaded because the file browser encountered an "
+                                "unexpected selection state. Please select the file again.";
+
+    mFileNameControl->SetLabelStr(label.c_str());
+    mFileNameControl->SetTooltip(message.c_str());
+    SetBrowserState(NAMBrowserState::Empty);
+    std::fprintf(stderr, "NAM: %s Source: %s; selected index: %d; item count: %d.\n", message.c_str(),
+                 source == NAMFileLoadSource::FilePickerSelection ? "file picker" : "existing browser selection",
+                 mSelectedItemIndex, NItems());
   }
 
   void SelectFirstFile() { mSelectedItemIndex = mFiles.GetSize() ? 0 : -1; }
