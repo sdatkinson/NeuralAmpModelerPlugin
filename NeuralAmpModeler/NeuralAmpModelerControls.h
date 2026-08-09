@@ -421,8 +421,8 @@ public:
   void LoadFileAtCurrentIndex(NAMFileLoadSource source, const WDL_String* filePickerFileName = nullptr,
                               const WDL_String* filePickerPath = nullptr)
   {
-    if (source == NAMFileLoadSource::FilePickerSelection && mSelectedItemIndex == -1 &&
-        filePickerFileName != nullptr && filePickerPath != nullptr)
+    if (source == NAMFileLoadSource::FilePickerSelection && mSelectedItemIndex == -1 && filePickerFileName != nullptr
+        && filePickerPath != nullptr)
     {
       ReportDirectoryScanFailure(*filePickerFileName, *filePickerPath);
       return;
@@ -494,8 +494,9 @@ private:
       mFileNameControl->SetLabelAndTooltipEllipsizing(*filePickerFileName);
 
     const std::string label = std::string("(FAILED) ") + mFileNameControl->GetLabelStr();
-    const std::string message = "The selected file could not be loaded because the file browser encountered an "
-                                "unexpected selection state. Please select the file again.";
+    const std::string message =
+      "The selected file could not be loaded because the file browser encountered an "
+      "unexpected selection state. Please select the file again.";
 
     mFileNameControl->SetLabelStr(label.c_str());
     mFileNameControl->SetTooltip(message.c_str());
