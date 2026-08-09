@@ -259,7 +259,9 @@ public:
       bounds,
       [url](IControl* pCaller) {
         WDL_String fullURL(url);
-        pCaller->GetUI()->OpenURL(fullURL.Get());
+        auto* ui = pCaller->GetUI();
+        ui->ReleaseMouseCapture();
+        ui->OpenURL(fullURL.Get());
       },
       globeSVG)
   {
