@@ -352,7 +352,8 @@ public:
             AddPath(path.Get(), "");
             SetupMenu();
             SetSelectedFile(fileName.Get());
-            LoadFileAtCurrentIndex();
+            if (!LoadFileAtCurrentIndex())
+              ReportDirectoryScanFailure(fileName, path);
           }
         });
 #endif
@@ -412,7 +413,7 @@ public:
     SetBrowserState(NAMBrowserState::Empty);
   }
 
-  void LoadFileAtCurrentIndex()
+  bool LoadFileAtCurrentIndex()
   {
     if (mSelectedItemIndex > -1 && mSelectedItemIndex < NItems())
     {
@@ -420,7 +421,10 @@ public:
       GetSelectedFile(fileName);
       mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
       mCompletionHandlerFunc(fileName, path);
+      return true;
     }
+
+    return false;
   }
 
   void OnMsgFromDelegate(int msgTag, int dataSize, const void* pData) override
@@ -456,6 +460,21 @@ public:
   }
 
 private:
+  void ReportDirectoryScanFailure(const WDL_String& fileName, const WDL_String& path)
+  {
+    mFileNameControl->SetLabelAndTooltipEllipsizing(fileName);
+    const std::string label = std::string("(FAILED) ") + mFileNameControl->GetLabelStr();
+
+    std::stringstream message;
+    message << "The selected file '" << fileName.Get() << "' was not found after scanning directory '" << path.Get()
+            << "'. The host may not have granted permission to enumerate that directory.";
+
+    mFileNameControl->SetLabelStr(label.c_str());
+    mFileNameControl->SetTooltip(message.str().c_str());
+    SetBrowserState(NAMBrowserState::Empty);
+    std::fprintf(stderr, "NAM: %s\n", message.str().c_str());
+  }
+
   void SelectFirstFile() { mSelectedItemIndex = mFiles.GetSize() ? 0 : -1; }
 
   void GetSelectedFileDirectory(WDL_String& path)
