@@ -409,14 +409,24 @@ void NeuralAmpModeler::OnReset()
   SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
-  // If there is a model or IR loaded, they need to be checked for resampling.
-  _ResetModelAndIR(sampleRate, GetBlockSize());
+  // Only reset the model when the format actually changed. iPlug2 also calls OnReset() in
+  // response to kAudioUnitProperty_BypassEffect (the AU bypass / power-button toggle), which
+  // would trigger prewarm() on the audio thread and cause an audible dropout. Sample rate and
+  // block size are unchanged on a bypass toggle, so skipping _ResetModelAndIR() is safe there.
+  if (sampleRate != mLastResetSampleRate || maxBlockSize != mLastResetBlockSize)
+  {
+    _ResetModelAndIR(sampleRate, maxBlockSize);
+    mLastResetSampleRate = sampleRate;
+    mLastResetBlockSize = maxBlockSize;
+  }
   mToneStack->Reset(sampleRate, maxBlockSize);
   _UpdateLatency();
 }
 
 void NeuralAmpModeler::OnIdle()
 {
+  delete mModelPendingDeletion.exchange(nullptr, std::memory_order_acquire);
+
   mInputSender.TransmitData(*this);
   mOutputSender.TransmitData(*this);
 
@@ -597,7 +607,7 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   // Remove marked modules
   if (mShouldRemoveModel)
   {
-    mModel = nullptr;
+    mModelPendingDeletion.store(mModel.release(), std::memory_order_release);
     mNAMPath.Set("");
     mShouldRemoveModel = false;
     mModelCleared = true;
@@ -614,8 +624,9 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   // Move things from staged to live
   if (mStagedModel != nullptr)
   {
+    ResamplingNAM* old = mModel.release();
     mModel = std::move(mStagedModel);
-    mStagedModel = nullptr;
+    mModelPendingDeletion.store(old, std::memory_order_release);
     mNewModelLoadedInDSP = true;
     _UpdateLatency();
     _SetInputGain();
