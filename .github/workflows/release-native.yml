@@ -2,6 +2,11 @@ name: Release Native
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Manual Release Tag (e.g., v1.0.0) - Leave blank if running on a pushed tag'
+        required: false
+        default: ''
   push:
     tags:
       - "v*"
@@ -9,33 +14,13 @@ on:
 env:
   PROJECT_NAME: NeuralAmpModeler
 
+permissions:
+  contents: write
+
 jobs:
-  create_release:
-    name: Create release
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{steps.create_release.outputs.upload_url}}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          draft: true
-          tag_name: ${{github.ref}}
-          release_name: Release ${{github.ref}}
-          body_path: ${{env.PROJECT_NAME}}/installer/changelog.txt
-
   build:
     name: Build
-    needs: create_release
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
@@ -47,103 +32,86 @@ jobs:
 
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         submodules: recursive
+        
+    - name: Cache iPlug2 Dependencies
+      id: cache-deps
+      uses: actions/cache@d4323d4df104b026a6e56904bb6582533a6564b1 # v4.2.2
+      with:
+        path: |
+          iPlug2/Dependencies/IPlug
+          iPlug2/Dependencies/Build
+        key: ${{ runner.os }}-iplug2-deps-${{ hashFiles('iPlug2/Dependencies/download-prebuilt-libs.sh') }}
 
     - name: Get VST3 SDK
+      if: steps.cache-deps.outputs.cache-hit != 'true'
       run: |
         cd iPlug2/Dependencies/IPlug
         ./download-iplug-sdks.sh
       shell: bash
 
     - name: Get Prebuilt Libs
+      if: steps.cache-deps.outputs.cache-hit != 'true'
       run: |
         cd iPlug2/Dependencies
         ./download-prebuilt-libs.sh
       shell: bash
 
-    - name: Get Archive Name macOS
-      id: mac_archivename_step
-      if: matrix.os == 'macOS-latest'
-      run: |
-        ARCHIVE_NAME=`python3 iPlug2/Scripts/get_archive_name.py ${{env.PROJECT_NAME}} mac full`
-        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Build macOS
-      if: matrix.os == 'macOS-latest'
+      if: matrix.os == 'macos-latest'
       run: |
-        cd ${{env.PROJECT_NAME}}/scripts
+        cd ${{ env.PROJECT_NAME }}/scripts
         ./makedist-mac.sh full installer
       shell: bash
 
-    - name: Upload mac DSYMs release asset
-      if: matrix.os == 'macOS-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        upload_url: ${{needs.create_release.outputs.upload_url}}
-        asset_path: ${{env.PROJECT_NAME}}/${{matrix.build_dir}}/out/${{steps.mac_archivename_step.outputs.archive_name}}-dSYMs.zip
-        asset_name: ${{steps.mac_archivename_step.outputs.archive_name}}-dSYMs.zip
-        asset_content_type: application/zip
-
-    - name: Upload mac dmg release asset
-      if: matrix.os == 'macOS-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        upload_url: ${{needs.create_release.outputs.upload_url}}
-        asset_path: ${{env.PROJECT_NAME}}/${{matrix.build_dir}}/out/${{steps.mac_archivename_step.outputs.archive_name}}.dmg
-        asset_name: ${{steps.mac_archivename_step.outputs.archive_name}}.dmg
-        asset_content_type: application/octet-stream
-
     - name: Add msbuild to PATH (Windows)
       if: matrix.os == 'windows-latest'
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Setup Python3
-      if: matrix.os == 'windows-latest'
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-        architecture: 'x64'
-
-    - name: Get Archive Name Windows
-      id: win_archivename_step
-      if: matrix.os == 'windows-latest'
-      run: |
-        ARCHIVE_NAME=`python.exe iPlug2/Scripts/get_archive_name.py ${{env.PROJECT_NAME}} win full`
-        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
-      shell: bash
+      uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
 
     - name: Build Windows
       if: matrix.os == 'windows-latest'
       run: |
-        cd ${{env.PROJECT_NAME}}\scripts
+        cd ${{ env.PROJECT_NAME }}\scripts
         .\makedist-win.bat full installer
-      shell: pwsh
+      shell: cmd # Changed to cmd as .bat scripts run more reliably here than in pwsh
 
-    - name: Upload Windows pdb release asset
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    # Replaced 4 complex steps with a single, wildcard-based upload step per OS matrix
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        upload_url: ${{needs.create_release.outputs.upload_url}}
-        asset_path: ${{env.PROJECT_NAME}}/${{matrix.build_dir}}/out/${{steps.win_archivename_step.outputs.archive_name}}-pdbs.zip
-        asset_name: ${{steps.win_archivename_step.outputs.archive_name}}-pdbs.zip
-        asset_content_type: application/zip
+        name: ${{ matrix.os }}-artifacts
+        path: |
+          ${{ env.PROJECT_NAME }}/${{ matrix.build_dir }}/out/*.dmg
+          ${{ env.PROJECT_NAME }}/${{ matrix.build_dir }}/out/*.zip
 
-    - name: Upload Windows zip release asset
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        upload_url: ${{needs.create_release.outputs.upload_url}}
-        asset_path: ${{env.PROJECT_NAME}}/${{matrix.build_dir}}/out/${{steps.win_archivename_step.outputs.archive_name}}.zip
-        asset_name: ${{steps.win_archivename_step.outputs.archive_name}}.zip
-        asset_content_type: application/zip
+  publish:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: artifacts
+
+      # Streamlined flattening to handle the grouped matrix paths
+      - name: Flatten artifact directories
+        run: |
+          mkdir -p release-assets
+          find artifacts/ -type f \( -name "*.dmg" -o -name "*.zip" \) -exec mv {} release-assets/ \;
+
+      - name: Create release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+        with:
+          draft: true
+          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+          release_name: Release ${{ github.event.inputs.tag_name || github.ref_name }}
+          body_path: ${{ env.PROJECT_NAME }}/installer/changelog.txt
+          files: release-assets/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
