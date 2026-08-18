@@ -87,7 +87,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kOutputLevel)->InitGain("Output", 0.0, -40.0, 40.0, 0.1);
   GetParam(kNoiseGateThreshold)->InitGain("Threshold", -80.0, -100.0, 0.0, 0.1);
   GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
-  GetParam(kEQActive)->InitBool("ToneStack", true);
+  GetParam(kEQMode)->InitEnum("EQ", kEQModePost, {"Pre", "Off", "Post"});
   GetParam(kOutputMode)->InitEnum("OutputMode", 1, {"Raw", "Normalized", "Calibrated"}); // TODO DRY w/ control
   GetParam(kIRToggle)->InitBool("IRToggle", true);
   GetParam(kCalibrateInput)->InitBool(kCalibrateInputParamName.c_str(), kDefaultCalibrateInput);
@@ -266,7 +266,13 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       kCtrlTagIRFileBrowser);
     pGraphics->AttachControl(
       new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
-    pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
+    // Buttons-only switch (label drawn separately so it aligns with the Noise Gate label)
+    const auto eqButtonsArea = eqToggleArea.GetReducedFromTop(6.0f).GetReducedFromBottom(24.0f);
+    pGraphics->AttachControl(
+      new IVTabSwitchControl(eqButtonsArea, kEQMode, {"Pre", "Off", "Post"}, "",
+                             radioButtonStyle.WithShowLabel(false).WithShowValue(false).WithDrawFrame(false),
+                             EVShape::Rectangle));
+    pGraphics->AttachControl(new IVLabelControl(eqToggleArea, "EQ", style.WithDrawFrame(false)));
 
     // The knobs
     pGraphics->AttachControl(new NAMKnobControl(inputKnobArea, kInputLevel, "", style, knobBackgroundBitmap));
@@ -337,7 +343,9 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   _ProcessInput(inputs, numFrames, numChannelsExternalIn, numChannelsInternal);
   _ApplyDSPStaging();
   const bool noiseGateActive = GetParam(kNoiseGateActive)->Value();
-  const bool toneStackActive = GetParam(kEQActive)->Value();
+  const int eqMode = GetParam(kEQMode)->Int();
+  const bool toneStackUsable = eqMode != kEQModeOff && mToneStack != nullptr;
+  const bool eqPre = eqMode == kEQModePre;
 
   // Noise gate trigger
   sample** triggerOutput = mInputPointers;
@@ -355,19 +363,23 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
     triggerOutput = mNoiseGateTrigger.Process(mInputPointers, numChannelsInternal, numFrames);
   }
 
+  // EQ before the model when in pre mode (gate detection stays on the raw input)
+  sample** modelInput =
+    (toneStackUsable && eqPre) ? mToneStack->Process(triggerOutput, numChannelsInternal, nFrames) : triggerOutput;
+
   if (mModel != nullptr)
   {
-    mModel->process(triggerOutput, mOutputPointers, nFrames);
+    mModel->process(modelInput, mOutputPointers, nFrames);
   }
   else
   {
-    _FallbackDSP(triggerOutput, mOutputPointers, numChannelsInternal, numFrames);
+    _FallbackDSP(modelInput, mOutputPointers, numChannelsInternal, numFrames);
   }
   // Apply the noise gate after the NAM
   sample** gateGainOutput =
     noiseGateActive ? mNoiseGateGain.Process(mOutputPointers, numChannelsInternal, numFrames) : mOutputPointers;
 
-  sample** toneStackOutPointers = (toneStackActive && mToneStack != nullptr)
+  sample** toneStackOutPointers = (toneStackUsable && !eqPre)
                                     ? mToneStack->Process(gateGainOutput, numChannelsInternal, nFrames)
                                     : gateGainOutput;
 
@@ -535,9 +547,12 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
     switch (paramIdx)
     {
       case kNoiseGateActive: pGraphics->GetControlWithParamIdx(kNoiseGateThreshold)->SetDisabled(!active); break;
-      case kEQActive:
-        pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
+      case kEQMode:
+      {
+        const bool eqOn = GetParam(kEQMode)->Int() != kEQModeOff;
+        pGraphics->ForControlInGroup("EQ_KNOBS", [eqOn](IControl* pControl) { pControl->SetDisabled(!eqOn); });
         break;
+      }
       case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
       default: break;
     }
