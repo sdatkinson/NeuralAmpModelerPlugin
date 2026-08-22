@@ -354,6 +354,7 @@
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\linear.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\lstm.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\nam_file.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\sequential.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\registry.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\util.h" />
@@ -444,6 +445,7 @@
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\linear.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\lstm.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\nam_file.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\sequential.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\ring_buffer.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\util.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\container.cpp" />
