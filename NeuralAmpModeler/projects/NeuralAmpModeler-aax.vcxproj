@@ -433,6 +433,10 @@
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\container.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\model.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_fast.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_planar.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\linear.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\nam_file.cpp" />
+    <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\sequential.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\wavenet\slimmable.cpp" />
     <ClCompile Include="..\ToneStack.cpp" />
   </ItemGroup>
@@ -547,6 +551,17 @@
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\slimmable.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\model.h" />
     <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_fast.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\a2_planar.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\compiler.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\container.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\linear.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\model_config.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\nam_file.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\sequential.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\slimmable.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\detail.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\params.h" />
+    <ClInclude Include="..\..\NeuralAmpModelerCore\NAM\wavenet\slimmable.h" />
     <ClInclude Include="..\resources\resource.h" />
     <ClInclude Include="..\ToneStack.h" />
   </ItemGroup>

@@ -21,6 +21,14 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		024953A6C6D7BA9F89A34B2A /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87B879AEFBDBAD47DB17733A /* linear.cpp */; };
+		04C62F62FBFCD0324E5FE518 /* a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2AA9769F8EE64B0C97379B7 /* a2_fast.cpp */; };
+		0ACA7BB721A86CDEC3642D72 /* a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2AA9769F8EE64B0C97379B7 /* a2_fast.cpp */; };
+		1757DFDD1FEAD85D0469DF0B /* a2_fast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2AA9769F8EE64B0C97379B7 /* a2_fast.cpp */; };
+		21C2AB77C47E8AA9A6F8DC3B /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786BA4B0EB1830A5EB10A1A3 /* nam_file.cpp */; };
+		2751D54F7AA7DF68D68A3035 /* a2_planar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D88107BA1B1DA6F4C9DAFE1B /* a2_planar.cpp */; };
+		419E1EADA81E36B8975ABA42 /* sequential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCA0691D15710331824146C /* sequential.cpp */; };
+		4B9158480A1EFCFEA949430E /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87B879AEFBDBAD47DB17733A /* linear.cpp */; };
 		4F10E7C020B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F10E7BF20B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard */; };
 		4F1115CF2296DA95000CFCBF /* NeuralAmpModeler-iOS-MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F10E7BF20B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard */; };
 		4F3E0F6A20A0BCD900A9C2BE /* NeuralAmpModeler-iOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3E0F6720A0BC5B00A9C2BE /* NeuralAmpModeler-iOS.storyboard */; };
@@ -51,8 +59,6 @@
 		4FBDC96229FFF143004FF203 /* activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC94929FFF143004FF203 /* activations.h */; };
 		4FBDC96329FFF143004FF203 /* activations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94A29FFF143004FF203 /* activations.cpp */; };
 		4FBDC96429FFF143004FF203 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94B29FFF143004FF203 /* model.cpp */; };
-		4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97E29FFF143004FF203 /* slimmable.cpp */; };
-		4FBDC98129FFF143004FF203 /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97F29FFF143004FF203 /* container.cpp */; };
 		4FBDC96529FFF143004FF203 /* get_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC94C29FFF143004FF203 /* get_dsp.cpp */; };
 		4FBDC97729FFF143004FF203 /* conv1d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97029FFF143004FF203 /* conv1d.cpp */; };
 		4FBDC97829FFF143004FF203 /* conv1d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC97129FFF143004FF203 /* conv1d.h */; };
@@ -61,6 +67,8 @@
 		4FBDC97B29FFF143004FF203 /* film.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC97429FFF143004FF203 /* film.h */; };
 		4FBDC97C29FFF143004FF203 /* gating_activations.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC97529FFF143004FF203 /* gating_activations.h */; };
 		4FBDC97D29FFF143004FF203 /* registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FBDC97629FFF143004FF203 /* registry.h */; };
+		4FBDC98029FFF143004FF203 /* slimmable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97E29FFF143004FF203 /* slimmable.cpp */; };
+		4FBDC98129FFF143004FF203 /* container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDC97F29FFF143004FF203 /* container.cpp */; };
 		4FC69835293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
 		4FC69836293BA47F0076EC33 /* NeuralAmpModelerAU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4FC6983A293BA4F10076EC33 /* NeuralAmpModelerAU.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA61F7B22E89A5900A92C58 /* NeuralAmpModelerAU.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -92,7 +100,10 @@
 		4FDF6D7F2267CEBA0007B686 /* IPlugAUPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FDF6D7D2267CEBA0007B686 /* IPlugAUPlayer.mm */; };
 		4FE0DEE829A183B700DDBCC8 /* NeuralAmpModelerAU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */; };
 		4FE0DEF029A2E0F100DDBCC8 /* IPlugAUViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF105A20A0E57100D3092F /* IPlugAUViewController.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		61A2585768B23900CB105A08 /* a2_planar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D88107BA1B1DA6F4C9DAFE1B /* a2_planar.cpp */; };
+		759B5959B2FCBB0FD24979C5 /* sequential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCA0691D15710331824146C /* sequential.cpp */; };
 		91236D811B08F59300734C5E /* NeuralAmpModelerAppExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		94B3B7E98BF35C0F739C5E2A /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786BA4B0EB1830A5EB10A1A3 /* nam_file.cpp */; };
 		AA341E2B2B9E5A650069C260 /* ToneStack.h in Headers */ = {isa = PBXBuildFile; fileRef = AA341E292B9E5A650069C260 /* ToneStack.h */; };
 		AA341E2C2B9E5A650069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E2A2B9E5A650069C260 /* ToneStack.cpp */; };
 		AA341E2D2B9E5A650069C260 /* ToneStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA341E2A2B9E5A650069C260 /* ToneStack.cpp */; };
@@ -104,6 +115,10 @@
 		AA7C860F2B43A42F00B5FB3A /* heapbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = AA7C860A2B43A42E00B5FB3A /* heapbuf.h */; };
 		AA8CA7772A452EF500F5BEF0 /* resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8CA7752A452EF500F5BEF0 /* resample.cpp */; };
 		AAB7BBB92CC4B8D6000B8B6E /* get_dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = AAB7BBB82CC4B8D6000B8B6E /* get_dsp.h */; };
+		D102983EE265EF647DC54A63 /* sequential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFCA0691D15710331824146C /* sequential.cpp */; };
+		D1BA6D9CABF842650FDFEF9E /* nam_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786BA4B0EB1830A5EB10A1A3 /* nam_file.cpp */; };
+		D3F84C0B6FCA6934F0AD38E4 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87B879AEFBDBAD47DB17733A /* linear.cpp */; };
+		DB857E2D3DEE4604FA3E9FD3 /* a2_planar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D88107BA1B1DA6F4C9DAFE1B /* a2_planar.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +171,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		154E0CB1AF87B1D46F35BDEE /* compiler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
+		241E5854C6956A3DE1DBCBCF /* nam_file.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = nam_file.h; sourceTree = "<group>"; };
+		24FB0F94BC8621CBA54C3DC1 /* container.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = container.h; sourceTree = "<group>"; };
+		2C465F6DF5F513B876DA04EE /* sequential.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sequential.h; sourceTree = "<group>"; };
+		3435AADE94EE12E6BDFBCC74 /* detail.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = detail.h; path = wavenet/detail.h; sourceTree = "<group>"; };
+		4281482B1171EF932BAF757A /* params.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = params.h; path = wavenet/params.h; sourceTree = "<group>"; };
 		4F10E7BF20B17EDB00F5B09B /* NeuralAmpModeler-iOS-MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "NeuralAmpModeler-iOS-MainInterface.storyboard"; path = "../resources/NeuralAmpModeler-iOS-MainInterface.storyboard"; sourceTree = "<group>"; };
 		4F10E7C520B189DD00F5B09B /* NeuralAmpModeler-iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "NeuralAmpModeler-iOS.entitlements"; sourceTree = "<group>"; };
 		4F2020F620A1B2B500F22200 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../scripts; sourceTree = "<group>"; };
@@ -291,6 +312,12 @@
 		4FBDC94429FFF143004FF203 /* convnet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = convnet.cpp; sourceTree = "<group>"; };
 		4FBDC94529FFF143004FF203 /* model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavenet/model.h; sourceTree = "<group>"; };
 		4FBDC94629FFF143004FF203 /* lstm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lstm.cpp; sourceTree = "<group>"; };
+		4FBDC94729FFF143004FF203 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		4FBDC94829FFF143004FF203 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
+		4FBDC94929FFF143004FF203 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
+		4FBDC94A29FFF143004FF203 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = activations.cpp; sourceTree = "<group>"; };
+		4FBDC94B29FFF143004FF203 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/model.cpp; sourceTree = "<group>"; };
+		4FBDC94C29FFF143004FF203 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4FBDC97029FFF143004FF203 /* conv1d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = conv1d.cpp; sourceTree = "<group>"; };
 		4FBDC97129FFF143004FF203 /* conv1d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = conv1d.h; sourceTree = "<group>"; };
 		4FBDC97229FFF143004FF203 /* ring_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ring_buffer.cpp; sourceTree = "<group>"; };
@@ -298,14 +325,8 @@
 		4FBDC97429FFF143004FF203 /* film.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = film.h; sourceTree = "<group>"; };
 		4FBDC97529FFF143004FF203 /* gating_activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gating_activations.h; sourceTree = "<group>"; };
 		4FBDC97629FFF143004FF203 /* registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = registry.h; sourceTree = "<group>"; };
-		4FBDC94729FFF143004FF203 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		4FBDC94829FFF143004FF203 /* dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsp.h; sourceTree = "<group>"; };
-		4FBDC94929FFF143004FF203 /* activations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activations.h; sourceTree = "<group>"; };
-		4FBDC94A29FFF143004FF203 /* activations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = activations.cpp; sourceTree = "<group>"; };
-		4FBDC94B29FFF143004FF203 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/model.cpp; sourceTree = "<group>"; };
 		4FBDC97E29FFF143004FF203 /* slimmable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wavenet/slimmable.cpp; sourceTree = "<group>"; };
 		4FBDC97F29FFF143004FF203 /* container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = container.cpp; sourceTree = "<group>"; };
-		4FBDC94C29FFF143004FF203 /* get_dsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = get_dsp.cpp; sourceTree = "<group>"; };
 		4FC46E58231440C8000045E7 /* web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = web; path = ../resources/web; sourceTree = "<group>"; };
 		4FC6982F293BA47F0076EC33 /* NeuralAmpModelerAU.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NeuralAmpModelerAU.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FC82B4720BD524700722133 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../resources/img; sourceTree = "<group>"; };
@@ -362,6 +383,10 @@
 		4FFF108420A1036200D3092F /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; };
 		4FFF108720A1036200D3092F /* NeuralAmpModeler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NeuralAmpModeler.cpp; path = ../NeuralAmpModeler.cpp; sourceTree = "<group>"; };
 		4FFF108820A1036200D3092F /* NeuralAmpModeler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NeuralAmpModeler.h; path = ../NeuralAmpModeler.h; sourceTree = "<group>"; };
+		65180F8A34DF34E6D776C421 /* a2_fast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = a2_fast.h; path = wavenet/a2_fast.h; sourceTree = "<group>"; };
+		786BA4B0EB1830A5EB10A1A3 /* nam_file.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = nam_file.cpp; sourceTree = "<group>"; };
+		7D9EA8935DC2021DCBD16C9F /* slimmable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = slimmable.h; path = wavenet/slimmable.h; sourceTree = "<group>"; };
+		87B879AEFBDBAD47DB17733A /* linear.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = linear.cpp; sourceTree = "<group>"; };
 		91236D0D1B08F42B00734C5E /* NeuralAmpModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeuralAmpModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91236D771B08F59300734C5E /* NeuralAmpModelerAppExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeuralAmpModelerAppExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA341E292B9E5A650069C260 /* ToneStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneStack.h; path = ../ToneStack.h; sourceTree = "<group>"; };
@@ -373,6 +398,13 @@
 		AA7C860A2B43A42E00B5FB3A /* heapbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapbuf.h; sourceTree = "<group>"; };
 		AA8CA7752A452EF500F5BEF0 /* resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resample.cpp; sourceTree = "<group>"; };
 		AAB7BBB82CC4B8D6000B8B6E /* get_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_dsp.h; sourceTree = "<group>"; };
+		AD5B7C148C765CFAB61C34DF /* a2_planar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = a2_planar.h; path = wavenet/a2_planar.h; sourceTree = "<group>"; };
+		B48253CBFD93C2B9FDE2FD48 /* slimmable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = slimmable.h; sourceTree = "<group>"; };
+		D88107BA1B1DA6F4C9DAFE1B /* a2_planar.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = a2_planar.cpp; path = wavenet/a2_planar.cpp; sourceTree = "<group>"; };
+		E2AA9769F8EE64B0C97379B7 /* a2_fast.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = a2_fast.cpp; path = wavenet/a2_fast.cpp; sourceTree = "<group>"; };
+		EFCA0691D15710331824146C /* sequential.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = sequential.cpp; sourceTree = "<group>"; };
+		F5C2DC2149578D403E9894A7 /* linear.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = linear.h; sourceTree = "<group>"; };
+		F6C0B19CBDA39CF560786AAC /* model_config.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = model_config.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -699,6 +731,23 @@
 				4FBDC97429FFF143004FF203 /* film.h */,
 				4FBDC97529FFF143004FF203 /* gating_activations.h */,
 				4FBDC97629FFF143004FF203 /* registry.h */,
+				E2AA9769F8EE64B0C97379B7 /* a2_fast.cpp */,
+				65180F8A34DF34E6D776C421 /* a2_fast.h */,
+				D88107BA1B1DA6F4C9DAFE1B /* a2_planar.cpp */,
+				AD5B7C148C765CFAB61C34DF /* a2_planar.h */,
+				154E0CB1AF87B1D46F35BDEE /* compiler.h */,
+				24FB0F94BC8621CBA54C3DC1 /* container.h */,
+				87B879AEFBDBAD47DB17733A /* linear.cpp */,
+				F5C2DC2149578D403E9894A7 /* linear.h */,
+				F6C0B19CBDA39CF560786AAC /* model_config.h */,
+				786BA4B0EB1830A5EB10A1A3 /* nam_file.cpp */,
+				241E5854C6956A3DE1DBCBCF /* nam_file.h */,
+				EFCA0691D15710331824146C /* sequential.cpp */,
+				2C465F6DF5F513B876DA04EE /* sequential.h */,
+				B48253CBFD93C2B9FDE2FD48 /* slimmable.h */,
+				3435AADE94EE12E6BDFBCC74 /* detail.h */,
+				4281482B1171EF932BAF757A /* params.h */,
+				7D9EA8935DC2021DCBD16C9F /* slimmable.h */,
 			);
 			name = NAM;
 			path = ../../NeuralAmpModelerCore/NAM;
@@ -1113,6 +1162,11 @@
 				4FBDC96329FFF143004FF203 /* activations.cpp in Sources */,
 				4FC69847293BA5F90076EC33 /* IPopupMenuControl.cpp in Sources */,
 				4FC6984E293BA61D0076EC33 /* NeuralAmpModeler.cpp in Sources */,
+				04C62F62FBFCD0324E5FE518 /* a2_fast.cpp in Sources */,
+				61A2585768B23900CB105A08 /* a2_planar.cpp in Sources */,
+				4B9158480A1EFCFEA949430E /* linear.cpp in Sources */,
+				94B3B7E98BF35C0F739C5E2A /* nam_file.cpp in Sources */,
+				D102983EE265EF647DC54A63 /* sequential.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1125,6 +1179,11 @@
 				4FDF6D7B2267CE540007B686 /* AppDelegate.m in Sources */,
 				4FDF6D772267CE540007B686 /* AppViewController.mm in Sources */,
 				4FDF6D792267CE540007B686 /* main.m in Sources */,
+				0ACA7BB721A86CDEC3642D72 /* a2_fast.cpp in Sources */,
+				2751D54F7AA7DF68D68A3035 /* a2_planar.cpp in Sources */,
+				D3F84C0B6FCA6934F0AD38E4 /* linear.cpp in Sources */,
+				21C2AB77C47E8AA9A6F8DC3B /* nam_file.cpp in Sources */,
+				759B5959B2FCBB0FD24979C5 /* sequential.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1135,6 +1194,11 @@
 				4FCBE769293CDFB7005D913D /* IPlugAUViewController.mm in Sources */,
 				AA341E2D2B9E5A650069C260 /* ToneStack.cpp in Sources */,
 				4F4856842773BD77005BCF8E /* NeuralAmpModelerAUv3Appex.m in Sources */,
+				1757DFDD1FEAD85D0469DF0B /* a2_fast.cpp in Sources */,
+				DB857E2D3DEE4604FA3E9FD3 /* a2_planar.cpp in Sources */,
+				024953A6C6D7BA9F89A34B2A /* linear.cpp in Sources */,
+				D1BA6D9CABF842650FDFEF9E /* nam_file.cpp in Sources */,
+				419E1EADA81E36B8975ABA42 /* sequential.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
