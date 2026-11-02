@@ -168,8 +168,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto irYOffset = 38.0f;
     const auto modelArea =
       contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
-    const auto slimIconArea =
-      IRECT(modelArea.R + 6.f, modelArea.MH() - 14.f, modelArea.R + 6.f + 2.f * 28.f, modelArea.MH() + 14.f);
+    const auto modelInfoIconArea =
+      IRECT(modelArea.R + 6.f, modelArea.MH() - 9.f, modelArea.R + 6.f + 18.f, modelArea.MH() + 9.f);
+    const auto slimIconArea = IRECT(
+      modelInfoIconArea.R + 4.f, modelArea.MH() - 14.f, modelInfoIconArea.R + 4.f + 2.f * 28.f, modelArea.MH() + 14.f);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
     const auto irArea = modelArea.GetVShifted(irYOffset);
     const auto irSwitchArea = irArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
@@ -256,6 +258,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->AttachControl(
         new NAMSquareButtonControl(slimIconArea, DefaultClickActionFunc, slimIconSVG), kCtrlTagSlimmableIcon)
       ->SetAnimationEndActionFunction(showSlimOverlay)
+      ->Hide(true);
+
+    // Shows the model's metadata in its tooltip
+    pGraphics
+      ->AttachControl(
+        new NAMInfoIconControl(modelInfoIconArea, PluginColors::NAM_THEMEFONTCOLOR), kCtrlTagModelInfoIcon)
       ->Hide(true);
 
     pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
@@ -441,6 +449,10 @@ void NeuralAmpModeler::OnIdle()
         p->Hide(true);
       if (auto* p = pGraphics->GetControlWithTag(kCtrlTagSlimKnob))
         p->Hide(true);
+      if (auto* p = pGraphics->GetControlWithTag(kCtrlTagModelInfoIcon))
+        p->Hide(true);
+      // Needed on macOS so that the tooltip regions match the visible controls
+      pGraphics->UpdateTooltips();
       pGraphics->SetAllControlsDirty();
       mModelCleared = false;
     }
@@ -599,6 +611,9 @@ void NeuralAmpModeler::_ApplyDSPStaging()
   {
     mModel = nullptr;
     mNAMPath.Set("");
+    mNAMGearMake.clear();
+    mNAMGearModel.clear();
+    mNAMModeledBy.clear();
     mShouldRemoveModel = false;
     mModelCleared = true;
     _UpdateLatency();
@@ -748,7 +763,8 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
-    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath);
+    nam::dspData modelData;
+    std::unique_ptr<nam::DSP> model = nam::get_dsp(dspPath, modelData);
 
     // Check that the model has 1 input and 1 output channel
     if (model->NumInputChannels() != 1)
@@ -767,8 +783,24 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
     {
       slimmable->SetSlimmableSize(GetParam(kSlim)->Value());
     }
+    // Optional metadata fields. Missing or non-string values are treated as unknown.
+    // Check the types first: nlohmann::json throws type_error (not a std::runtime_error) on mismatches.
+    auto GetMetadataString = [&modelData](const char* key) {
+      const nlohmann::json& metadata = modelData.metadata;
+      if (!metadata.is_object())
+        return std::string();
+      const auto it = metadata.find(key);
+      if (it == metadata.end() || !it->is_string())
+        return std::string();
+      return it->get<std::string>();
+    };
+
     mStagedModel = std::move(temp);
     mNAMPath = modelPath;
+    // Set last, so they're left untouched if loading fails.
+    mNAMGearMake = GetMetadataString("gear_make");
+    mNAMGearModel = GetMetadataString("gear_model");
+    mNAMModeledBy = GetMetadataString("modeled_by");
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
   }
   catch (std::runtime_error& e)
@@ -960,6 +992,18 @@ void NeuralAmpModeler::_UpdateControlsFromModel()
       const bool show = mModel->GetSlimmableModel() != nullptr;
       pSlimIcon->Hide(!show);
     }
+
+    if (auto* pInfoIcon = pGraphics->GetControlWithTag(kCtrlTagModelInfoIcon))
+    {
+      auto KnownOrUnknown = [](const std::string& s) { return s.empty() ? std::string("(Unknown)") : s; };
+      const std::string tooltip = "Gear make: " + KnownOrUnknown(mNAMGearMake) + "\nGear model: "
+                                  + KnownOrUnknown(mNAMGearModel) + "\nModeled by: " + KnownOrUnknown(mNAMModeledBy);
+      pInfoIcon->SetTooltip(tooltip.c_str());
+      pInfoIcon->Hide(false);
+    }
+
+    // Needed on macOS so that the tooltip regions match the visible controls
+    pGraphics->UpdateTooltips();
   }
 }
 

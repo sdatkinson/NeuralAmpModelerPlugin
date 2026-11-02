@@ -73,6 +73,30 @@ public:
   }
 };
 
+/// "i" icon whose tooltip shows information about the loaded model.
+class NAMInfoIconControl : public IControl
+{
+public:
+  NAMInfoIconControl(const IRECT& bounds, const IColor& color)
+  : IControl(bounds)
+  , mColor(color)
+  {
+  }
+
+  void Draw(IGraphics& g) override
+  {
+    if (mMouseIsOver)
+      g.FillEllipse(PluginColors::MOUSEOVER, mRECT);
+
+    const IRECT circle = mRECT.GetPadded(-1.5f);
+    g.DrawEllipse(mColor, circle, nullptr, 1.5f);
+    g.DrawText(IText(circle.H() * 0.75f, mColor, "Roboto-Regular"), "i", circle);
+  }
+
+private:
+  const IColor mColor;
+};
+
 /// Full-window dim layer; click dismisses (used for Slim overlay).
 class NAMSlimOverlayBackdropControl : public IControl
 {
