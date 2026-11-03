@@ -45,11 +45,41 @@ jobs:
         ./download-prebuilt-libs.sh
       shell: bash
 
+    - name: Build Steinberg validator (macOS)
+      if: matrix.os == 'macOS-latest'
+      run: |
+        git clone --depth=1 https://github.com/steinbergmedia/vst3sdk.git "$RUNNER_TEMP/vst3sdk"
+        cd "$RUNNER_TEMP/vst3sdk"
+        git submodule update --init --depth=1 pluginterfaces base public.sdk cmake
+        cmake -S . -B VST3_BUILD -DSMTG_ENABLE_VST3_PLUGIN_EXAMPLES=OFF -DSMTG_ENABLE_VST3_HOSTING_EXAMPLES=ON -DSMTG_ENABLE_VSTGUI_SUPPORT=OFF
+        cmake --build VST3_BUILD --target validator --config Release --parallel 2
+      shell: bash
+
+    - name: Build Steinberg validator (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        $sdk = Join-Path $env:RUNNER_TEMP "vst3sdk"
+        git clone --depth=1 https://github.com/steinbergmedia/vst3sdk.git $sdk
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        git -C $sdk submodule update --init --depth=1 pluginterfaces base public.sdk cmake
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        cmake -S $sdk -B (Join-Path $sdk "VST3_BUILD") -DSMTG_ENABLE_VST3_PLUGIN_EXAMPLES=OFF -DSMTG_ENABLE_VST3_HOSTING_EXAMPLES=ON -DSMTG_ENABLE_VSTGUI_SUPPORT=OFF
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        cmake --build (Join-Path $sdk "VST3_BUILD") --target validator --config Release --parallel 2
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      shell: pwsh
+
     - name: Build macOS
       if: matrix.os == 'macOS-latest'
       run: |
         cd ${{env.PROJECT_NAME}}/scripts
         ./makedist-mac.sh full zip
+      shell: bash
+
+    - name: Validate VST3 bundle (macOS)
+      if: matrix.os == 'macOS-latest'
+      run: |
+        "$RUNNER_TEMP/vst3sdk/VST3_BUILD/bin/validator" "$HOME/Library/Audio/Plug-Ins/VST3/NeuralAmpModeler.vst3"
       shell: bash
 
     - name: Add msbuild to PATH (Windows)
@@ -61,6 +91,16 @@ jobs:
       run: |
         cd ${{env.PROJECT_NAME}}\scripts
         .\makedist-win.bat full zip
+      shell: pwsh
+
+    - name: Validate VST3 bundle (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        $validator = Get-ChildItem (Join-Path $env:RUNNER_TEMP "vst3sdk/VST3_BUILD") -Filter validator.exe -Recurse | Select-Object -First 1
+        if (-not $validator) { throw "Could not find validator.exe in the VST3 SDK build" }
+        $bundle = Join-Path $env:GITHUB_WORKSPACE "NeuralAmpModeler/build-win/NeuralAmpModeler.vst3"
+        & $validator.FullName $bundle
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       shell: pwsh
 
     - name: Upload artifact
