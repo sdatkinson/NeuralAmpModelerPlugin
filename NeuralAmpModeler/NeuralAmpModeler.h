@@ -38,7 +38,7 @@ enum EParams
   kOutputLevel,
   // The rest is fine though.
   kNoiseGateActive,
-  kEQActive,
+  kEQMode,
   kIRToggle,
   // Input calibration
   kCalibrateInput,
@@ -46,6 +46,13 @@ enum EParams
   kOutputMode,
   kSlim,
   kNumParams
+};
+
+enum EEQMode
+{
+  kEQModePre = 0,
+  kEQModeOff,
+  kEQModePost
 };
 
 const int numKnobs = 6;

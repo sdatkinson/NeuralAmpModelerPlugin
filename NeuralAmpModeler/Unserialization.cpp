@@ -97,11 +97,47 @@ void _RenameKeys(nlohmann::json& j, std::unordered_map<std::string, std::string>
   }
 }
 
+// v0.8.1
+
+void _UpdateConfigFrom_0_8_1(nlohmann::json& config)
+{
+  // Fill me in once something changes!
+}
+
+int _GetConfigFrom_0_8_1(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
+{
+  std::vector<std::string> paramNames{"Input",
+                                      "Threshold",
+                                      "Bass",
+                                      "Middle",
+                                      "Treble",
+                                      "Output",
+                                      "NoiseGateActive",
+                                      "EQ",
+                                      "IRToggle",
+                                      "CalibrateInput",
+                                      "InputCalibrationLevel",
+                                      "OutputMode",
+                                      "Slim"};
+
+  int pos = _UnserializePathsAndExpectedKeys(chunk, startPos, config, paramNames);
+  _UpdateConfigFrom_0_8_1(config);
+  return pos;
+}
+
 // v0.7.14
 
 void _UpdateConfigFrom_0_7_14(nlohmann::json& config)
 {
-  // Fill me in once something changes!
+  // "ToneStack" (Bool: off/on) became "EQ" (Enum: 0=Pre, 1=Off, 2=Post).
+  // Legacy "on" was always post-model, so map on->Post, off->Off.
+  if (config.find("ToneStack") != config.end())
+  {
+    const bool on = config["ToneStack"].get<double>() > 0.5;
+    config["EQ"] = static_cast<double>(on ? kEQModePost : kEQModeOff);
+    config.erase("ToneStack");
+  }
+  _UpdateConfigFrom_0_8_1(config);
 }
 
 int _GetConfigFrom_0_7_14(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config)
@@ -277,7 +313,11 @@ int NeuralAmpModeler::_UnserializeStateWithKnownVersion(const iplug::IByteChunk&
   _Version version(versionStr);
   // Act accordingly
   nlohmann::json config;
-  if (version >= _Version(0, 7, 14))
+  if (version >= _Version(0, 8, 1))
+  {
+    pos = _GetConfigFrom_0_8_1(chunk, pos, config);
+  }
+  else if (version >= _Version(0, 7, 14))
   {
     pos = _GetConfigFrom_0_7_14(chunk, pos, config);
   }
