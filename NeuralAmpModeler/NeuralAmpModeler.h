@@ -63,6 +63,7 @@ enum ECtrlTags
   kCtrlTagSlimmableIcon,
   kCtrlTagSlimOverlayBackdrop,
   kCtrlTagSlimKnob,
+  kCtrlTagModelInfoIcon,
   kNumCtrlTags
 };
 
@@ -202,6 +203,10 @@ private:
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
+  // Optional descriptive metadata from the model's .nam file (empty if not provided)
+  std::string mNAMGearMake;
+  std::string mNAMGearModel;
+  std::string mNAMModeledBy;
   // Path to IR (.wav file)
   WDL_String mIRPath;
 
