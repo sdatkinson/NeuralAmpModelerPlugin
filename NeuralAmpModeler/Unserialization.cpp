@@ -55,19 +55,19 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   LEAVE_PARAMS_MUTEX
 
   mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
-  mIRPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
+  mCabPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
 
   if (mNAMPath.GetLength())
   {
     _StageModel(mNAMPath);
   }
-  if (mIRPath.GetLength())
+  if (mCabPath.GetLength())
   {
-    _StageIR(mIRPath);
+    _StageCab(mCabPath);
   }
 }
 
-// Unserialize NAM Path, IR path, then named keys
+// Unserialize model path, cab path, then named keys
 int _UnserializePathsAndExpectedKeys(const iplug::IByteChunk& chunk, int startPos, nlohmann::json& config,
                                      std::vector<std::string>& paramNames)
 {

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../AudioDSPTools/dsp/ImpulseResponse.h"
 #include "../AudioDSPTools/dsp/NoiseGate.h"
 #include "../AudioDSPTools/dsp/dsp.h"
-#include "../AudioDSPTools/dsp/wav.h"
 #include "ResamplingNAM.h"
 
 #include "Colors.h"
@@ -39,7 +37,7 @@ enum EParams
   // The rest is fine though.
   kNoiseGateActive,
   kEQActive,
-  kIRToggle,
+  kCabToggle,
   // Input calibration
   kCalibrateInput,
   kInputCalibrationLevel,
@@ -53,7 +51,7 @@ const int numKnobs = 6;
 enum ECtrlTags
 {
   kCtrlTagModelFileBrowser = 0,
-  kCtrlTagIRFileBrowser,
+  kCtrlTagCabFileBrowser,
   kCtrlTagInputMeter,
   kCtrlTagOutputMeter,
   kCtrlTagSettingsBox,
@@ -70,12 +68,12 @@ enum EMsgTags
 {
   // These tags are used from UI -> DSP
   kMsgTagClearModel = 0,
-  kMsgTagClearIR,
+  kMsgTagClearCab,
   kMsgTagHighlightColor,
   // The following tags are from DSP -> UI
   kMsgTagLoadFailed,
   kMsgTagLoadedModel,
-  kMsgTagLoadedIR,
+  kMsgTagLoadedCab,
   kNumMsgTags
 };
 
@@ -117,10 +115,9 @@ private:
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
-  // Loads an IR and stores it to mStagedIR.
-  // Return status code so that error messages can be relayed if
-  // it wasn't successful.
-  dsp::wav::LoadReturnCode _StageIR(const WDL_String& irPath);
+  // Loads a WAV or NAM cab and stores it to mStagedCab.
+  // Returns an empty string on success, or an error message on failure.
+  std::string _StageCab(const WDL_String& cabPath);
 
   bool _HaveModel() const { return this->mModel != nullptr; };
   // Prepare the input & output buffers
@@ -136,8 +133,8 @@ private:
   // :param nChansOut: Out to external
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
-  // Resetting for models and IRs, called by OnReset
-  void _ResetModelAndIR(const double sampleRate, const int maxBlockSize);
+  // Resetting for the model and cab, called by OnReset
+  void _ResetModelAndCab(const double sampleRate, const int maxBlockSize);
 
   void _SetInputGain();
   void _SetOutputGain();
@@ -153,8 +150,8 @@ private:
   // Update all controls that depend on a model
   void _UpdateControlsFromModel();
 
-  // Make sure that the latency is reported correctly.
-  void _UpdateLatency();
+  // Report latency and tail length to the host.
+  void _UpdateLatencyAndTail();
 
   // Update level meters
   // Called within ProcessBlock().
@@ -168,6 +165,8 @@ private:
   std::vector<std::vector<iplug::sample>> mInputArray;
   // Output from NAM
   std::vector<std::vector<iplug::sample>> mOutputArray;
+  // Separate cab output avoids requiring NAM architectures to support in-place processing.
+  std::vector<iplug::sample> mCabinetOutput;
   // Pointer versions
   iplug::sample** mInputPointers = nullptr;
   iplug::sample** mOutputPointers = nullptr;
@@ -181,14 +180,16 @@ private:
   dsp::noise_gate::Gain mNoiseGateGain;
   // The model actually being used:
   std::unique_ptr<ResamplingNAM> mModel;
-  // And the IR
-  std::unique_ptr<dsp::ImpulseResponse> mIR;
+  // The cabinet, loaded from a WAV impulse response or NAM model.
+  std::unique_ptr<ResamplingNAM> mCab;
+  bool mCabIsWav = false;
   // Manages switching what DSP is being used.
   std::unique_ptr<ResamplingNAM> mStagedModel;
-  std::unique_ptr<dsp::ImpulseResponse> mStagedIR;
+  std::unique_ptr<ResamplingNAM> mStagedCab;
+  bool mStagedCabIsWav = false;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mShouldRemoveModel = false;
-  std::atomic<bool> mShouldRemoveIR = false;
+  std::atomic<bool> mShouldRemoveCab = false;
 
   std::atomic<bool> mNewModelLoadedInDSP = false;
   std::atomic<bool> mModelCleared = false;
@@ -196,14 +197,14 @@ private:
   // Tone stack modules
   std::unique_ptr<dsp::tone_stack::AbstractToneStack> mToneStack;
 
-  // Post-IR filters
+  // Post-cab filters
   recursive_linear_filter::HighPass mHighPass;
   //  recursive_linear_filter::LowPass mLowPass;
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
-  // Path to IR (.wav file)
-  WDL_String mIRPath;
+  // Path to the cab (.wav or .nam file). Keep IRPath in serialized state for compatibility.
+  WDL_String mCabPath;
 
   WDL_String mHighLightColor{PluginColors::NAM_THEMECOLOR.ToColorCode()};
 

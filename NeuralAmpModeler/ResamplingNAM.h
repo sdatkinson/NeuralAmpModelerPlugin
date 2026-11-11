@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -65,10 +66,6 @@ public:
       SetOutputLevel(mEncapsulated->GetOutputLevel());
     }
 
-    // NOTE: prewarm samples doesn't mean anything--we can prewarm the encapsulated model as it likes and be good to
-    // go.
-    // _prewarm_samples = 0;
-
     // And be ready
     int maxBlockSize = 2048; // Conservative
     Reset(expected_sample_rate, maxBlockSize);
@@ -77,6 +74,16 @@ public:
   ~ResamplingNAM() = default;
 
   void prewarm() override { mEncapsulated->prewarm(); };
+
+  // Report the encapsulated model's history length in host-rate samples.
+  int GetPrewarmSamples() override
+  {
+    double samples = mEncapsulated->GetPrewarmSamples();
+    if (NeedToResample())
+      samples *= GetExpectedSampleRate() / GetEncapsulatedSampleRate();
+    return static_cast<int>(std::clamp(std::ceil(samples), 0.0,
+                                       static_cast<double>(std::numeric_limits<int>::max())));
+  }
 
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override
   {
