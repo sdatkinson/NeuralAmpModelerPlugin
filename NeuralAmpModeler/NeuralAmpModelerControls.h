@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cmath> // std::round
+#include <cctype>
 #include <cstdio> // FILE, fclose
+#include <filesystem>
 #include <sstream> // std::stringstream
 #include <unordered_map> // std::unordered_map
 #include "IControls.h"
@@ -296,6 +298,48 @@ public:
 
   void Draw(IGraphics& g) override { g.DrawFittedBitmap(mBitmap, mRECT); }
 
+  void SetupMenu()
+  {
+    if (std::strcmp(mExtension.Get(), "wav nam") != 0)
+    {
+      IDirBrowseControlBase::SetupMenu();
+      return;
+    }
+
+    // This iPlug2 version scans only one extension. Populate the cab's flat directory menu locally so the file
+    // picker, popup menu, and previous/next buttons all see both supported formats.
+    mFiles.Empty(true);
+    mItems.Empty(false);
+    mMainMenu.Clear();
+    mSelectedItemIndex = -1;
+    for (int pathIndex = 0; pathIndex < mPaths.GetSize(); ++pathIndex)
+    {
+      std::error_code error;
+      const auto directory = std::filesystem::u8path(mPaths.Get(pathIndex)->Get());
+      for (std::filesystem::directory_iterator entry(directory, error), end; !error && entry != end;
+           entry.increment(error))
+      {
+        const auto& path = entry->path();
+        const auto name = path.filename().u8string();
+        std::error_code fileError;
+        auto extension = path.extension().string();
+        std::transform(extension.begin(), extension.end(), extension.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        if (name.empty() || name[0] == '.' || !entry->is_regular_file(fileError)
+            || (extension != ".wav" && extension != ".nam"))
+          continue;
+        const auto label = path.stem().u8string();
+        auto* item = new IPopupMenu::Item(
+          reinterpret_cast<const char*>(label.c_str()), IPopupMenu::Item::kNoFlags, mFiles.GetSize());
+        mMainMenu.AddItem(item, -2 /* sort alphabetically */);
+        const auto fullPath = path.u8string();
+        mFiles.Add(new WDL_String(reinterpret_cast<const char*>(fullPath.c_str())));
+      }
+    }
+    for (int i = 0; i < mMainMenu.NItems(); ++i)
+      mItems.Add(mMainMenu.GetItem(i));
+  }
+
   void OnPopupMenuSelection(IPopupMenu* pSelectedMenu, int valIdx) override
   {
     if (pSelectedMenu)
@@ -455,7 +499,7 @@ public:
         }
         break;
       case kMsgTagLoadedModel:
-      case kMsgTagLoadedIR:
+      case kMsgTagLoadedCab:
       {
         WDL_String fileName, directory;
         fileName.Set(reinterpret_cast<const char*>(pData));

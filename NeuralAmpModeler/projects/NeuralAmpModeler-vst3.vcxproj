@@ -329,7 +329,6 @@
     <ClInclude Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_ProcessorBase.h" />
     <ClInclude Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_View.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\dsp.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\ImpulseResponse.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\NoiseGate.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\Resample.h" />
@@ -339,7 +338,6 @@
     <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\Dependencies\WDL\wdltypes.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\ResamplingContainer\ResamplingContainer.h" />
     <ClInclude Include="..\..\AudioDSPTools\dsp\version.h" />
-    <ClInclude Include="..\..\AudioDSPTools\dsp\wav.h" />
     <ClInclude Include="..\Colors.h" />
     <ClInclude Include="..\NeuralAmpModeler.h" />
     <ClInclude Include="..\NeuralAmpModelerControls.h" />
@@ -427,10 +425,8 @@
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3.cpp" />
     <ClCompile Include="..\..\iPlug2\IPlug\VST3\IPlugVST3_ProcessorBase.cpp" />
     <ClCompile Include="..\..\AudioDSPTools\dsp\dsp.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\ImpulseResponse.cpp" />
     <ClCompile Include="..\..\AudioDSPTools\dsp\NoiseGate.cpp" />
     <ClCompile Include="..\..\AudioDSPTools\dsp\RecursiveLinearFilter.cpp" />
-    <ClCompile Include="..\..\AudioDSPTools\dsp\wav.cpp" />
     <ClCompile Include="..\NeuralAmpModeler.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\activations.cpp" />
     <ClCompile Include="..\..\NeuralAmpModelerCore\NAM\conv1d.cpp" />

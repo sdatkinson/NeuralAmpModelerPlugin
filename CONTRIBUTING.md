@@ -14,7 +14,7 @@ If you'd like to work on an [existing Issue](https://github.com/sdatkinson/Neura
 I would like to ask that you please try to give me a timeline for your work--I'd hate to have you duplicate work if I know that I'm going to e.g. get to it today and beat you to the punch.
 
 ## Testing
-The model sample-rate adapter has standalone regression tests that do not require a plugin SDK:
+The sample-rate adapter and cabinet loader have standalone regression tests that do not require a plugin SDK:
 
 ```bash
 cmake -S tests -B build-tests -DCMAKE_BUILD_TYPE=Release

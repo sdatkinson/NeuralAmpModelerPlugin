@@ -1,7 +1,9 @@
 #include <algorithm> // std::clamp, std::min
+#include <cctype>
 #include <cmath> // pow
 #include <filesystem>
 #include <iostream>
+#include <limits>
 #include <utility>
 
 #include "Colors.h"
@@ -89,7 +91,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
   GetParam(kNoiseGateActive)->InitBool("NoiseGateActive", true);
   GetParam(kEQActive)->InitBool("ToneStack", true);
   GetParam(kOutputMode)->InitEnum("OutputMode", 1, {"Raw", "Normalized", "Calibrated"}); // TODO DRY w/ control
-  GetParam(kIRToggle)->InitBool("IRToggle", true);
+  GetParam(kCabToggle)->InitBool("IRToggle", true);
   GetParam(kCalibrateInput)->InitBool(kCalibrateInputParamName.c_str(), kDefaultCalibrateInput);
   GetParam(kInputCalibrationLevel)
     ->InitDouble(kInputCalibrationLevelParamName.c_str(), kDefaultInputCalibrationLevel, -60.0, 60.0, 0.1, "dBu");
@@ -125,8 +127,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     const auto rightArrowSVG = pGraphics->LoadSVG(RIGHT_ARROW_FN);
     const auto leftArrowSVG = pGraphics->LoadSVG(LEFT_ARROW_FN);
     const auto modelIconSVG = pGraphics->LoadSVG(MODEL_ICON_FN);
-    const auto irIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
-    const auto irIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
+    const auto cabIconOnSVG = pGraphics->LoadSVG(IR_ICON_ON_FN);
+    const auto cabIconOffSVG = pGraphics->LoadSVG(IR_ICON_OFF_FN);
     const auto slimIconSVG = pGraphics->LoadSVG(SLIMMABLE_ICON_FN);
 
     const auto backgroundBitmap = pGraphics->LoadBitmap(BACKGROUND_FN);
@@ -162,17 +164,17 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       noiseGateArea.GetVShifted(noiseGateArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
     const auto eqToggleArea = midKnobArea.GetVShifted(midKnobArea.H()).SubRectVertical(2, 0).GetReducedFromTop(10.0f);
 
-    // Areas for model and IR
+    // Areas for model and cab
     const auto fileWidth = 200.0f;
     const auto fileHeight = 30.0f;
-    const auto irYOffset = 38.0f;
+    const auto cabYOffset = 38.0f;
     const auto modelArea =
       contentArea.GetFromBottom((2.0f * fileHeight)).GetFromTop(fileHeight).GetMidHPadded(fileWidth).GetVShifted(-1);
     const auto slimIconArea =
       IRECT(modelArea.R + 6.f, modelArea.MH() - 14.f, modelArea.R + 6.f + 2.f * 28.f, modelArea.MH() + 14.f);
     const auto modelIconArea = modelArea.GetFromLeft(30).GetTranslated(-40, 10);
-    const auto irArea = modelArea.GetVShifted(irYOffset);
-    const auto irSwitchArea = irArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
+    const auto cabArea = modelArea.GetVShifted(cabYOffset);
+    const auto cabSwitchArea = cabArea.GetFromLeft(30.0f).GetHShifted(-40.0f).GetScaledAboutCentre(0.6f);
 
     // Areas for meters
     const auto inputMeterArea = contentArea.GetFromLeft(30).GetHShifted(-20).GetMidVPadded(100).GetVShifted(-25);
@@ -187,7 +189,7 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       {
         // Sets mNAMPath and mStagedNAM
         const std::string msg = _StageModel(fileName);
-        // TODO error messages like the IR loader.
+        // TODO error messages like the cab loader.
         if (msg.size())
         {
           std::stringstream ss;
@@ -198,19 +200,16 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       }
     };
 
-    // IR loader button
-    auto loadIRCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
+    // Cab loader button
+    auto loadCabCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
       if (fileName.GetLength())
       {
-        mIRPath = fileName;
-        const dsp::wav::LoadReturnCode retCode = _StageIR(fileName);
-        if (retCode != dsp::wav::LoadReturnCode::SUCCESS)
+        const std::string error = _StageCab(fileName);
+        if (!error.empty())
         {
           std::stringstream message;
-          message << "Failed to load IR file " << fileName.Get() << ":\n";
-          message << dsp::wav::GetMsgForLoadReturnCode(retCode);
-
-          _ShowMessageBox(GetUI(), message.str().c_str(), "Failed to load IR!", kMB_OK);
+          message << "Failed to load cab file " << fileName.Get() << ":\n" << error;
+          _ShowMessageBox(GetUI(), message.str().c_str(), "Failed to load cab!", kMB_OK);
         }
       }
     };
@@ -222,10 +221,10 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
 #ifdef NAM_PICK_DIRECTORY
     const std::string defaultNamFileString = "Select model directory...";
-    const std::string defaultIRString = "Select IR directory...";
+    const std::string defaultCabString = "Select cab directory...";
 #else
     const std::string defaultNamFileString = "Select model...";
-    const std::string defaultIRString = "Select IR...";
+    const std::string defaultCabString = "Select cab...";
 #endif
     // Getting started page listing additional resources
     const char* const getUrl = "https://www.neuralampmodeler.com/users#comp-marb84o5";
@@ -258,12 +257,12 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
       ->SetAnimationEndActionFunction(showSlimOverlay)
       ->Hide(true);
 
-    pGraphics->AttachControl(new ISVGSwitchControl(irSwitchArea, {irIconOffSVG, irIconOnSVG}, kIRToggle));
+    pGraphics->AttachControl(new ISVGSwitchControl(cabSwitchArea, {cabIconOffSVG, cabIconOnSVG}, kCabToggle));
     pGraphics->AttachControl(
-      new NAMFileBrowserControl(irArea, kMsgTagClearIR, defaultIRString.c_str(), "wav", loadIRCompletionHandler, style,
-                                fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap, globeSVG,
-                                "Get IRs", getUrl),
-      kCtrlTagIRFileBrowser);
+      new NAMFileBrowserControl(cabArea, kMsgTagClearCab, defaultCabString.c_str(), "wav nam", loadCabCompletionHandler,
+                                style, fileSVG, crossSVG, leftArrowSVG, rightArrowSVG, fileBackgroundBitmap, globeSVG,
+                                "Get cabs", getUrl),
+      kCtrlTagCabFileBrowser);
     pGraphics->AttachControl(
       new NAMSwitchControl(ngToggleArea, kNoiseGateActive, "Noise Gate", style, switchHandleBitmap));
     pGraphics->AttachControl(new NAMSwitchControl(eqToggleArea, kEQActive, "EQ", style, switchHandleBitmap));
@@ -371,9 +370,13 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
                                     ? mToneStack->Process(gateGainOutput, numChannelsInternal, nFrames)
                                     : gateGainOutput;
 
-  sample** irPointers = toneStackOutPointers;
-  if (mIR != nullptr && GetParam(kIRToggle)->Value())
-    irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
+  sample** cabPointers = toneStackOutPointers;
+  sample* cabinetOutputPointers[]{mCabinetOutput.data()};
+  if (mCab != nullptr && GetParam(kCabToggle)->Bool())
+  {
+    mCab->process(toneStackOutPointers, cabinetOutputPointers, nFrames);
+    cabPointers = cabinetOutputPointers;
+  }
 
   // And the HPF for DC offset (Issue 271)
   const double highPassCutoffFreq = kDCBlockerFrequency;
@@ -382,7 +385,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
   // const recursive_linear_filter::LowPassParams lowPassParams(sampleRate, lowPassCutoffFreq);
   mHighPass.SetParams(highPassParams);
   // mLowPass.SetParams(lowPassParams);
-  sample** hpfPointers = mHighPass.Process(irPointers, numChannelsInternal, numFrames);
+  sample** hpfPointers = mHighPass.Process(cabPointers, numChannelsInternal, numFrames);
   // sample** lpfPointers = mLowPass.Process(hpfPointers, numChannelsInternal, numFrames);
 
   // restore previous floating point state
@@ -402,17 +405,12 @@ void NeuralAmpModeler::OnReset()
   const auto sampleRate = GetSampleRate();
   const int maxBlockSize = GetBlockSize();
 
-  // Tail is because the HPF DC blocker has a decay.
-  // 10 cycles should be enough to pass the VST3 tests checking tail behavior.
-  // I'm ignoring the model & IR, but it's not the end of the world.
-  const int tailCycles = 10;
-  SetTailSize(tailCycles * (int)(sampleRate / kDCBlockerFrequency));
   mInputSender.Reset(sampleRate);
   mOutputSender.Reset(sampleRate);
-  // If there is a model or IR loaded, they need to be checked for resampling.
-  _ResetModelAndIR(sampleRate, GetBlockSize());
+  // If there is a model or cab loaded, they need to be checked for resampling.
+  _ResetModelAndCab(sampleRate, GetBlockSize());
   mToneStack->Reset(sampleRate, maxBlockSize);
-  _UpdateLatency();
+  _UpdateLatencyAndTail();
 }
 
 void NeuralAmpModeler::OnIdle()
@@ -458,7 +456,7 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
   // Model directory (don't serialize the model itself; we'll just load it again
   // when we unserialize)
   chunk.PutStr(mNAMPath.Get());
-  chunk.PutStr(mIRPath.Get());
+  chunk.PutStr(mCabPath.Get());
   return SerializeParams(chunk);
 }
 
@@ -493,11 +491,11 @@ void NeuralAmpModeler::OnUIOpen()
       SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
   }
 
-  if (mIRPath.GetLength())
+  if (mCabPath.GetLength())
   {
-    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
-    if (mIR == nullptr && mStagedIR == nullptr)
-      SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadFailed);
+    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, mCabPath.GetLength(), mCabPath.Get());
+    if (mCab == nullptr && mStagedCab == nullptr)
+      SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadFailed);
   }
 
   if (mModel != nullptr)
@@ -522,6 +520,10 @@ void NeuralAmpModeler::OnParamChange(int paramIdx)
     case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
     case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
     case kSlim: _ApplySlimParamToLoadedNAMs(); break;
+    case kCabToggle:
+      _SetOutputGain();
+      _UpdateLatencyAndTail();
+      break;
     default: break;
   }
 }
@@ -538,7 +540,7 @@ void NeuralAmpModeler::OnParamChangeUI(int paramIdx, EParamSource source)
       case kEQActive:
         pGraphics->ForControlInGroup("EQ_KNOBS", [active](IControl* pControl) { pControl->SetDisabled(!active); });
         break;
-      case kIRToggle: pGraphics->GetControlWithTag(kCtrlTagIRFileBrowser)->SetDisabled(!active); break;
+      case kCabToggle: pGraphics->GetControlWithTag(kCtrlTagCabFileBrowser)->SetDisabled(!active); break;
       default: break;
     }
   }
@@ -549,7 +551,7 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
   switch (msgTag)
   {
     case kMsgTagClearModel: mShouldRemoveModel = true; return true;
-    case kMsgTagClearIR: mShouldRemoveIR = true; return true;
+    case kMsgTagClearCab: mShouldRemoveCab = true; return true;
     case kMsgTagHighlightColor:
     {
       mHighLightColor.Set((const char*)pData);
@@ -601,15 +603,18 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mNAMPath.Set("");
     mShouldRemoveModel = false;
     mModelCleared = true;
-    _UpdateLatency();
+    _UpdateLatencyAndTail();
     _SetInputGain();
     _SetOutputGain();
   }
-  if (mShouldRemoveIR)
+  if (mShouldRemoveCab)
   {
-    mIR = nullptr;
-    mIRPath.Set("");
-    mShouldRemoveIR = false;
+    mCab = nullptr;
+    mCabIsWav = false;
+    mCabPath.Set("");
+    mShouldRemoveCab = false;
+    _UpdateLatencyAndTail();
+    _SetOutputGain();
   }
   // Move things from staged to live
   if (mStagedModel != nullptr)
@@ -617,14 +622,17 @@ void NeuralAmpModeler::_ApplyDSPStaging()
     mModel = std::move(mStagedModel);
     mStagedModel = nullptr;
     mNewModelLoadedInDSP = true;
-    _UpdateLatency();
+    _UpdateLatencyAndTail();
     _SetInputGain();
     _SetOutputGain();
   }
-  if (mStagedIR != nullptr)
+  if (mStagedCab != nullptr)
   {
-    mIR = std::move(mStagedIR);
-    mStagedIR = nullptr;
+    mCab = std::move(mStagedCab);
+    mCabIsWav = mStagedCabIsWav;
+    mStagedCab = nullptr;
+    _UpdateLatencyAndTail();
+    _SetOutputGain();
   }
 }
 
@@ -654,7 +662,7 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
       mOutputArray[c][s] = mInputArray[c][s];
 }
 
-void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBlockSize)
+void NeuralAmpModeler::_ResetModelAndCab(const double sampleRate, const int maxBlockSize)
 {
   // Model
   if (mStagedModel != nullptr)
@@ -666,25 +674,11 @@ void NeuralAmpModeler::_ResetModelAndIR(const double sampleRate, const int maxBl
     mModel->Reset(sampleRate, maxBlockSize);
   }
 
-  // IR
-  if (mStagedIR != nullptr)
-  {
-    const double irSampleRate = mStagedIR->GetSampleRate();
-    if (irSampleRate != sampleRate)
-    {
-      const auto irData = mStagedIR->GetData();
-      mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
-    }
-  }
-  else if (mIR != nullptr)
-  {
-    const double irSampleRate = mIR->GetSampleRate();
-    if (irSampleRate != sampleRate)
-    {
-      const auto irData = mIR->GetData();
-      mStagedIR = std::make_unique<dsp::ImpulseResponse>(irData, sampleRate);
-    }
-  }
+  // Core retains the original model data and handles coefficient resampling on Reset.
+  if (mStagedCab != nullptr)
+    mStagedCab->Reset(sampleRate, maxBlockSize);
+  else if (mCab != nullptr)
+    mCab->Reset(sampleRate, maxBlockSize);
 }
 
 void NeuralAmpModeler::_SetInputGain()
@@ -726,6 +720,12 @@ void NeuralAmpModeler::_SetOutputGain()
       default: break;
     }
   }
+  if (mCab != nullptr && mCabIsWav && GetParam(kCabToggle)->Bool())
+  {
+    // Core compensates by sourceRate / hostRate when resampling IR coefficients.
+    // This remaining factor preserves the legacy -18 dB * 48000 / hostRate level.
+    gainDB += -18.0 + 20.0 * std::log10(48000.0 / mCab->GetEncapsulatedSampleRate());
+  }
   mOutputGain = DBToAmp(gainDB);
 }
 
@@ -740,6 +740,7 @@ void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
   };
   apply(mModel.get());
   apply(mStagedModel.get());
+  _UpdateLatencyAndTail();
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
@@ -787,41 +788,32 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
   return "";
 }
 
-dsp::wav::LoadReturnCode NeuralAmpModeler::_StageIR(const WDL_String& irPath)
+std::string NeuralAmpModeler::_StageCab(const WDL_String& cabPath)
 {
-  // FIXME it'd be better for the path to be "staged" as well. Just in case the
-  // path and the model got caught on opposite sides of the fence...
-  WDL_String previousIRPath = mIRPath;
-  const double sampleRate = GetSampleRate();
-  dsp::wav::LoadReturnCode wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
   try
   {
-    mStagedIR = std::make_unique<dsp::ImpulseResponse>(irPath.Get(), sampleRate);
-    wavState = mStagedIR->GetWavState();
+    // Finish loading before publishing the model, so a failed load preserves the current cab and path.
+    const auto path = std::filesystem::u8path(cabPath.Get());
+    auto model = nam::get_dsp(path);
+    if (model->NumInputChannels() != 1 || model->NumOutputChannels() != 1)
+      throw std::runtime_error("Cab model must have 1 input and 1 output channel.");
+    auto cab = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
+    cab->Reset(GetSampleRate(), GetBlockSize());
+    auto extension = path.extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    mStagedCabIsWav = extension == ".wav";
+    mStagedCab = std::move(cab);
+    mCabPath = cabPath;
+    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, mCabPath.GetLength(), mCabPath.Get());
   }
-  catch (std::runtime_error& e)
+  catch (const std::exception& error)
   {
-    wavState = dsp::wav::LoadReturnCode::ERROR_OTHER;
-    std::cerr << "Caught unhandled exception while attempting to load IR:" << std::endl;
-    std::cerr << e.what() << std::endl;
+    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadFailed);
+    std::cerr << "Failed to load cab: " << error.what() << std::endl;
+    return error.what();
   }
-
-  if (wavState == dsp::wav::LoadReturnCode::SUCCESS)
-  {
-    mIRPath = irPath;
-    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadedIR, mIRPath.GetLength(), mIRPath.Get());
-  }
-  else
-  {
-    if (mStagedIR != nullptr)
-    {
-      mStagedIR = nullptr;
-    }
-    mIRPath = previousIRPath;
-    SendControlMsgFromDelegate(kCtrlTagIRFileBrowser, kMsgTagLoadFailed);
-  }
-
-  return wavState;
+  return "";
 }
 
 size_t NeuralAmpModeler::_GetBufferNumChannels() const
@@ -857,6 +849,7 @@ void NeuralAmpModeler::_PrepareBuffers(const size_t numChannels, const size_t nu
   }
   if (updateFrames)
   {
+    mCabinetOutput.resize(numFrames);
     for (auto c = 0; c < mInputArray.size(); c++)
     {
       mInputArray[c].resize(numFrames);
@@ -963,14 +956,22 @@ void NeuralAmpModeler::_UpdateControlsFromModel()
   }
 }
 
-void NeuralAmpModeler::_UpdateLatency()
+void NeuralAmpModeler::_UpdateLatencyAndTail()
 {
   int latency = 0;
   if (mModel)
   {
     latency += mModel->GetLatency();
   }
-  // Other things that add latency here...
+  const bool cabActive = mCab != nullptr && GetParam(kCabToggle)->Bool();
+  if (cabActive)
+    latency += mCab->GetLatency();
+
+  // Both wrappers report their models' history lengths in host-rate samples.
+  // Allow another two seconds (ten cycles at 5 Hz) for the DC blocker.
+  const double tail = 2.0 * GetSampleRate() + (mModel ? mModel->GetPrewarmSamples() : 0)
+                      + (cabActive ? mCab->GetPrewarmSamples() : 0);
+  SetTailSize(static_cast<int>(std::min(tail, static_cast<double>(std::numeric_limits<int>::max()))));
 
   // Feels weird to have to do this.
   if (GetLatency() != latency)
