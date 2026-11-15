@@ -1,0 +1,12 @@
+{
+  "amp": "clean.nam",
+  "description": "This is a test preset",
+  "ir": "clean.wav",
+  "name": "Test Preset",
+  "params": [
+    1.0,
+    2.0,
+    3.0
+  ],
+  "version": 1
+}
