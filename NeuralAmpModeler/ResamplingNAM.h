@@ -7,6 +7,7 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <variant>
 
 #include "../iPlug2/IPlug/IPlugConstants.h"
 
@@ -43,14 +44,10 @@ public:
   : nam::DSP(encapsulated->NumInputChannels(), encapsulated->NumOutputChannels(), expected_sample_rate)
   , mEncapsulated(std::move(encapsulated))
   , mSupportsArbitrarySampleRate(mEncapsulated->SupportsArbitrarySampleRate())
-  , mResampler(GetNAMSampleRate(mEncapsulated))
+  , mResampler(MakeResampler(NumInputChannels(), NumOutputChannels(), GetEncapsulatedSampleRate()))
+  , mBlockProcessFunc(
+      [this](NAM_SAMPLE** input, NAM_SAMPLE** output, int frames) { mEncapsulated->process(input, output, frames); })
   {
-    // Assign the encapsulated object's processing function  to this object's member so that the resampler can use it:
-    auto ProcessBlockFunc = [&](NAM_SAMPLE** input, NAM_SAMPLE** output, int numFrames) {
-      mEncapsulated->process(input, output, numFrames);
-    };
-    mBlockProcessFunc = ProcessBlockFunc;
-
     // Get the other information from the encapsulated NAM so that we can tell the outside world about what we're
     // holding.
     if (mEncapsulated->HasLoudness())
@@ -97,11 +94,17 @@ public:
     }
     else
     {
-      mResampler.ProcessBlock(input, output, num_frames, mBlockProcessFunc);
+      std::visit([&](auto& resampler) { resampler.ProcessBlock(input, output, num_frames, mBlockProcessFunc); },
+                 mResampler);
     }
   };
 
-  int GetLatency() const { return NeedToResample() ? mResampler.GetLatency() : 0; };
+  int GetLatency() const
+  {
+    if (!NeedToResample())
+      return 0;
+    return std::visit([](const auto& resampler) { return resampler.GetLatency(); }, mResampler);
+  };
 
   void Reset(const double sampleRate, const int maxBlockSize) override
   {
@@ -113,7 +116,7 @@ public:
     int maxEncapsulatedBlockSize = maxBlockSize;
     if (NeedToResample())
     {
-      mResampler.Reset(sampleRate, maxBlockSize);
+      std::visit([&](auto& resampler) { resampler.Reset(sampleRate, maxBlockSize); }, mResampler);
       maxEncapsulatedBlockSize =
         static_cast<int>(std::ceil(static_cast<double>(maxBlockSize) * modelSampleRate / sampleRate));
     }
@@ -130,6 +133,26 @@ public:
   }
 
 private:
+  template <int Inputs, int Outputs>
+  using ChannelResampler = dsp::ResamplingContainer<NAM_SAMPLE, Inputs, 12, Outputs>;
+  using Resampler =
+    std::variant<ChannelResampler<1, 1>, ChannelResampler<1, 2>, ChannelResampler<2, 1>, ChannelResampler<2, 2>>;
+
+  static Resampler MakeResampler(int inputs, int outputs, double sampleRate)
+  {
+    if (inputs > 2 || outputs > 2)
+      throw std::runtime_error("ResamplingNAM supports at most two input and output channels.");
+    if (inputs == 1)
+    {
+      if (outputs == 1)
+        return Resampler(std::in_place_type<ChannelResampler<1, 1>>, sampleRate);
+      return Resampler(std::in_place_type<ChannelResampler<1, 2>>, sampleRate);
+    }
+    if (outputs == 1)
+      return Resampler(std::in_place_type<ChannelResampler<2, 1>>, sampleRate);
+    return Resampler(std::in_place_type<ChannelResampler<2, 2>>, sampleRate);
+  }
+
   bool NeedToResample() const
   {
     return !mSupportsArbitrarySampleRate && GetExpectedSampleRate() != GetEncapsulatedSampleRate();
@@ -137,13 +160,9 @@ private:
   // The encapsulated NAM
   std::unique_ptr<nam::DSP> mEncapsulated;
   const bool mSupportsArbitrarySampleRate;
-
-  // The resampling wrapper
-  dsp::ResamplingContainer<NAM_SAMPLE, 1, 12> mResampler;
+  Resampler mResampler;
+  std::function<void(NAM_SAMPLE**, NAM_SAMPLE**, int)> mBlockProcessFunc;
 
   // Used to check that we don't get too large a block to process.
   int mMaxExternalBlockSize = 0;
-
-  // This function is defined to conform to the interface expected by the iPlug2 resampler.
-  std::function<void(NAM_SAMPLE**, NAM_SAMPLE**, int)> mBlockProcessFunc;
 };

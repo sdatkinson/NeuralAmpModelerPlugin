@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "../AudioDSPTools/dsp/NoiseGate.h"
 #include "../AudioDSPTools/dsp/dsp.h"
 #include "ResamplingNAM.h"
@@ -12,14 +14,15 @@
 
 
 const int kNumPresets = 1;
-// The plugin is mono inside
-constexpr size_t kNumChannelsInternal = 1;
+// Both slots take mono input and may produce mono or stereo output.
+constexpr size_t kMaxNumChannelsInternal = 2;
 
-class NAMSender : public iplug::IPeakAvgSender<>
+template <int Channels>
+class NAMSender : public iplug::IPeakAvgSender<Channels>
 {
 public:
   NAMSender()
-  : iplug::IPeakAvgSender<>(-90.0, true, 5.0f, 1.0f, 300.0f, 500.0f)
+  : iplug::IPeakAvgSender<Channels>(-90.0, true, 5.0f, 1.0f, 300.0f, 500.0f)
   {
   }
 };
@@ -81,7 +84,6 @@ class NeuralAmpModeler final : public iplug::Plugin
 {
 public:
   NeuralAmpModeler(const iplug::InstanceInfo& info);
-  ~NeuralAmpModeler();
 
   void ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames) override;
   void OnReset() override;
@@ -97,20 +99,15 @@ public:
   bool OnMessage(int msgTag, int ctrlTag, int dataSize, const void* pData) override;
 
 private:
-  // Allocates mInputPointers and mOutputPointers
-  void _AllocateIOPointers(const size_t nChans);
+  static constexpr int kMaxInternalBlockSize = 2048;
+
   // Moves DSP modules from staging area to the main area.
   // Also deletes DSP modules that are flagged for removal.
   // Exists so that we don't try to use a DSP module that's only
   // partially-instantiated.
   void _ApplyDSPStaging();
-  // Deallocates mInputPointers and mOutputPointers
-  void _DeallocateIOPointers();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
-  // Sizes based on mInputArray
-  size_t _GetBufferNumChannels() const;
-  size_t _GetBufferNumFrames() const;
   void _InitToneStack();
   // Loads a NAM model and stores it to mStagedNAM
   // Returns an empty string on success, or an error message on failure.
@@ -120,21 +117,17 @@ private:
   std::string _StageCab(const WDL_String& cabPath);
 
   bool _HaveModel() const { return this->mModel != nullptr; };
-  // Prepare the input & output buffers
-  void _PrepareBuffers(const size_t numChannels, const size_t numFrames);
-  // Manage pointers
-  void _PrepareIOPointers(const size_t nChans);
-  // Copy the input buffer to the object, applying input level.
-  // :param nChansIn: In from external
-  // :param nChansOut: Out to the internal of the DSP routine
-  void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn, const size_t nChansOut);
+  void _ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames, size_t numChannelsExternalIn,
+                     size_t numChannelsExternalOut);
+  // Mix the host inputs to mono and apply input gain.
+  void _ProcessInput(iplug::sample** inputs, const size_t nFrames, const size_t nChansIn);
   // Copy the output to the output buffer, applying output level.
   // :param nChansIn: In from internal
   // :param nChansOut: Out to external
   void _ProcessOutput(iplug::sample** inputs, iplug::sample** outputs, const size_t nFrames, const size_t nChansIn,
                       const size_t nChansOut);
   // Resetting for the model and cab, called by OnReset
-  void _ResetModelAndCab(const double sampleRate, const int maxBlockSize);
+  void _ResetModelAndCab(const double sampleRate);
 
   void _SetInputGain();
   void _SetOutputGain();
@@ -157,35 +150,36 @@ private:
   // Called within ProcessBlock().
   // Assume _ProcessInput() and _ProcessOutput() were run immediately before.
   void _UpdateMeters(iplug::sample** inputPointer, iplug::sample** outputPointer, const size_t nFrames,
-                     const size_t nChansIn, const size_t nChansOut);
+                     const size_t nChansOut);
 
   // Member data
 
-  // Input arrays to NAM
-  std::vector<std::vector<iplug::sample>> mInputArray;
-  // Output from NAM
-  std::vector<std::vector<iplug::sample>> mOutputArray;
+  using SampleBuffer = std::array<iplug::sample, kMaxInternalBlockSize>;
+  SampleBuffer mInputBuffer{};
+  std::array<SampleBuffer, kMaxNumChannelsInternal> mModelOutput{};
   // Separate cab output avoids requiring NAM architectures to support in-place processing.
-  std::vector<iplug::sample> mCabinetOutput;
-  // Pointer versions
-  iplug::sample** mInputPointers = nullptr;
-  iplug::sample** mOutputPointers = nullptr;
+  std::array<SampleBuffer, kMaxNumChannelsInternal> mCabinetOutput{};
+  SampleBuffer mCabinetInput{};
 
   // Input and output gain
   double mInputGain = 1.0;
   double mOutputGain = 1.0;
 
   // Noise gates
-  dsp::noise_gate::Trigger mNoiseGateTrigger;
-  dsp::noise_gate::Gain mNoiseGateGain;
+  dsp::noise_gate::Trigger mNoiseGateTrigger; // Mono input to the trigger
+  dsp::noise_gate::Gain mNoiseGateGain;  // Gain reduction applied to left/mono output of the amp...
+  dsp::noise_gate::Gain mNoiseGateGainRight;  // ...and the right output, if applicable.
   // The model actually being used:
   std::unique_ptr<ResamplingNAM> mModel;
   // The cabinet, loaded from a WAV impulse response or NAM model.
   std::unique_ptr<ResamplingNAM> mCab;
+  // Independent state for a mono cab processing the right side of a stereo amp.
+  std::unique_ptr<ResamplingNAM> mCabRight;
   bool mCabIsWav = false;
   // Manages switching what DSP is being used.
   std::unique_ptr<ResamplingNAM> mStagedModel;
   std::unique_ptr<ResamplingNAM> mStagedCab;
+  std::unique_ptr<ResamplingNAM> mStagedCabRight;
   bool mStagedCabIsWav = false;
   // Flags to take away the modules at a safe time.
   std::atomic<bool> mShouldRemoveModel = false;
@@ -199,7 +193,6 @@ private:
 
   // Post-cab filters
   recursive_linear_filter::HighPass mHighPass;
-  //  recursive_linear_filter::LowPass mLowPass;
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
@@ -210,5 +203,6 @@ private:
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
-  NAMSender mInputSender, mOutputSender;
+  NAMSender<1> mInputSender;
+  NAMSender<2> mOutputSender;
 };
