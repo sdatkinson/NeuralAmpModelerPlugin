@@ -50,7 +50,8 @@ if(NAM_VST3_SDK_ROOT AND NAM_VST3_TEST_PLUGIN)
     "${NAM_VST3_SDK_ROOT}/public.sdk/source/vst/hosting/plugprovider.cpp"
     "${NAM_VST3_SDK_ROOT}/public.sdk/source/common/memorystream.cpp"
   )
-  target_compile_features(test_stereo_plugin PRIVATE cxx_std_20)
+  # Match the SDK validator: its Windows loader expects u8string() to return std::string.
+  set_target_properties(test_stereo_plugin PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
   target_include_directories(test_stereo_plugin PRIVATE "${CORE_ROOT}/Dependencies/nlohmann")
   target_link_libraries(test_stereo_plugin PRIVATE sdk_hosting)
   if(APPLE)
