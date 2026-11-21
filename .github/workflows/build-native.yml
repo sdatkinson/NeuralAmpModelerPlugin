@@ -17,6 +17,7 @@ jobs:
     name: Build-native-plugins
     runs-on: ${{matrix.os}}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
         include:
@@ -101,6 +102,21 @@ jobs:
         $bundle = Join-Path $env:GITHUB_WORKSPACE "NeuralAmpModeler/build-win/NeuralAmpModeler.vst3"
         & $validator.FullName $bundle
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      shell: pwsh
+
+    - name: Run CTest suite
+      run: |
+        $sdk = Join-Path $env:RUNNER_TEMP "vst3sdk"
+        if ($env:RUNNER_OS -eq 'Windows') {
+          $bundle = Join-Path $env:GITHUB_WORKSPACE "NeuralAmpModeler/build-win/NeuralAmpModeler.vst3"
+        } else {
+          $bundle = Join-Path $HOME "Library/Audio/Plug-Ins/VST3/NeuralAmpModeler.vst3"
+        }
+        cmake -S tests -B build-tests -DCMAKE_BUILD_TYPE=Release "-DNAM_VST3_SDK_ROOT=$sdk" "-DNAM_VST3_TEST_PLUGIN=$bundle"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        cmake --build build-tests --config Release --parallel 2
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        ctest --test-dir build-tests -C Release --output-on-failure --no-tests=error
       shell: pwsh
 
     - name: Upload artifact

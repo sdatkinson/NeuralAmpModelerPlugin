@@ -595,43 +595,59 @@ private:
   NAMGetButtonControl* mGetButton = nullptr;
 };
 
-class NAMMeterControl : public IVPeakAvgMeterControl<>, public IBitmapBase
+template <int Channels>
+class NAMMeterControl : public IVPeakAvgMeterControl<Channels>, public IBitmapBase
 {
   static constexpr float KMeterMin = -70.0f;
   static constexpr float KMeterMax = -0.01f;
 
 public:
   NAMMeterControl(const IRECT& bounds, const IBitmap& bitmap, const IVStyle& style)
-  : IVPeakAvgMeterControl<>(bounds, "", style.WithShowValue(false).WithDrawFrame(false).WithWidgetFrac(0.8),
-                            EDirection::Vertical, {}, 0, KMeterMin, KMeterMax, {})
+  : IVPeakAvgMeterControl<Channels>(bounds, "", style.WithShowValue(false).WithDrawFrame(false).WithWidgetFrac(0.8),
+                                   EDirection::Vertical, {}, 0, KMeterMin, KMeterMax, {})
   , IBitmapBase(bitmap)
   {
-    SetPeakSize(1.0f);
+    this->SetPeakSize(1.0f);
   }
 
-  void OnRescale() override { mBitmap = GetUI()->GetScaledBitmap(mBitmap); }
+  void OnRescale() override { mBitmap = this->GetUI()->GetScaledBitmap(mBitmap); }
 
-  virtual void OnResize() override
+  void OnResize() override
   {
-    SetTargetRECT(MakeRects(mRECT));
-    mWidgetBounds = mWidgetBounds.GetMidHPadded(5).GetVPadded(10);
-    MakeTrackRects(mWidgetBounds);
-    MakeStepRects(mWidgetBounds, mNSteps);
-    SetDirty(false);
+    this->SetTargetRECT(this->MakeRects(this->mRECT));
+    this->mWidgetBounds = this->mWidgetBounds.GetMidHPadded(5.0f).GetVPadded(10);
+    this->MakeTrackRects(this->mWidgetBounds);
+    this->MakeStepRects(this->mWidgetBounds, this->mNSteps);
+    this->SetDirty(false);
   }
 
   void DrawBackground(IGraphics& g, const IRECT& r) override { g.DrawFittedBitmap(mBitmap, r); }
 
+  void DrawWidget(IGraphics& g) override
+  {
+    if constexpr (Channels == 2)
+    {
+      // Draw equal levels together so fractional UI scaling can't leave a seam.
+      if (this->GetValue(0) == this->GetValue(1))
+      {
+        this->DrawTrack(g, this->mWidgetBounds, 0);
+        return;
+      }
+    }
+    IVPeakAvgMeterControl<Channels>::DrawWidget(g);
+  }
+
   void DrawTrackHandle(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
   {
     if (r.H() > 2)
-      g.FillRect(GetColor(kX1), r, &mBlend);
+      g.FillRect(this->GetColor(kX1), r, &this->mBlend);
   }
 
   void DrawPeak(IGraphics& g, const IRECT& r, int chIdx, bool aboveBaseValue) override
   {
-    g.DrawGrid(COLOR_BLACK, mTrackBounds.Get()[chIdx], 10, 2);
-    g.FillRect(GetColor(kX3), r, &mBlend);
+    const IRECT track(r.L, this->mWidgetBounds.T, r.R, this->mWidgetBounds.B);
+    g.DrawGrid(COLOR_BLACK, track, 10, 2);
+    g.FillRect(this->GetColor(kX3), r, &this->mBlend);
   }
 };
 

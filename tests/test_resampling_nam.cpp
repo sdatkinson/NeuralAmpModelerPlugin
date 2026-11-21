@@ -165,6 +165,52 @@ void test_fixed_rate_sequential_audio()
     require_matching_audio(actual, expected);
   }
 }
+
+class StereoDSP : public nam::DSP
+{
+public:
+  StereoDSP()
+  : nam::DSP(1, 2, 48000.0)
+  {
+  }
+
+  void process(NAM_SAMPLE** input, NAM_SAMPLE** output, int frames) override
+  {
+    for (int i = 0; i < frames; ++i)
+    {
+      output[0][i] = 0.5 * input[0][i];
+      output[1][i] = -0.25 * input[0][i];
+    }
+  }
+};
+
+void test_mono_to_stereo_resampling()
+{
+  ResamplingNAM wrapped(std::make_unique<StereoDSP>(), 48000.0);
+  for (const double rate : {48000.0, 44100.0, 96000.0, 48000.0})
+  {
+    wrapped.Reset(rate, 256);
+    std::vector<NAM_SAMPLE> input(4096), left(4096), right(4096, 123.0);
+    for (size_t i = 0; i < input.size(); ++i)
+      input[i] = 0.2 * std::sin(0.071 * i);
+    for (size_t offset = 0; offset < input.size();)
+    {
+      const int frames = std::min<int>(137, input.size() - offset);
+      NAM_SAMPLE* in[]{input.data() + offset};
+      NAM_SAMPLE* out[]{left.data() + offset, right.data() + offset};
+      wrapped.process(in, out, frames);
+      offset += frames;
+    }
+    double energy = 0.0;
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+      require(std::isfinite(right[i]) && std::abs(right[i] + 0.5 * left[i]) < 1.0e-6,
+              "Stereo channels were lost or mixed during resampling");
+      energy += left[i] * left[i];
+    }
+    require(energy > 1.0, "Stereo model produced no audio");
+  }
+}
 } // namespace
 
 int main()
@@ -174,6 +220,7 @@ int main()
     test_reset_rates_and_metadata();
     test_native_linear_audio();
     test_fixed_rate_sequential_audio();
+    test_mono_to_stereo_resampling();
     std::cout << "Sample-rate integration tests passed\n";
   }
   catch (const std::exception& error)
