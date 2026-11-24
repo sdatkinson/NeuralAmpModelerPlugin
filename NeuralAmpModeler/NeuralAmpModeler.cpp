@@ -280,7 +280,8 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
 
     // The meters
     pGraphics->AttachControl(new NAMMeterControl<1>(inputMeterArea, meterBackgroundBitmap, style), kCtrlTagInputMeter);
-    pGraphics->AttachControl(new NAMMeterControl<2>(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
+    pGraphics->AttachControl(
+      new NAMMeterControl<2>(outputMeterArea, meterBackgroundBitmap, style), kCtrlTagOutputMeter);
 
     // Settings/help/about box
     pGraphics->AttachControl(new NAMCircleButtonControl(
@@ -335,7 +336,7 @@ void NeuralAmpModeler::ProcessBlock(iplug::sample** inputs, iplug::sample** outp
 }
 
 void NeuralAmpModeler::_ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames,
-                                    size_t numChannelsExternalIn, size_t numChannelsExternalOut)
+                                     size_t numChannelsExternalIn, size_t numChannelsExternalOut)
 {
   const size_t numModelOutputs = mModel != nullptr ? mModel->NumOutputChannels() : 1;
   const size_t numFrames = (size_t)nFrames;

@@ -78,8 +78,7 @@ public:
     double samples = mEncapsulated->GetPrewarmSamples();
     if (NeedToResample())
       samples *= GetExpectedSampleRate() / GetEncapsulatedSampleRate();
-    return static_cast<int>(std::clamp(std::ceil(samples), 0.0,
-                                       static_cast<double>(std::numeric_limits<int>::max())));
+    return static_cast<int>(std::clamp(std::ceil(samples), 0.0, static_cast<double>(std::numeric_limits<int>::max())));
   }
 
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override
@@ -94,8 +93,8 @@ public:
     }
     else
     {
-      std::visit([&](auto& resampler) { resampler.ProcessBlock(input, output, num_frames, mBlockProcessFunc); },
-                 mResampler);
+      std::visit(
+        [&](auto& resampler) { resampler.ProcessBlock(input, output, num_frames, mBlockProcessFunc); }, mResampler);
     }
   };
 

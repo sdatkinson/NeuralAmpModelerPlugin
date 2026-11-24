@@ -518,8 +518,8 @@ void test_large_host_blocks(const VST3::Hosting::PluginFactory& factory, const V
     const auto expected = small.render(input);
     const auto actual = large.render(input, {largeBlockSize});
     for (const auto& channel : expected)
-      require(std::any_of(channel.end() - finalBlockSize, channel.end(),
-                          [](double value) { return std::abs(value) > 1.0e-4; }),
+      require(std::any_of(
+                channel.end() - finalBlockSize, channel.end(), [](double value) { return std::abs(value) > 1.0e-4; }),
               "Large-block fixture produced no signal in the final block");
     compare(actual, expected);
     require(large.latency() == small.latency(), "Large host blocks changed latency");

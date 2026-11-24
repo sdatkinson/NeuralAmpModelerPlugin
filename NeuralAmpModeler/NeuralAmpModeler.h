@@ -166,8 +166,8 @@ private:
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger; // Mono input to the trigger
-  dsp::noise_gate::Gain mNoiseGateGain;  // Gain reduction applied to left/mono output of the amp...
-  dsp::noise_gate::Gain mNoiseGateGainRight;  // ...and the right output, if applicable.
+  dsp::noise_gate::Gain mNoiseGateGain; // Gain reduction applied to left/mono output of the amp...
+  dsp::noise_gate::Gain mNoiseGateGainRight; // ...and the right output, if applicable.
   // The model actually being used:
   std::unique_ptr<ResamplingNAM> mModel;
   struct Cabinet
@@ -211,6 +211,6 @@ private:
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
-  NAMSender<1> mInputSender;  // Mono input
-  NAMSender<2> mOutputSender;  // Stereo output
+  NAMSender<1> mInputSender; // Mono input
+  NAMSender<2> mOutputSender; // Stereo output
 };
