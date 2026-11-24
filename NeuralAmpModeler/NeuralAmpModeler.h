@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <atomic>
+#include <mutex>
 
 #include "../AudioDSPTools/dsp/NoiseGate.h"
 #include "../AudioDSPTools/dsp/dsp.h"
@@ -101,22 +103,18 @@ public:
 private:
   static constexpr int kMaxInternalBlockSize = 2048;
 
-  // Moves DSP modules from staging area to the main area.
-  // Also deletes DSP modules that are flagged for removal.
-  // Exists so that we don't try to use a DSP module that's only
-  // partially-instantiated.
+  // Applies pending module and parameter changes at the start of a host block.
   void _ApplyDSPStaging();
   // Fallback that just copies inputs to outputs if mDSP doesn't hold a model.
   void _FallbackDSP(iplug::sample** inputs, iplug::sample** outputs, const size_t numChannels, const size_t numFrames);
   void _InitToneStack();
-  // Loads a NAM model and stores it to mStagedNAM
+  // Loads a NAM model and stores it to mStagedModel.
   // Returns an empty string on success, or an error message on failure.
   std::string _StageModel(const WDL_String& dspFile);
   // Loads a WAV or NAM cab and stores it to mStagedCab.
   // Returns an empty string on success, or an error message on failure.
   std::string _StageCab(const WDL_String& cabPath);
 
-  bool _HaveModel() const { return this->mModel != nullptr; };
   void _ProcessBlock(iplug::sample** inputs, iplug::sample** outputs, int nFrames, size_t numChannelsExternalIn,
                      size_t numChannelsExternalOut);
   // Mix the host inputs to mono and apply input gain.
@@ -164,6 +162,7 @@ private:
   // Input and output gain
   double mInputGain = 1.0;
   double mOutputGain = 1.0;
+  bool mCabEnabled = true;
 
   // Noise gates
   dsp::noise_gate::Trigger mNoiseGateTrigger; // Mono input to the trigger
@@ -171,20 +170,29 @@ private:
   dsp::noise_gate::Gain mNoiseGateGainRight;  // ...and the right output, if applicable.
   // The model actually being used:
   std::unique_ptr<ResamplingNAM> mModel;
-  // The cabinet, loaded from a WAV impulse response or NAM model.
-  std::unique_ptr<ResamplingNAM> mCab;
-  // Independent state for a mono cab processing the right side of a stereo amp.
-  std::unique_ptr<ResamplingNAM> mCabRight;
-  bool mCabIsWav = false;
-  // Manages switching what DSP is being used.
-  std::unique_ptr<ResamplingNAM> mStagedModel;
-  std::unique_ptr<ResamplingNAM> mStagedCab;
-  std::unique_ptr<ResamplingNAM> mStagedCabRight;
-  bool mStagedCabIsWav = false;
-  // Flags to take away the modules at a safe time.
-  std::atomic<bool> mShouldRemoveModel = false;
-  std::atomic<bool> mShouldRemoveCab = false;
+  struct Cabinet
+  {
+    std::unique_ptr<ResamplingNAM> model;
+    // Independent state for a mono cab processing the right side of a stereo amp.
+    std::unique_ptr<ResamplingNAM> right;
+    bool isWav = false;
 
+    void Reset(double sampleRate);
+  };
+  Cabinet mCab;
+
+  // Mutex to prevent the staging routines (_StageModel(), _StageCab()) from changing what's in the "mStaged{Model,Cab}"
+  // members while _ApplyDSPStaging() is getting from them.
+  mutable std::mutex mDSPStagingMutex;
+  std::atomic<double> mDSPStagingSampleRate{iplug::DEFAULT_SAMPLE_RATE};
+  std::unique_ptr<ResamplingNAM> mStagedModel;
+  Cabinet mStagedCab;
+  bool mShouldRemoveModel = false;
+  bool mShouldRemoveCab = false;
+
+  std::atomic<bool> mDSPGainsAndTimingDirty{true};
+  std::atomic<bool> mToneStackDirty{true};
+  std::atomic<bool> mSlimDirty{false};
   std::atomic<bool> mNewModelLoadedInDSP = false;
   std::atomic<bool> mModelCleared = false;
 
@@ -203,6 +211,6 @@ private:
 
   std::unordered_map<std::string, double> mNAMParams = {{"Input", 0.0}, {"Output", 0.0}};
 
-  NAMSender<1> mInputSender;
-  NAMSender<2> mOutputSender;
+  NAMSender<1> mInputSender;  // Mono input
+  NAMSender<2> mOutputSender;  // Stereo output
 };

@@ -188,7 +188,6 @@ NeuralAmpModeler::NeuralAmpModeler(const InstanceInfo& info)
     auto loadModelCompletionHandler = [&](const WDL_String& fileName, const WDL_String& path) {
       if (fileName.GetLength())
       {
-        // Sets mNAMPath and mStagedNAM
         const std::string msg = _StageModel(fileName);
         // TODO error messages like the cab loader.
         if (msg.size())
@@ -393,9 +392,9 @@ void NeuralAmpModeler::_ProcessBlock(iplug::sample** inputs, iplug::sample** out
   size_t numOutputChannels = numModelOutputs;
   sample** cabPointers = toneStackOutPointers;
   sample* cabinetOutputPointers[]{mCabinetOutput[0].data(), mCabinetOutput[1].data()};
-  if (mCab != nullptr && GetParam(kCabToggle)->Bool())
+  if (mCab.model != nullptr && mCabEnabled)
   {
-    if (mCab->NumOutputChannels() == 2)
+    if (mCab.model->NumOutputChannels() == 2)
     {
       sample* cabInputPointers[]{toneStackOutPointers[0]};
       if (numModelOutputs == 2)
@@ -404,15 +403,15 @@ void NeuralAmpModeler::_ProcessBlock(iplug::sample** inputs, iplug::sample** out
           mCabinetInput[i] = 0.5 * (toneStackOutPointers[0][i] + toneStackOutPointers[1][i]);
         cabInputPointers[0] = mCabinetInput.data();
       }
-      mCab->process(cabInputPointers, cabinetOutputPointers, nFrames);
+      mCab.model->process(cabInputPointers, cabinetOutputPointers, nFrames);
       numOutputChannels = 2;
     }
     else
     {
       // Mono cabs process stereo amp outputs independently, preserving L/R.
-      mCab->process(toneStackOutPointers, cabinetOutputPointers, nFrames);
+      mCab.model->process(toneStackOutPointers, cabinetOutputPointers, nFrames);
       if (numModelOutputs == 2)
-        mCabRight->process(toneStackOutPointers + 1, cabinetOutputPointers + 1, nFrames);
+        mCab.right->process(toneStackOutPointers + 1, cabinetOutputPointers + 1, nFrames);
     }
     cabPointers = cabinetOutputPointers;
   }
@@ -441,6 +440,7 @@ void NeuralAmpModeler::OnReset()
   // If there is a model or cab loaded, they need to be checked for resampling.
   _ResetModelAndCab(sampleRate);
   mToneStack->Reset(sampleRate, kMaxInternalBlockSize);
+  mCabEnabled = GetParam(kCabToggle)->Bool();
   _UpdateLatencyAndTail();
 }
 
@@ -448,6 +448,7 @@ void NeuralAmpModeler::OnIdle()
 {
   mInputSender.TransmitData(*this);
   mOutputSender.TransmitData(*this);
+  _ApplySlimParamToLoadedNAMs();
 
   if (mNewModelLoadedInDSP)
   {
@@ -486,8 +487,11 @@ bool NeuralAmpModeler::SerializeState(IByteChunk& chunk) const
   chunk.PutStr(version.Get());
   // Model directory (don't serialize the model itself; we'll just load it again
   // when we unserialize)
-  chunk.PutStr(mNAMPath.Get());
-  chunk.PutStr(mCabPath.Get());
+  {
+    const std::lock_guard lock(mDSPStagingMutex);
+    chunk.PutStr(mNAMPath.Get());
+    chunk.PutStr(mCabPath.Get());
+  }
   return SerializeParams(chunk);
 }
 
@@ -513,47 +517,50 @@ void NeuralAmpModeler::OnUIOpen()
 {
   Plugin::OnUIOpen();
 
-  if (mNAMPath.GetLength())
+  WDL_String modelPath, cabPath;
+  bool modelLoaded, cabLoaded;
   {
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    const std::lock_guard lock(mDSPStagingMutex);
+    modelPath = mNAMPath;
+    cabPath = mCabPath;
+    modelLoaded = mModel != nullptr || mStagedModel != nullptr;
+    cabLoaded = mCab.model != nullptr || mStagedCab.model != nullptr;
+  }
+  if (modelPath.GetLength())
+  {
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, modelPath.GetLength(), modelPath.Get());
     // If it's not loaded yet, then mark as failed.
     // If it's yet to be loaded, then the completion handler will set us straight once it runs.
-    if (mModel == nullptr && mStagedModel == nullptr)
+    if (!modelLoaded)
       SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
   }
 
-  if (mCabPath.GetLength())
+  if (cabPath.GetLength())
   {
-    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, mCabPath.GetLength(), mCabPath.Get());
-    if (mCab == nullptr && mStagedCab == nullptr)
+    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, cabPath.GetLength(), cabPath.Get());
+    if (!cabLoaded)
       SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadFailed);
   }
 
-  if (mModel != nullptr)
-  {
-    _UpdateControlsFromModel();
-  }
+  _UpdateControlsFromModel();
 }
 
 void NeuralAmpModeler::OnParamChange(int paramIdx)
 {
   switch (paramIdx)
   {
-    // Changes to the input gain
     case kCalibrateInput:
     case kInputCalibrationLevel:
-    case kInputLevel: _SetInputGain(); break;
-    // Changes to the output gain
+    case kInputLevel:
     case kOutputLevel:
-    case kOutputMode: _SetOutputGain(); break;
-    // Tone stack:
-    case kToneBass: mToneStack->SetParam("bass", GetParam(paramIdx)->Value()); break;
-    case kToneMid: mToneStack->SetParam("middle", GetParam(paramIdx)->Value()); break;
-    case kToneTreble: mToneStack->SetParam("treble", GetParam(paramIdx)->Value()); break;
-    case kSlim: _ApplySlimParamToLoadedNAMs(); break;
-    case kCabToggle:
-      _SetOutputGain();
-      _UpdateLatencyAndTail();
+    case kOutputMode:
+    case kCabToggle: mDSPGainsAndTimingDirty = true; break;
+    case kToneBass:
+    case kToneMid:
+    case kToneTreble: mToneStackDirty = true; break;
+    case kSlim:
+      mSlimDirty = true;
+      _ApplySlimParamToLoadedNAMs();
       break;
     default: break;
   }
@@ -581,8 +588,24 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 {
   switch (msgTag)
   {
-    case kMsgTagClearModel: mShouldRemoveModel = true; return true;
-    case kMsgTagClearCab: mShouldRemoveCab = true; return true;
+    case kMsgTagClearModel:
+    {
+      std::unique_ptr<ResamplingNAM> superseded;
+      const std::lock_guard lock(mDSPStagingMutex);
+      superseded = std::move(mStagedModel);
+      mNAMPath.Set("");
+      mShouldRemoveModel = true;
+      return true;
+    }
+    case kMsgTagClearCab:
+    {
+      Cabinet superseded;
+      const std::lock_guard lock(mDSPStagingMutex);
+      superseded = std::exchange(mStagedCab, {});
+      mCabPath.Set("");
+      mShouldRemoveCab = true;
+      return true;
+    }
     case kMsgTagHighlightColor:
     {
       mHighLightColor.Set((const char*)pData);
@@ -613,45 +636,46 @@ bool NeuralAmpModeler::OnMessage(int msgTag, int ctrlTag, int dataSize, const vo
 
 void NeuralAmpModeler::_ApplyDSPStaging()
 {
-  // Remove marked modules
-  if (mShouldRemoveModel)
+  std::unique_ptr<ResamplingNAM> retiredModel;
+  Cabinet retiredCab;
+  bool modelChanged = false, cabChanged = false;
   {
-    mModel = nullptr;
-    mNAMPath.Set("");
-    mShouldRemoveModel = false;
-    mModelCleared = true;
-    _UpdateLatencyAndTail();
+    // The audio thread keeps using the current modules if a publisher holds the lock.
+    const std::unique_lock lock(mDSPStagingMutex, std::try_to_lock);
+    if (lock.owns_lock())
+    {
+      // A staged replacement takes precedence over an earlier clear request.
+      if (mStagedModel != nullptr || mShouldRemoveModel)
+      {
+        retiredModel = std::exchange(mModel, std::move(mStagedModel));
+        mShouldRemoveModel = false;
+        mNewModelLoadedInDSP = mModel != nullptr;
+        mModelCleared = mModel == nullptr;
+        modelChanged = true;
+      }
+      if (mStagedCab.model != nullptr || mShouldRemoveCab)
+      {
+        std::swap(retiredCab, mCab);
+        mCab = std::exchange(mStagedCab, {});
+        mShouldRemoveCab = false;
+        cabChanged = true;
+      }
+    }
+  }
+
+  // State recall and host automation can arrive off the audio thread.
+  if (mToneStackDirty.exchange(false))
+  {
+    mToneStack->SetParam("bass", GetParam(kToneBass)->Value());
+    mToneStack->SetParam("middle", GetParam(kToneMid)->Value());
+    mToneStack->SetParam("treble", GetParam(kToneTreble)->Value());
+  }
+  if (mDSPGainsAndTimingDirty.exchange(false) || modelChanged || cabChanged)
+  {
+    mCabEnabled = GetParam(kCabToggle)->Bool();
     _SetInputGain();
     _SetOutputGain();
-  }
-  if (mShouldRemoveCab)
-  {
-    mCab = nullptr;
-    mCabRight = nullptr;
-    mCabIsWav = false;
-    mCabPath.Set("");
-    mShouldRemoveCab = false;
     _UpdateLatencyAndTail();
-    _SetOutputGain();
-  }
-  // Move things from staged to live
-  if (mStagedModel != nullptr)
-  {
-    mModel = std::move(mStagedModel);
-    mStagedModel = nullptr;
-    mNewModelLoadedInDSP = true;
-    _UpdateLatencyAndTail();
-    _SetInputGain();
-    _SetOutputGain();
-  }
-  if (mStagedCab != nullptr)
-  {
-    mCab = std::move(mStagedCab);
-    mCabRight = std::move(mStagedCabRight);
-    mCabIsWav = mStagedCabIsWav;
-    mStagedCab = nullptr;
-    _UpdateLatencyAndTail();
-    _SetOutputGain();
   }
 }
 
@@ -663,31 +687,25 @@ void NeuralAmpModeler::_FallbackDSP(iplug::sample** inputs, iplug::sample** outp
       outputs[c][s] = inputs[c][s];
 }
 
+void NeuralAmpModeler::Cabinet::Reset(double sampleRate)
+{
+  if (model != nullptr)
+    model->Reset(sampleRate, kMaxInternalBlockSize);
+  if (right != nullptr)
+    right->Reset(sampleRate, kMaxInternalBlockSize);
+}
+
 void NeuralAmpModeler::_ResetModelAndCab(const double sampleRate)
 {
-  // Model
-  if (mStagedModel != nullptr)
-  {
-    mStagedModel->Reset(sampleRate, kMaxInternalBlockSize);
-  }
-  else if (mModel != nullptr)
-  {
+  const std::lock_guard lock(mDSPStagingMutex);
+  mDSPStagingSampleRate = sampleRate;
+  // The active module may still render if the pending handoff is delayed.
+  if (mModel != nullptr)
     mModel->Reset(sampleRate, kMaxInternalBlockSize);
-  }
-
-  // Core retains the original model data and handles coefficient resampling on Reset.
-  if (mStagedCab != nullptr)
-  {
-    mStagedCab->Reset(sampleRate, kMaxInternalBlockSize);
-    if (mStagedCabRight != nullptr)
-      mStagedCabRight->Reset(sampleRate, kMaxInternalBlockSize);
-  }
-  else if (mCab != nullptr)
-  {
-    mCab->Reset(sampleRate, kMaxInternalBlockSize);
-    if (mCabRight != nullptr)
-      mCabRight->Reset(sampleRate, kMaxInternalBlockSize);
-  }
+  if (mStagedModel != nullptr)
+    mStagedModel->Reset(sampleRate, kMaxInternalBlockSize);
+  mCab.Reset(sampleRate);
+  mStagedCab.Reset(sampleRate);
 }
 
 void NeuralAmpModeler::_SetInputGain()
@@ -729,17 +747,23 @@ void NeuralAmpModeler::_SetOutputGain()
       default: break;
     }
   }
-  if (mCab != nullptr && mCabIsWav && GetParam(kCabToggle)->Bool())
+  if (mCab.model != nullptr && mCab.isWav && mCabEnabled)
   {
     // Core compensates by sourceRate / hostRate when resampling IR coefficients.
     // This remaining factor preserves the legacy -18 dB * 48000 / hostRate level.
-    gainDB += -18.0 + 20.0 * std::log10(48000.0 / mCab->GetEncapsulatedSampleRate());
+    gainDB += -18.0 + 20.0 * std::log10(48000.0 / mCab.model->GetEncapsulatedSampleRate());
   }
   mOutputGain = DBToAmp(gainDB);
 }
 
 void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
 {
+  if (!mSlimDirty)
+    return;
+  const std::unique_lock lock(mDSPStagingMutex, std::try_to_lock);
+  if (!lock.owns_lock() || !mSlimDirty.exchange(false))
+    return;
+
   const double v = GetParam(kSlim)->Value();
   auto apply = [v](ResamplingNAM* p) {
     if (p == nullptr)
@@ -749,12 +773,11 @@ void NeuralAmpModeler::_ApplySlimParamToLoadedNAMs()
   };
   apply(mModel.get());
   apply(mStagedModel.get());
-  _UpdateLatencyAndTail();
+  mDSPGainsAndTimingDirty = true;
 }
 
 std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
 {
-  WDL_String previousNAMPath = mNAMPath;
   try
   {
     auto dspPath = std::filesystem::u8path(modelPath.Get());
@@ -771,25 +794,29 @@ std::string NeuralAmpModeler::_StageModel(const WDL_String& modelPath)
                                + std::to_string(model->NumOutputChannels()));
     }
 
-    std::unique_ptr<ResamplingNAM> temp = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
-    temp->Reset(GetSampleRate(), kMaxInternalBlockSize);
-    if (nam::SlimmableModel* slimmable = temp->GetSlimmableModel())
+    const double sampleRate = mDSPStagingSampleRate.load();
+    auto staged = std::make_unique<ResamplingNAM>(std::move(model), sampleRate);
+    auto* slimmable = staged->GetSlimmableModel();
+    const double slim = GetParam(kSlim)->Value();
+    if (slimmable != nullptr)
+      slimmable->SetSlimmableSize(slim);
+
     {
-      slimmable->SetSlimmableSize(GetParam(kSlim)->Value());
+      const std::lock_guard lock(mDSPStagingMutex);
+      const double currentRate = mDSPStagingSampleRate.load();
+      if (currentRate != sampleRate)
+        staged->Reset(currentRate, kMaxInternalBlockSize);
+      const double currentSlim = GetParam(kSlim)->Value();
+      if (slimmable != nullptr && currentSlim != slim)
+        slimmable->SetSlimmableSize(currentSlim);
+      mNAMPath = modelPath;
+      std::swap(mStagedModel, staged);
     }
-    mStagedModel = std::move(temp);
-    mNAMPath = modelPath;
-    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, mNAMPath.GetLength(), mNAMPath.Get());
+    SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadedModel, modelPath.GetLength(), modelPath.Get());
   }
-  catch (std::runtime_error& e)
+  catch (const std::runtime_error& e)
   {
     SendControlMsgFromDelegate(kCtrlTagModelFileBrowser, kMsgTagLoadFailed);
-
-    if (mStagedModel != nullptr)
-    {
-      mStagedModel = nullptr;
-    }
-    mNAMPath = previousNAMPath;
     std::cerr << "Failed to read DSP module" << std::endl;
     std::cerr << e.what() << std::endl;
     return e.what();
@@ -807,24 +834,30 @@ std::string NeuralAmpModeler::_StageCab(const WDL_String& cabPath)
     auto model = nam::get_dsp(path, config);
     if (model->NumInputChannels() != 1 || model->NumOutputChannels() < 1 || model->NumOutputChannels() > 2)
       throw std::runtime_error("Cab model must have 1 input and 1 or 2 output channels.");
-    auto cab = std::make_unique<ResamplingNAM>(std::move(model), GetSampleRate());
-    cab->Reset(GetSampleRate(), kMaxInternalBlockSize);
-    std::unique_ptr<ResamplingNAM> right;
-    if (cab->NumOutputChannels() == 1)
+
+    const double sampleRate = mDSPStagingSampleRate.load();
+    Cabinet staged;
+    staged.model = std::make_unique<ResamplingNAM>(std::move(model), sampleRate);
+    if (staged.model->NumOutputChannels() == 1)
     {
       // Use the same decoded data so both instances match even if the file changes.
       // Prepare the right instance here so changing amp width needs no model loading in ProcessBlock.
-      right = std::make_unique<ResamplingNAM>(nam::get_dsp(config), GetSampleRate());
-      right->Reset(GetSampleRate(), kMaxInternalBlockSize);
+      staged.right = std::make_unique<ResamplingNAM>(nam::get_dsp(config), sampleRate);
     }
     auto extension = path.extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(),
                    [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    mStagedCabIsWav = extension == ".wav";
-    mStagedCabRight = std::move(right);
-    mStagedCab = std::move(cab);
-    mCabPath = cabPath;
-    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, mCabPath.GetLength(), mCabPath.Get());
+    staged.isWav = extension == ".wav";
+
+    {
+      const std::lock_guard lock(mDSPStagingMutex);
+      const double currentRate = mDSPStagingSampleRate.load();
+      if (currentRate != sampleRate)
+        staged.Reset(currentRate);
+      mCabPath = cabPath;
+      std::swap(mStagedCab, staged);
+    }
+    SendControlMsgFromDelegate(kCtrlTagCabFileBrowser, kMsgTagLoadedCab, cabPath.GetLength(), cabPath.Get());
   }
   catch (const std::exception& error)
   {
@@ -880,36 +913,37 @@ void NeuralAmpModeler::_ProcessOutput(iplug::sample** inputs, iplug::sample** ou
 
 void NeuralAmpModeler::_UpdateControlsFromModel()
 {
-  if (mModel == nullptr)
-  {
-    return;
-  }
   if (auto* pGraphics = GetUI())
   {
     ModelInfo modelInfo;
-    modelInfo.sampleRate.known = true;
-    modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
-    modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
-    modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
-    modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
-    modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+    bool slimmable, hasLoudness;
+    {
+      const std::lock_guard lock(mDSPStagingMutex);
+      if (mModel == nullptr)
+        return;
+      modelInfo.sampleRate.known = true;
+      modelInfo.sampleRate.value = mModel->GetEncapsulatedSampleRate();
+      modelInfo.inputCalibrationLevel.known = mModel->HasInputLevel();
+      modelInfo.inputCalibrationLevel.value = mModel->HasInputLevel() ? mModel->GetInputLevel() : 0.0;
+      modelInfo.outputCalibrationLevel.known = mModel->HasOutputLevel();
+      modelInfo.outputCalibrationLevel.value = mModel->HasOutputLevel() ? mModel->GetOutputLevel() : 0.0;
+      slimmable = mModel->GetSlimmableModel() != nullptr;
+      hasLoudness = mModel->HasLoudness();
+    }
 
     static_cast<NAMSettingsPageControl*>(pGraphics->GetControlWithTag(kCtrlTagSettingsBox))->SetModelInfo(modelInfo);
 
-    const bool disableInputCalibrationControls = !mModel->HasInputLevel();
+    const bool disableInputCalibrationControls = !modelInfo.inputCalibrationLevel.known;
     pGraphics->GetControlWithTag(kCtrlTagCalibrateInput)->SetDisabled(disableInputCalibrationControls);
     pGraphics->GetControlWithTag(kCtrlTagInputCalibrationLevel)->SetDisabled(disableInputCalibrationControls);
     {
       auto* c = static_cast<OutputModeControl*>(pGraphics->GetControlWithTag(kCtrlTagOutputMode));
-      c->SetNormalizedDisable(!mModel->HasLoudness());
-      c->SetCalibratedDisable(!mModel->HasOutputLevel());
+      c->SetNormalizedDisable(!hasLoudness);
+      c->SetCalibratedDisable(!modelInfo.outputCalibrationLevel.known);
     }
 
     if (auto* pSlimIcon = pGraphics->GetControlWithTag(kCtrlTagSlimmableIcon))
-    {
-      const bool show = mModel->GetSlimmableModel() != nullptr;
-      pSlimIcon->Hide(!show);
-    }
+      pSlimIcon->Hide(!slimmable);
   }
 }
 
@@ -920,14 +954,14 @@ void NeuralAmpModeler::_UpdateLatencyAndTail()
   {
     latency += mModel->GetLatency();
   }
-  const bool cabActive = mCab != nullptr && GetParam(kCabToggle)->Bool();
+  const bool cabActive = mCab.model != nullptr && mCabEnabled;
   if (cabActive)
-    latency += mCab->GetLatency();
+    latency += mCab.model->GetLatency();
 
   // Both wrappers report their models' history lengths in host-rate samples.
   // Allow another two seconds (ten cycles at 5 Hz) for the DC blocker.
   const double tail = 2.0 * GetSampleRate() + (mModel ? mModel->GetPrewarmSamples() : 0)
-                      + (cabActive ? mCab->GetPrewarmSamples() : 0);
+                      + (cabActive ? mCab.model->GetPrewarmSamples() : 0);
   SetTailSize(static_cast<int>(std::min(tail, static_cast<double>(std::numeric_limits<int>::max()))));
 
   // Feels weird to have to do this.
