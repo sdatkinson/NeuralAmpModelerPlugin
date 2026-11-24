@@ -54,16 +54,21 @@ void NeuralAmpModeler::_UnserializeApplyConfig(nlohmann::json& config)
   OnParamReset(iplug::EParamSource::kPresetRecall);
   LEAVE_PARAMS_MUTEX
 
-  mNAMPath.Set(static_cast<std::string>(config["NAMPath"]).c_str());
-  mCabPath.Set(static_cast<std::string>(config["IRPath"]).c_str());
-
-  if (mNAMPath.GetLength())
+  const WDL_String modelPath(static_cast<std::string>(config["NAMPath"]).c_str());
+  const WDL_String cabPath(static_cast<std::string>(config["IRPath"]).c_str());
   {
-    _StageModel(mNAMPath);
+    const std::lock_guard lock(mDSPStagingMutex);
+    mNAMPath = modelPath;
+    mCabPath = cabPath;
   }
-  if (mCabPath.GetLength())
+
+  if (modelPath.GetLength())
   {
-    _StageCab(mCabPath);
+    _StageModel(modelPath);
+  }
+  if (cabPath.GetLength())
+  {
+    _StageCab(cabPath);
   }
 }
 
@@ -206,7 +211,7 @@ public:
   _Version(const int major, const int minor, const int patch)
   : mMajor(major)
   , mMinor(minor)
-  , mPatch(patch) {};
+  , mPatch(patch){};
   _Version(const std::string& versionStr)
   {
     std::istringstream stream(versionStr);

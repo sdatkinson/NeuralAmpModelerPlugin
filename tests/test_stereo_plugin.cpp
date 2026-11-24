@@ -11,12 +11,14 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <initializer_list>
 #include <iostream>
 #include <stdexcept>
@@ -127,6 +129,13 @@ public:
 
   void load(const std::string& model, const std::string& cab, bool cabEnabled = true, bool gateAndEQ = false)
   {
+    auto state = makeState(model, cab, cabEnabled, gateAndEQ);
+    loadState(state);
+  }
+
+  std::vector<char> makeState(const std::string& model, const std::string& cab, bool cabEnabled = true,
+                              bool gateAndEQ = false)
+  {
     MemoryStream saved;
     require(mComponent->getState(&saved) == kResultOk, "Could not read plugin state");
     auto* data = static_cast<char*>(saved.getData());
@@ -171,6 +180,11 @@ public:
     param(3, 3);
     param(4, 8);
     state.insert(state.end(), params.begin(), params.end());
+    return state;
+  }
+
+  void loadState(std::vector<char>& state)
+  {
     MemoryStream stream(state.data(), state.size());
     require(mComponent->setState(&stream) == kResultOk, "Could not restore plugin state");
   }
@@ -410,6 +424,77 @@ void test_routing(const VST3::Hosting::PluginFactory& factory, const VST3::Hosti
   std::cout << cases << " routing cases plus gate/EQ, replacement, long IR, and resampling checks passed\n";
 }
 
+void test_cab_switching_during_playback(const VST3::Hosting::PluginFactory& factory,
+                                        const VST3::Hosting::ClassInfo& info)
+{
+  constexpr double rate = 48000.0;
+  Fixtures files;
+  const auto amp = files.nam("switch-amp.nam", {{0.5}, {-0.25}}, rate);
+  const auto mono = files.nam("switch-mono.nam", {{0.75}}, rate);
+  const auto stereo = files.wav("switch-stereo.wav", {{0.5}, {-0.5}}, rate);
+  HostedPlugin plugin(factory, info, rate, 2);
+  plugin.load(amp, mono);
+  // Only replace the cabinet during playback. The stereo amp stays active.
+  std::array<std::vector<char>, 2> states{plugin.makeState("", mono), plugin.makeState("", stereo)};
+  const Audio input{{0.25, -0.25, 0.25, -0.25}};
+  const std::array<std::array<double, 2>, 2> cabGains{{{0.375, -0.1875}, {0.0625, -0.0625}}};
+  const std::array<double, 2> outputGains{1.0, std::pow(10.0, -18.0 / 20.0)};
+  const double highPassAlpha = 1.0 / (1.0 + 2.0 * std::acos(-1.0) * 5.0 / rate);
+  std::array<double, 2> previousInput{}, previousOutput{};
+  auto renderCab = [&]() {
+    const auto output = plugin.render(input, {4});
+    // Each block must match one whole cabinet, including the WAV output gain.
+    for (size_t cab = 0; cab < cabGains.size(); ++cab)
+    {
+      auto lastInput = previousInput, lastOutput = previousOutput;
+      bool matches = true;
+      for (size_t ch = 0; ch < output.size(); ++ch)
+        for (size_t i = 0; i < output[ch].size(); ++i)
+        {
+          const double sample = cabGains[cab][ch] * input[0][i];
+          lastOutput[ch] = highPassAlpha * (lastOutput[ch] + sample - lastInput[ch]);
+          lastInput[ch] = sample;
+          matches &= std::abs(output[ch][i] - outputGains[cab] * lastOutput[ch]) < 2.0e-6;
+        }
+      if (matches)
+      {
+        previousInput = lastInput;
+        previousOutput = lastOutput;
+        return cab;
+      }
+    }
+    throw std::runtime_error("Playback received a mismatched cabinet");
+  };
+  require(renderCab() == 0, "Playback did not start with the mono cabinet");
+
+  std::atomic<bool> finished{false};
+  std::promise<void> started;
+  auto playback = std::async(std::launch::async, [&]() {
+    started.set_value();
+    std::array<bool, 2> heard{};
+    while (!finished.load())
+      heard[renderCab()] = true;
+    require(heard[0] && heard[1], "Playback did not render both cabinet widths during switching");
+  });
+  started.get_future().wait();
+  try
+  {
+    // Keep the audio callback running while the host repeatedly loads new state.
+    for (int i = 0; i < 2000; ++i)
+      plugin.loadState(states[i % states.size()]);
+  }
+  catch (...)
+  {
+    finished = true;
+    playback.wait();
+    throw;
+  }
+  finished = true;
+  playback.get();
+  require(renderCab() == 1, "Playback did not adopt the final stereo cabinet");
+  std::cout << "Mono and stereo cabinet switches kept both channels coherent during playback\n";
+}
+
 void test_large_host_blocks(const VST3::Hosting::PluginFactory& factory, const VST3::Hosting::ClassInfo& info)
 {
   constexpr int largeBlockSize = 5000;
@@ -433,8 +518,8 @@ void test_large_host_blocks(const VST3::Hosting::PluginFactory& factory, const V
     const auto expected = small.render(input);
     const auto actual = large.render(input, {largeBlockSize});
     for (const auto& channel : expected)
-      require(std::any_of(channel.end() - finalBlockSize, channel.end(),
-                          [](double value) { return std::abs(value) > 1.0e-4; }),
+      require(std::any_of(
+                channel.end() - finalBlockSize, channel.end(), [](double value) { return std::abs(value) > 1.0e-4; }),
               "Large-block fixture produced no signal in the final block");
     compare(actual, expected);
     require(large.latency() == small.latency(), "Large host blocks changed latency");
@@ -459,6 +544,7 @@ int main(int argc, char** argv)
       if (info.category() == kVstAudioEffectClass)
       {
         test_routing(module->getFactory(), info);
+        test_cab_switching_during_playback(module->getFactory(), info);
         test_large_host_blocks(module->getFactory(), info);
         tested = true;
       }

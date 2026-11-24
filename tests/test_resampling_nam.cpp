@@ -27,10 +27,7 @@ public:
 
   bool SupportsArbitrarySampleRate() override { return mAdaptive; }
 
-  int GetPrewarmSamples() override
-  {
-    return mAdaptive ? static_cast<int>(std::ceil(0.1 * mProcessingRate)) : 4801;
-  }
+  int GetPrewarmSamples() override { return mAdaptive ? static_cast<int>(std::ceil(0.1 * mProcessingRate)) : 4801; }
 
   void Reset(double sampleRate, int maxBlockSize) override
   {
@@ -108,7 +105,7 @@ void test_reset_rates_and_metadata()
       require(wrapped.GetEncapsulatedSampleRate() == 48000.0, "Wrapper lost the training sample rate");
       require((wrapped.GetLatency() == 0) == (adaptive || hostRate == 48000.0), "Incorrect resampling latency");
       const int expectedHistory = adaptive ? static_cast<int>(std::ceil(0.1 * hostRate))
-                                          : static_cast<int>(std::ceil(4801.0 * hostRate / 48000.0));
+                                           : static_cast<int>(std::ceil(4801.0 * hostRate / 48000.0));
       require(wrapped.GetPrewarmSamples() == expectedHistory, "History length was not reported in host-rate samples");
       render([&](auto** in, auto** out, int frames) { wrapped.process(in, out, frames); });
     }
