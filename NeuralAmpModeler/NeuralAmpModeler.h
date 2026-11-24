@@ -64,6 +64,7 @@ enum ECtrlTags
   kCtrlTagSlimmableIcon,
   kCtrlTagSlimOverlayBackdrop,
   kCtrlTagSlimKnob,
+  kCtrlTagModelInfoIcon,
   kNumCtrlTags
 };
 
@@ -196,6 +197,10 @@ private:
 
   // Path to model's config.json or model.nam
   WDL_String mNAMPath;
+  // Optional descriptive metadata from the model's .nam file (empty if not provided)
+  std::string mNAMGearMake;
+  std::string mNAMGearModel;
+  std::string mNAMModeledBy;
   // Path to the cab (.wav or .nam file). Keep IRPath in serialized state for compatibility.
   WDL_String mCabPath;
 
